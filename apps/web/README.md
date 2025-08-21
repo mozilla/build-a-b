@@ -3,6 +3,7 @@
 The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroUI, Tailwind CSS, NextAuth, LaunchDarkly, Sanity integration, and optimized for performance.
 
 ## Table of Contents
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
@@ -16,23 +17,31 @@ The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroU
 - [License](#license)
 
 ## Prerequisites
+
 - Node.js >= 18.x
 - pnpm >= 7.x
 - Git CLI
 
 ## Installation
+
 From the monorepo root:
+
 ```bash
 pnpm install
 ```
+
 To start the development server:
+
 ```bash
 pnpm --filter web dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000).
 
 ## Environment Variables
+
 Environment variables are managed at the monorepo root in `.env.example`. Key variables for the web app include:
+
 ```env
 NEXT_PUBLIC_SANITY_PROJECT_ID=...
 NEXT_PUBLIC_SANITY_DATASET=production
@@ -43,7 +52,9 @@ GITHUB_SECRET=...
 ```
 
 ## Scripts
+
 Available scripts:
+
 ```bash
 pnpm --filter web dev     # Start development server
 pnpm --filter web build   # Build for production
@@ -55,6 +66,7 @@ pnpm --filter web test    # Run Jest tests
 ```
 
 ## Project Structure
+
 ```
 packages/web/
 ├─ public/          # Static assets (images, icons)
@@ -70,6 +82,7 @@ packages/web/
 ```
 
 ## Dependencies Overview
+
 - `@heroui/react` - HeroUI React components
 - `tailwind-plugin` - HeroUI Tailwind plugin
 - `next` - Next.js framework (v15.4.5)
@@ -80,6 +93,7 @@ packages/web/
 - `framer-motion` - Animations
 
 ## Architecture & Technologies
+
 - App Router (Next.js) with SSR and ISR support
 - Turbopack for faster builds and HMR
 - Tailwind CSS v4 for utility-first styling
@@ -89,22 +103,27 @@ packages/web/
 - Sanity CMS for content management
 
 ## Styling
+
 - Global styles in [`_styles/globals.css`](packages/web/src/app/_styles/globals.css:1)
 - Tailwind CSS configuration in [`postcss.config.mjs`](packages/web/postcss.config.mjs:1)
 
 ## Testing
+
 - Jest & React Testing Library
 - Tests located alongside components under `__tests__` directories
 - To run tests:
+
 ```bash
 pnpm --filter web test
 ```
 
 ## Contributing
-1. Fork the repo  
-2. Create a branch: `git checkout -b feature/web-update`  
-3. Commit changes: `git commit -m "docs(web): update README"`  
+
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/web-update`
+3. Commit changes: `git commit -m "docs(web): update README"`
 4. Push and open PR
 
 ## License
+
 MIT © Your Company
