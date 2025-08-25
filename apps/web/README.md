@@ -1,6 +1,6 @@
 # Web Application — Mondolite Boilerplate
 
-The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroUI, Tailwind CSS, NextAuth, LaunchDarkly, Sanity integration, and optimized for performance.
+The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroUI, Tailwind CSS, Sanity integration, and optimized for performance.
 
 ## Table of Contents
 
@@ -45,10 +45,8 @@ Environment variables are managed at the monorepo root in `.env.example`. Key va
 ```env
 NEXT_PUBLIC_SANITY_PROJECT_ID=...
 NEXT_PUBLIC_SANITY_DATASET=production
-NEXT_PUBLIC_LD_CLIENT_ID=...
-NEXTAUTH_SECRET=...
-GITHUB_ID=...
-GITHUB_SECRET=...
+DEPLOY_BUTTON_VISIBILITY_FLAG=boolean-value
+BETA_FEATURE_FLAG=boolean-value
 ```
 
 ## Scripts
@@ -87,9 +85,7 @@ packages/web/
 - `tailwind-plugin` - HeroUI Tailwind plugin
 - `next` - Next.js framework (v15.4.5)
 - `react` & `react-dom` (v19.1.0)
-- `next-auth` & `next-auth-sanity` - Authentication with Sanity
 - `@sanity/client` - Sanity API client
-- `launchdarkly-js-client-sdk` & `launchdarkly-react-client-sdk` - Feature flags
 - `framer-motion` - Animations
 
 ## Architecture & Technologies
@@ -98,8 +94,7 @@ packages/web/
 - Turbopack for faster builds and HMR
 - Tailwind CSS v4 for utility-first styling
 - HeroUI for pre-built UI components
-- LaunchDarkly for feature gating
-- NextAuth for authentication
+- Vercel Flags SDK for gating
 - Sanity CMS for content management
 
 ## Styling

@@ -15,9 +15,8 @@
   "dependencies": {
     "@heroui/react": "^2.8.2",
     "@sanity/client": "^6.29.1",
+    "flags": "^4.0.1",
     "framer-motion": "^11.18.2",
-    "launchdarkly-js-client-sdk": "^3.8.1",
-    "launchdarkly-react-client-sdk": "^3.8.1",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",

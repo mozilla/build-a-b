@@ -5,7 +5,8 @@ A Next.js 15+ TypeScript monorepo starter kit featuring:
 - HeroUI component library
 - Tailwind CSS v4 with customized plugin
 - Sanity CMS Studio for content management
-- LaunchDarkly feature flags
+- Flags SDK for feature flags
+
 - Localization and internationalization support
 - Performance best practices (Turbopack, caching, ISR)
 
@@ -91,7 +92,7 @@ mondolite-boilerplate/
 ### [`packages/web`](packages/web:1)
 
 - Next.js (App Router), TypeScript, Turbopack, Tailwind v4, HeroUI.
-- LaunchDarkly and Sanity for content.
+- Flags SDK and Sanity for content.
 
 ### [`packages/studio`](packages/studio:1)
 
@@ -133,7 +134,7 @@ pnpm --filter studio deploy
 - Frontend: Next.js (App Router), Server Components where applicable
 - Styling: Tailwind v4, HeroUI component wrappers
 - CMS: Sanity (GROQ, next-sanity)
-- Feature flags: LaunchDarkly
+- Feature flags: Vercel Flags SDK
 
 ## Quality Gates
 
