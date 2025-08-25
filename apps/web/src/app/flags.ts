@@ -7,7 +7,7 @@ const flags = {
     description: 'Flips deploy button visibility',
     defaultValue: false,
     decide() {
-      return process.env.DEPLOY_BUTTON_VISIBILITY_FLAG === 'true';
+      return process.env.FLAG_DEPLOY_BUTTON_VISIBILITY === 'true';
     },
   }),
   betaFeatures: flag({
@@ -15,7 +15,7 @@ const flags = {
     description: 'Enable beta features for testing',
     defaultValue: false,
     decide() {
-      return process.env.BETA_FEATURE_FLAG === 'true';
+      return process.env.FLAG_BETA_FEATURE === 'true';
     },
   }),
 } as const;
