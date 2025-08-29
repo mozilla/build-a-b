@@ -1,7 +1,20 @@
+/* ============================= */
+/* Responsive Typography Setup   */
+/* ============================= */
+
+/* 
+  Define custom properties for font sizes based on viewport width.
+  4.10256410256vw: 16px / 390px * 100vw for portrait
+  1.11111111111vw: 16px / 1440px * 100vw for landscape
+*/
+:root {
+  --font-size-portrait: 4.10256410256vw; /* 40px / 975px * 100vw */
+  --font-size-landscape: 1.11111111111vw; /* 40px / 3600px * 100vw */
+}
 html {
-  font-size: 4.10256410256vw;
+  font-size: var(--font-size-portrait);
   @variant landscape {
-    font-size: 1.11111111111vw;
+    font-size: var(--font-size-landscape);
   }
 }
 
