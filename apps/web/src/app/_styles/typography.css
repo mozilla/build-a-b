@@ -4,3 +4,79 @@ html {
     font-size: 1.11111111111vw;
   }
 }
+
+/* ============================= */
+/* Custom Typography Utilities   */
+/* ============================= */
+
+/* Sharp Sans font utility */
+@utility font-sharp {
+  font-family: "Sharp Sans", sans-serif;
+}
+
+/* text-9xl/leading-none/font-extrabold */
+@utility text-9xl-custom {
+  @apply font-sharp font-extrabold;
+  font-size: 7.875rem;   /* 126px */
+  line-height: 7.9375rem; /* 127px */
+}
+
+/* text-4xl/leading-10/font-extrabold */
+@utility text-4xl-custom {
+  @apply font-sharp font-extrabold;
+  font-size: 2.25rem; /* 36px */
+  line-height: 2.5rem; /* 40px */
+}
+
+/* text-3xl/leading-9/font-extrabold */
+@utility text-3xl-custom {
+  @apply font-sharp font-extrabold;
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+}
+
+/* text-2xl/leading-8/font-extrabold */
+@utility text-2xl-custom {
+  @apply font-sharp font-extrabold;
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+}
+
+/* text-xl/leading-7/font-medium */
+@utility text-xl-custom {
+  @apply font-sharp font-medium;
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
+}  
+
+/* text-lg/leading-7/font-medium */
+@utility text-lg-custom {
+  @apply font-sharp font-medium;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.5rem; /* 24px */
+}  
+
+/* text-base/leading-6/font-medium */
+@utility text-base-custom {
+  @apply font-sharp font-medium;
+  font-size: 1rem; /* 16px */
+  line-height: 1.5rem; /* 24px */
+}
+
+/* text-sm/leading-5/font-extrabold */
+@utility text-sm-custom {
+  @apply font-sharp font-extrabold;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}    
+
+/* BBO/Label 14 */
+@utility label-14 {
+  @apply font-sharp font-bold uppercase;
+  font-size: 0.75rem; /* 12px */
+  letter-spacing: 0.06rem; /* 0.96px */
+  line-height: normal; /* explicitly normal */
+}
+
+/* NOTE: Some Figma portrait/landscape variants missing.
+   Add here when design provides them. */
