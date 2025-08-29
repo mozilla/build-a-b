@@ -1,0 +1,6 @@
+html {
+  font-size: 4.10256410256vw;
+  @variant landscape {
+    font-size: 1.11111111111vw;
+  }
+}
