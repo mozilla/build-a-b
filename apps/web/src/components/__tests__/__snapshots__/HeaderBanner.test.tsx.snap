@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`HeaderBanner matches snapshot 1`] = `
+<div>
+  <div
+    class="hero-bbo-header flex flex-col relative items-center justify-center w-full h-[16.25rem]
+                 rounded-[12px] border-[var(--colors-common-ash)] border-[2px] bg-[var(--primary-charcoal)]
+                 py-[2rem] px-[2rem] mt-[4rem]"
+  >
+    <div
+      class="header-bbo-flip-container group perspective-[10000px] flex items-center justify-center
+                   w-[78rem] h-[7.4375rem]"
+    >
+      <div
+        class="relative w-full h-full transition-transform duration-600 transform-3d
+                     group-hover:rotate-y-180"
+      >
+        <div
+          class="absolute inset-0 backface-hidden flex items-center justify-center"
+        >
+          <div
+            class="text-headline bg-gradient-to-r from-[var(--secondary-blue)] to-[var(--secondary-purple)]
+                         bg-clip-text text-transparent"
+          >
+            <h1
+              aria-label="Main heading: Billionaire Blast Off"
+              class="main-heading"
+            >
+              #BillionaireBlastOff
+            </h1>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 max-w-full backface-hidden flex items-center justify-center rotate-y-180"
+        >
+          <div
+            class="text-headline-back bg-gradient-to-r from-[var(--secondary-yellow)] to-[var(--primary-orange)]
+                         bg-clip-text text-transparent"
+          >
+            <h2
+              aria-label="Alternative heading: Open What You Want"
+              class="flip-heading"
+            >
+              #OpenWhatYouWant
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span
+      class="powered-by relative flex w-full justify-end items-center"
+    >
+      <p
+        class="mr-[8px] font-[family-name:var(--sharp-sans)] text-[10px] font-medium tracking-[0.8] z-20"
+      >
+        Powered by
+      </p>
+      <a
+        aria-label="Firefox. Opens in a new window"
+        href="https://www.mozilla.org/firefox/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <img
+          alt="Firefox Logo"
+          data-nimg="1"
+          decoding="async"
+          height="16"
+          loading="lazy"
+          src="/_next/image?url=%2Fhero%2FLockup_FullColor-Dark.png&w=128&q=75"
+          srcset="/_next/image?url=%2Fhero%2FLockup_FullColor-Dark.png&w=64&q=75 1x, /_next/image?url=%2Fhero%2FLockup_FullColor-Dark.png&w=128&q=75 2x"
+          style="color: transparent;"
+          width="60"
+        />
+      </a>
+    </span>
+    <div
+      class="header-bottom flex w-full h-[2.9375rem] px-[0.5rem] py-0 justify-between items-center mt-[18px]"
+    >
+      <nav
+        aria-label="Primary site navigation"
+        class="left flex w-[26.75rem] shrink-0 items-start gap-[2rem] text-[12px] uppercase font-bold
+                     text-[var(--colors-common-teal-500)] tracking-[0.96px]"
+      >
+        <a
+          aria-label="Home Page"
+          href="#"
+        >
+          Home
+        </a>
+        <a
+          aria-label="Twitchcon event information"
+          href="#"
+        >
+          Twitchcon
+        </a>
+        <a
+          aria-label="Space launch information"
+          href="#"
+        >
+          Space Launch
+        </a>
+        <a
+          aria-label="Card game details"
+          href="#"
+        >
+          Card Game
+        </a>
+      </nav>
+      <div
+        class="right flex items center"
+      >
+        <nav
+          class="flex gap-[1rem] items-center justify-center"
+        >
+          <a
+            aria-label="Visit our Twitch channel"
+            href="https://www.twitch.tv/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="Twitch Icon"
+              data-nimg="1"
+              decoding="async"
+              height="32"
+              loading="lazy"
+              src="/_next/image?url=%2Fhero%2FTwitch_black.png&w=64&q=75"
+              srcset="/_next/image?url=%2Fhero%2FTwitch_black.png&w=32&q=75 1x, /_next/image?url=%2Fhero%2FTwitch_black.png&w=64&q=75 2x"
+              style="color: transparent;"
+              width="32"
+            />
+          </a>
+          <a
+            aria-label="Visit our YouTube channel"
+            href="https://youtube.com"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="YouTube Icon"
+              data-nimg="1"
+              decoding="async"
+              height="32"
+              loading="lazy"
+              src="/_next/image?url=%2Fhero%2FYoutube_black.png&w=64&q=75"
+              srcset="/_next/image?url=%2Fhero%2FYoutube_black.png&w=32&q=75 1x, /_next/image?url=%2Fhero%2FYoutube_black.png&w=64&q=75 2x"
+              style="color: transparent;"
+              width="32"
+            />
+          </a>
+          <a
+            aria-label="Visit our TikTok"
+            href="https://www.tiktok.com/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="TikTok Icon"
+              data-nimg="1"
+              decoding="async"
+              height="32"
+              loading="lazy"
+              src="/_next/image?url=%2Fhero%2FTikTok.png&w=64&q=75"
+              srcset="/_next/image?url=%2Fhero%2FTikTok.png&w=32&q=75 1x, /_next/image?url=%2Fhero%2FTikTok.png&w=64&q=75 2x"
+              style="color: transparent;"
+              width="32"
+            />
+          </a>
+          <a
+            aria-label="Visit our Instagram"
+            href="https://instagram.com"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              alt="Instagram Icon"
+              data-nimg="1"
+              decoding="async"
+              height="32"
+              loading="lazy"
+              src="/_next/image?url=%2Fhero%2FInstagram.png&w=64&q=75"
+              srcset="/_next/image?url=%2Fhero%2FInstagram.png&w=32&q=75 1x, /_next/image?url=%2Fhero%2FInstagram.png&w=64&q=75 2x"
+              style="color: transparent;"
+              width="32"
+            />
+          </a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+`;

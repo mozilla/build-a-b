@@ -11,6 +11,7 @@
   --grid-grey-450: #525259;
   --background-grey-400: #696b70;
   --colors-common-ash: #f8f6f4;
+  --colors-common-teal-500: #53ffbc;
   --primary-charcoal: #333336;
   --primary: #3b82f6; /* Tailwind blue-500 */
   --secondary-blue: #00a6f9;
@@ -20,6 +21,10 @@
 
   /* Typography */
   --sharp-sans: 'Sharp Sans', sans-serif;
+
+  /* main-logo */
+  --logo-width: 25.983rem;
+  --logo-height: 12.463rem;
 }
 
 /* HeroUI theming */
@@ -39,6 +44,21 @@
   :root {
     --background: var(--background-grey-400);
     --foreground: #ededed;
+  }
+}
+
+/* Respect user's preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
   }
 }
 
