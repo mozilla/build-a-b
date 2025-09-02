@@ -26,13 +26,13 @@ html {
 
 /* Sharp Sans font utility */
 @utility font-sharp {
-  font-family: "Sharp Sans", sans-serif;
+  font-family: 'Sharp Sans', sans-serif;
 }
 
 /* text-9xl/leading-none/font-extrabold */
 @utility text-9xl-custom {
   @apply font-sharp font-extrabold;
-  font-size: 7.875rem;   /* 126px */
+  font-size: clamp(4rem, 8.5vw, 7.875rem); /* 126px */
   line-height: 7.9375rem; /* 127px */
 }
 
@@ -62,14 +62,14 @@ html {
   @apply font-sharp font-medium;
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem; /* 28px */
-}  
+}
 
 /* text-lg/leading-7/font-medium */
 @utility text-lg-custom {
   @apply font-sharp font-medium;
   font-size: 1.125rem; /* 18px */
   line-height: 1.5rem; /* 24px */
-}  
+}
 
 /* text-base/leading-6/font-medium */
 @utility text-base-custom {
@@ -83,7 +83,7 @@ html {
   @apply font-sharp font-extrabold;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
-}    
+}
 
 /* BBO/Label 14 */
 @utility label-14 {
@@ -125,7 +125,7 @@ html {
   font-size: 0.875rem; /* 14px */
   line-height: 1.225rem; /* 19.6px (140%) */
 }
-    
+
 /* Sharp Sans 13.6px / font-bold / uppercase */
 @utility text-sharp-13 {
   @apply font-sharp font-bold uppercase;
@@ -152,6 +152,15 @@ html {
     }
   }
 
+  /* "#OpenWhatYouWant" hero */
+  .text-headline-back {
+    @apply text-sharp-33;
+    @variant landscape {
+      font-size: clamp(4rem, 8.5vw, 7.15rem); /* 114.4px */
+      line-height: 7.9375rem; /* 127px */
+    }
+  }
+
   /* "#BillionaireBlastOff" card */
   .text-card-title-lg {
     @apply text-4xl-custom;
@@ -173,8 +182,8 @@ html {
     @apply text-2xl-custom;
     @variant landscape {
       @apply text-4xl-custom;
-    }  
-  }  
+    }
+  }
 
   /* "Unlimited power. Zero accountability. What could go wrong?" */
   .text-card-title-sm {
