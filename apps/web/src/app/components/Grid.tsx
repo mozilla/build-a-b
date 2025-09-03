@@ -18,7 +18,7 @@ export default function Grid({
   const baseClasses = "";
 
   return (
-    <div className="grid grid-cols-12 grid-rows-6 gap-4">
+    <div className="grid grid-cols-12 grid-rows-6 gap-8">
       <div className={`col-span-7 row-span-2 ${baseClasses}`}>{ slot1 }</div>
       <div className={`col-span-5 row-span-3 col-start-8 ${baseClasses}`}>{ slot2 }</div>
       <div className={`col-span-7 row-start-3 ${baseClasses}`}>{ slot3 }</div>
