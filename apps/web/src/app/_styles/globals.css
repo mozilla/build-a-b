@@ -10,6 +10,28 @@
 @source '../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
 @custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Color system */
+  --grid-grey-450: #525259;
+  --background-grey-400: #696b70;
+  --colors-common-ash: #f8f6f4;
+  --colors-common-teal-500: #53ffbc;
+  --primary-charcoal: #333336;
+  --primary: #3b82f6; /* Tailwind blue-500 */
+  --secondary-blue: #00a6f9;
+  --secondary-purple: #754fe0;
+  --secondary-yellow: #ffea80;
+  --primary-orange: #ff8a50;
+
+  /* main-logo */
+  --logo-width: 25.983rem;
+  --logo-height: 12.463rem;
+
+  --container-width-landscape: 82.0625rem;
+  --container-width-portrait: 22.375rem;
+}
+
 /* Theming overrides */
 @theme inline {
   --color-background: var(--background-grey-400);
