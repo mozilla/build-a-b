@@ -8,34 +8,11 @@
   1.11111111111vw: 16px / 1440px * 100vw for landscape
 */
 :root {
-  /* Color system */
-  --grid-grey-450: #525259;
-  --background-grey-400: #696b70;
-  --colors-common-ash: #f8f6f4;
-  --colors-common-teal-500: #53ffbc;
-  --primary-charcoal: #333336;
-  --primary: #3b82f6; /* Tailwind blue-500 */
-  --secondary-blue: #00a6f9;
-  --secondary-purple: #754fe0;
-  --secondary-yellow: #ffea80;
-  --primary-orange: #ff8a50;
-
   /* Typography */
   --sharp-sans: 'Sharp Sans', sans-serif;
 
-  /* main-logo */
-  --logo-width: 25.983rem;
-  --logo-height: 12.463rem;
-
   --font-size-portrait: 4.10256410256vw; /* 40px / 975px * 100vw */
   --font-size-landscape: 1.11111111111vw; /* 40px / 3600px * 100vw */
-
-  /* HeaderBanner Heights Sizes*/
-  --header-banner-margin-top-portrait: 6.56410256vw; /* 64px / 975px * 100vw - mobile */
-  --header-banner-height-landscape: 10.9375rem; /* 106.640625px / 975px * 100vw - desktop */
-  --header-banner-height-portrait: 12.94871795vw; /* 126.25px / 975px * 100vw */
-  --header-banner-border-width-portrait: 0.20512821vw; /* 2px / 975px * 100vw */
-  --header-banner-border-radius-portrait: 1.23076923vw; /* 12px / 975 * 100vw */
 }
 
 html {
@@ -50,11 +27,6 @@ html {
 /* ============================= */
 
 /* Named after Figma text styles for clarity */
-
-@utility landscape-header {
-  height: var(--header-banner-height-landscape);
-  margin-top: var(--header-banner-margin-top-portrait);
-}
 
 /* Sharp Sans font utility */
 @utility font-sharp {
@@ -184,15 +156,6 @@ html {
     }
   }
 
-  /* "#OpenWhatYouWant" hero */
-  .text-headline-back {
-    @apply text-sharp-33;
-    @variant landscape {
-      font-size: clamp(4rem, 8.5vw, 7.15rem); /* 114.4px */
-      line-height: 7.9375rem; /* 127px */
-    }
-  }
-
   /* "#BillionaireBlastOff" card */
   .text-card-title-lg {
     @apply text-4xl-custom;
@@ -254,19 +217,6 @@ html {
     @apply text-sharp-8;
     @variant landscape {
       @apply text-sharp-14;
-    }
-  }
-
-  .hero-bbo-header {
-    height: var(--header-banner-height-portrait);
-    margin-top: var(--header-banner-margin-top-portrait);
-    border-width: var(--header-banner-border-width-portrait);
-    border-radius: var(--header-banner-border-radius-portrait);
-  }
-
-  .header-banner-height {
-    @variant landscape {
-      @apply landscape-header;
     }
   }
 }

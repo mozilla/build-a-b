@@ -6,7 +6,10 @@ export interface ContainerProps {
 
 const Container = ({ children }: ContainerProps) => {
   return (
-    <div className="flex flex-col w-full px-[1rem] max-w-[82rem] mx-auto max-xl:px-[1rem]">
+    <div
+      className="flex flex-col w-full max-w-[var(--container-width-portrait)]
+                 landscape:max-w-[var(--container-width-landscape)] mx-auto"
+    >
       {children}
     </div>
   );
