@@ -11,8 +11,8 @@
   /* Typography */
   --sharp-sans: 'Sharp Sans', sans-serif;
 
-  --font-size-portrait: 4.10256410256vw; /* 40px / 975px * 100vw */
-  --font-size-landscape: 1.11111111111vw; /* 40px / 3600px * 100vw */
+  --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
+  --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
 }
 
 html {
