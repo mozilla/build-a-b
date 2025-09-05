@@ -58,7 +58,8 @@
 }
 
 body {
-  background: var(--background-grey-400);
+  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/BG.svg)];
+  background-color: var(--background-grey-400);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
