@@ -5,13 +5,7 @@ export interface ContainerProps {
 }
 
 const Container = ({ children }: ContainerProps) => {
-  return (
-    <div
-      className="site-container"
-    >
-      {children}
-    </div>
-  );
+  return <div className="site-container">{children}</div>;
 };
 
 export default Container;
