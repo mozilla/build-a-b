@@ -18,7 +18,7 @@ export default function RootLayout({
         <link href="https://fonts.cdnfonts.com/css/sharp-sans" rel="stylesheet" />
       </head>
       <body
-        className="antialiased bg-background text-foreground"
+        className="bg-background text-foreground"
       >
         {children}
       </body>
