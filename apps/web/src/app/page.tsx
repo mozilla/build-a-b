@@ -22,15 +22,16 @@ export default async function Home() {
 
         <div className="flex flex-col justify-center">
           <Header />
-          <div className="mt-[2rem] min-h-[2rem]"></div>
 
           <Card
-            className="flex h-[40rem] border-red border-[0.4rem] rounded-[4rem]"
-            childStyle="flex h-[40rem] border-red border-[0.4rem] rounded-[4rem]"
+            className="flex relative w-[5.5rem] h-[5.5rem] landscape:h-[20rem] landscape:w-[20rem]
+                       border-[0.028rem] rounded-[0.25rem] landscape:rounded-[0.75rem] landscape:mt-[4.8rem]
+                       mt-[1.23rem]"
+            childStyle="absolute -top-[0.0325rem] -left-[0.0325rem] w-[5.5rem] h-[5.5rem] landscape:h-[20rem]
+                        landscape:w-[20rem]"
             image="/assets/images/Avatar3ZoomMobile.svg"
-            imageWidth={30 * 16}
-            imageHeight={30 * 16}
             imageAlt="Background Image"
+            imageFillSize={true}
           >
             <Header2 />
           </Card>
@@ -39,3 +40,6 @@ export default async function Home() {
     </Layout>
   );
 }
+
+// -left-[0.0325rem]
+// left-[2rem]
