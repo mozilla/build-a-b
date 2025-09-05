@@ -27,9 +27,6 @@
   /* main-logo */
   --logo-width: 25.983rem;
   --logo-height: 12.463rem;
-
-  --container-width-landscape: 82.0625rem;
-  --container-width-portrait: 22.375rem;
 }
 
 /* Theming overrides */
@@ -38,6 +35,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --container-width-landscape: 82.0625rem;
+  --container-width-portrait: 22.375rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -47,8 +47,18 @@
   }
 }
 
+@layer components {
+  .site-container {
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto pt-4 min-h-dvh;
+    @variant landscape {
+      @apply max-w-[var(--container-width-landscape)] pt-16;
+    }
+  }
+}
+
 body {
-  background: var(--background-grey-400);
+  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/BG.svg)];
+  background-color: var(--background-grey-400);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
