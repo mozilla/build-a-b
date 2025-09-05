@@ -3,6 +3,8 @@ import Layout from '@/components/Layout';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Card from '@/components/Card';
+import TickerTop from '@/components/TickerTop';
+import TickerBottom from '@/components/TickerBottom';
 import Header2 from '@/components/Header2';
 
 export default async function Home() {
@@ -22,6 +24,10 @@ export default async function Home() {
 
         <div className="flex flex-col justify-center">
           <Header />
+
+          <TickerTop />
+
+          <TickerBottom />
 
           <Card
             className="flex relative w-[5.5rem] h-[5.5rem] landscape:h-[20rem] landscape:w-[20rem]
