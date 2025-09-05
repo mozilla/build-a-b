@@ -26,11 +26,11 @@ const TickerTop = () => {
               <span className="mx-2 text-[0.5394rem] landscape:text-[2rem]">{item.emoji}</span>
 
               {item.hashtag && (
-                <span className="text-white mx-2 text-[0.29162857rem] landscape:text-[1.08125rem] font-medium">
+                <span className="text-white mx-2 text-[0.29162857rem] landscape:text-[1.08125rem] font-bold">
                   {item.hashtag}
                 </span>
               )}
-              <span className="mx-2 text-[0.5394rem] landscape:text-[2rem]">{item.emoji}</span>
+              <span className="mx-2 text-[0.5394rem] landscape:text-[2rem] ">{item.emoji}</span>
             </div>
           ))}
         </div>
