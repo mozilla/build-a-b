@@ -2,10 +2,6 @@
 /* Responsive Typography Setup   */
 /* ============================= */
 
-/* External fonts used on the project */
-@import url('https://fonts.cdnfonts.com/css/sharp-sans');
-
-
 /* 
   Define custom properties for font sizes based on viewport width.
   4.10256410256vw: 16px / 390px * 100vw for portrait
