@@ -27,11 +27,8 @@ export default async function Home() {
             className="flex relative w-[5.5rem] h-[5.5rem] landscape:h-[20rem] landscape:w-[20rem]
                        border-[0.028rem] rounded-[0.25rem] landscape:rounded-[0.75rem] landscape:mt-[4.8rem]
                        mt-[1.23rem]"
-            childStyle="absolute -top-[0.0325rem] -left-[0.0325rem] w-[5.5rem] h-[5.5rem] landscape:h-[20rem]
-                        landscape:w-[20rem]"
             image="/assets/images/Avatar3ZoomMobile.svg"
             imageAlt="Background Image"
-            imageFillSize={true}
           >
             <Header2 />
           </Card>
@@ -40,6 +37,3 @@ export default async function Home() {
     </Layout>
   );
 }
-
-// -left-[0.0325rem]
-// left-[2rem]

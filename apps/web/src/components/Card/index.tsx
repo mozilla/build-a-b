@@ -1,59 +1,55 @@
-import { FC, ReactNode, cloneElement, isValidElement, ReactElement } from 'react';
-import Image from 'next/image';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import {
+  FC,
+  ReactNode,
+  cloneElement,
+  isValidElement,
+  ReactElement,
+  Children,
+  Fragment,
+} from 'react';
+import Image, { StaticImageData } from 'next/image';
 
-interface CardsProps {
+interface CardProps {
   className?: string;
-  childStyle?: string;
   children?: ReactNode;
-  image?: StaticImport | string;
+  image?: StaticImageData | string;
   imageAlt?: string;
-  imageFillSize?: boolean;
 }
 
 interface ChildProps {
   className?: string;
-  childStyle?: string;
-  children?: ReactNode;
-  image?: StaticImport | string;
-  imageAlt?: string;
-  ImageFillSize?: boolean;
-  [key: string]: any /* Any additional props */;
+  [key: string]: any;
 }
 
 const defaultCardStyle =
-  'border-[var(--colors-common-ash)] border-[0.03rem] landscape:border-[0.035rem] \
-                          rounded-[0.20rem] landscape:rounded-[0.75rem] bg-[var(--colors-common-ash)]';
+  'relative overflow-hidden border border-white bg-[var(--primary-charcoal)]';
 
-const Card: FC<CardsProps> = ({
-  className,
-  childStyle,
-  children,
-  image,
-  imageAlt,
-  imageFillSize,
-}) => {
-  const parentStyle = className !== '' || className !== undefined ? className : defaultCardStyle;
-  const imageFill = imageFillSize;
-  /**
-   * Clone children and inject props
-   */
-  const childrenWithProps =
-    children && isValidElement(children)
-      ? cloneElement(children as ReactElement<ChildProps>, {
-          childStyle,
-          image,
-          imageAlt,
-        })
-      : children;
+const Card: FC<CardProps> = ({ className, children, image, imageAlt }) => {
+  const parentClassName = [defaultCardStyle, className].filter(Boolean).join(' ');
+
+  const childrenWithProps = Children.map(children, (child) => {
+    if (isValidElement(child) && child.type !== Fragment) {
+      const el = child as ReactElement<ChildProps>;
+      const merged = [el.props.className, 'relative z-10'].filter(Boolean).join(' ');
+      return cloneElement(el, { className: merged });
+    }
+
+    // If it's a Fragment or a text node, wrap so we can apply z-10 safely
+    if (child === null || child === undefined || child === false) return null;
+    return <div className="relative z-10">{child as ReactNode}</div>;
+  });
 
   return (
-    <div className={parentStyle}>
-      {image !== undefined ? (
-        <div className={childStyle}>
-          <Image src={image} alt={imageAlt!} fill={imageFill} style={{ objectFit: 'cover' }} />
-        </div>
-      ) : null}
+    <div className={parentClassName}>
+      {image && (
+        <Image
+          src={image}
+          alt={imageAlt ?? ''}
+          fill
+          sizes="100vw"
+          className="absolute inset-0 z-0 object-cover"
+        />
+      )}
       {childrenWithProps}
     </div>
   );
