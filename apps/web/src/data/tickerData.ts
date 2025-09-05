@@ -22,7 +22,7 @@ export const tickerDataHashtag: TickerItem[] = [
     id: 3,
     emoji: '🚀',
     text: '@GAMEWITCH',
-    hashtag: null,
+    hashtag: '#BILLIONAIREBLASTOFF',
   },
 ];
 
