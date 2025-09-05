@@ -7,9 +7,8 @@ interface CardsProps {
   childStyle?: string;
   children?: ReactNode;
   image?: StaticImport | string;
-  imageWidth?: number;
-  imageHeight?: number;
   imageAlt?: string;
+  imageFillSize?: boolean;
 }
 
 interface ChildProps {
@@ -17,9 +16,8 @@ interface ChildProps {
   childStyle?: string;
   children?: ReactNode;
   image?: StaticImport | string;
-  imageWidth?: number;
-  imageHeight?: number;
   imageAlt?: string;
+  ImageFillSize?: boolean;
   [key: string]: any /* Any additional props */;
 }
 
@@ -29,32 +27,31 @@ const defaultCardStyle =
 
 const Card: FC<CardsProps> = ({
   className,
+  childStyle,
   children,
   image,
-  imageHeight,
-  imageWidth,
   imageAlt,
+  imageFillSize,
 }) => {
   const parentStyle = className !== '' || className !== undefined ? className : defaultCardStyle;
+  const imageFill = imageFillSize;
   /**
    * Clone children and inject props
    */
   const childrenWithProps =
     children && isValidElement(children)
       ? cloneElement(children as ReactElement<ChildProps>, {
-          className,
+          childStyle,
           image,
-          imageHeight,
-          imageWidth,
           imageAlt,
         })
       : children;
 
   return (
-    <div>
+    <div className={parentStyle}>
       {image !== undefined ? (
-        <div className="absolute">
-          <Image src={image} width={imageWidth} height={imageHeight} alt={imageAlt!} />
+        <div className={childStyle}>
+          <Image src={image} alt={imageAlt!} fill={imageFill} style={{ objectFit: 'cover' }} />
         </div>
       ) : null}
       {childrenWithProps}
