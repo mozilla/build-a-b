@@ -62,3 +62,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 9s linear infinite;
+}
+
+/* Pause on hover */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
