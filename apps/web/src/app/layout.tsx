@@ -17,11 +17,7 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.cdnfonts.com/css/sharp-sans" rel="stylesheet" />
       </head>
-      <body
-        className="bg-background text-foreground"
-      >
-        {children}
-      </body>
+      <body className="bg-background text-foreground">{children}</body>
     </html>
   );
 }

@@ -27,7 +27,6 @@
   /* main-logo */
   --logo-width: 25.983rem;
   --logo-height: 12.463rem;
-
 }
 
 /* Theming overrides */
@@ -50,7 +49,7 @@
 
 @layer components {
   .site-container {
-    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto pt-4 min-h-dvh ;
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto pt-4 min-h-dvh;
     @variant landscape {
       @apply max-w-[var(--container-width-landscape)] pt-16;
     }
