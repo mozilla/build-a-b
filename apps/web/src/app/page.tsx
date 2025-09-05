@@ -2,6 +2,8 @@
 import Layout from '@/components/Layout';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
+import Card from '@/components/Card';
+import Header2 from '@/components/Header2';
 
 export default async function Home() {
   // const flags = await getAllFlags();
@@ -20,6 +22,16 @@ export default async function Home() {
 
         <div className="flex flex-col justify-center">
           <Header />
+
+          <Card
+            className="flex relative w-[5.5rem] h-[5.5rem] landscape:h-[20rem] landscape:w-[20rem]
+                       border-[0.028rem] rounded-[0.25rem] landscape:rounded-[0.75rem] landscape:mt-[4.8rem]
+                       mt-[1.23rem]"
+            image="/assets/images/sample/Avatar3ZoomMobile.svg"
+            imageAlt="Background Image"
+          >
+            <Header2 />
+          </Card>
         </div>
       </Container>
     </Layout>
