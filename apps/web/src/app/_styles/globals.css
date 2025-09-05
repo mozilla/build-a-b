@@ -1,3 +1,6 @@
+/* External fonts used on the project */
+@import url('https://fonts.cdnfonts.com/css/sharp-sans');
+
 /* Tailwind import */
 @import 'tailwindcss';
 @import './typography.css';
