@@ -8,9 +8,13 @@
   1.11111111111vw: 16px / 1440px * 100vw for landscape
 */
 :root {
-  --font-size-portrait: 4.10256410256vw; /* 40px / 975px * 100vw */
-  --font-size-landscape: 1.11111111111vw; /* 40px / 3600px * 100vw */
+  /* Typography */
+  --font-sharp-sans: 'Sharp Sans', sans-serif;
+
+  --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
+  --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
 }
+
 html {
   font-size: var(--font-size-portrait);
   @variant landscape {
@@ -26,13 +30,13 @@ html {
 
 /* Sharp Sans font utility */
 @utility font-sharp {
-  font-family: "Sharp Sans", sans-serif;
+  font-family: var(--font-sharp-sans);
 }
 
 /* text-9xl/leading-none/font-extrabold */
 @utility text-9xl-custom {
   @apply font-sharp font-extrabold;
-  font-size: 7.875rem;   /* 126px */
+  font-size: 7.875rem; /* 126px */
   line-height: 7.9375rem; /* 127px */
 }
 
@@ -62,14 +66,14 @@ html {
   @apply font-sharp font-medium;
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem; /* 28px */
-}  
+}
 
 /* text-lg/leading-7/font-medium */
 @utility text-lg-custom {
   @apply font-sharp font-medium;
   font-size: 1.125rem; /* 18px */
   line-height: 1.5rem; /* 24px */
-}  
+}
 
 /* text-base/leading-6/font-medium */
 @utility text-base-custom {
@@ -83,7 +87,7 @@ html {
   @apply font-sharp font-extrabold;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
-}    
+}
 
 /* BBO/Label 14 */
 @utility label-14 {
@@ -125,7 +129,7 @@ html {
   font-size: 0.875rem; /* 14px */
   line-height: 1.225rem; /* 19.6px (140%) */
 }
-    
+
 /* Sharp Sans 13.6px / font-bold / uppercase */
 @utility text-sharp-13 {
   @apply font-sharp font-bold uppercase;
@@ -173,8 +177,8 @@ html {
     @apply text-2xl-custom;
     @variant landscape {
       @apply text-4xl-custom;
-    }  
-  }  
+    }
+  }
 
   /* "Unlimited power. Zero accountability. What could go wrong?" */
   .text-card-title-sm {
