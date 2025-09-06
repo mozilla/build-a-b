@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +14,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.cdnfonts.com/css/sharp-sans" rel="stylesheet" />
       </head>
       <body className="bg-background text-foreground">{children}</body>
     </html>

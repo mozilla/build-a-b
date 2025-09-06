@@ -9,7 +9,7 @@
 */
 :root {
   /* Typography */
-  --sharp-sans: 'Sharp Sans', sans-serif;
+  --font-sharp-sans: 'Sharp Sans', sans-serif;
 
   --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
   --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
@@ -30,7 +30,7 @@ html {
 
 /* Sharp Sans font utility */
 @utility font-sharp {
-  font-family: var(--sharp-sans);
+  font-family: var(--font-sharp-sans);
 }
 
 /* text-9xl/leading-none/font-extrabold */
