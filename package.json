@@ -8,8 +8,12 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "dev": "pnpm --filter ./apps/web dev",
+    "dev": "pnpm --parallel dev",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "dev:studio": "pnpm --filter ./apps/studio dev",
     "build": "pnpm --parallel build",
+    "build:web": "pnpm --parallel build",
+    "build:studio": "pnpm --filter ./apps/studio build",
     "start": "pnpm --filter ./apps/web start",
     "lint": "pnpm --parallel lint",
     "format": "pnpm --parallel format",
