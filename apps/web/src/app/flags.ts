@@ -2,20 +2,20 @@ import { flag } from 'flags/next';
 import { FlagType } from '@/types';
 
 const flags = {
-  deployButton: flag({
-    key: 'deploy-default-button',
-    description: 'Flips deploy button visibility',
+  demoAvatarBento: flag({
+    key: 'demo-avatar-bento',
+    description: 'Shows the demo avatar bento on the homepage',
     defaultValue: false,
     decide() {
-      return process.env.FLAG_DEPLOY_BUTTON_VISIBILITY === 'true';
+      return process.env.FLAG_DEMO_AVATAR_BENTO === 'true';
     },
   }),
-  betaFeatures: flag({
-    key: 'beta-features',
-    description: 'Enable beta features for testing',
+  demoLargeTeaserBento: flag({
+    key: 'demo-large-teaser-bento',
+    description: 'Shows the demo large teaser bento on the homepage',
     defaultValue: false,
     decide() {
-      return process.env.FLAG_BETA_FEATURE === 'true';
+      return process.env.FLAG_DEMO_LARGE_TEASER_BENTO === 'true';
     },
   }),
 } as const;

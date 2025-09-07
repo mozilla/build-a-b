@@ -21,8 +21,10 @@
     "types": ["jest", "node"],
     "paths": {
       "@/*": ["./src/*"],
-      "@/styles/*": ["./src/app/_styles/*"],
-      "@/components/*": ["./src/components/*"]
+      "@/app/*": ["./src/app/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/utils/*": ["./src/utils/*"]
     }
   },
   "include": [
