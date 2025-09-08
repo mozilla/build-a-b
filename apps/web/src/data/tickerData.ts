@@ -2,7 +2,8 @@ export interface TickerItem {
   id: number;
   text: string;
   emoji?: string;
-  hashtag?: string | null;
+  hashtag?: string;
+  href?: string;
 }
 
 export const tickerDataHashtag: TickerItem[] = [
@@ -11,18 +12,21 @@ export const tickerDataHashtag: TickerItem[] = [
     text: '@POKIMANE',
     emoji: '🚀',
     hashtag: '#BILLIONAIREBLASTOFF',
+    href: 'https:twitch.tv/pokimane',
   },
   {
     id: 2,
     emoji: '🪐',
     text: '@CRISPYBEAR',
     hashtag: '#BILLIONAIREBLASTOFF',
+    href: 'https:twitch.tv/crispy',
   },
   {
     id: 3,
     emoji: '🚀',
     text: '@GAMEWITCH',
     hashtag: '#BILLIONAIREBLASTOFF',
+    href: 'https:twitch.tv/gametwitch',
   },
 ];
 

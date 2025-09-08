@@ -72,11 +72,15 @@ body {
   }
 }
 
-.animate-scroll {
-  animation: scroll 9s linear infinite;
+.animate-scroll-without-pause {
+  animation: scroll 20s linear infinite;
+}
+
+.animate-scroll-with-pause {
+  animation: scroll 20s linear infinite;
 }
 
 /* Pause on hover */
-.animate-scroll:hover {
+.animate-scroll-with-pause:hover {
   animation-play-state: paused;
 }
