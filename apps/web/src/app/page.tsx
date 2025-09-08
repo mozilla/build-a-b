@@ -1,3 +1,4 @@
+// import { getAllFlags } from '@/app/flags';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Bento from '@/components/Bento';
@@ -180,7 +181,6 @@ export default async function Home() {
       </main>
       {/* Ticker */}
       <Ticker tickerProps={tickerData} />
-
       <Ticker aria-labe="Social media updates ticker" tickerProps={tickerDataHashtag} />
       {/* Footer */}
     </Container>
