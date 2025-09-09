@@ -17,7 +17,7 @@ export interface TickerProps {
 const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
   const tickerData = items;
 
-  const isHashtag = tickerData?.some((item) => item.hashtag);
+  const isHashtag = tickerData?.some((item) => item.href);
 
   return (
     <div
