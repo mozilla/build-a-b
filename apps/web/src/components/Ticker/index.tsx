@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 
 export interface TickerItem {
-  id: number;
+  id?: number;
   text: string;
   emoji?: string;
   hashtag?: string;
@@ -10,12 +10,12 @@ export interface TickerItem {
 }
 
 export interface TickerProps {
-  tickerProps?: TickerItem[];
+  items?: TickerItem[];
   'aria-label'?: string;
 }
 
-const Ticker: FC<TickerProps> = ({ tickerProps, 'aria-label': ariaLabel }) => {
-  const tickerData = tickerProps;
+const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
+  const tickerData = items;
 
   const isHashtag = tickerData?.some((item) => item.hashtag);
 

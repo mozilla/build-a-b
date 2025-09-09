@@ -15,7 +15,7 @@ const flags = {
 };
 
 export interface TickerItem {
-  id: number;
+  id?: number;
   text: string;
   emoji?: string;
   hashtag?: string;
@@ -180,8 +180,8 @@ export default async function Home() {
         </div>
       </main>
       {/* Ticker */}
-      <Ticker tickerProps={tickerData} />
-      <Ticker aria-labe="Social media updates ticker" tickerProps={tickerDataHashtag} />
+      <Ticker items={tickerData} />
+      <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
       {/* Footer */}
     </Container>
   );
