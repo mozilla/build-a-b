@@ -16,7 +16,7 @@ const flags = {
 };
 
 export interface TickerItem {
-  id: number;
+  id?: number;
   text: string;
   emoji?: string;
   hashtag?: string;
@@ -72,7 +72,7 @@ export default async function Home() {
     <Container>
       <Header />
       {/* Ticker */}
-      <Ticker tickerProps={tickerData} />
+      <Ticker items={tickerData} />
       <main className="grid grid-cols-12 grid-rows-6 gap-8 @variant landscape:mt-[2rem]">
         <div className="col-span-7 row-span-2">
           {/* Avatar Bento */}
@@ -182,7 +182,7 @@ export default async function Home() {
         </div>
       </main>
       {/* Ticker */}
-      <Ticker aria-labe="Social media updates ticker" tickerProps={tickerDataHashtag} />
+      <Ticker aria-labe="Social media updates ticker" items={tickerDataHashtag} />
       {/* Footer */}
       <Footer />
     </Container>
