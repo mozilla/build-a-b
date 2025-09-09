@@ -49,9 +49,9 @@
 
 @layer components {
   .site-container {
-    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto pt-4 min-h-dvh;
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
     @variant landscape {
-      @apply max-w-[var(--container-width-landscape)] pt-16;
+      @apply max-w-[var(--container-width-landscape)] py-16;
     }
   }
 }

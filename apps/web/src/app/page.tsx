@@ -73,7 +73,7 @@ export default async function Home() {
       <Header />
       {/* Ticker */}
       <Ticker items={tickerData} />
-      <main className="grid grid-cols-12 grid-rows-6 gap-8 @variant landscape:mt-[2rem]">
+      <main className="grid grid-cols-12 grid-rows-6 gap-8 @variant landscape:mt-[2rem] mt-[0.75rem]">
         <div className="col-span-7 row-span-2">
           {/* Avatar Bento */}
           {flags?.demoAvatarBento ? (
