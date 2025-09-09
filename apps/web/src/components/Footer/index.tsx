@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Button } from '@heroui/react';
 
 const Footer = () => {
+  const currentYear = new Date();
+
   return (
     <footer
       aria-label="Site footer"
@@ -15,8 +17,7 @@ const Footer = () => {
       mt-[0.75rem] bg-[url(/assets/images/Nebula.png)] bg-cover bg-no-repeat
       @variant landscape:max-w-[var(--container-width-landscape)] 
       @variant landscape:grid @variant landscape:grid-cols-3 @variant landscape:gap-8
-      @variant landscape:min-h-[20rem] @variant landscape:relative @variant landscape:mt-[2rem]
-    "
+      @variant landscape:min-h-[20rem] @variant landscape:relative @variant landscape:mt-[2rem]"
     >
       {/* Mobile Logo */}
       <span className="flex absolute w-[13.3125rem] h-[6.493125rem] shrink-0 -rotate-5 mt-[0.9023rem] @variant landscape:hidden">
@@ -56,22 +57,22 @@ const Footer = () => {
             className="flex flex-col items-end text-[0.75rem] not-italic font-bold tracking-[0.06rem] uppercase
                        text-[var(--colors-common-teal-500)]"
           >
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans)">
+            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
               <Link href="/home" tabIndex={0}>
                 Home
               </Link>
             </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans)">
+            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
               <Link href="https://www.twitchcon.com/" tabIndex={0}>
                 Twitchcon
               </Link>
             </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans)">
+            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
               <Link href="#" tabIndex={0}>
                 Space Launch
               </Link>
             </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans)">
+            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
               <Link href="#" tabIndex={0}>
                 Game
               </Link>
@@ -83,7 +84,7 @@ const Footer = () => {
         <div
           role="region"
           aria-label="Social media links"
-          className="inline-flex justify-end w-[8.5rem] h-[3.1875rem] gap-[0.5rem] shrink-0 pr-[1rem] mt-[3.34375rem]"
+          className="inline-flex justify-end w-[8.5rem] h-[3.1875rem] gap-[0.5rem] shrink-0 pr-[1rem] mt-[1.9rem]"
         >
           <ul className="flex w-full items-center justify-between">
             <li className="flex relative w-[2rem] h-[2rem]">
@@ -144,14 +145,11 @@ const Footer = () => {
           aria-labelledby="motivational-heading-mobile"
           className="flex flex-col items-end justify-between w-[17.75rem] h-[5.5rem] px-[1rem] mt-[1.4687rem]"
         >
-          <div
-            className="flex flex-col items-end w-[15.75rem] h-[2.5rem] text-[0.875rem] 
-                          not-italic font-semibold"
-          >
-            <p className="font-semibold font-(family-name:--font-sharp-sans)">
+          <div className="flex flex-col items-end w-[15.75rem] h-[2.5rem] text-[0.875rem]">
+            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic font-[var(--colors-common-ash)]">
               Big Tech wants to own your orbit.
             </p>
-            <p className="font-semibold font-(family-name:--font-sharp-sans)">
+            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic font-[var(--colors-common-ash)]">
               We say-go launch yourself.
             </p>
           </div>
@@ -172,11 +170,8 @@ const Footer = () => {
           aria-label="Copyright and legal information"
           className="w-[20.375rem] flex flex-col self-center mt-[4.4rem]"
         >
-          <span
-            className="flex items center text-[0.875rem] font-semibold
-                      "
-          >
-            <p className="font-(family-name:--font-sharp-sans)">
+          <span className="flex items center text-[0.875rem]">
+            <p className="font-(family-name:--font-sharp-sans) font-semibold text-[var(--colors-common-ash)]">
               Some kind of messaging goes here.
             </p>
           </span>
@@ -185,14 +180,14 @@ const Footer = () => {
 
           <div className="w-full flex justify-between my-[1rem]">
             <span className="text-[0.625rem] not-italic font-medium">
-              <p className="font-(family-name:--font-sharp-sans)">
-                @2025 Mozilla. All rights reserved.
+              <p className="font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
+                @{currentYear.getFullYear()} Mozilla. All rights reserved.
               </p>
             </span>
             <span className="flex w-[6.8rem] text-[0.625rem] not-italic font-medium">
-              <p className="flex w-full font-(family-name:--font-sharp-sans)">
+              <p className="flex w-full font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
                 Built by
-                <span className="flex underline ml-[0.2rem] font-(family-name:--font-sharp-sans)">
+                <span className="flex underline ml-[0.2rem] font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
                   mondorobot.
                 </span>
               </p>
@@ -208,17 +203,17 @@ const Footer = () => {
         role="navigation"
         aria-label="Footer navigation"
       >
-        <ul className="flex flex-col text-[0.75rem] uppercase text-[var(--colors-common-teal-500)]">
+        <ul className="flex flex-col text-[0.75rem] uppercase text-[var(--colors-common-teal-500)] mt-[2rem]">
           <li
             role="none"
-            className="flex p-[1rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
+            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
                       @variant landscape:font-(family-name:--font-sharp-sans)"
           >
             <Link href="/home">Home</Link>
           </li>
           <li
             role="none"
-            className="flex p-[1rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
+            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
                       @variant landscape:font-(family-name:--font-sharp-sans)"
           >
             <Link
@@ -232,7 +227,7 @@ const Footer = () => {
           </li>
           <li
             role="none"
-            className="flex p-[1rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
+            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
                       @variant landscape:font-(family-name:--font-sharp-sans)"
           >
             <Link href="#" target="_blank" rel="noopener noreferrer">
@@ -241,7 +236,7 @@ const Footer = () => {
           </li>
           <li
             role="none"
-            className="flex p-[1rem] items-center justify-start @variant landscape:font-bold
+            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold
                          tracking-[0.06rem] @variant landscape:font-(family-name:--font-sharp-sans)"
           >
             <Link href="#" tabIndex={3} target="_blank" rel="noopener noreferrer">
@@ -255,9 +250,12 @@ const Footer = () => {
           aria-labelledby="motivational-heading-desktop"
           className="flex flex-col gap-4 mt-6 pl-[1rem]"
         >
-          <div className="text-sm text-white font-(family-name:--font-sharp-sans) @variant landscape:font-semibold">
-            <p>Big Tech wants to own your orbit.</p>
-            <p>We say—go launch yourself!</p>
+          <div
+            className="text-sm text-[var(--colors-common-ash)] font-(family-name:--font-sharp-sans)
+                       @variant landscape:font-semibold"
+          >
+            <p className="text-[var(--colors-common-ash)]">Big Tech wants to own your orbit.</p>
+            <p className="text-[var(--colors-common-ash)]">We say—go launch yourself!</p>
           </div>
           <Button
             aria-label="Build a Billionaire - Learn more about our program"
@@ -278,10 +276,9 @@ const Footer = () => {
         aria-label="Social media links and messaging"
         className="hidden @variant landscape:flex @variant landscape:flex-col @variant landscape:col-start-3
                       @variant landscape:items-end @variant landscape:justify-between @variant landscape:gap-4
-                      @variant landscape:mt-[1rem] @variant landscape:pr-[2rem]
-                      "
+                      @variant landscape:mt-[1rem] @variant landscape:pr-[2rem]"
       >
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-4 mt-[2rem]">
           <li className="flex relative w-[2rem] h-[2rem]">
             <Link
               href="https://www.tiktok.com/"
@@ -332,8 +329,10 @@ const Footer = () => {
           </li>
         </ul>
 
-        <div className="text-sm font-(family-name:--font-sharp-sans) text-white text-center mt-4">
-          <p>Some kind of messaging goes here.</p>
+        <div className="text-sm font-(family-name:--font-sharp-sans) text-center mt-4">
+          <p className="text-[var(--colors-common-ash)] @variant landscape:font-semibold">
+            Some kind of messaging goes here.
+          </p>
         </div>
       </div>
 
@@ -348,11 +347,14 @@ const Footer = () => {
           className="flex @variant landscape:w-full justify-between my-[1rem]
                         @variant landscape:px-[1rem] font-(family-name:--font-sharp-sans)"
         >
-          <span className="text-xs font-(family-name:--font-sharp-sans) font-medium">
-            @2025 Mozilla. All rights reserved.
+          <span className="text-xs font-(family-name:--font-sharp-sans) font-medium text-[var(--colors-common-ash)]">
+            @{currentYear.getFullYear()} Mozilla. All rights reserved.
           </span>
-          <span className="flex text-xs font-medium">
-            Built by <span className="flex underline ml-[0.3rem]">mondorobot.</span>
+          <span className="flex text-xs font-(family-name:--font-sharp-sans) font-medium text-[var(--colors-common-ash)]">
+            Built by
+            <span className="flex text-[var(--colors-common-ash)] underline ml-[0.3rem]">
+              mondorobot.
+            </span>
           </span>
         </div>
       </div>
