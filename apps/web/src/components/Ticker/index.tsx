@@ -17,7 +17,7 @@ export interface TickerProps {
 const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
   const tickerData = items;
 
-  const isHashtag = tickerData?.some((item) => item.href);
+  const isHref = tickerData?.some((item) => item.href);
 
   return (
     <div
@@ -37,7 +37,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
         <div
           role="list"
           aria-label="Scrolling ticker items"
-          className={`flex ${isHashtag ? 'animate-scroll-with-pause' : 'animate-scroll-without-pause'}`}
+          className={`flex ${isHref ? 'animate-scroll-with-pause' : 'animate-scroll-without-pause'}`}
         >
           {[...tickerData!, ...tickerData!].map((item: TickerItem, index: number) => (
             <div
