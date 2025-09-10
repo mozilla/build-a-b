@@ -4,11 +4,7 @@ import Link from 'next/link';
 
 const Header = () => {
   return (
-    <Bento
-      className="h-16 landscape:h-[10.9375rem]
-                    mb-3 landscape:mb-8
-                    bg-no-repeat bg-cover bg-[url(/assets/images/NightSky.svg)]"
-    >
+    <Bento className="h-16 landscape:h-[10.9375rem] bg-no-repeat bg-cover bg-[url(/assets/images/NightSky.svg)]">
       <div className="flex relative justify-between w-full h-full items-center px-[1rem]">
         {/* Mobile Billionaire */}
         <span
