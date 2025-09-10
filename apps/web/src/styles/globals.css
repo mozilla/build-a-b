@@ -49,9 +49,9 @@
 
 @layer components {
   .site-container {
-    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto pt-4 min-h-dvh;
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
     @variant landscape {
-      @apply max-w-[var(--container-width-landscape)] pt-16;
+      @apply max-w-[var(--container-width-landscape)] py-16;
     }
   }
 }
@@ -63,7 +63,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@keyframes scroll {
+@keyframes ticker-horizontal-infinite-scroll {
   0% {
     transform: translateX(0);
   }
@@ -73,11 +73,11 @@ body {
 }
 
 .animate-scroll-without-pause {
-  animation: scroll 20s linear infinite;
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 .animate-scroll-with-pause {
-  animation: scroll 20s linear infinite;
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 /* Pause on hover */
