@@ -3,6 +3,7 @@ import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
+import Footer from '@/components/Footer';
 
 // Temporary hardcoded flags for demonstration purposes
 const flags = {
@@ -71,7 +72,8 @@ export default async function Home() {
     <Container>
       <Header />
       {/* Ticker */}
-      <main className="grid grid-cols-12 grid-rows-6 gap-8">
+      <Ticker items={tickerData} />
+      <main className="grid grid-cols-12 grid-rows-6 gap-8 @variant landscape:mt-[2rem] mt-[0.75rem]">
         <div className="col-span-7 row-span-2">
           {/* Avatar Bento */}
           {flags?.demoAvatarBento ? (
@@ -180,9 +182,9 @@ export default async function Home() {
         </div>
       </main>
       {/* Ticker */}
-      <Ticker items={tickerData} />
-      <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
+      <Ticker aria-labe="Social media updates ticker" items={tickerDataHashtag} />
       {/* Footer */}
+      <Footer />
     </Container>
   );
 }

@@ -17,7 +17,7 @@ export interface TickerProps {
 const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
   const tickerData = items;
 
-  const isHashtag = tickerData?.some((item) => item.hashtag);
+  const isHref = tickerData?.some((item) => item.href);
 
   return (
     <div
@@ -26,7 +26,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
       aria-label={ariaLabel || 'Live updates ticker'}
       className="relative flex w-full h-[2.375rem] landscape:h-[4rem] rounded-[0.75rem]
                  landscape:rounded-[0.75rem] border-[0.125rem] landscape:border-[0.125rem]
-                 border-[var(--colors-common-ash)] @variant landscape:border-[var(--colors-common-ash)]
+                 border-[var(--colors-common-ash)] landscape:border-[var(--colors-common-ash)]
                  mt-[0.75rem] landscape:mt-[2rem] py-[0.295rem] items-center landscape:items-center
                  bg-gradient-to-r from-[var(--secondary-blue)] to-[var(--secondary-purple)]
                  shrink-0 landscape:shrink-0"
@@ -38,7 +38,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
         <div
           role="list"
           aria-label="Scrolling ticker items"
-          className={`flex ${isHashtag ? 'animate-scroll-with-pause' : 'animate-scroll-without-pause'}`}
+          className={`flex ${isHref ? 'animate-scroll-with-pause' : 'animate-scroll-without-pause'}`}
         >
           {[...tickerData!, ...tickerData!].map((item: TickerItem, index: number) => (
             <div
