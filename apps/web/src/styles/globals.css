@@ -63,7 +63,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@keyframes ticker-scroll {
+@keyframes ticker-horizontal-infinite-scroll {
   0% {
     transform: translateX(0);
   }
@@ -73,11 +73,11 @@ body {
 }
 
 .animate-scroll-without-pause {
-  animation: ticker-scroll 20s linear infinite;
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 .animate-scroll-with-pause {
-  animation: ticker-scroll 20s linear infinite;
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 /* Pause on hover */
