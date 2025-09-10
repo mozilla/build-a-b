@@ -146,10 +146,10 @@ const Footer = () => {
           className="flex flex-col items-end justify-between w-[17.75rem] h-[5.5rem] px-[1rem] mt-[1.4687rem]"
         >
           <div className="flex flex-col items-end w-[15.75rem] h-[2.5rem] text-[0.875rem]">
-            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic font-[var(--colors-common-ash)]">
+            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic text-[var(--colors-common-ash)]">
               Big Tech wants to own your orbit.
             </p>
-            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic font-[var(--colors-common-ash)]">
+            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic text-[var(--colors-common-ash)]">
               We say-go launch yourself.
             </p>
           </div>
@@ -180,14 +180,14 @@ const Footer = () => {
 
           <div className="w-full flex justify-between my-[1rem]">
             <span className="text-[0.625rem] not-italic font-medium">
-              <p className="font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
+              <p className="font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
                 @{currentYear.getFullYear()} Mozilla. All rights reserved.
               </p>
             </span>
             <span className="flex w-[6.8rem] text-[0.625rem] not-italic font-medium">
-              <p className="flex w-full font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
+              <p className="flex w-full font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
                 Built by
-                <span className="flex underline ml-[0.2rem] font-(family-name:--font-sharp-sans) font-[var(--colors-common-ash)]">
+                <span className="flex underline ml-[0.2rem] font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
                   mondorobot.
                 </span>
               </p>
