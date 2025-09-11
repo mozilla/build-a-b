@@ -7,9 +7,9 @@ import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 
 export default defineConfig({
   name: 'default',
-  title: 'Mondo Lite',
+  title: 'Mozilla Billionaire Blast-Off',
 
-  projectId: 'qvqrpwsj',
+  projectId: 'ik0si9ep',
   dataset: 'production',
 
   plugins: [
