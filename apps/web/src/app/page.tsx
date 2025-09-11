@@ -15,7 +15,7 @@ const flags = {
   demoGalleryBento: true,
 };
 
-export interface TickerItem {
+interface TickerItem {
   id?: number;
   text: string;
   emoji?: string;
@@ -23,7 +23,7 @@ export interface TickerItem {
   href?: string;
 }
 
-export const tickerDataHashtag: TickerItem[] = [
+const tickerDataHashtag: TickerItem[] = [
   {
     id: 1,
     text: '@POKIMANE',
@@ -47,7 +47,7 @@ export const tickerDataHashtag: TickerItem[] = [
   },
 ];
 
-export const tickerData: TickerItem[] = [
+const tickerData: TickerItem[] = [
   {
     id: 4,
     text: 'SEND YOUR BILLIONAIRE TO SPACE',
