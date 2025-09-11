@@ -182,7 +182,7 @@ export default async function Home() {
         </div>
       </main>
       {/* Ticker */}
-      <Ticker aria-labe="Social media updates ticker" items={tickerDataHashtag} />
+      <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
       {/* Footer */}
       <Footer />
     </Container>
