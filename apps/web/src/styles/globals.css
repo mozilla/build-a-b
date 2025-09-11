@@ -1,0 +1,86 @@
+/* External fonts used on the project */
+@import url('https://fonts.cdnfonts.com/css/sharp-sans');
+
+/* Tailwind import */
+@import 'tailwindcss';
+@import './typography.css';
+
+/* HeroUI theming */
+@plugin '../app/hero.ts';
+@source '/node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Color system */
+  --grid-grey-450: #525259;
+  --background-grey-400: #696b70;
+  --colors-common-ash: #f8f6f4;
+  --colors-common-teal-500: #53ffbc;
+  --primary-charcoal: #333336;
+  --primary: #3b82f6; /* Tailwind blue-500 */
+  --secondary-blue: #00a6f9;
+  --secondary-purple: #754fe0;
+  --secondary-yellow: #ffea80;
+  --primary-orange: #ff8a50;
+
+  /* main-logo */
+  --logo-width: 25.983rem;
+  --logo-height: 12.463rem;
+}
+
+/* Theming overrides */
+@theme inline {
+  --color-background: var(--background-grey-400);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --container-width-landscape: 82.0625rem;
+  --container-width-portrait: 22.375rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--background-grey-400);
+    --foreground: #ededed;
+  }
+}
+
+@layer components {
+  .site-container {
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
+    @variant landscape {
+      @apply max-w-[var(--container-width-landscape)] py-16;
+    }
+  }
+}
+
+body {
+  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/BG.svg)];
+  background-color: var(--background-grey-400);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes ticker-horizontal-infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-without-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-scroll-with-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+/* Pause on hover */
+.animate-scroll-with-pause:hover {
+  animation-play-state: paused;
+}
