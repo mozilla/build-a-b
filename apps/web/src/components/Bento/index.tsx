@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import Image, { StaticImageData } from 'next/image';
 
-interface BentoProps {
+export interface BentoProps {
   className?: string;
   children?: ReactNode;
   image?: StaticImageData | string;
