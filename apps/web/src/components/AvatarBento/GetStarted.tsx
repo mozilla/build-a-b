@@ -3,6 +3,7 @@
 import { Button, useDisclosure } from '@heroui/react';
 import type { FC } from 'react';
 import Modal from '../Modal';
+import BaBIntro from '../BaBIntro';
 
 interface GetStartedProps {
   ctaText: string;
@@ -12,7 +13,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} body="">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} body={<BaBIntro />}>
       <Button
         onPress={onOpen}
         type="button"
