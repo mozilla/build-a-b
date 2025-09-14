@@ -3,7 +3,7 @@
 import { Button } from '@heroui/react';
 import Image from 'next/image';
 import type { FC } from 'react';
-import MeetAstroBento from '../MeetAstroBento';
+import MeetAstroBento from '../../MeetAstroBento';
 
 export interface AvatarViewProps {
   /**
@@ -20,6 +20,9 @@ export interface AvatarViewProps {
   attributes: string;
 }
 
+{
+  /* TODO: Implement action handlers */
+}
 const actions = [
   { name: 'share', onPress: () => {} },
   { name: 'save', onPress: () => {} },
@@ -58,7 +61,6 @@ const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
           active
         />
         <div className="flex gap-[0.5rem]">
-          {/* TODO: Implement action handlers */}
           {actions.map(({ name, onPress }) => (
             <Button
               key={name}

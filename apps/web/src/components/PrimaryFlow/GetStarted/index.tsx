@@ -2,18 +2,18 @@
 
 import { Button, useDisclosure } from '@heroui/react';
 import type { FC } from 'react';
-import Modal from '../Modal';
-import BaBIntro from '../BaBIntro';
+import Modal from '../../Modal';
+import Intro, { type IntroProps } from '../Intro';
 
-interface GetStartedProps {
+export interface GetStartedProps extends IntroProps {
   ctaText: string;
 }
 
-const GetStarted: FC<GetStartedProps> = ({ ctaText }) => {
+const GetStarted: FC<GetStartedProps> = ({ ctaText, ...babFlowData }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} body={<BaBIntro />}>
+    <>
       <Button
         onPress={onOpen}
         type="button"
@@ -21,7 +21,10 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText }) => {
       >
         {ctaText}
       </Button>
-    </Modal>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Intro {...babFlowData} />
+      </Modal>
+    </>
   );
 };
 
