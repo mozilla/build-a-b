@@ -1,43 +1,55 @@
-import type { FC, PropsWithChildren } from 'react';
-import {
-  Modal as HeroModal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from '@heroui/modal';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
+import { Modal as HeroModal, ModalContent, ModalBody, Button, type ModalProps } from '@heroui/react';
+import Image from 'next/image';
+import ThreeDots from '../ThreeDots';
 
-const Modal: FC<PropsWithChildren> = ({ children }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+const Modal: FC<PropsWithChildren<ModalProps & { body: ReactNode }>> = ({
+  children,
+  isOpen,
+  onOpenChange,
+  body,
+  ...modalProps
+}) => {
   return (
     <>
       {children}
-      <HeroModal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
+      <HeroModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="full"
+        placement="center"
+        backdrop="opaque"
+        classNames={{
+          wrapper: 'p-0 @variant landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:100%] [--slide-enter:0px] [--slide-exit:80px] sm:[--scale-enter:100%] sm:[--scale-exit:103%] sm:[--slide-enter:0px] sm:[--slide-exit:0px]',
+          base: 'w-full h-full @variant landscape:w-[71.8125rem] @variant landscape:h-[36.5625rem] @variant landscape:rounded-[0.75rem] z-[1000] overflow-hidden',
+          backdrop: 'bg-black/50 z-[998] w-screen h-screen fixed inset-0',
+        }}
+        {...modalProps}
+      >
+        <ModalContent className="w-full h-full @variant landscape:w-[71.8125rem] @variant landscape:h-[36.5625rem] bg-white rounded-none @variant landscape:rounded-[0.75rem] relative overflow-hidden border-0 @variant landscape:border-2 @variant landscape:border-[var(--colors-common-ash)]">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
-              <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit dolor
-                  adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                  officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem eiusmod et. Culpa
-                  deserunt nostrud ad veniam.
-                </p>
-              </ModalBody>
+              <Image
+                src="/assets/images/NightSky.svg"
+                alt="Night Sky Background"
+                fill
+                className="absolute inset-0 object-cover z-0"
+              />
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex h-[3rem] px-[1rem] flex-row justify-end @variant landscape:justify-between items-center border-b-0 @variant landscape:border-b-2 @variant landscape:border-[var(--colors-common-ash)] bg-transparent">
+                  <ThreeDots white className="hidden @variant landscape:flex" />
+                  <Button
+                    onPress={onClose}
+                    isIconOnly
+                    variant="light"
+                    className="flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
+                    aria-label="Close modal"
+                  >
+                    <Image src="/assets/images/close-icon.svg" alt="Close" width={24} height={24} />
+                  </Button>
+                </div>
+                <ModalBody>{body}</ModalBody>
+              </div>
             </>
           )}
         </ModalContent>
@@ -45,3 +57,5 @@ const Modal: FC<PropsWithChildren> = ({ children }) => {
     </>
   );
 };
+
+export default Modal;
