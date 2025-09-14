@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
 import Footer from '@/components/Footer';
-import AvatarBento, { type AvatarBentoProps } from '@/components/AvatarBento';
+import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 
 // Temporary hardcoded flags for demonstration purposes
 const flags = {
@@ -72,7 +72,14 @@ export const avatarBentoData: AvatarBentoProps = {
     name: 'Astra Wealthington',
     attributes: 'Trust Fund Baby, Chaos-Loving, Genius, Regulation Capturing, Ocean City-Building',
   },
-  ctaText: 'Get Started',
+  primaryFlowData: {
+    ctaText: 'Get Started',
+    title: 'Make Space a Better Place. Add a Billionaire.',
+    description:
+      'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
+    createAvatarCtaText: 'Make a Custom Billionaire',
+    randomAvatarCtaText: 'Get a Surprise Billionaire',
+  },
   image: '/assets/images/Avatar_Square.svg',
   imageAlt: '', // Decorative image
   defaultContent: 'Unlimited power.\n Zero accountability. \n What could go wrong?',
