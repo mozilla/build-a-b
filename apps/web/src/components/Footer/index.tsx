@@ -15,6 +15,27 @@ const Footer = () => {
     { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
   ];
 
+  const socials = [
+    {
+      href: 'https://www.tiktok.com/@firefox',
+      title: 'Visit our TikTok',
+      alt: 'TikTok',
+      src: '/assets/images/social/tiktok.svg',
+    },
+    {
+      href: 'https://www.instagram.com/firefox/',
+      title: 'Check our Instagram',
+      alt: 'Instagram',
+      src: '/assets/images/social/instagram.svg',
+    },
+    {
+      href: 'https://www.youtube.com/firefoxchannel',
+      title: 'Watch our YouTube channel',
+      alt: 'YouTube',
+      src: '/assets/images/social/youtube.svg',
+    },
+  ];
+
   return (
     <footer className="site-footer" aria-label="Site footer">
       <Link
@@ -39,7 +60,12 @@ const Footer = () => {
                 <Link
                   href={href}
                   title={title}
-                  className="inline-block py-2"
+                  className="inline-block py-2
+                             transform transition-all duration-300
+                             origin-left
+                             hover:-rotate-3 hover:translate-y-1
+                             hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
+                             hover:bg-clip-text hover:text-transparent"
                   aria-current={pathname === href ? 'page' : undefined}
                 >
                   {label}
@@ -50,39 +76,18 @@ const Footer = () => {
         </nav>
         <nav className="py-8 landscape:py-0" aria-label="Footer navigation">
           <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-6">
-            <li>
-              <Link href="https://www.tiktok.com/@firefox" target="_blank" title="Visit our TikTok">
-                <Image src="/assets/images/social/tiktok.svg" alt="TikTok" width={32} height={32} />
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://www.instagram.com/firefox/"
-                target="_blank"
-                title="Check our Instagram"
-              >
-                <Image
-                  src="/assets/images/social/instagram.svg"
-                  alt="Instagram"
-                  width={32}
-                  height={32}
-                />
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://www.youtube.com/firefoxchannel"
-                target="_blank"
-                title="Watch our YouTube channel"
-              >
-                <Image
-                  src="/assets/images/social/youtube.svg"
-                  alt="Youtube"
-                  width={32}
-                  height={32}
-                />
-              </Link>
-            </li>
+            {socials.map(({ href, title, alt, src }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  target="_blank"
+                  title={title}
+                  className="inline-flex items-center justify-center rounded-full transition-transform duration-300 hover:-rotate-30"
+                >
+                  <Image src={src} alt={alt} width={32} height={32} />
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
