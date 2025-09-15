@@ -8,9 +8,6 @@
   1.11111111111vw: 16px / 1440px * 100vw for landscape
 */
 :root {
-  /* Typography */
-  --font-sharp-sans: 'Sharp Sans', sans-serif;
-
   --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
   --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
 }
