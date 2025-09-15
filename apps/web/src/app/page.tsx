@@ -5,6 +5,7 @@ import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
 import Footer from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
+import BentoScale from '@/components/BentoScale';
 
 // Temporary hardcoded flags for demonstration purposes
 const flags = {
@@ -177,33 +178,25 @@ export default async function Home({
         <div className="col-span-6 row-start-12 @variant landscape:col-span-2 @variant landscape:col-start-5 @variant landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/diamond.jpg" />
           ) : null}
         </div>
         <div className="col-span-6 col-start-7 row-start-12 @variant landscape:col-span-2 @variant landscape:col-start-7 @variant landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/rocket.jpg" />
           ) : null}
         </div>
         <div className="col-span-6 row-start-13 @variant landscape:col-span-2 @variant landscape:col-start-9 @variant landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/crown.jpg" />
           ) : null}
         </div>
         <div className="col-span-6 col-start-7 row-start-13 @variant landscape:col-span-2 @variant landscape:col-start-11 @variant landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/meteor.jpg" />
           ) : null}
         </div>
       </main>
