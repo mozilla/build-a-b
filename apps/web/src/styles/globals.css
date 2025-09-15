@@ -62,7 +62,10 @@
 
 @layer components {
   .site-container {
-    @apply p-4 md:p-8;
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
+    @variant landscape {
+      @apply max-w-[var(--container-width-landscape)] py-16;
+    }
   }
 
   .site-footer {
@@ -72,10 +75,6 @@
   .rounded-button {
     @apply inline-flex px-4 py-1 rounded-3xl border-2 border-accent text-accent font-bold;
   }
-}
-
-html {
-  font-size: 14px;
 }
 
 body {
