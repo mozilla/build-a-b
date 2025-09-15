@@ -38,6 +38,8 @@
 
   --container-width-landscape: 82.0625rem;
   --container-width-portrait: 22.375rem;
+
+  --breakpoint-xs: 30rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,4 +85,11 @@ body {
 /* Pause on hover */
 .animate-scroll-with-pause:hover {
   animation-play-state: paused;
+}
+
+.menu-item-hover:hover {
+  background-image: linear-gradient(90deg, var(--colors-common-teal-500) 10%, var(--secondary-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
