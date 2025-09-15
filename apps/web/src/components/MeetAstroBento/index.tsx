@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from 'react';
+import ThreeDots from '../ThreeDots';
 
 export interface MeetAstroBentoProps {
   /**
@@ -27,14 +28,11 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
       <div className="rounded-[calc(0.532rem-2px)] overflow-hidden bg-transparent">
         <div
           id="header"
-          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center gap-[0.355rem] shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-[var(--primary-charcoal)] bg-[var(--colors-common-ash)]' : 'border-[var(--primary-charcoal)] group-hover:border-transparent bg-gradient-to-r from-[var(--secondary-blue)] to-[var(--secondary-purple)] group-hover:bg-[var(--colors-common-ash)]'} transition-all duration-500`}
+          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-[var(--primary-charcoal)] bg-[var(--colors-common-ash)]' : 'border-[var(--primary-charcoal)] group-hover:border-transparent bg-gradient-to-r from-[var(--secondary-blue)] to-[var(--secondary-purple)] group-hover:bg-[var(--colors-common-ash)]'} transition-all duration-500`}
         >
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={index}
-              className={`w-[0.516rem] h-[0.516rem] shrink-0 rounded-full border-[0.089rem] ${active ? 'border-[var(--primary-charcoal)]' : 'border-[var(--primary-charcoal)] group-hover:border-[var(--colors-common-ash)]'} transition-colors duration-500`}
-            />
-          ))}
+          <ThreeDots
+            dotClassName={`${active ? 'border-[var(--primary-charcoal)]' : 'border-[var(--primary-charcoal)] group-hover:border-[var(--colors-common-ash)]'} transition-colors duration-500`}
+          />
         </div>
         <div
           id="body"
