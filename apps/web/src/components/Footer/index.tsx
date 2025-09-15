@@ -75,7 +75,7 @@ const Footer = () => {
           </ul>
         </nav>
         <nav className="py-8 landscape:py-0" aria-label="Footer navigation">
-          <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-6">
+          <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-4">
             {socials.map(({ href, title, alt, src }) => (
               <li key={href}>
                 <Link
@@ -88,7 +88,13 @@ const Footer = () => {
                              hover:-rotate-30
                              group"
                 >
-                  <Image src={src} alt={alt} width={32} height={32} />
+                  <Image
+                    src={src}
+                    alt={alt}
+                    width={42}
+                    height={42}
+                    className="w-8 landscape:w-10"
+                  />
                   <span
                     className="absolute inset-0
                                bg-gradient-to-br from-transparent to-secondary-blue
