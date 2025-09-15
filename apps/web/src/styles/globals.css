@@ -72,6 +72,15 @@ body {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
 .animate-scroll-without-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
