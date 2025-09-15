@@ -4,6 +4,7 @@ import { Button } from '@heroui/button';
 import Image from 'next/image';
 import MeetAstroBento, { type MeetAstroBentoProps } from '../MeetAstroBento';
 import AvatarView, { type AvatarViewProps } from './AvatarView';
+import GetStarted from './GetStarted';
 
 export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
   /**
@@ -52,12 +53,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
         <AvatarView {...avatarData} />
       ) : (
         <>
-          <Button
-            type="button"
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[9.119deg] @variant landscape:top-auto @variant landscape:left-auto @variant landscape:translate-x-0 @variant landscape:translate-y-0 @variant landscape:bottom-[8.235rem] @variant landscape:left-[7.8125rem] z-20 border border-[var(--colors-common-teal-500)] font-bold text-base text-[var(--colors-common-teal-500)] rounded-full px-[2.5rem] h-[2.5rem] cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-[var(--colors-common-teal-500)] transition-colors duration-300"
-          >
-            {ctaText}
-          </Button>
+          <GetStarted ctaText={ctaText} />
 
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 @variant landscape:bottom-0 @variant landscape:right-0 @variant landscape:left-auto @variant landscape:translate-x-0 @variant landscape:pr-[3rem] @variant landscape:pb-[7rem] z-20">
             <div className="scale-75 @variant landscape:scale-100">
