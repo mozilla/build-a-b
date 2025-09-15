@@ -2,12 +2,21 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
   const currentYear = new Date();
+  const pathname = usePathname();
+
+  const links = [
+    { href: '/', label: 'Home', title: 'Go to home' },
+    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
+    { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
+    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
+  ];
 
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" aria-label="Site footer">
       <Link
         href="/"
         title="Back to home"
@@ -23,35 +32,23 @@ const Footer = () => {
       </Link>
 
       <div className="landscape:flex landscape:justify-between landscape:mt-14 landscape:mb-16">
-        <nav className="text-accent uppercase font-bold">
+        <nav className="text-accent uppercase font-bold" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
-            <li>
-              <Link href="/" title="Go to home" className="inline-block py-2">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/twitchcon" title="Learn about Twitchcon" className="inline-block py-2">
-                Twitchcon
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/space-launch"
-                title="More about Space Launch"
-                className="inline-block py-2"
-              >
-                Space Launch
-              </Link>
-            </li>
-            <li>
-              <Link href="/datawar" title="Play our game Data War" className="inline-block py-2">
-                Game
-              </Link>
-            </li>
+            {links.map(({ href, label, title }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  title={title}
+                  className="inline-block py-2"
+                  aria-current={pathname === href ? 'page' : undefined}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
-        <nav className="py-8 landscape:py-0">
+        <nav className="py-8 landscape:py-0" aria-label="Footer navigation">
           <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-6">
             <li>
               <Link href="https://www.tiktok.com/@firefox" target="_blank" title="Visit our TikTok">
