@@ -18,7 +18,7 @@ const Footer = () => {
           width={373}
           height={220}
           alt="Billionaire Logo"
-          className="-ml-2 max-w-[230px] landscape:max-w-none"
+          className="-ml-2 max-w-[14rem] landscape:max-w-[26rem]"
         />
       </Link>
 
