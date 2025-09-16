@@ -1,8 +1,6 @@
 import { FC } from 'react';
 import Bento, { BentoProps } from '../Bento';
 
-export interface BentoScaleProps extends BentoProps {}
-
 const BentoScale: FC<BentoProps> = ({ image }) => {
   return (
     <Bento
