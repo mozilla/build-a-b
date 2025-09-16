@@ -5,7 +5,7 @@ import Image from 'next/image';
 const BentoSelfie: FC = () => {
   return (
     <Bento
-      className="h-full flex flex-col justify-center items-center gap-2 bg-common-ash! border-accent!
+      className="h-full py-8 flex flex-col justify-center items-center gap-2 bg-common-ash! border-accent!
                  relative group hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple
                  hover:cursor-pointer"
     >
