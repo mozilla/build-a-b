@@ -1,18 +1,12 @@
-# mondolite-lite-boilerplate
+# Mozilla Billionaire Blast-Off
 
-A Next.js 15+ TypeScript monorepo starter kit featuring:
+This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off" microsite. It features a HeroUI component library, Tailwind CSS v4 with a customized plugin, Sanity CMS Studio for content management, and the Flags SDK for feature flags.
 
-- HeroUI component library
-- Tailwind CSS v4 with customized plugin
-- Sanity CMS Studio for content management
-- Flags SDK for feature flags
+## Table ofContents
 
-- Localization and internationalization support
-- Performance best practices (Turbopack, caching, ISR)
-
-## Table of Contents
-
-- [Project overview](#project-overview)
+- [Project Overview](#project-overview)
+- [Documentation](#documentation)
+- [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
@@ -24,79 +18,111 @@ A Next.js 15+ TypeScript monorepo starter kit featuring:
 - [Contributing](#contributing)
 - [License](#license)
 
-## Project overview
+---
 
-**Project name**: Mondo Lite  
+## Project Overview
+
+**Project name**: Mozilla Billionaire Blast-Off  
 **Owners**: Platform / Project Owner (fill in CODEOWNERS)  
 **Slack/Comms**: #platform or project channel  
 **Live URLs**: preview via Vercel; production via Vercel/AWS (per project)
 
-Summary:
-Mondo Lite is a white‑label Next.js + Sanity starter that provides a production‑ready foundation (routing, CMS, design system, theming, CI, auth stubs) for quickly shipping client sites. The repository is opinionated about stack choices and quality gates so teams can move fast while keeping consistency.
+**Summary:**
+"Billionaire Blast-Off" is an interactive microsite designed to promote Firefox’s “Open What You Want” positioning through a satirical, Gen Z–friendly creative lens. Users can build their own billionaire avatar and learn about data privacy in a playful way. The project is built on a white-label Next.js + Sanity starter that provides a production-ready foundation for quickly shipping client sites. The primary goal is to drive awareness, not data collection, with no PII being stored.
 
-Goals / success metrics:
+**Goals / Success Metrics:**
+-   Volume of avatars generated.
+-   Engagement with playpen actions.
+-   Return rate (users revisiting via hash/URL).
+-   Social sharing (tracked via outbound links, not user IDs).
 
-- Setup time: < 60 minutes
-- First page + CMS sync: < 15 minutes
-- Predictable CI checks and passing Quality Gates on PRs
+---
 
-Where to find detailed docs:
+## Documentation
 
-- [`README.frontend.md`](README.frontend.md:1)
-- [`README.cms.md`](README.cms.md:1)
-- [`README.architecture.md`](README.architecture.md:1)
-- [`README.environments.md`](README.environments.md:1)
+For more in-depth information, please see the following documents:
+
+-   [**Product Requirements Document (PRD)**](PRODUCT_REQUIREMENTS.md): Detailed information on campaign goals, user experience flow, success metrics, and constraints.
+-   [**Engineering Playbook**](ENGINEERING_PLAYBOOK.md): A comprehensive guide to the technical architecture, database schema, security measures, and deployment process.
+-   [**Frontend Documentation**](README.frontend.md)
+-   [**CMS Documentation**](README.cms.md)
+-   [**Architecture Documentation**](README.architecture.md)
+-   [**Environments Documentation**](README.environments.md)
+
+---
+
+## Features
+
+-   **Avatar Builder**: Users can create a custom billionaire avatar by answering a 7-question quiz or get a randomly generated one. Avatars and bios are generated via an LLM API.
+-   **Unique Avatar URL**: Each user receives a unique "all-access pass" link (e.g., `/a/{hash}`) to their generated avatar, which they can share.
+-   **Interactive Story**: The experience guides users through a narrative about data privacy and corporate accountability.
+-   **Avatar Gallery & Playpen**: Users can perform actions with their avatar, such as taking a space selfie or doing a TikTok dance.
+-   **Sanity CMS Integration**: Content is managed through a Sanity Studio backend.
+-   **Bento Grid Layout**: The site uses a modern bento grid layout for its components.
+
+---
 
 ## Prerequisites
 
-- Node.js >= 18.x
-- pnpm >= 7.x
-- Git CLI
+* Node.js >= 18.x
+* pnpm >= 7.x
+* Git CLI
+
+---
 
 ## Getting Started
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-org/mondolite-boilerplate.git
-   cd mondolite-boilerplate
-   ```
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Copy environment variables:
-   ```bash
-   cp .env.example .env.local
-   ```
-4. Update `.env.local` with credentials (see `.env.example`)
+1.  Clone the repository:
+    ```bash
+    git clone [https://github.com/your-org/build-a-b.git](https://github.com/your-org/build-a-b.git)
+    cd build-a-b
+    ```
+2.  Install dependencies:
+    ```bash
+    pnpm install
+    ```
+3.  Copy environment variables:
+    ```bash
+    cp .env.example .env.local
+    ```
+4.  Update `.env.local` with your Sanity project ID and dataset from `apps/studio/sanity.config.ts`.
+
+---
 
 ## Environment Variables
 
 All environment variables are defined in [`.env.example`](.env.example:1). Do not commit secrets; use your hosting provider's secret store for production credentials.
 
+---
+
 ## Project Structure
 
 ```
-mondolite-boilerplate/
+build-a-b/
 ├─ apps/
-│  ├─ web/     # Next.js application (frontend)
-│  └─ studio/  # Sanity CMS Studio (content backend)
-├─ packages/   # shared packages (ui, config, utils)
+│  ├─ web/             # Next.js application (frontend)
+│  │  └─ .env.example  # Web-level .env is required for build
+│  └─ studio/          # Sanity CMS Studio (content backend)
+├─ packages/           # shared packages (ui, config, utils)
 ├─ .env.example
 ├─ package.json
 └─ README.md
 ```
 
+---
+
 ## Packages Overview
 
-### [`packages/web`](packages/web:1)
+### [`apps/web`](apps/web:1)
 
-- Next.js (App Router), TypeScript, Turbopack, Tailwind v4, HeroUI.
-- Flags SDK and Sanity for content.
+-   Next.js (App Router), TypeScript, Turbopack, Tailwind v4, HeroUI.
+-   Flags SDK and Sanity for content.
 
-### [`packages/studio`](packages/studio:1)
+### [`apps/studio`](apps/studio:1)
 
-- Sanity Studio configured; schemas live in `packages/studio/schemaTypes`.
+-   Sanity Studio configured; schemas live in `apps/studio/schemaTypes`.
+
+---
 
 ## Available Scripts
 
@@ -128,30 +154,38 @@ pnpm --filter studio build
 pnpm --filter studio deploy
 ```
 
+---
+
 ## Architecture & Technologies
 
-- Monorepo: pnpm workspaces + Turbo
-- Frontend: Next.js (App Router), Server Components where applicable
-- Styling: Tailwind v4, HeroUI component wrappers
-- CMS: Sanity (GROQ, next-sanity)
-- Feature flags: Vercel Flags SDK
+-   Monorepo: pnpm workspaces + Turbo
+-   Frontend: Next.js (App Router), Server Components where applicable
+-   Styling: Tailwind v4, HeroUI component wrappers
+-   CMS: Sanity (GROQ, next-sanity)
+-   Feature flags: Vercel Flags SDK
+
+---
 
 ## Quality Gates
 
 These commands should run successfully in CI for PRs:
 
-1. Type check: `pnpm typecheck` (tsc --noEmit)
-2. Format: `pnpm format`
-3. Lint: `pnpm lint`
-4. Tests: `pnpm test`
-5. Sanity schema validate: `pnpm -F @apps/studio schema:validate`
-6. Build: `pnpm build`
+1.  Type check: `pnpm typecheck` (tsc --noEmit)
+2.  Format: `pnpm format`
+3.  Lint: `pnpm lint`
+4.  Tests: `pnpm test`
+5.  Sanity schema validate: `pnpm -F @apps/studio schema:validate`
+6.  Build: `pnpm build`
+
+---
 
 ## Contributing
 
-- Follow Conventional Commits. Fork → feature branch → PR.
-- Include tests, stories, and docs for new components.
-- Use ADRs (`/adr`) for architectural changes.
+-   Follow Conventional Commits. Fork → feature branch → PR.
+-   Include tests, stories, and docs for new components.
+-   Use ADRs (`/adr`) for architectural changes.
+
+---
 
 ## License
 

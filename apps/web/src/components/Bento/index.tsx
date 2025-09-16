@@ -7,14 +7,23 @@ export interface BentoProps {
   image?: StaticImageData | string;
   imageAlt?: string;
   priority?: boolean;
+  imageClassName?: string;
 }
 
 const defaultBentoStyle =
-  'bg-color-[var(--primary-charcoal)] border border-[var(--colors-common-ash)] border-[0.125rem] overflow-hidden relative rounded-[0.75rem] w-full ';
+  'bg-charcoal border-common-ash border-[0.125rem] overflow-hidden relative rounded-[0.75rem]';
+const defaultImageStyle = 'absolute inset-0 z-0 object-cover';
 
-const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority }) => {
+const Bento: FC<BentoProps> = ({
+  className,
+  children,
+  image,
+  imageAlt,
+  priority,
+  imageClassName,
+}) => {
   const parentClassName = [defaultBentoStyle, className].filter(Boolean).join(' ');
-
+  const imgClassName = [defaultImageStyle, imageClassName].filter(Boolean).join(' ');
   return (
     <div className={parentClassName}>
       {image && (
@@ -23,11 +32,10 @@ const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority 
           alt={imageAlt ?? ''}
           fill
           sizes="100vw"
-          className="absolute inset-0 z-0 object-cover"
+          className={imgClassName}
           priority={priority}
         />
       )}
-      {/* Pass children straight through */}
       {children}
     </div>
   );
