@@ -30,172 +30,109 @@ html {
   font-family: var(--font-sharp-sans);
 }
 
-/* text-9xl/leading-none/font-extrabold */
-@utility text-9xl-custom {
-  @apply font-sharp font-extrabold;
-  font-size: 7.875rem; /* 126px */
-  line-height: 7.9375rem; /* 127px */
-}
+/* DESKTOP (LANDSCAPE) FONT SIZES */
 
-/* text-4xl/leading-10/font-extrabold */
+/* text-4xl */
 @utility text-4xl-custom {
-  @apply font-sharp font-extrabold;
   font-size: 2.25rem; /* 36px */
   line-height: 2.5rem; /* 40px */
 }
 
-/* text-3xl/leading-9/font-extrabold */
-@utility text-3xl-custom {
-  @apply font-sharp font-extrabold;
-  font-size: 1.875rem; /* 30px */
-  line-height: 2.25rem; /* 36px */
-}
-
-/* text-2xl/leading-8/font-extrabold */
+/* text-2xl */
 @utility text-2xl-custom {
-  @apply font-sharp font-extrabold;
   font-size: 1.5rem; /* 24px */
   line-height: 2rem; /* 32px */
 }
 
-/* text-xl/leading-7/font-medium */
+/* text-xl */
 @utility text-xl-custom {
-  @apply font-sharp font-medium;
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem; /* 28px */
 }
 
-/* text-lg/leading-7/font-medium */
+/* text-lg */
 @utility text-lg-custom {
-  @apply font-sharp font-medium;
   font-size: 1.125rem; /* 18px */
   line-height: 1.5rem; /* 24px */
 }
 
-/* text-base/leading-6/font-medium */
-@utility text-base-custom {
-  @apply font-sharp font-medium;
+/* text-reg */
+@utility text-regular-custom {
   font-size: 1rem; /* 16px */
   line-height: 1.5rem; /* 24px */
 }
 
-/* text-sm/leading-5/font-extrabold */
+/* text-sm */
 @utility text-sm-custom {
-  @apply font-sharp font-extrabold;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
 }
 
 /* BBO/Label 14 */
 @utility label-14 {
-  @apply font-sharp font-bold uppercase;
   font-size: 0.75rem; /* 12px */
   letter-spacing: 0.06rem; /* 0.96px */
   line-height: normal; /* explicitly normal */
 }
 
-/* Unnamed sizes from Figma design specs */
-
-/* Sharp Sans 43px / 48px / font-extrabold */
-@utility text-sharp-43 {
-  @apply font-sharp font-extrabold;
-  font-size: 2.688rem; /* 43px */
-  line-height: 3rem; /* 48px ~111.628% */
-}
-
-/* Sharp Sans 32.717px / 37.993px / font-extrabold */
-@utility text-sharp-33 {
-  @apply font-sharp font-extrabold;
-  font-size: 2.045rem; /* 32.717px */
-  line-height: 2.375rem; /* 37.993px ~116.129% */
-}
-
-/* Sharp Sans 19.2px / font-bold / uppercase */
+/* Sharp Sans 19.2px */
 @utility text-sharp-19 {
-  @apply font-sharp font-bold uppercase;
   font-size: 1.2rem; /* 19.2px */
   letter-spacing: 0.096rem; /* 1.536px */
   line-height: normal;
 }
 
-/* Sharp Sans 14px / font-medium / leading-trim both / text-edge cap */
-@utility text-sharp-14 {
-  @apply font-sharp font-medium;
-  leading-trim: both;
-  text-edge: cap;
+/* MOBILE (PORTRAIT) FONT SIZES */
+
+/* 📱 Mobile/Title/1 = text-4xl-custom */
+
+/* 📱 Mobile/Title/3 = text-2xl-custom */
+
+/* 📱 Mobile/Body Regular = text-regular-custom */
+
+/* 📱 Mobile/Body Small = text-sm-custom */
+
+/* 📱 Mobile/Meta 2 */
+@utility text-mobile-meta-2 {
   font-size: 0.875rem; /* 14px */
-  line-height: 1.225rem; /* 19.6px (140%) */
-}
-
-/* Sharp Sans 13.6px / font-bold / uppercase */
-@utility text-sharp-13 {
-  @apply font-sharp font-bold uppercase;
-  font-size: 0.85rem; /* 13.6px */
-  letter-spacing: 0.068rem; /* 1.088px */
   line-height: normal;
+  letter-spacing: 0.07rem; /* 1.12px */
 }
 
-/* Sharp Sans 8px / font-medium / leading-trim both / text-edge cap */
-@utility text-sharp-8 {
-  @apply font-sharp font-medium;
-  leading-trim: both;
-  text-edge: cap;
-  font-size: 0.5rem; /* 8px */
-  line-height: 0.7rem; /* 11.2px (140%) */
-}
+/* ============================= */
+/* Custom Typography Components  */
+/* ============================= */
 
 @layer components {
-  /* "#BillionaireBlastOff" hero */
-  .text-headline {
-    @apply text-sharp-33;
-    @variant landscape {
-      @apply text-9xl-custom;
-    }
-  }
-
-  /* "#BillionaireBlastOff" card */
-  .text-card-title-lg {
-    @apply text-4xl-custom;
-    @variant landscape {
-      @apply text-sharp-43;
-    }
-  }
-
-  /* "Join us at Twitchcon" */
-  .text-card-title-lg-alt {
-    @apply text-4xl-custom;
-    @variant landscape {
-      @apply text-4xl-custom;
-    }
-  }
-
-  /* "We’re launching your billionaires into space…for realz." */
-  .text-card-title-md {
-    @apply text-2xl-custom;
-    @variant landscape {
-      @apply text-4xl-custom;
-    }
+  /* "#BillionaireBlastOff" */
+  .text-title-1 {
+    @apply text-4xl-custom font-sharp font-extrabold;
   }
 
   /* "Unlimited power. Zero accountability. What could go wrong?" */
-  .text-card-title-sm {
-    @apply text-2xl-custom;
-    @variant landscape {
-      @apply text-3xl-custom;
-    }
+  .text-title-3 {
+    @apply text-2xl-custom font-sharp font-extrabold;
   }
 
-  /* Billionaires want to trade your data so they can go to space and do other dumb billionaire sh*t." */
-  .text-card-body {
-    @apply text-base-custom;
+  /* "They go to space on rockets of your data. But there is another way." */
+  .text-body-regular {
+    @apply text-regular-custom font-sharp font-medium;
     @variant landscape {
       @apply text-xl-custom;
     }
   }
 
+  /* "Post content of your billionaire for a shot at sending them to actual, for-real-real space." */
+  .text-body-small {
+    @apply text-sm-custom font-sharp font-medium;
+    @variant landscape {
+      @apply text-lg-custom;
+    }
+  }
+
   /* Ticker Content "Send Your Billionaire to Space" */
   .text-ticker {
-    @apply text-sharp-13;
+    @apply text-mobile-meta-2 font-sharp font-bold uppercase;
     @variant landscape {
       @apply text-sharp-19;
     }
@@ -203,17 +140,7 @@ html {
 
   /* Navigation Items "Home" "Twitchcon" "Space Launch" "Card Game" */
   .text-nav-item {
-    @apply label-14;
-    @variant landscape {
-      @apply label-14;
-    }
+    @apply label-14 font-sharp font-bold uppercase;
   }
 
-  /* Footer Colophon "@2025 Mozilla. All rights reserved." */
-  .text-colophon {
-    @apply text-sharp-8;
-    @variant landscape {
-      @apply text-sharp-14;
-    }
-  }
 }
