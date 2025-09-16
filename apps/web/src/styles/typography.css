@@ -8,9 +8,6 @@
   1.11111111111vw: 16px / 1440px * 100vw for landscape
 */
 :root {
-  /* Typography */
-  --font-sharp-sans: 'Sharp Sans', sans-serif;
-
   --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
   --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
 }
@@ -19,6 +16,12 @@ html {
   font-size: var(--font-size-portrait);
   @variant landscape {
     font-size: var(--font-size-landscape);
+  }
+}
+
+@layer base {
+  .text-xs10 {
+    font-size: var(--font-size-xs10);
   }
 }
 
@@ -145,5 +148,4 @@ html {
   .text-nav-item {
     @apply label-14 font-sharp font-bold uppercase;
   }
-
 }
