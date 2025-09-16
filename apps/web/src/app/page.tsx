@@ -8,6 +8,7 @@ import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/Ava
 import BentoScale from '@/components/BentoScale';
 import Image from 'next/image';
 import BentoSelfie from '@/components/BentoSelfie';
+import BentoRotate from '@/components/BentoRotate';
 
 const flags = {
   demoAvatarBento: true,
@@ -122,18 +123,10 @@ export default async function Home({
               {flags?.demoActionItems ? <BentoSelfie /> : null}
             </div>
             <div className="col-span-6 landscape:col-span-4">
-              {flags?.demoActionItems ? (
-                <Bento className="h-full">
-                  <span>Action Item Bento</span>
-                </Bento>
-              ) : null}
+              {flags?.demoActionItems ? <BentoRotate /> : null}
             </div>
             <div className="col-span-6 landscape:col-span-4">
-              {flags?.demoActionItems ? (
-                <Bento className="h-full">
-                  <span>Action Item Bento</span>
-                </Bento>
-              ) : null}
+              {flags?.demoActionItems ? <BentoRotate /> : null}
             </div>
           </div>
         </div>
