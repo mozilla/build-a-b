@@ -1,46 +1,65 @@
 import Link from 'next/link';
+import Image from 'next/image';
+
+
 
 const SocialNetwork = () => {
+
+const socials = [
+    {
+      href: 'https://www.tiktok.com/@firefox',
+      title: 'Visit our TikTok',
+      alt: 'TikTok',
+      src: '/assets/images/SocialButtons/TikTok.svg',
+    },
+    {
+      href: 'https://www.instagram.com/firefox/',
+      title: 'Check our Instagram',
+      alt: 'Instagram',
+      src: '/assets/images/SocialButtons/Instagram.svg',
+    },
+    {
+      href: 'https://www.youtube.com/firefoxchannel',
+      title: 'Watch our YouTube channel',
+      alt: 'YouTube',
+      src: '/assets/images/SocialButtons/Youtube.svg',
+    },
+  ];
+
+
     return (
-        <div className="social-network hidden lg:block w-[15%] flex content-center"
+        <div className="social-network hidden landscape:flex content-center"
             aria-label='Social media links'>
-            <ul className='flex flex-row content-center justify-center items-center gap-[8px]'>
-                <li>
-                    <Link className='w-[40px] h-[40px] block transition 
-                        bg-no-repeat bg-[url(/assets/images/SocialButtons/Tiktok.svg)]
-                        hover:bg-[url(/assets/images/SocialButtons/Tiktok-hover.svg)]
-                        hover:-rotate-20' 
-                        href='https://www.tiktok.com/@firefox' 
-                        target='_blank'
-                        aria-label="Follow us on TikTok (opens in new tab)"
-                        rel="noopener noreferrer">
-
-                    </Link>
-                </li>
-                <li>
-                    <Link className='w-[40px] h-[40px] block transition 
-                        bg-no-repeat bg-[url(/assets/images/SocialButtons/Instagram.svg)]
-                        hover:bg-[url(/assets/images/SocialButtons/Instagram-hover.svg)]
-                        hover:-rotate-20' 
-                        href='https://www.instagram.com/firefox' 
-                        target='_blank'
-                        aria-label="Follow us on Instagram (opens in new tab)"
-                        rel="noopener noreferrer">
-
-                    </Link>
-                </li>
-                <li>
-                    <Link className='w-[40px] h-[40px] block transition 
-                        bg-no-repeat bg-[url(/assets/images/SocialButtons/Youtube.svg)]
-                        hover:bg-[url(/assets/images/SocialButtons/Youtube-hover.svg)]
-                        hover:-rotate-20' 
-                        href='https://youtube.com/firefoxchannel' 
-                        target='_blank'
-                        aria-label="Subscribe on Youtube (opens in new tab)"
-                        rel="noopener noreferrer">
-
-                    </Link>
-                </li>
+            <ul className='flex flex-row content-center justify-center items-center gap-x-4'>
+                {socials.map(({href, title, alt, src})=>(
+                    <li key={href}>
+                        <Link
+                            href={href}
+                            target='_blank'
+                            title={title}
+                            aria-label={title}
+                            className="relative inline-flex
+                                    items-center justify-center
+                                    rounded-full overflow-hidden 
+                                    transition-transform duration-300
+                                    hover:-rotate-30 group"   
+                        >
+                            <Image 
+                                src={src}
+                                alt={alt}
+                                width={42}
+                                height={42}
+                                className='w-8 landscape:w-10'
+                            />
+                            <span
+                                className="absolute inset-0
+                                            bg-gradient-to-br from-transparent to-secondary-blue
+                                            opacity-0 group-hover:opacity-70
+                                            transition-opacity duration-300" 
+                            />
+                        </Link>
+                    </li>
+                ))}
             </ul>
         </div>
     );

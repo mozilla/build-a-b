@@ -1,38 +1,44 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const HeaderMenu = () => {
+
+    const pathname = usePathname();
+    const links = [
+        { href: '/', label: 'Home', title: 'Go to home' },
+        { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
+        { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
+        { href: '/datawar', label: 'Card Game', title: 'Play our game Data War' },
+    ];
+
     return(
-        <div className="main-navigation hidden lg:block landscape:w-[70%] 
-            font-(family-name:--font-sharp-sans) text-[16px] font-bold uppercase">
-            <nav aria-label="Main Navigation" className='flex h-full justify-end'>
-                <ul className='flex flex-row content-center justify-end items-center gap-[60px] text-[var(--colors-common-teal-500)]'>
-                    <li>
-                        <Link href="/home" 
-                            aria-label='Go to Homepage'
-                            className='block transition menu-item-hover hover:-rotate-5' 
-                            tabIndex={0}>Home</Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/twitchcon"
-                            aria-label='Go to TwitchCon page' 
-                            className='block transition menu-item-hover hover:-rotate-5' 
-                            tabIndex={0}>TwitchCon</Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/space-launch" 
-                            aria-label='Go to Space Launch page'
-                            className='block transition menu-item-hover hover:-rotate-5' 
-                            tabIndex={0}>Space Launch</Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/datawar" 
-                            aria-label='Go to Card Game page'
-                            className='block transition menu-item-hover hover:-rotate-5' 
-                            tabIndex={0}>Card Game</Link>
-                    </li>
+        <div className="main-navigation 
+            font-sharp text-[0.75rem] font-bold uppercase">
+            <nav aria-label="Main Navigation" className='hidden landscape:flex h-full justify-end'>
+                <ul className='flex flex-row content-center justify-end items-center font-bold gap-3 text-[var(--colors-common-teal-500)]'>
+                    {links.map(({href, label, title})=>(
+                        <li key={href}>
+                            <Link
+                                href={href}
+                                title={title}
+                                aria-label={title}
+                                aria-current={pathname === href ? 'page' : undefined}
+                                className="inline-block p-3 py-2 text-nav-item 
+                                        transform transition-all duration-300
+                                        hover:-rotate-5
+                                        hover:bg-gradient-to-r
+                                        hover:form-accent
+                                        hover:to-secondary-blue
+                                        hover:bg-clip-text
+                                        hover:text-transparent"
+                            >
+                                {label}
+                            </Link>
+                        </li>
+                    ))}
+
                 </ul>
             </nav>
         </div>
