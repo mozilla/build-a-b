@@ -33,12 +33,6 @@
   --container-width-portrait: 22.375rem;
 }
 
-@layer base {
-  .text-xs10 {
-    font-size: var(--font-size-xs10);
-  }
-}
-
 @layer components {
   .site-container {
     @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
