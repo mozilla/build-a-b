@@ -6,7 +6,6 @@ import Ticker from '@/components/Ticker';
 import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import BentoScale from '@/components/BentoScale';
-import Image from 'next/image';
 import BentoSelfie from '@/components/BentoSelfie';
 import BentoRotate from '@/components/BentoRotate';
 
