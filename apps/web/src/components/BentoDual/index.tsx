@@ -33,7 +33,7 @@ const BentoDual: FC<BentoDualProps> = ({
   const backCardClasses = clsx(baseBentoClasses, backFlipCardClasses);
 
   return (
-    <div className="group [perspective:1000px] rounded-[0.75rem] w-full h-full">
+    <div className="group [perspective:1000px] rounded-[0.75rem] w-full h-full cursor-pointer">
       <div className={wrapperClasses}>
         {/* Front Face */}
         <div className={frontCardClasses}>
