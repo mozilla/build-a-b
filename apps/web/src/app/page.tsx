@@ -10,6 +10,7 @@ import BentoSelfie from '@/components/BentoSelfie';
 import BentoRotate from '@/components/BentoRotate';
 import BentoPlanet from '@/components/BentoPlanet';
 import BentoDual from '@/components/BentoDual';
+import Window from '@/components/Window';
 
 const flags = {
   demoAvatarBento: true,
@@ -149,7 +150,19 @@ export default async function Home({
           {flags?.demoLargeTeaserBento ? (
             <BentoDual
               className="flex w-full h-full"
-              back={<h1>Back here!</h1>}
+              back={
+                <Window>
+                  <h4 className="text-title-1 pb-4">We don't say for-real-real lightly.</h4>
+                  <p>
+                    Every post gets you closer to the stratosphere, which is where we'll be sending
+                    only the noisiest little billionaire avatars aboard a rocket, streamed for the
+                    world to see live at the climax of TwitchCon. <strong>To the mooooon!</strong>
+                  </p>
+                  <a className="rounded-button mt-6" href="#">
+                    Button
+                  </a>
+                </Window>
+              }
               effect="fade"
               image="/assets/images/rocket.webp"
             >
