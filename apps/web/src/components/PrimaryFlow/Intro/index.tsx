@@ -120,13 +120,13 @@ const Intro: FC<IntroProps> = ({
         <div className="flex flex-col items-center w-full gap-3 @variant landscape:items-start @variant landscape:gap-0">
           <Button
             type="button"
-            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-accent transition-colors duration-300 rotate-[2.259deg] @variant landscape:text-base @variant landscape:h-12 @variant landscape:w-[24.3125rem]"
+            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 rotate-[2.259deg] @variant landscape:text-base @variant landscape:h-12 @variant landscape:w-[24.3125rem]"
           >
             {createAvatarCtaText}
           </Button>
           <Button
             type="button"
-            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-accent transition-colors duration-300 -rotate-[1.772deg] @variant landscape:mt-6 @variant landscape:text-base @variant landscape:h-12 @variant landscape:w-[24.3125rem] @variant landscape:ml-16"
+            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 -rotate-[1.772deg] @variant landscape:mt-6 @variant landscape:text-base @variant landscape:h-12 @variant landscape:w-[24.3125rem] @variant landscape:ml-16"
           >
             {randomAvatarCtaText}
           </Button>

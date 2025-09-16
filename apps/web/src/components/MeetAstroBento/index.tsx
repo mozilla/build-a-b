@@ -23,15 +23,15 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
 }) => {
   return (
     <div
-      className={`z-[1] ${active ? 'w-full' : 'w-[20.3125rem]'} rounded-[0.532rem] p-[2px] ${active ? 'bg-[var(--primary-charcoal)]' : 'bg-[var(--primary-charcoal)] group-hover:bg-gradient-to-r group-hover:from-secondary-blue group-hover:to-secondary-purple'} transition-all duration-500`}
+      className={`z-[1] ${active ? 'w-full' : 'w-[20.3125rem]'} rounded-[0.532rem] p-[2px] ${active ? 'bg-charcoal' : 'bg-charcoal group-hover:bg-gradient-to-r group-hover:from-secondary-blue group-hover:to-secondary-purple'} transition-all duration-500`}
     >
       <div className="rounded-[calc(0.532rem-2px)] overflow-hidden bg-transparent">
         <div
           id="header"
-          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-[var(--primary-charcoal)] bg-[var(--colors-common-ash)]' : 'border-[var(--primary-charcoal)] group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-[var(--colors-common-ash)]'} transition-all duration-500`}
+          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-charcoal bg-[var(--colors-common-ash)]' : 'border-charcoal group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-[var(--colors-common-ash)]'} transition-all duration-500`}
         >
           <ThreeDots
-            dotClassName={`${active ? 'border-[var(--primary-charcoal)]' : 'border-[var(--primary-charcoal)] group-hover:border-[var(--colors-common-ash)]'} transition-colors duration-500`}
+            dotClassName={`${active ? 'border-charcoal' : 'border-charcoal group-hover:border-[var(--colors-common-ash)]'} transition-colors duration-500`}
           />
         </div>
         <div
@@ -54,9 +54,7 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
           <div
             className={`absolute inset-0 z-10 flex flex-col justify-center items-start gap-0.5 px-[1.476rem] py-[0.984rem] ${active ? 'translate-y-0 opacity-100' : 'translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100'} transition-all duration-700`}
           >
-            <span className="text-[var(--primary-charcoal)] text-lg font-medium leading-6">
-              {activeContent}
-            </span>
+            <span className="text-charcoal text-lg font-medium leading-6">{activeContent}</span>
           </div>
         </div>
       </div>
