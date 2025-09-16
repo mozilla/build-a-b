@@ -1,12 +1,12 @@
-# Frontend — Mondo Lite
+# Frontend — BBO Microsite
 
-This document describes frontend conventions, patterns and commands for the Mondo Lite starter (Next.js + TypeScript + Tailwind + HeroUI).
+This document describes frontend conventions, patterns and commands for the BBO Microsite starter (Next.js + TypeScript + Tailwind + HeroUI).
 
 ## Language & conventions
 
 - TypeScript strict mode everywhere. Use path aliases in `tsconfig.json` for shared packages.
 - React: prefer Server Components where possible; opt into Client Components (`"use client"`) only for interactive code.
-- Co‑locate component, styles, tests and stories in the same folder.
+- Co-locate component, styles, tests and stories in the same folder.
 - Keep components small and framework-friendly; prefer composition (slots, asChild) over large prop APIs.
 
 ## Styling & UI
@@ -20,6 +20,7 @@ This document describes frontend conventions, patterns and commands for the Mond
 - Routing: App Router under [`apps/web/app`](apps/web/app:1) (segment layouts + server components).
 - Data fetching: prefer server fetches in server components. Use ISR via `export const revalidate = <seconds>` or tag revalidation for dynamic content.
 - Image & font optimization: use Next built-in image and font handling (`next/image`, `next/font`).
+- Hosting is managed by Netlify.
 
 ## File layout (recommended)
 
