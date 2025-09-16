@@ -3,8 +3,11 @@ import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
-import Footer from '@/components/Footer';
+import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
+import BentoScale from '@/components/BentoScale';
+import BentoSelfie from '@/components/BentoSelfie';
+import BentoRotate from '@/components/BentoRotate';
 
 const flags = {
   demoAvatarBento: true,
@@ -86,6 +89,38 @@ const avatarBentoData: AvatarBentoProps = {
     'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
 };
 
+const footerData: FooterProps = {
+  links: [
+    { href: '/', label: 'Home', title: 'Go to home' },
+    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
+    { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
+    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
+  ],
+  socials: [
+    {
+      href: 'https://www.tiktok.com/@firefox',
+      title: 'Visit our TikTok',
+      alt: 'TikTok',
+      src: '/assets/images/social/tiktok.svg',
+    },
+    {
+      href: 'https://www.instagram.com/firefox/',
+      title: 'Check our Instagram',
+      alt: 'Instagram',
+      src: '/assets/images/social/instagram.svg',
+    },
+    {
+      href: 'https://www.youtube.com/firefoxchannel',
+      title: 'Watch our YouTube channel',
+      alt: 'YouTube',
+      src: '/assets/images/social/youtube.svg',
+    },
+  ],
+  ctaCopy: ['Big Tech wants to own your orbit.', 'We say—go launch yourself!'],
+  ctaLabel: 'Build a Billionaire',
+  message: 'Some kind of messaging goes here.',
+};
+
 export default async function Home({
   searchParams,
 }: {
@@ -97,119 +132,102 @@ export default async function Home({
   return (
     <Container>
       <Header />
-      {/* Ticker */}
+
       <Ticker items={tickerData} />
-      <main className="grid grid-cols-12 grid-rows-6 gap-8 @variant landscape:mt-[2rem] mt-[0.75rem]">
-        <div className="col-span-12 row-span-2 @variant landscape:col-span-7 @variant landscape:row-span-2">
+
+      <main className="mt-6 grid grid-cols-12 grid-rows-5 gap-8 landscape:mt-8">
+        <div className="col-span-12 row-span-2 landscape:col-span-7 landscape:row-span-2">
           <AvatarBento
             {...avatarBentoData}
             // demoAvatarBento query param = 1 will show the generated avatar UI.
             avatarData={params.demoAvatarBento === '1' ? avatarBentoData.avatarData : null}
           />
         </div>
-        <div className="col-span-12 row-span-1 @variant landscape:col-span-5 @variant landscape:row-span-3 @variant landscape:col-start-8 @variant landscape:row-start-1">
-          {/* Large Teaser Bento */}
+        <div className="col-span-12 row-span-1 landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           {flags?.demoLargeTeaserBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Large Teaser Bento</span>
-            </Bento>
+            <Bento className="flex w-full h-full">Large Teaser Bento</Bento>
           ) : null}
         </div>
-        <div className="col-span-12 row-start-4 @variant landscape:col-span-7 @variant landscape:row-start-3">
-          {/* Action Buttons */}
+        <div className="col-span-12 row-start-4 landscape:col-span-7 landscape:row-start-3">
           <div className="grid grid-cols-12 grid-rows-1 gap-8 h-full">
-            <div className="col-span-4">
-              {flags?.demoActionItems ? (
-                <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-                  <span className="text-gray-500 text-xl">Action Item Bento</span>
-                </Bento>
-              ) : null}
+            <div className="col-span-12 landscape:col-span-4">
+              {flags?.demoActionItems ? <BentoSelfie /> : null}
             </div>
-            <div className="col-span-4">
-              {flags?.demoActionItems ? (
-                <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-                  <span className="text-gray-500 text-xl">Action Item Bento</span>
-                </Bento>
-              ) : null}
+            <div className="col-span-6 landscape:col-span-4">
+              {flags?.demoActionItems ? <BentoRotate /> : null}
             </div>
-            <div className="col-span-4">
-              {flags?.demoActionItems ? (
-                <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-                  <span className="text-gray-500 text-xl">Action Item Bento</span>
-                </Bento>
-              ) : null}
+            <div className="col-span-6 landscape:col-span-4">
+              {flags?.demoActionItems ? <BentoRotate /> : null}
             </div>
           </div>
         </div>
-        <div className="col-span-12 row-start-5 @variant landscape:col-span-4 @variant landscape:row-start-4">
+        <div className="col-span-12 row-start-5 landscape:col-span-4 landscape:row-start-4">
           {/* BBOOWYW Bento */}
           {flags?.demoBBOOWYWBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">BBOOWYWBento</span>
+            <Bento className="h-full">
+              <span>BBOOWYWBento</span>
             </Bento>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-6 @variant landscape:col-span-4 @variant landscape:col-start-5 @variant landscape:row-start-4">
+        <div className="col-span-12 row-span-2 row-start-6 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
           {/* Small Teaser Bento (Data War) */}
           {flags?.demoSmallTeaserBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Small Teaser Bento</span>
+            <Bento className="h-full">
+              <span>Small Teaser Bento</span>
             </Bento>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-8 @variant landscape:col-span-4 @variant landscape:col-start-9 @variant landscape:row-start-4">
+        <div className="col-span-12 row-span-2 row-start-8 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
           {/* Small Teaser Bento (Twitchcon) */}
           {flags?.demoSmallTeaserBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Small Teaser Bento</span>
+            <Bento className="h-full">
+              <span>Small Teaser Bento</span>
             </Bento>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-10 @variant landscape:col-span-4 @variant landscape:row-start-5">
+        <div className="col-span-12 row-span-2 row-start-10 landscape:col-span-4 landscape:row-start-5">
           {/* Gallery Bento (Large) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Large)</span>
+            <Bento className="h-full">
+              <span>Gallery Bento (Large)</span>
             </Bento>
           ) : null}
         </div>
-        <div className="col-span-6 row-start-12 @variant landscape:col-span-2 @variant landscape:col-start-5 @variant landscape:row-start-6">
+        <div className="col-span-6 row-start-12 landscape:col-span-2 landscape:col-start-5 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/diamond.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 col-start-7 row-start-12 @variant landscape:col-span-2 @variant landscape:col-start-7 @variant landscape:row-start-6">
+        <div className="col-span-6 col-start-7 row-start-12 landscape:col-span-2 landscape:col-start-7 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/rocket.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 row-start-13 @variant landscape:col-span-2 @variant landscape:col-start-9 @variant landscape:row-start-6">
+        <div className="col-span-6 row-start-13 landscape:col-span-2 landscape:col-start-9 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/crown.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 col-start-7 row-start-13 @variant landscape:col-span-2 @variant landscape:col-start-11 @variant landscape:row-start-6">
+        <div className="col-span-6 col-start-7 row-start-13 landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
-            <Bento className="bg-gray-100 p-8 flex items-center justify-center h-full">
-              <span className="text-gray-500 text-xl">Gallery Bento (Small)</span>
-            </Bento>
+            <BentoScale image="/assets/images/placeholders/meteor.jpg" />
           ) : null}
         </div>
       </main>
-      {/* Ticker */}
+
       <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
-      {/* Footer */}
-      <Footer />
+
+      <Footer
+        links={footerData.links}
+        socials={footerData.socials}
+        ctaCopy={footerData.ctaCopy}
+        ctaLabel={footerData.ctaLabel}
+        message={footerData.message}
+      />
     </Container>
   );
 }

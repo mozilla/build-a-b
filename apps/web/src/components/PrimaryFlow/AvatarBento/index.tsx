@@ -38,7 +38,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
 
   return (
     <Bento
-      className={`${hasGeneratedAvatar ? 'bg-gradient-to-r from-[var(--secondary-blue)] to-[var(--secondary-purple)] group' : 'bg-gray-100'} h-[43.6875rem] @variant landscape:h-[26.4375rem] ${!hasGeneratedAvatar ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out' : ''} @variant landscape:block [&_img]:object-[20%_center] @variant landscape:[&_img]:object-cover`}
+      className={`${hasGeneratedAvatar ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple group' : 'bg-gray-100'} h-[43.6875rem] @variant landscape:h-[26.4375rem] ${!hasGeneratedAvatar ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out' : ''} @variant landscape:block [&_img]:object-[20%_center] @variant landscape:[&_img]:object-cover`}
       {...bentoProps}
       image={hasGeneratedAvatar ? '/assets/images/Blue_Grid.svg' : image}
       priority

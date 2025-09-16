@@ -2,361 +2,133 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { FC } from 'react';
 
-import { Button } from '@heroui/react';
+export interface FooterProps {
+  links: {
+    href: string;
+    label: string;
+    title: string;
+  }[];
+  socials: {
+    href: string;
+    title: string;
+    alt: string;
+    src: string;
+  }[];
+  ctaCopy: string[];
+  ctaLabel: string;
+  message: string;
+}
 
-const Footer = () => {
+const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message }) => {
   const currentYear = new Date();
+  const pathname = usePathname();
 
   return (
-    <footer
-      aria-label="Site footer"
-      className="
-      flex flex-col w-full max-w-[var(--container-width-portrait)] 
-      border-[0.125rem] rounded-[0.75rem] border-[var(--colors-common-ash)]
-      mt-[0.75rem] bg-[url(/assets/images/Nebula.png)] bg-cover bg-no-repeat
-      @variant landscape:max-w-[var(--container-width-landscape)] 
-      @variant landscape:grid @variant landscape:grid-cols-3 @variant landscape:gap-8
-      @variant landscape:min-h-[20rem] @variant landscape:relative @variant landscape:mt-[2rem]"
-    >
-      {/* Mobile Logo */}
-      <span className="flex absolute w-[13.3125rem] h-[6.493125rem] shrink-0 -rotate-5 mt-[0.9023rem] @variant landscape:hidden">
-        <Image
-          src="/assets/images/Billionaire-Logo.svg"
-          alt="Billionaire Logo"
-          fill={true}
-          style={{ objectFit: 'contain' }}
-        />
-      </span>
-
-      {/* Desktop Logo - Center Column */}
-      <div
-        className="hidden @variant landscape:flex @variant landscape:flex-col @variant landscape:justify-start
-                      @variant landscape:col-start-2 @variant landscape:row-span-2"
+    <footer className="site-footer" aria-label="Site footer">
+      <Link
+        href="/"
+        title="Back to home"
+        className="block w-fit landscape:absolute landscape:top-14 landscape:left-1/2 landscape:-translate-x-1/2"
       >
-        <div className="flex @variant landscape:w-[24rem] @variant landscape:h-[10.625rem] @variant landscape:mt-[3.421rem] items-start">
-          <Image
-            className="@variant landscape:-rotate-8"
-            src="/assets/images/Billionaire-Logo.svg"
-            alt="Billionaire Logo"
-            width={23 * 16}
-            height={9.625 * 16}
-          />
-        </div>
-      </div>
+        <Image
+          src="/assets/images/billionaire-logo.svg"
+          width={373}
+          height={220}
+          alt="Billionaire Logo"
+          className="-ml-2 max-w-[14rem] landscape:max-w-[26rem]"
+        />
+      </Link>
 
-      {/* Mobile Content Container */}
-      <div className="flex w-full flex-col items-end @variant landscape:hidden">
-        {/* Mobile Navigation */}
-        <nav
-          role="navigation"
-          aria-label="Footer navigation"
-          className="flex justify-end gap w-[8.75rem] h-[9.75rem] mt-[4rem]"
-        >
-          <ul
-            className="flex flex-col items-end text-[0.75rem] not-italic font-bold tracking-[0.06rem] uppercase
-                       text-[var(--colors-common-teal-500)]"
-          >
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
-              <Link href="/home" tabIndex={0}>
-                Home
-              </Link>
-            </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
-              <Link href="https://www.twitchcon.com/" tabIndex={0}>
-                Twitchcon
-              </Link>
-            </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
-              <Link href="#" tabIndex={0}>
-                Space Launch
-              </Link>
-            </li>
-            <li className="flex p-[1rem] items-center justify-center font-(family-name:--font-sharp-sans) h-[2.5rem]">
-              <Link href="#" tabIndex={0}>
-                Game
-              </Link>
-            </li>
+      <div className="landscape:flex landscape:justify-between landscape:mt-14 landscape:mb-16">
+        <nav className="text-accent uppercase font-bold" aria-label="Footer navigation">
+          <ul className="flex flex-col items-end landscape:items-start">
+            {links.map(({ href, label, title }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  title={title}
+                  className="inline-block py-2
+                             transform transition-all duration-300
+                             origin-left
+                             hover:-rotate-3 hover:translate-y-1
+                             hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
+                             hover:bg-clip-text hover:text-transparent"
+                  aria-current={pathname === href ? 'page' : undefined}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
-
-        {/* Mobile Social Icons */}
-        <div
-          role="region"
-          aria-label="Social media links"
-          className="inline-flex justify-end w-[8.5rem] h-[3.1875rem] gap-[0.5rem] shrink-0 pr-[1rem] mt-[1.9rem]"
-        >
-          <ul className="flex w-full items-center justify-between">
-            <li className="flex relative w-[2rem] h-[2rem]">
-              <Link
-                className="flex"
-                href="https://www.tiktok.com/"
-                aria-label="Follow us on TikTok (opens in new tab)"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  className="shrink-0"
-                  alt="TikTok icon"
-                  src="assets/images/TikTok.svg"
-                  fill={true}
-                  style={{ objectFit: 'contain' }}
-                />
-              </Link>
-            </li>
-            <li className="flex relative w-[2rem] h-[2rem]">
-              <Link
-                href="https://www.instagram.com/"
-                aria-label="Follow us on Instagram (opens in new tab)"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  className="shrink-0"
-                  alt="Instagram icon"
-                  src="assets/images/Instagram.svg"
-                  fill={true}
-                  style={{ objectFit: 'contain' }}
-                />
-              </Link>
-            </li>
-            <li className="flex relative w-[2rem] h-[2rem]">
-              <Link
-                href="https://youtube.com"
-                aria-label="Subscribe to our YouTube channel (opens in new tab)"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  className="shrink-0e"
-                  alt="Youtube icon"
-                  src="assets/images/Youtube_black.svg"
-                  fill={true}
-                  style={{ objectFit: 'contain' }}
-                />
-              </Link>
-            </li>
+        <nav className="py-8 landscape:py-0" aria-label="Footer navigation">
+          <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-4">
+            {socials.map(({ href, title, alt, src }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  target="_blank"
+                  title={title}
+                  className="relative inline-flex items-center justify-center
+                             rounded-full overflow-hidden
+                             transition-transform duration-300
+                             hover:-rotate-30
+                             group"
+                >
+                  <Image
+                    src={src}
+                    alt={alt}
+                    width={42}
+                    height={42}
+                    className="w-8 landscape:w-10"
+                  />
+                  <span
+                    className="absolute inset-0
+                               bg-gradient-to-br from-transparent to-secondary-blue
+                               opacity-0 group-hover:opacity-70
+                               transition-opacity duration-300"
+                  />
+                </Link>
+              </li>
+            ))}
           </ul>
-        </div>
-
-        {/* Mobile Content */}
-        <div
-          role="region"
-          aria-labelledby="motivational-heading-mobile"
-          className="flex flex-col items-end justify-between w-[17.75rem] h-[5.5rem] px-[1rem] mt-[1.4687rem]"
-        >
-          <div className="flex flex-col items-end w-[15.75rem] h-[2.5rem] text-[0.875rem]">
-            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic text-[var(--colors-common-ash)]">
-              Big Tech wants to own your orbit.
-            </p>
-            <p className="font-semibold font-(family-name:--font-sharp-sans) not-italic text-[var(--colors-common-ash)]">
-              We say-go launch yourself.
-            </p>
-          </div>
-          <div className="flex relative w-[9.25rem] h-[2rem]">
-            <Button
-              aria-label="Build a Billionaire - Learn more about our program"
-              aria-describedby="motivational-text-mobile"
-              className="w-full bg-transparent border-[0.125rem] rounded-[6.25rem] text-[0.75rem] font-bold
-                         text-[var(--colors-common-teal-500)] shadow-lg px-[1.5rem]"
-            >
-              <span className="font-(family-name:--font-sharp-sans)">Build a Billionaire</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Footer Info */}
-        <div
-          aria-label="Copyright and legal information"
-          className="w-[20.375rem] flex flex-col self-center mt-[4.4rem]"
-        >
-          <span className="flex items center text-[0.875rem]">
-            <p className="font-(family-name:--font-sharp-sans) font-semibold text-[var(--colors-common-ash)]">
-              Some kind of messaging goes here.
-            </p>
-          </span>
-
-          <div className="flex w-full min-h-[0.125rem] mt-[1rem] bg-[var(--colors-common-ash)]" />
-
-          <div className="w-full flex justify-between my-[1rem]">
-            <span className="text-[0.625rem] not-italic font-medium">
-              <p className="font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
-                @{currentYear.getFullYear()} Mozilla. All rights reserved.
-              </p>
-            </span>
-            <span className="flex w-[6.8rem] text-[0.625rem] not-italic font-medium">
-              <p className="flex w-full font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
-                Built by
-                <span className="flex underline ml-[0.2rem] font-(family-name:--font-sharp-sans) text-[var(--colors-common-ash)]">
-                  mondorobot.
-                </span>
-              </p>
-            </span>
-          </div>
-        </div>
+        </nav>
       </div>
 
-      {/* Desktop Left Column - Navigation + Content */}
-      <nav
-        className="hidden @variant landscape:flex @variant landscape:flex-col @variant landscape:col-start-1
-                   @variant landscape:gap-4 @variant landscape:pl-[2rem]"
-        role="navigation"
-        aria-label="Footer navigation"
-      >
-        <ul className="flex flex-col text-[0.75rem] uppercase text-[var(--colors-common-teal-500)] mt-[2rem]">
-          <li
-            role="none"
-            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
-                      @variant landscape:font-(family-name:--font-sharp-sans)"
-          >
-            <Link href="/home">Home</Link>
-          </li>
-          <li
-            role="none"
-            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
-                      @variant landscape:font-(family-name:--font-sharp-sans)"
-          >
-            <Link
-              href="https://www.twitchcon.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitchcon (opens in new tab)"
-            >
-              Twitchcon
-            </Link>
-          </li>
-          <li
-            role="none"
-            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold tracking-[0.06rem]
-                      @variant landscape:font-(family-name:--font-sharp-sans)"
-          >
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              Space Launch
-            </Link>
-          </li>
-          <li
-            role="none"
-            className="flex p-[1rem] h-[2.5rem] items-center justify-start @variant landscape:font-bold
-                         tracking-[0.06rem] @variant landscape:font-(family-name:--font-sharp-sans)"
-          >
-            <Link href="#" tabIndex={3} target="_blank" rel="noopener noreferrer">
-              Game
-            </Link>
-          </li>
-        </ul>
-
-        <div
-          role="region"
-          aria-labelledby="motivational-heading-desktop"
-          className="flex flex-col gap-4 mt-6 pl-[1rem]"
-        >
-          <div
-            className="text-sm text-[var(--colors-common-ash)] font-(family-name:--font-sharp-sans)
-                       @variant landscape:font-semibold"
-          >
-            <p className="text-[var(--colors-common-ash)]">Big Tech wants to own your orbit.</p>
-            <p className="text-[var(--colors-common-ash)]">We say—go launch yourself!</p>
-          </div>
-          <Button
-            aria-label="Build a Billionaire - Learn more about our program"
-            aria-describedby="motivational-text-desktop"
-            className="w-[9.25rem] h-[2.25rem] bg-transparent border-[0.125rem] rounded-full text-[0.75rem]
-                       text-[var(--colors-common-teal-500)]"
-          >
-            <span className="@variant landscape:font-bold @variant landscape:font-(family-name:--font-sharp-sans)">
-              Build a Billionaire
-            </span>
-          </Button>
-        </div>
-      </nav>
-
-      {/* Desktop Right Column - Social Icons + Messaging */}
-      <div
-        role="region"
-        aria-label="Social media links and messaging"
-        className="hidden @variant landscape:flex @variant landscape:flex-col @variant landscape:col-start-3
-                      @variant landscape:items-end @variant landscape:justify-between @variant landscape:gap-4
-                      @variant landscape:mt-[1rem] @variant landscape:pr-[2rem]"
-      >
-        <ul className="flex flex-col gap-4 mt-[2rem]">
-          <li className="flex relative w-[2rem] h-[2rem]">
-            <Link
-              href="https://www.tiktok.com/"
-              aria-label="Follow us on TikTok (opens in new tab)"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                className="shrink-0"
-                alt="TikTok icon"
-                src="assets/images/TikTok.svg"
-                fill={true}
-                style={{ objectFit: 'contain' }}
-              />
-            </Link>
-          </li>
-          <li className="flex relative w-[2rem] h-[2rem]">
-            <Link
-              href="https://www.instagram.com/"
-              aria-label="Follow us on Instagram (opens in new tab)"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                className="shrink-0"
-                alt="Instagram icon"
-                src="assets/images/Instagram.svg"
-                fill={true}
-                style={{ objectFit: 'contain' }}
-              />
-            </Link>
-          </li>
-          <li className="flex relative w-[2rem] h-[2rem]">
-            <Link
-              href="https://youtube.com"
-              aria-label="Subscribe to our YouTube channel (opens in new tab)"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                className="shrink-0e"
-                alt="Youtube icon"
-                src="assets/images/Youtube_black.svg"
-                fill={true}
-                style={{ objectFit: 'contain' }}
-              />
-            </Link>
-          </li>
-        </ul>
-
-        <div className="text-sm font-(family-name:--font-sharp-sans) text-center mt-4">
-          <p className="text-[var(--colors-common-ash)] @variant landscape:font-semibold">
-            Some kind of messaging goes here.
+      <div className="landscape:flex landscape:justify-between">
+        <div className="ml-auto text-right mb-20 landscape:ml-0 landscape:mb-0 landscape:text-left">
+          <p className="mb-4">
+            {ctaCopy.map((line, inx) => (
+              <span key={inx}>
+                {inx > 0 ? <br /> : null}
+                {line}
+              </span>
+            ))}
           </p>
+          <Link href="#" className="rounded-button" title="Build an avatar now">
+            {ctaLabel}
+          </Link>
         </div>
+        <p className="landscape:self-end">{message}</p>
       </div>
 
-      {/* Desktop Footer Info */}
-      <div
-        className="hidden @variant landscape:flex @variant landscape:flex-col @variant landscape:col-span-3 @variant
-                   landscape:justify-between @variant landscape:items-center @variant landscape:pt-[0.5rem] 
-                   @variant landscape:px-[1rem]"
-      >
-        <div className="flex @variant landscape:w-full min-h-[0.125rem] bg-[var(--colors-common-ash)]" />
-        <div
-          className="flex @variant landscape:w-full justify-between my-[1rem]
-                        @variant landscape:px-[1rem] font-(family-name:--font-sharp-sans)"
-        >
-          <span className="text-xs font-(family-name:--font-sharp-sans) font-medium text-[var(--colors-common-ash)]">
-            @{currentYear.getFullYear()} Mozilla. All rights reserved.
-          </span>
-          <span className="flex text-xs font-(family-name:--font-sharp-sans) font-medium text-[var(--colors-common-ash)]">
-            Built by
-            <span className="flex text-[var(--colors-common-ash)] underline ml-[0.3rem]">
-              mondorobot.
-            </span>
-          </span>
-        </div>
+      <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
+        <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
+        <span>
+          Built by{' '}
+          <Link
+            href="https://www.mondorobot.com/"
+            target="_blank"
+            title="Visit MondoRobot website"
+            className="underline"
+          >
+            mondorobot
+          </Link>
+          .
+        </span>
       </div>
     </footer>
   );

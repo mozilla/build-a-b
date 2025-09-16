@@ -7,7 +7,7 @@ interface ThreeDotsProps {
 }
 
 const ThreeDots: FC<ThreeDotsProps> = ({ className = '', dotClassName = '', white = false }) => {
-  const baseBorderColor = white ? 'border-white' : 'border-[var(--primary-charcoal)]';
+  const baseBorderColor = white ? 'border-white' : 'border-charcoal';
 
   return (
     <div className={`flex flex-row justify-start items-center gap-[0.355rem] ${className}`}>
