@@ -19,6 +19,12 @@ html {
   }
 }
 
+@layer base {
+  .text-xs10 {
+    font-size: var(--font-size-xs10);
+  }
+}
+
 /* ============================= */
 /* Custom Typography Utilities   */
 /* ============================= */
@@ -142,5 +148,4 @@ html {
   .text-nav-item {
     @apply label-14 font-sharp font-bold uppercase;
   }
-
 }
