@@ -11,10 +11,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background-grey-400: #696b70;
-}
-
 @theme {
   --color-charcoal: #333336;
   --color-common-ash: #f8f6f4;
@@ -28,7 +24,6 @@
 
 /* Theming overrides */
 @theme inline {
-  --color-background: var(--background-grey-400);
   --color-foreground: var(--foreground);
 
   --font-sans: var(--font-geist-sans);
@@ -36,13 +31,6 @@
 
   --container-width-landscape: 82.0625rem;
   --container-width-portrait: 22.375rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--background-grey-400);
-    --foreground: #ededed;
-  }
 }
 
 @layer base {
