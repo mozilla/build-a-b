@@ -28,10 +28,10 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
       <div className="rounded-[calc(0.532rem-2px)] overflow-hidden bg-transparent">
         <div
           id="header"
-          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-charcoal bg-[var(--colors-common-ash)]' : 'border-charcoal group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-[var(--colors-common-ash)]'} transition-all duration-500`}
+          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-charcoal bg-common-ash' : 'border-charcoal group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-common-ash'} transition-all duration-500`}
         >
           <ThreeDots
-            dotClassName={`${active ? 'border-charcoal' : 'border-charcoal group-hover:border-[var(--colors-common-ash)]'} transition-colors duration-500`}
+            dotClassName={`${active ? 'border-charcoal' : 'border-charcoal group-hover:border-common-ash'} transition-colors duration-500`}
           />
         </div>
         <div
@@ -42,12 +42,12 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
             className={`absolute inset-0 ${active ? 'opacity-0' : 'bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:opacity-0'} transition-opacity duration-500`}
           ></div>
           <div
-            className={`absolute inset-0 bg-[var(--colors-common-ash)] ${active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-500`}
+            className={`absolute inset-0 bg-common-ash ${active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-500`}
           ></div>
           <div
             className={`absolute inset-0 z-10 px-[1.476rem] py-[0.984rem] flex flex-col justify-center items-start gap-0.5 ${active ? '-translate-y-4 opacity-0' : 'translate-y-0 group-hover:-translate-y-4 opacity-100 group-hover:opacity-0'} transition-all duration-700`}
           >
-            <span className="block text-[var(--colors-common-ash)] text-2xl font-extrabold leading-8 whitespace-pre-line">
+            <span className="block text-common-ash text-2xl font-extrabold leading-8 whitespace-pre-line">
               {defaultContent}
             </span>
           </div>
