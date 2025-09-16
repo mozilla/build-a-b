@@ -28,7 +28,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
                  landscape:rounded-[0.75rem] border-[0.125rem] landscape:border-[0.125rem]
                  border-[var(--colors-common-ash)] landscape:border-[var(--colors-common-ash)]
                  mt-[0.75rem] landscape:mt-[2rem] py-[0.295rem] items-center landscape:items-center
-                 bg-gradient-to-r from-[var(--secondary-blue)] to-secondary-purple
+                 bg-gradient-to-r from-secondary-blue to-secondary-purple
                  shrink-0 landscape:shrink-0"
     >
       <div
