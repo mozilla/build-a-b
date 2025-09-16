@@ -39,7 +39,6 @@
   --container-width-landscape: 82.0625rem;
   --container-width-portrait: 22.375rem;
 
-  --breakpoint-xs: 30rem;
 }
 
 @media (prefers-color-scheme: dark) {
