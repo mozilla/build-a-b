@@ -118,15 +118,17 @@ export default async function Home({
         </div>
         <div className="col-span-12 row-start-4 landscape:col-span-7 landscape:row-start-3">
           <div className="grid grid-cols-12 grid-rows-1 gap-8 h-full">
-            <div className="col-span-4">{flags?.demoActionItems ? <BentoSelfie /> : null}</div>
-            <div className="col-span-4">
+            <div className="col-span-12 landscape:col-span-4">
+              {flags?.demoActionItems ? <BentoSelfie /> : null}
+            </div>
+            <div className="col-span-6 landscape:col-span-4">
               {flags?.demoActionItems ? (
                 <Bento className="h-full">
                   <span>Action Item Bento</span>
                 </Bento>
               ) : null}
             </div>
-            <div className="col-span-4">
+            <div className="col-span-6 landscape:col-span-4">
               {flags?.demoActionItems ? (
                 <Bento className="h-full">
                   <span>Action Item Bento</span>
