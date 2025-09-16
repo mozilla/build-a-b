@@ -19,7 +19,6 @@
   --primary-charcoal: #333336;
   --primary: #3b82f6; /* Tailwind blue-500 */
   --secondary-blue: #00a6f9;
-  --secondary-purple: #754fe0;
   --secondary-yellow: #ffea80;
   --primary-orange: #ff8a50;
 
@@ -32,6 +31,7 @@
   --color-charcoal: #333336;
   --color-common-ash: #f8f6f4;
   --color-secondary-blue: #00a6f9;
+  --color-secondary-purple: #754fe0;
   --color-accent: #53ffbc;
   --font-sharp-sans: 'Sharp Sans', sans-serif;
   --font-size-xs10: 0.714rem;
@@ -75,7 +75,7 @@
   }
 
   .rounded-button {
-    @apply inline-flex px-4 py-1 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300;
+    @apply inline-flex px-4 py-1 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
   }
 }
 
