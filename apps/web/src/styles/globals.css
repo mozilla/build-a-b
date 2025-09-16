@@ -12,16 +12,11 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Color system */
   --grid-grey-450: #525259;
   --background-grey-400: #696b70;
   --primary: #3b82f6; /* Tailwind blue-500 */
   --secondary-yellow: #ffea80;
   --primary-orange: #ff8a50;
-
-  /* main-logo */
-  --logo-width: 25.983rem;
-  --logo-height: 12.463rem;
 }
 
 @theme {
