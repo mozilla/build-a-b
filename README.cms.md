@@ -1,6 +1,6 @@
-# CMS (Sanity) — Mondo Lite
+# CMS (Sanity) — BBO Microsite
 
-This document provides practical guidance for working with the Sanity Studio included in Mondo Lite.
+This document provides practical guidance for working with the Sanity Studio included in the BBO Microsite.
 
 ## Studio location
 The studio lives in the monorepo at:
