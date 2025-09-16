@@ -7,7 +7,7 @@ const BentoScale: FC<BentoProps> = ({ image }) => {
   return (
     <Bento
       image={image}
-      className="bg-gray-100 p-8 flex items-center justify-center h-full group"
+      className="aspect-square group"
       imageClassName="transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10"
     />
   );
