@@ -15,6 +15,24 @@ This document describes frontend conventions, patterns and commands for the BBO 
 - HeroUI is the UI kit; wrap or extend reusable patterns in `packages/ui/components`.
 - Avoid hard-coded colors; consume CSS variables / tokens.
 
+## Responsive Typography: Linear Scaling
+
+This project utilizes a linear scaling approach for typography and spacing to create a fluidly responsive design that works across all viewport sizes without breakpoints.
+
+**How it Works:**
+The root `font-size` on the `<html>` element is set using viewport width (`vw`) units, as seen in `apps/web/src/styles/typography.css`. This means that the base font size scales proportionally with the width of the browser window.
+
+**Usage Requirements:**
+For this scaling to work correctly, all length units in the application **must be in `rem`s**. This includes `font-size`, `margin`, `padding`, `width`, `height`, etc. Using `rem`s ties the size of an element to the root font size, allowing the entire layout to scale up or down while maintaining its aspect ratio perfectly.
+
+- **DO:** `mt-4`, `p-[1.25rem]`
+- **DO NOT:** `mt-[16px]`, `p-[20px]`
+
+**Challenges & Watchouts:**
+- **Extreme Viewport Sizes:** Without constraints, text can become unreadably small on very narrow screens. We will use CSS functions like `max()` to set minimum size caps.
+- **Accessibility:** Browser "zoom" does not work as expected with relative sizing. To achieve this we would need a custom "zoomed" template to change sizes.
+- **Third-Party Components:** Components from external libraries may use fixed `px` values. This can cause them to appear misaligned or out of proportion with the rest of the UI. These components may require style overrides to conform to the `rem`-based system.
+
 ## Next.js specifics (apps/web)
 
 - Routing: App Router under [`apps/web/app`](apps/web/app:1) (segment layouts + server components).
