@@ -29,10 +29,10 @@
 }
 
 @theme {
-  --color-accent: #53ffbc;
   --color-charcoal: #333336;
   --color-common-ash: #f8f6f4;
   --color-secondary-blue: #00a6f9;
+  --color-accent: #53ffbc;
   --font-sharp-sans: 'Sharp Sans', sans-serif;
   --font-size-xs10: 0.714rem;
 }
