@@ -12,11 +12,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --grid-grey-450: #525259;
   --background-grey-400: #696b70;
-  --primary: #3b82f6; /* Tailwind blue-500 */
-  --secondary-yellow: #ffea80;
-  --primary-orange: #ff8a50;
 }
 
 @theme {
