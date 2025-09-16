@@ -29,7 +29,7 @@ const actions = [
   { name: 'restart', onPress: () => {} },
 ];
 const actionButtonStyles =
-  'min-w-[6.0625rem] px-[0.625rem] border border-accent font-bold text-[0.875rem] leading-[1.25rem] text-accent rounded-full h-[2rem] cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-accent transition-colors duration-300 gap-[0.375rem] flex items-center justify-center [&:hover_img]:brightness-50';
+  'min-w-[6.0625rem] px-[0.625rem] border border-accent font-bold text-[0.875rem] leading-[1.25rem] text-accent rounded-full h-[2rem] cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 gap-[0.375rem] flex items-center justify-center [&:hover_img]:brightness-50';
 
 /**
  * Client side avatar view to use with the AvatarBento.
@@ -50,10 +50,10 @@ const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
         <MeetAstroBento
           activeContent={
             <div className="flex flex-col gap-1">
-              <span className="text-[var(--primary-charcoal)] text-lg font-bold leading-6">
+              <span className="text-charcoal text-lg font-bold leading-6">
                 Meet <span className="text-secondary-purple">{name}</span>
               </span>
-              <span className="text-[var(--primary-charcoal)] text-base font-normal leading-5">
+              <span className="text-charcoal text-base font-normal leading-5">
                 Your <span className="font-bold">{attributes}</span> Billionaire
               </span>
             </div>
