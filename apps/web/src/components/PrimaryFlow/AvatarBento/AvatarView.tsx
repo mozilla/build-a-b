@@ -51,7 +51,7 @@ const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
           activeContent={
             <div className="flex flex-col gap-1">
               <span className="text-[var(--primary-charcoal)] text-lg font-bold leading-6">
-                Meet <span className="text-[var(--secondary-purple)]">{name}</span>
+                Meet <span className="text-secondary-purple">{name}</span>
               </span>
               <span className="text-[var(--primary-charcoal)] text-base font-normal leading-5">
                 Your <span className="font-bold">{attributes}</span> Billionaire
