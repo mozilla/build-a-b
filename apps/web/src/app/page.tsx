@@ -3,7 +3,7 @@ import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
-import Footer from '@/components/Footer';
+import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import BentoScale from '@/components/BentoScale';
 import Image from 'next/image';
@@ -88,6 +88,38 @@ const avatarBentoData: AvatarBentoProps = {
   defaultContent: 'Unlimited power.\n Zero accountability. \n What could go wrong?',
   activeContent:
     'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
+};
+
+const footerData: FooterProps = {
+  links: [
+    { href: '/', label: 'Home', title: 'Go to home' },
+    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
+    { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
+    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
+  ],
+  socials: [
+    {
+      href: 'https://www.tiktok.com/@firefox',
+      title: 'Visit our TikTok',
+      alt: 'TikTok',
+      src: '/assets/images/social/tiktok.svg',
+    },
+    {
+      href: 'https://www.instagram.com/firefox/',
+      title: 'Check our Instagram',
+      alt: 'Instagram',
+      src: '/assets/images/social/instagram.svg',
+    },
+    {
+      href: 'https://www.youtube.com/firefoxchannel',
+      title: 'Watch our YouTube channel',
+      alt: 'YouTube',
+      src: '/assets/images/social/youtube.svg',
+    },
+  ],
+  ctaCopy: ['Big Tech wants to own your orbit.', 'We say—go launch yourself!'],
+  ctaLabel: 'Build a Billionaire',
+  message: 'Some kind of messaging goes here.',
 };
 
 export default async function Home({
@@ -190,7 +222,13 @@ export default async function Home({
 
       <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
 
-      <Footer />
+      <Footer
+        links={footerData.links}
+        socials={footerData.socials}
+        ctaCopy={footerData.ctaCopy}
+        ctaLabel={footerData.ctaLabel}
+        message={footerData.message}
+      />
     </Container>
   );
 }

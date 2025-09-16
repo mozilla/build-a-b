@@ -3,38 +3,28 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { FC } from 'react';
 
-const Footer = () => {
+export interface FooterProps {
+  links: {
+    href: string;
+    label: string;
+    title: string;
+  }[];
+  socials: {
+    href: string;
+    title: string;
+    alt: string;
+    src: string;
+  }[];
+  ctaCopy: string[];
+  ctaLabel: string;
+  message: string;
+}
+
+const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message }) => {
   const currentYear = new Date();
   const pathname = usePathname();
-
-  const links = [
-    { href: '/', label: 'Home', title: 'Go to home' },
-    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
-    { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
-    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
-  ];
-
-  const socials = [
-    {
-      href: 'https://www.tiktok.com/@firefox',
-      title: 'Visit our TikTok',
-      alt: 'TikTok',
-      src: '/assets/images/social/tiktok.svg',
-    },
-    {
-      href: 'https://www.instagram.com/firefox/',
-      title: 'Check our Instagram',
-      alt: 'Instagram',
-      src: '/assets/images/social/instagram.svg',
-    },
-    {
-      href: 'https://www.youtube.com/firefoxchannel',
-      title: 'Watch our YouTube channel',
-      alt: 'YouTube',
-      src: '/assets/images/social/youtube.svg',
-    },
-  ];
 
   return (
     <footer className="site-footer" aria-label="Site footer">
@@ -111,15 +101,18 @@ const Footer = () => {
       <div className="landscape:flex landscape:justify-between">
         <div className="ml-auto text-right mb-20 landscape:ml-0 landscape:mb-0 landscape:text-left">
           <p className="mb-4">
-            Big Tech wants to own your orbit.
-            <br />
-            We say—go launch yourself!
+            {ctaCopy.map((line, inx) => (
+              <span key={inx}>
+                {inx > 0 ? <br /> : null}
+                {line}
+              </span>
+            ))}
           </p>
           <Link href="#" className="rounded-button" title="Build an avatar now">
-            Build a Billionaire
+            {ctaLabel}
           </Link>
         </div>
-        <p className="landscape:self-end">Some kind of messaging goes here. </p>
+        <p className="landscape:self-end">{message}</p>
       </div>
 
       <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
