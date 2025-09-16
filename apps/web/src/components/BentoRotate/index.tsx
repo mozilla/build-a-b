@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const BentoRotate: FC = () => {
   return (
-    <Bento className="group h-full py-8 bg-secondary-gray flex flex-col justify-center items-center">
+    <Bento className="group h-full py-8 bg-secondary-gray flex flex-col justify-center items-center cursor-pointer">
       <Image
         src="/assets/images/icons/plus.svg"
         width={60}
