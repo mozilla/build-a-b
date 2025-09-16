@@ -4,3 +4,59 @@ export interface FlagType<T = boolean> {
   description: string;
   defaultValue: T;
 }
+
+export type Choice =
+  | 'inherited'
+  | 'manipulator'
+  | 'data-thief'
+  | 'crypto-king'
+  | 'med-mogul'
+  | 'power'
+  | 'chaos'
+  | 'immortality'
+  | 'control'
+  | 'fame'
+  | 'eco-fake'
+  | 'visionary'
+  | 'rebel'
+  | 'savior'
+  | 'genius'
+  | 'raiders'
+  | 'shadows'
+  | 'data-mine'
+  | 'media-spin'
+  | 'policy-hack'
+  | 'mars'
+  | 'sea-lord'
+  | 'ai-god'
+  | 'blood-bank'
+  | 'forever-pill';
+
+export type ChoiceGroup =
+  | 'origin-story'
+  | 'core-drive'
+  | 'public-mask'
+  | 'power-play'
+  | 'legacy-plan';
+
+export type ChoiceConfig = {
+  /**
+   * Icon (url) to display in the choice card.
+   */
+  icon: string;
+  /**
+   * Icon (url) to display in the confirmation screen.
+   */
+  iconWhenConfirmed: string;
+  /**
+   * Text to display in the confirmation screen.
+   */
+  phrase: string;
+  /**
+   * The numeric value associated to the choice.
+   * This value will be sent to the API.
+   */
+  value: number;
+};
+
+export type GameChoices = Record<ChoiceGroup, Record<Choice, ChoiceConfig>>;
