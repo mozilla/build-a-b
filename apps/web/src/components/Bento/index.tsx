@@ -8,21 +8,14 @@ export interface BentoProps {
   image?: StaticImageData | string;
   imageAlt?: string;
   priority?: boolean;
-  imageClassName?: string;
+  bgEffect?: boolean;
 }
 
 const defaultStyle =
   'relative bg-charcoal border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem]';
 const defaultImageStyle = 'absolute inset-0 z-0 object-cover';
 
-const Bento: FC<BentoProps> = ({
-  className,
-  children,
-  image,
-  imageAlt,
-  priority,
-  imageClassName,
-}) => (
+const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority, bgEffect }) => (
   <div className={clsx(defaultStyle, className)}>
     {image && (
       <Image
@@ -30,7 +23,11 @@ const Bento: FC<BentoProps> = ({
         alt={imageAlt ?? ''}
         fill
         sizes="100vw"
-        className={clsx(defaultImageStyle, imageClassName)}
+        className={clsx(
+          defaultImageStyle,
+          bgEffect &&
+            'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
+        )}
         priority={priority}
       />
     )}
