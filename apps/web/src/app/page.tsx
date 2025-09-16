@@ -9,6 +9,7 @@ import BentoScale from '@/components/BentoScale';
 import BentoSelfie from '@/components/BentoSelfie';
 import BentoRotate from '@/components/BentoRotate';
 import BentoPlanet from '@/components/BentoPlanet';
+import BentoDual from '@/components/BentoDual';
 
 const flags = {
   demoAvatarBento: true,
@@ -146,7 +147,20 @@ export default async function Home({
         </div>
         <div className="col-span-12 row-span-1 landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           {flags?.demoLargeTeaserBento ? (
-            <Bento className="flex w-full h-full">Large Teaser Bento</Bento>
+            <BentoDual
+              className="flex w-full h-full"
+              back={<h1>Back here!</h1>}
+              effect="fade"
+              image="/assets/images/rocket.webp"
+            >
+              <h3 className="text-title-1 max-w-sm mt-12 ml-8">
+                Send Your Fake Little Billionaires Into Very Real Orbit.
+              </h3>
+              <p className="max-w-2xs mt-4 ml-8">
+                Post content of your billionaire for a shot at sending them to actual, for-real-real
+                space.
+              </p>
+            </BentoDual>
           ) : null}
         </div>
         <div className="col-span-12 row-start-4 landscape:col-span-7 landscape:row-start-3">

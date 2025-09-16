@@ -12,7 +12,12 @@ const baseBentoClasses =
   'w-full h-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal';
 
 const frontFlipCardClasses = 'absolute w-full h-full backface-hidden';
-const backFlipCardClasses = `absolute w-full h-full backface-hidden [transform:rotateY(180deg)]`;
+const backFlipCardClasses = `${frontFlipCardClasses} [transform:rotateY(180deg)]`;
+
+const frontFadeCardClasses =
+  'absolute inset-0 transition-opacity duration-700 group-hover:opacity-0';
+const backFadeCardClasses =
+  'absolute inset-0 transition-opacity duration-700 opacity-0 group-hover:opacity-100';
 
 const BentoDual: FC<BentoDualProps> = ({
   className,
@@ -24,13 +29,19 @@ const BentoDual: FC<BentoDualProps> = ({
   effect = 'flip',
 }) => {
   const wrapperEffectClasses =
-    effect == 'flip' && back
+    effect == 'flip'
       ? 'relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]'
-      : 'w-full h-full';
+      : '';
 
   const wrapperClasses = clsx(wrapperEffectClasses, className);
-  const frontCardClasses = clsx(baseBentoClasses, frontFlipCardClasses);
-  const backCardClasses = clsx(baseBentoClasses, backFlipCardClasses);
+  const frontCardClasses = clsx(
+    baseBentoClasses,
+    effect === 'flip' ? frontFlipCardClasses : frontFadeCardClasses,
+  );
+  const backCardClasses = clsx(
+    baseBentoClasses,
+    effect === 'flip' ? backFlipCardClasses : backFadeCardClasses,
+  );
 
   return (
     <div className="group [perspective:1000px] rounded-[0.75rem] w-full h-full cursor-pointer">
@@ -50,7 +61,7 @@ const BentoDual: FC<BentoDualProps> = ({
               )}
             />
           )}
-          {children}
+          <div className="absolute inset-0 z-1">{children}</div>
         </div>
         {/* Back Face */}
         <div className={backCardClasses}>{back}</div>
