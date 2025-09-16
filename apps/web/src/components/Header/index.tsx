@@ -10,9 +10,15 @@ const Header = () => {
                     mb-3 landscape:mb-8
                     bg-no-repeat gap-[30px] bg-cover bg-[url(/assets/images/NightSky.svg)]"
     >
-      <LogoPage/>
-      <HeaderMenu/>
-      <SocialNetwork />
+      <div className='header-container flex justify-between h-full pl-4 pr-4 landscape:pl-8 landscape:pr-8'>
+        <div className='left-side flex flex-row h-full'>
+          <LogoPage/>
+        </div>
+        <div className='right-side flex flex-row gap-x-3'>
+          <HeaderMenu/>
+          <SocialNetwork />
+        </div>
+      </div>
     </Bento>
   );
 };
