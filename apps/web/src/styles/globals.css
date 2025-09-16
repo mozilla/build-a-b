@@ -11,41 +11,27 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  /* Color system */
-  --grid-grey-450: #525259;
-  --background-grey-400: #696b70;
-  --colors-common-ash: #f8f6f4;
-  --colors-common-teal-500: #53ffbc;
-  --primary-charcoal: #333336;
-  --primary: #3b82f6; /* Tailwind blue-500 */
-  --secondary-blue: #00a6f9;
-  --secondary-purple: #754fe0;
-  --secondary-yellow: #ffea80;
-  --primary-orange: #ff8a50;
-
-  /* main-logo */
-  --logo-width: 25.983rem;
-  --logo-height: 12.463rem;
+@theme {
+  --color-charcoal: #333336;
+  --color-common-ash: #f8f6f4;
+  --color-secondary-blue: #00a6f9;
+  --color-secondary-purple: #754fe0;
+  --color-secondary-gray: #d4d4d8;
+  --color-accent: #53ffbc;
+  --font-sharp-sans: 'Sharp Sans', sans-serif;
+  --font-size-xs10: 0.714rem;
 }
 
 /* Theming overrides */
 @theme inline {
-  --color-background: var(--background-grey-400);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   --container-width-landscape: 82.0625rem;
   --container-width-portrait: 22.375rem;
 
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--background-grey-400);
-    --foreground: #ededed;
-  }
 }
 
 @layer components {
@@ -55,13 +41,18 @@
       @apply max-w-[var(--container-width-landscape)] py-16;
     }
   }
+
+  .site-footer {
+    @apply relative mt-8 p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-2 border-common-ash rounded-xl;
+  }
+
+  .rounded-button {
+    @apply inline-flex px-4 py-1 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
+  }
 }
 
 body {
-  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/BG.svg)];
-  background-color: var(--background-grey-400);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/bg.svg)] font-sharp-sans text-common-ash font-semibold;
 }
 
 @keyframes ticker-horizontal-infinite-scroll {
@@ -74,7 +65,8 @@ body {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
