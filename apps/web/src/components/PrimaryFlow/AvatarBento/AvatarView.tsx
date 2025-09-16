@@ -29,7 +29,7 @@ const actions = [
   { name: 'restart', onPress: () => {} },
 ];
 const actionButtonStyles =
-  'min-w-[6.0625rem] px-[0.625rem] border border-[var(--colors-common-teal-500)] font-bold text-[0.875rem] leading-[1.25rem] text-[var(--colors-common-teal-500)] rounded-full h-[2rem] cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-[var(--colors-common-teal-500)] transition-colors duration-300 gap-[0.375rem] flex items-center justify-center [&:hover_img]:brightness-50';
+  'min-w-[6.0625rem] px-[0.625rem] border border-accent font-bold text-[0.875rem] leading-[1.25rem] text-accent rounded-full h-[2rem] cursor-pointer hover:text-[var(--primary-charcoal)] hover:bg-accent transition-colors duration-300 gap-[0.375rem] flex items-center justify-center [&:hover_img]:brightness-50';
 
 /**
  * Client side avatar view to use with the AvatarBento.
