@@ -1,14 +1,14 @@
 'use client';
 
+import { choiceGroupMap } from '@/constants/choice-map';
 import { Button, useDisclosure } from '@heroui/react';
-import { useCallback, type FC } from 'react';
+import { type FC } from 'react';
 import Modal from '../../Modal';
 import ChoiceBento from '../ChoiceBento';
+import CompletionScreen from '../CompletionScreen';
+import ConfirmSelectionScreen, { ConfirmSelectionHeaderLogo } from '../ConfirmSelectionScreen';
 import Intro, { type IntroProps } from '../Intro';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import ConfirmSelectionScreen, { ConfirmSelectionHeaderLogo } from '../ConfirmSelectionScreen';
-import CompletionScreen from '../CompletionScreen';
-import { choiceGroupMap } from '@/constants/choice-map';
 
 export interface GetStartedProps extends IntroProps {
   ctaText: string;

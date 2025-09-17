@@ -16,12 +16,6 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const { userChoices, setUserChoices, setShowConfirmation } = usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
 
-  // Check if there are any previous selections to show in the icon row
-  const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
-  const selectedChoices = groupKeys
-    .filter((group) => userChoices[group] && group !== activeGroup)
-    .map((group) => userChoices[group]!);
-  const hasSelectedChoices = selectedChoices.length > 0;
 
   return (
     <div className="flex flex-col h-full p-4 pb-8 landscape:py-10 landscape:px-0 landscape:items-center">
@@ -37,8 +31,8 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row or spacer */}
-        <div className="pt-[2.625rem]">
-          <SelectedIconsRow className="mb-6" />
+        <div className="pt-[2.625rem] mb-6">
+          <SelectedIconsRow />
         </div>
 
         {/* Centered text content */}
@@ -55,7 +49,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
         {/* Cards */}
         <div
-          className={`grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto ${hasSelectedChoices ? 'pt-4' : 'pt-8'}`}
+          className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto pt-8"
         >
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
@@ -66,7 +60,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
               }}
               aria-label={`Select ${choiceKey.replace('-', ' ')}`}
               aria-pressed={selectedChoice === choiceConfig.value}
-              className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] p-2 sm:p-3 rounded-2xl flex flex-col items-center justify-center gap-1 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] p-3 rounded-2xl flex flex-col items-center justify-center gap-1 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 index === choices.length - 1 && choices.length % 2 === 1
                   ? 'col-span-2 justify-self-center'
                   : ''
@@ -128,7 +122,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
               }}
               aria-label={`Select ${choiceKey.replace('-', ' ')}`}
               aria-pressed={selectedChoice === choiceConfig.value}
-              className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] landscape:w-[12rem] landscape:h-[10.5rem] p-2 sm:p-3 landscape:p-4 rounded-2xl flex flex-col items-center justify-center gap-1 landscape:gap-2 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] landscape:w-[12rem] landscape:h-[10.5rem] p-3 landscape:p-4 rounded-2xl flex flex-col items-center justify-center gap-1 landscape:gap-2 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 index === choices.length - 1 && choices.length % 2 === 1
                   ? 'col-span-2 justify-self-center'
                   : ''
@@ -142,7 +136,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                     : 'opacity-0 group-hover:opacity-100'
                 }`}
               />
-              <div className="relative z-10 flex flex-col items-center justify-center gap-0.5 sm:gap-1 landscape:gap-2">
+              <div className="relative z-10 flex flex-col items-center justify-center gap-1 landscape:gap-2">
                 <div>
                   <Image
                     src={choiceConfig.icon}
@@ -153,7 +147,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                   />
                 </div>
                 <div
-                  className={`bg-transparent landscape:bg-accent ${selectedChoice === choiceConfig.value ? 'text-common-ash' : 'text-charcoal'} landscape:text-charcoal px-2 py-1 sm:px-3 sm:py-1.5 landscape:px-6 landscape:py-3 rounded-full text-center capitalize transition-transform duration-500 font-sharp text-xs font-bold leading-tight ${
+                  className={`bg-transparent landscape:bg-accent ${selectedChoice === choiceConfig.value ? 'text-common-ash' : 'text-charcoal'} landscape:text-charcoal px-3 py-1.5 landscape:px-6 landscape:py-3 rounded-full text-center capitalize transition-transform duration-500 font-sharp text-xs font-bold leading-tight ${
                     selectedChoice === choiceConfig.value ? '-rotate-12' : 'group-hover:-rotate-12'
                   }`}
                 >

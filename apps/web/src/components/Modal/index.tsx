@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren } from 'react';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 import {
   Modal as HeroModal,
   ModalContent,
@@ -10,7 +10,7 @@ import Image from 'next/image';
 import ThreeDots from '../ThreeDots';
 
 interface CustomModalProps extends ModalProps {
-  headerContent?: React.ReactNode;
+  headerContent?: ReactNode;
   modalTitle?: string;
 }
 
@@ -39,7 +39,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
         aria-current="page"
         classNames={{
           wrapper:
-            'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:100%] [--slide-enter:0px] [--slide-exit:80px] sm:[--scale-enter:100%] sm:[--scale-exit:103%] sm:[--slide-enter:0px] sm:[--slide-exit:0px]',
+            'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:103%] [--slide-enter:0px] [--slide-exit:0px]',
           base: 'w-full h-full landscape:w-[71.8125rem] landscape:h-auto landscape:min-h-[36.5625rem] landscape:rounded-[0.75rem] z-[1000] overflow-hidden',
           backdrop: 'bg-black/50 z-[998] w-screen h-screen fixed inset-0',
         }}
@@ -49,7 +49,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
           {(onClose) => (
             <>
               <Image
-                src="/assets/images/NightSky.svg"
+                src="/assets/images/night-sky.webp"
                 alt="Night Sky Background"
                 fill
                 className="absolute inset-0 object-cover z-0"
