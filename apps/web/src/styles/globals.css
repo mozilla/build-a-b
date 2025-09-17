@@ -87,9 +87,6 @@ body {
   animation-play-state: paused;
 }
 
-.menu-item-hover:hover {
-  background-image: linear-gradient(90deg, var(--colors-common-teal-500) 10%, var(--secondary-blue));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.backface-hidden {
+  backface-visibility: hidden;
 }
