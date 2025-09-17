@@ -29,30 +29,6 @@ interface TickerItem {
   href?: string;
 }
 
-const tickerDataHashtag: TickerItem[] = [
-  {
-    id: 1,
-    text: '@POKIMANE',
-    emoji: '🚀',
-    hashtag: '#BILLIONAIREBLASTOFF',
-    href: 'https:twitch.tv/pokimane',
-  },
-  {
-    id: 2,
-    emoji: '🪐',
-    text: '@CRISPYBEAR',
-    hashtag: '#BILLIONAIREBLASTOFF',
-    href: 'https:twitch.tv/crispy',
-  },
-  {
-    id: 3,
-    emoji: '🚀',
-    text: '@GAMEWITCH',
-    hashtag: '#BILLIONAIREBLASTOFF',
-    href: 'https:twitch.tv/gametwitch',
-  },
-];
-
 const tickerData: TickerItem[] = [
   {
     id: 4,
@@ -318,8 +294,6 @@ export default async function Home({
           ) : null}
         </div>
       </main>
-
-      <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
 
       <Footer
         links={navigationData.links}
