@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import clsx from 'clsx';
 import { BentoProps } from '../Bento';
 
