@@ -8,6 +8,33 @@ export const choiceGroupMap: Record<ChoiceGroup, Choice[]> = {
   'legacy-plan': ['mars', 'forever-pill', 'blood-bank', 'ai-god', 'sea-lord'],
 };
 
+export const groupDescriptionMap: Record<ChoiceGroup, { title: string; description: string }> = {
+  'origin-story': {
+    title: 'Pick an Origin Story',
+    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+  },
+  'core-drive': {
+    title: 'Pick a Core Drive',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+  },
+  'legacy-plan': {
+    title: 'Pick a Legacy Plan',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+  },
+  'power-play': {
+    title: 'Pick a Power Play',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+  },
+  'public-mask': {
+    title: 'Pick a Public Mask',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+  },
+};
+
 export const phrasesMap: Record<Choice, string> = {
   inherited: 'Nothing fuels the myth of rugged individualism like an absence of hardship.',
   manipulator: 'They’re not exploiting your data. They’re maximizing your experience.',
@@ -54,6 +81,7 @@ export const choiceMap: GameChoices = Object.entries(choiceGroupMap).reduce(
           iconWhenConfirmed: `/assets/images/choice-confirmation/${currentChoice}.png`,
           phrase: phrasesMap[currentChoice],
           value: choiceIndex + 1,
+          id: currentChoice,
         };
 
         return choicesConf;
