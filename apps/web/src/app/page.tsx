@@ -92,7 +92,7 @@ const avatarBentoData: AvatarBentoProps = {
     'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
 };
 
-const footerData: FooterProps = {
+const navigationData: FooterProps = {
   links: [
     { href: '/', label: 'Home', title: 'Go to home' },
     { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
@@ -134,7 +134,12 @@ export default async function Home({
 
   return (
     <Container>
-      <Header />
+      <Header
+        links={navigationData.links}
+        socials={navigationData.socials}
+        ctaCopy={navigationData.ctaCopy}
+        ctaLabel={navigationData.ctaLabel}
+      />
 
       <Ticker items={tickerData} />
 
@@ -317,11 +322,11 @@ export default async function Home({
       <Ticker aria-label="Social media updates ticker" items={tickerDataHashtag} />
 
       <Footer
-        links={footerData.links}
-        socials={footerData.socials}
-        ctaCopy={footerData.ctaCopy}
-        ctaLabel={footerData.ctaLabel}
-        message={footerData.message}
+        links={navigationData.links}
+        socials={navigationData.socials}
+        ctaCopy={navigationData.ctaCopy}
+        ctaLabel={navigationData.ctaLabel}
+        message={navigationData.message}
       />
     </Container>
   );
