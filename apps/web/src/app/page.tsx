@@ -208,9 +208,31 @@ export default async function Home({
         <div className="col-span-12 row-span-2 row-start-8 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
           {/* Small Teaser Bento (Twitchcon) */}
           {flags?.demoSmallTeaserBento ? (
-            <Bento className="h-full">
-              <span>Small Teaser Bento</span>
-            </Bento>
+            <BentoDual
+              className="h-full"
+              effect="flip"
+              image="/assets/images/join-twitchcon.webp"
+              back={
+                <Window>
+                  <h4 className="text-title-1 pb-4">Party at the moontower</h4>
+                  <p>
+                    Join us IRL or right here during TwitchCon to help us send all the billionaires
+                    off to space in style!
+                  </p>
+                  <a className="rounded-button mt-6" href="#">
+                    Button
+                  </a>
+                </Window>
+              }
+            >
+              <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+                <h2 className="absolute bottom-6 left-6 text-title-1">
+                  Join us at
+                  <br />
+                  Twitchcon
+                </h2>
+              </div>
+            </BentoDual>
           ) : null}
         </div>
         <div className="col-span-12 row-span-2 row-start-10 landscape:col-span-4 landscape:row-start-5">
