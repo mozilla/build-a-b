@@ -45,7 +45,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
     >
       {hasGeneratedAvatar && (
         <Image
-          src="/assets/images/grain-main.svg"
+          src="/assets/images/grain-main.webp"
           alt=""
           fill
           sizes="100vw"
