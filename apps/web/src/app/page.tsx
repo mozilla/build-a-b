@@ -131,7 +131,10 @@ export default async function Home({
 
   return (
     <Container>
-      <Header />
+      <Header 
+        links={footerData.links}
+        socials={footerData.socials}
+      />
 
       <Ticker items={tickerData} />
 
