@@ -26,7 +26,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   return (
     <Bento
       className="h-16 landscape:h-[10.9375rem]
-                 mb-3 landscape:mb-8
+                 mb-3 landscape:mb-2
                  bg-no-repeat gap-[30px] bg-cover bg-[url(/assets/images/NightSky.svg)]"
     >
       <div className="header-container flex justify-between h-full pl-4 pr-4 landscape:pl-8 landscape:pr-8">
