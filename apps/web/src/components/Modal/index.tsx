@@ -30,17 +30,17 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
       }}
       {...modalProps}
     >
-      <ModalContent className="w-full h-full @variant landscape:w-[71.8125rem] @variant landscape:h-[36.5625rem] bg-white rounded-none @variant landscape:rounded-[0.75rem] relative overflow-hidden border-0 @variant landscape:border-2 @variant landscape:border-[var(--colors-common-ash)]">
+      <ModalContent className="w-full h-full @variant landscape:w-[71.8125rem] @variant landscape:h-[36.5625rem] bg-white rounded-none @variant landscape:rounded-[0.75rem] relative overflow-hidden border-0 @variant landscape:border-2 @variant landscape:border-common-ash">
         {(onClose) => (
           <>
             <Image
-              src="/assets/images/NightSky.svg"
+              src="/assets/images/night-sky.webp"
               alt="Night Sky Background"
               fill
               className="absolute inset-0 object-cover z-0"
             />
             <div className="relative z-10 flex flex-col h-full">
-              <div className="flex h-[3rem] px-[1rem] flex-row justify-end @variant landscape:justify-between items-center border-b-0 @variant landscape:border-b-2 @variant landscape:border-[var(--colors-common-ash)] bg-transparent">
+              <div className="flex h-[3rem] px-[1rem] flex-row justify-end @variant landscape:justify-between items-center border-b-0 @variant landscape:border-b-2 @variant landscape:border-common-ash bg-transparent">
                 <ThreeDots white className="hidden @variant landscape:flex" />
                 <Button
                   onPress={onClose}
