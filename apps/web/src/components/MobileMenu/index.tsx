@@ -1,11 +1,11 @@
 'use client';
-import { useState } from 'react';
+
+import { FC, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
 import { HeaderProps } from '@/components/Header';
-import { FC } from 'react';
 
 const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   const [open, setOpen] = useState(false);
