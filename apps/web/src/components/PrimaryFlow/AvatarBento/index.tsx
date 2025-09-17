@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import MeetAstroBento, { type MeetAstroBentoProps } from '../../MeetAstroBento';
 import AvatarView, { type AvatarViewProps } from './AvatarView';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
+import { PrimaryContextProvider } from '../PrimaryFlowContext';
 
 export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
   /**
@@ -38,7 +39,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
 
   return (
     <Bento
-      className={`${hasGeneratedAvatar ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple group' : 'bg-gray-100'} h-[43.6875rem] @variant landscape:h-[26.4375rem] ${!hasGeneratedAvatar ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out' : ''} @variant landscape:block [&_img]:object-[20%_center] @variant landscape:[&_img]:object-cover`}
+      className={`${hasGeneratedAvatar ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple group' : 'bg-gray-100'} h-[43.6875rem] landscape:h-[26.4375rem] ${!hasGeneratedAvatar ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out' : ''} landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
       {...bentoProps}
       image={hasGeneratedAvatar ? '/assets/images/Blue_Grid.svg' : image}
       priority
@@ -57,10 +58,14 @@ const AvatarBento: FC<AvatarBentoProps> = ({
         <AvatarView {...avatarData} />
       ) : (
         <>
-          {primaryFlowData && <GetStarted {...primaryFlowData} />}
+          {primaryFlowData && (
+            <PrimaryContextProvider>
+              <GetStarted {...primaryFlowData} />
+            </PrimaryContextProvider>
+          )}
 
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 @variant landscape:bottom-0 @variant landscape:right-0 @variant landscape:left-auto @variant landscape:translate-x-0 @variant landscape:pr-[3rem] @variant landscape:pb-[7rem] z-20">
-            <div className="scale-75 @variant landscape:scale-100">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 landscape:bottom-0 landscape:right-0 landscape:left-auto landscape:translate-x-0 landscape:pr-[3rem] landscape:pb-[7rem] z-20">
+            <div className="scale-75 landscape:scale-100">
               <MeetAstroBento defaultContent={defaultContent} activeContent={activeContent} />
             </div>
           </div>
