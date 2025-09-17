@@ -16,7 +16,7 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   return (
     <div className="mobile-menu flex flex-row center-content items-center landscape:hidden">
       <div className="button-section">
-        <button onClick={() => setOpen(!open)} className="">
+        <button onClick={() => setOpen(!open)}>
           <Image src={srcIcon} width={24} height={24} alt={altText} />
         </button>
       </div>
