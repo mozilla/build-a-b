@@ -28,24 +28,20 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                     bg-no-repeat bg-center bg-cover p-8"
         >
           <div className="modal-container relative flex flex-col">
-            <div className="close-button absolute z-60 right-0">
-              <button onClick={() => setOpen(false)}>
-                <Image src={closeIcon} width={24} height={24} alt={altText} />
-              </button>
-            </div>
+            <button onClick={() => setOpen(false)} className="absolute z-60 right-0 cursor-pointer">
+              <Image src={closeIcon} width={24} height={24} alt={altText} />
+            </button>
 
             <div className="logo-container">
-              <span className="flex">
-                <Link href="/home" tabIndex={0} className="flex flex-row content-center">
-                  <Image
-                    src="/assets/images/Billionaire-Logo.svg"
-                    alt="Billionaire Logo"
-                    width={373}
-                    height={220}
-                    className=""
-                  />
-                </Link>
-              </span>
+              <Link href="/home" tabIndex={0} className="inline-block">
+                <Image
+                  src="/assets/images/Billionaire-Logo.svg"
+                  alt="Billionaire Logo"
+                  width={373}
+                  height={220}
+                  className="w-45"
+                />
+              </Link>
             </div>
 
             <div className="menu-section pt-6">
