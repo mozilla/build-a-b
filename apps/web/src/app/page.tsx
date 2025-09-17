@@ -1,7 +1,6 @@
 // import { getAllFlags } from '@/app/flags';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
-import Bento from '@/components/Bento';
 import Ticker from '@/components/Ticker';
 import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
@@ -11,6 +10,7 @@ import BentoRotate from '@/components/BentoRotate';
 import BentoPlanet from '@/components/BentoPlanet';
 import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
+import Image from 'next/image';
 
 const flags = {
   demoAvatarBento: true,
@@ -192,9 +192,35 @@ export default async function Home({
         <div className="col-span-12 row-start-5 landscape:col-span-4 landscape:row-start-4">
           {/* BBOOWYW Bento */}
           {flags?.demoBBOOWYWBento ? (
-            <Bento className="h-full">
-              <span>BBOOWYWBento</span>
-            </Bento>
+            <BentoDual
+              className="h-full"
+              effect="fade"
+              back={
+                <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+                  <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
+                    <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
+                    <p className="text-body-small text-[0.9rem]">
+                      With all the billionaires permanently off-planet, we can finally browse in
+                      peace, indulge our curiosities, and open what we want.
+                    </p>
+                  </div>
+                  <Image
+                    src="/assets/images/firefox-open.webp"
+                    width={120}
+                    height={43}
+                    alt=""
+                    className="absolute right-12 bottom-1"
+                  />
+                </div>
+              }
+            >
+              <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+                <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
+                <p className="text-body-regular">
+                  The go to space on rockets of your data. But there is another way.
+                </p>
+              </div>
+            </BentoDual>
           ) : null}
         </div>
         <div className="col-span-12 row-span-2 row-start-6 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
