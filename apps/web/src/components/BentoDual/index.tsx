@@ -1,0 +1,73 @@
+import { FC, ReactNode } from 'react';
+import Image from 'next/image';
+import clsx from 'clsx';
+import { BentoProps } from '../Bento';
+
+export interface BentoDualProps extends BentoProps {
+  back: ReactNode;
+  effect: 'flip' | 'fade';
+}
+
+const baseBentoClasses =
+  'w-full h-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal';
+
+const frontFlipCardClasses = 'absolute w-full h-full backface-hidden';
+const backFlipCardClasses = `${frontFlipCardClasses} [transform:rotateY(180deg)]`;
+
+const frontFadeCardClasses =
+  'absolute inset-0 transition-opacity duration-700 group-hover:opacity-0';
+const backFadeCardClasses =
+  'absolute inset-0 transition-opacity duration-700 opacity-0 group-hover:opacity-100';
+
+const BentoDual: FC<BentoDualProps> = ({
+  className,
+  children,
+  back,
+  image,
+  imageAlt,
+  bgEffect,
+  effect = 'flip',
+}) => {
+  const wrapperEffectClasses =
+    effect == 'flip'
+      ? 'relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]'
+      : '';
+
+  const wrapperClasses = clsx(wrapperEffectClasses, className);
+  const frontCardClasses = clsx(
+    baseBentoClasses,
+    effect === 'flip' ? frontFlipCardClasses : frontFadeCardClasses,
+  );
+  const backCardClasses = clsx(
+    baseBentoClasses,
+    effect === 'flip' ? backFlipCardClasses : backFadeCardClasses,
+  );
+
+  return (
+    <div className="group [perspective:1000px] rounded-[0.75rem] w-full h-full cursor-pointer">
+      <div className={wrapperClasses}>
+        {/* Front Face */}
+        <div className={frontCardClasses}>
+          {image && (
+            <Image
+              src={image}
+              alt={imageAlt ?? ''}
+              fill
+              sizes="100vw"
+              className={clsx(
+                'absolute inset-0 z-0 object-cover',
+                bgEffect &&
+                  'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
+              )}
+            />
+          )}
+          <div className="absolute inset-0 z-1">{children}</div>
+        </div>
+        {/* Back Face */}
+        <div className={backCardClasses}>{back}</div>
+      </div>
+    </div>
+  );
+};
+
+export default BentoDual;
