@@ -1,9 +1,25 @@
+'use client';
 import Bento from '@/components/Bento';
 import LogoPage from '@/components/LogoPage';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
+import { FC } from 'react';
 
-const Header = () => {
+export interface HeaderProps {
+  links: {
+    href: string;
+    label: string;
+    title: string;
+  }[];
+  socials: {
+    href: string;
+    title: string;
+    alt: string;
+    src: string;
+  }[];
+}
+
+const Header: FC<HeaderProps> = ({ links, socials }) => {
   return (
     <Bento
       className="h-16 landscape:h-[10.9375rem]
@@ -15,8 +31,12 @@ const Header = () => {
           <LogoPage/>
         </div>
         <div className='right-side flex flex-row gap-x-3'>
-          <HeaderMenu/>
-          <SocialNetwork />
+          <HeaderMenu
+            links={links}
+          />
+          <SocialNetwork
+            socials={socials}
+          />
         </div>
       </div>
     </Bento>

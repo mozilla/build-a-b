@@ -1,34 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { FC } from 'react';
 
+export interface SocialNetworkProps {
+  socials: {
+    href: string;
+    title: string;
+    alt: string;
+    src: string;
+  }[];
+}
 
-
-const SocialNetwork = () => {
-
-const socials = [
-    {
-      href: 'https://www.tiktok.com/@firefox',
-      title: 'Visit our TikTok',
-      alt: 'TikTok',
-      src: '/assets/images/SocialButtons/TikTok.svg',
-    },
-    {
-      href: 'https://www.instagram.com/firefox/',
-      title: 'Check our Instagram',
-      alt: 'Instagram',
-      src: '/assets/images/SocialButtons/Instagram.svg',
-    },
-    {
-      href: 'https://www.youtube.com/firefoxchannel',
-      title: 'Watch our YouTube channel',
-      alt: 'YouTube',
-      src: '/assets/images/SocialButtons/Youtube.svg',
-    },
-  ];
-
+const SocialNetwork: FC<SocialNetworkProps> = ({socials}) => {
 
     return (
-        <div className="social-network hidden landscape:flex content-center"
+        <nav className="social-network hidden landscape:flex content-center"
             aria-label='Social media links'>
             <ul className='flex flex-row content-center justify-center items-center gap-x-4'>
                 {socials.map(({href, title, alt, src})=>(
@@ -49,7 +35,7 @@ const socials = [
                                 alt={alt}
                                 width={42}
                                 height={42}
-                                className='w-8 landscape:w-10'
+                                className=''
                             />
                             <span
                                 className="absolute inset-0
@@ -61,7 +47,7 @@ const socials = [
                     </li>
                 ))}
             </ul>
-        </div>
+        </nav>
     );
 };
 
