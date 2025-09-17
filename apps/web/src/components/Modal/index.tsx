@@ -34,7 +34,7 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
         {(onClose) => (
           <>
             <Image
-              src="/assets/images/NightSky.svg"
+              src="/assets/images/night-sky.webp"
               alt="Night Sky Background"
               fill
               className="absolute inset-0 object-cover z-0"
