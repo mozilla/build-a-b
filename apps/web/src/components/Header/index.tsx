@@ -3,6 +3,7 @@ import Bento from '@/components/Bento';
 import LogoPage from '@/components/LogoPage';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
+import MobileMenu from '@/components/MobileMenu';
 import { FC } from 'react';
 
 export interface HeaderProps {
@@ -17,9 +18,11 @@ export interface HeaderProps {
     alt: string;
     src: string;
   }[];
+  ctaCopy: string[];
+  ctaLabel: string;
 }
 
-const Header: FC<HeaderProps> = ({ links, socials }) => {
+const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   return (
     <Bento
       className="h-16 landscape:h-[10.9375rem]
@@ -33,10 +36,19 @@ const Header: FC<HeaderProps> = ({ links, socials }) => {
         <div className='right-side flex flex-row gap-x-3'>
           <HeaderMenu
             links={links}
+            isHorizontal={true}
+            isInModal={false}
           />
           <SocialNetwork
             socials={socials}
+            isInModal={false}
           />
+          <MobileMenu
+            links={links}
+            socials={socials}
+            ctaCopy={ctaCopy}
+            ctaLabel={ctaLabel}
+           />
         </div>
       </div>
     </Bento>

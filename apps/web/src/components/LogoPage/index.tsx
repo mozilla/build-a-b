@@ -10,9 +10,9 @@ const LogoPage = () => {
                     <Image 
                         src="/assets/images/Billionaire-Logo.svg" 
                         alt='Billionaire Logo'
-                        width={210}
-                        height={103}
-                        className='max-w-[6.125rem] landscape:max-w-[14rem]'
+                        width={373}
+                        height={220}
+                        className='max-w-[4.125rem] landscape:max-w-[14rem]'
                     />
                 </Link>
             </span>
