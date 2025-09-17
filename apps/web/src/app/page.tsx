@@ -200,9 +200,31 @@ export default async function Home({
         <div className="col-span-12 row-span-2 row-start-6 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
           {/* Small Teaser Bento (Data War) */}
           {flags?.demoSmallTeaserBento ? (
-            <Bento className="h-full">
-              <span>Small Teaser Bento</span>
-            </Bento>
+            <BentoDual
+              className="h-full"
+              effect="flip"
+              image="/assets/images/data-war.webp"
+              back={
+                <Window>
+                  <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
+                  <p>
+                    Ever wonder what it's like to trade people's data and manipulate the world so
+                    you can build a toy rocket and go into space?
+                  </p>
+                  <a className="rounded-button mt-6" href="#">
+                    Button
+                  </a>
+                </Window>
+              }
+            >
+              <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+                <h2 className="absolute bottom-6 left-6 text-title-1">
+                  Join us at
+                  <br />
+                  Twitchcon
+                </h2>
+              </div>
+            </BentoDual>
           ) : null}
         </div>
         <div className="col-span-12 row-span-2 row-start-8 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
