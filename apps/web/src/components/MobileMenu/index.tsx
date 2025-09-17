@@ -10,7 +10,7 @@ import { FC } from 'react';
 const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   const [open, setOpen] = useState(false);
   const closeIcon = '/assets/images/close-icon.svg';
-  const srcIcon = open ? closeIcon : '/assets/images/icons/menuMobile.svg';
+  const srcIcon = open ? closeIcon : '/assets/images/icons/menu.svg';
   const altText = open ? 'Close Menu' : 'Open Menu';
 
   return (
