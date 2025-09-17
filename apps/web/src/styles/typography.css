@@ -38,6 +38,12 @@ html {
 
 /* DESKTOP (LANDSCAPE) FONT SIZES */
 
+/* text-5xl */
+@utility text-5xl-custom {
+  font-size: 3rem; /* 48px */
+  line-height: 3rem; /* 48px */
+}
+
 /* text-4xl */
 @utility text-4xl-custom {
   font-size: 2.25rem; /* 36px */
@@ -103,6 +109,12 @@ html {
   font-size: 0.875rem; /* 14px */
   line-height: normal;
   letter-spacing: 0.07rem; /* 1.12px */
+}
+
+/* title-2 */
+@utility text-mobile-title-2 {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
 }
 
 /* ============================= */

@@ -57,6 +57,10 @@ export type ChoiceConfig = {
    * This value will be sent to the API.
    */
   value: number;
+  /**
+   * String associated value.
+   */
+  id: Choice;
 };
 
 export type GameChoices = Record<ChoiceGroup, Record<Choice, ChoiceConfig>>;

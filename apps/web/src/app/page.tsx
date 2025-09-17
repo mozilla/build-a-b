@@ -73,7 +73,7 @@ const tickerData: TickerItem[] = [
 
 const avatarBentoData: AvatarBentoProps = {
   avatarData: {
-    url: '/assets/images/Avatar_Mock.svg',
+    url: '/assets/images/avatar-mock.webp',
     name: 'Astra Wealthington',
     attributes: 'Trust Fund Baby, Chaos-Loving, Genius, Regulation Capturing, Ocean City-Building',
   },
@@ -85,7 +85,7 @@ const avatarBentoData: AvatarBentoProps = {
     createAvatarCtaText: 'Make a Custom Billionaire',
     randomAvatarCtaText: 'Get a Surprise Billionaire',
   },
-  image: '/assets/images/Avatar_Square.svg',
+  image: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
   defaultContent: 'Unlimited power.\n Zero accountability. \n What could go wrong?',
   activeContent:
