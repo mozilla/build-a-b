@@ -228,7 +228,7 @@ export default async function Home({
           {/* Small Teaser Bento (Data War) */}
           {flags?.demoSmallTeaserBento ? (
             <BentoDual
-              className="h-full"
+              className="h-full aspect-square"
               effect="flip"
               image="/assets/images/data-war.webp"
               back={
@@ -258,7 +258,7 @@ export default async function Home({
           {/* Small Teaser Bento (Twitchcon) */}
           {flags?.demoSmallTeaserBento ? (
             <BentoDual
-              className="h-full"
+              className="h-full aspect-square"
               effect="flip"
               image="/assets/images/join-twitchcon.webp"
               back={
