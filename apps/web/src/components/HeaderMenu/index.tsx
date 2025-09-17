@@ -37,13 +37,13 @@ const HeaderMenu: FC<HeaderMenuProps> = ({ links, isHorizontal, isInModal }) => 
                 title={title}
                 aria-label={title}
                 aria-current={pathname === href ? 'page' : undefined}
-                className="inline-block p-3 py-2  
-                                        transform transition-all duration-300
-                                        origin-left text-nav-item
-                                        hover:-rotate-3 hover:translate-y-1
-                                        hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
-                                        hover:bg-clip-text
-                                        hover:text-transparent"
+                className="label-14 inline-block p-3 py-2
+                           transform transition-all duration-300
+                           origin-left text-nav-item
+                           hover:-rotate-3 hover:translate-y-1
+                           hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
+                           hover:bg-clip-text
+                           hover:text-transparent"
               >
                 {label}
               </Link>
