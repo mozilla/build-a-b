@@ -9,12 +9,16 @@ export interface SocialNetworkProps {
     alt: string;
     src: string;
   }[];
+  isInModal:boolean;
 }
 
-const SocialNetwork: FC<SocialNetworkProps> = ({socials}) => {
+const SocialNetwork: FC<SocialNetworkProps> = ({socials, isInModal}) => {
+
+    const navClass = isInModal ? "social-network flex content-center" :
+                                "social-network hidden landscape:flex content-center";
 
     return (
-        <nav className="social-network hidden landscape:flex content-center"
+        <nav className={navClass}
             aria-label='Social media links'>
             <ul className='flex flex-row content-center justify-center items-center gap-x-4'>
                 {socials.map(({href, title, alt, src})=>(

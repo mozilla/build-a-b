@@ -134,6 +134,8 @@ export default async function Home({
       <Header 
         links={footerData.links}
         socials={footerData.socials}
+        ctaCopy={footerData.ctaCopy}
+        ctaLabel={footerData.ctaLabel}
       />
 
       <Ticker items={tickerData} />
