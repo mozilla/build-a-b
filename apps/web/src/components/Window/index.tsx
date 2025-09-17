@@ -1,10 +1,6 @@
-import { FC, ReactNode } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
-export interface WindowProps {
-  children: ReactNode;
-}
-
-const Window: FC<WindowProps> = ({ children }) => {
+const Window: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className="h-full w-full bg-gradient-to-r from-secondary-blue to-secondary-purple">
       <div className="flex items-center gap-2 px-3 py-2 border-b-2 border-gray-303">
