@@ -152,11 +152,12 @@ export default async function Home({
               className="flex w-full h-full"
               back={
                 <Window>
-                  <h4 className="text-title-1 pb-4">We don't say for-real-real lightly.</h4>
+                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
                   <p>
-                    Every post gets you closer to the stratosphere, which is where we'll be sending
-                    only the noisiest little billionaire avatars aboard a rocket, streamed for the
-                    world to see live at the climax of TwitchCon. <strong>To the mooooon!</strong>
+                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
+                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
+                    for the world to see live at the climax of TwitchCon.{' '}
+                    <strong>To the mooooon!</strong>
                   </p>
                   <a className="rounded-button mt-6" href="#">
                     Button
@@ -234,8 +235,8 @@ export default async function Home({
                 <Window>
                   <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
                   <p>
-                    Ever wonder what it's like to trade people's data and manipulate the world so
-                    you can build a toy rocket and go into space?
+                    Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
+                    world so you can build a toy rocket and go into space?
                   </p>
                   <a className="rounded-button mt-6" href="#">
                     Button
