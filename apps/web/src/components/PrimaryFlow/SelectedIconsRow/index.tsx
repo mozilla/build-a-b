@@ -15,8 +15,8 @@ const SelectedIconsRow: FC<SelectedIconsRowProps> = ({ className = '', excludeGr
   // Get all selected choices for icon row, excluding the current active group
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
   const selectedChoices = groupKeys
-    .filter(group => userChoices[group] && group !== excludeGroup)
-    .map(group => userChoices[group]!);
+    .filter((group) => userChoices[group] && group !== excludeGroup)
+    .map((group) => userChoices[group]!);
   const hasSelectedChoices = selectedChoices.length > 0;
 
   if (!hasSelectedChoices) {

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 
-const BentoSelfie: FC = () => {
+const BentoPlaypenSelfie: FC = () => {
   return (
     <Bento
       className="h-full py-8 flex flex-col justify-center items-center gap-2 bg-common-ash! border-accent!
@@ -23,4 +23,4 @@ const BentoSelfie: FC = () => {
   );
 };
 
-export default BentoSelfie;
+export default BentoPlaypenSelfie;

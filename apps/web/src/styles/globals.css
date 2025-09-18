@@ -42,7 +42,7 @@
   }
 
   .site-footer {
-    @apply relative mt-8 p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-2 border-common-ash rounded-xl;
+    @apply relative p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-2 border-common-ash rounded-xl;
   }
 
   .rounded-button {
