@@ -28,6 +28,7 @@ const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority,
             'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
         )}
         priority={priority}
+        aria-hidden={!imageAlt}
       />
     )}
     {children}
