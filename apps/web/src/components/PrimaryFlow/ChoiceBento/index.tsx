@@ -16,7 +16,6 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const { userChoices, setUserChoices, setShowConfirmation } = usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
 
-
   return (
     <div className="flex flex-col h-full p-4 pb-8 landscape:py-10 landscape:px-0 landscape:items-center">
       {/* Logo - only show on landscape */}
@@ -48,9 +47,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Cards */}
-        <div
-          className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto pt-8"
-        >
+        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto pt-8">
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
