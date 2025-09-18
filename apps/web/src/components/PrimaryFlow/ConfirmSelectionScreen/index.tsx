@@ -72,7 +72,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
 
         {/* Button */}
         <div className="pt-4 flex justify-center">
-          <button onClick={handleContinue} className="rounded-button">
+          <button onClick={handleContinue} className="secondary-button">
             Continue
           </button>
         </div>
@@ -91,7 +91,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
 
           {/* Button - appears after description on landscape */}
           <div className="pt-4 flex justify-center">
-            <button onClick={handleContinue} className="rounded-button">
+            <button onClick={handleContinue} className="secondary-button">
               Continue
             </button>
           </div>

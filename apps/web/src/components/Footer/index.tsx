@@ -108,7 +108,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
               </span>
             ))}
           </p>
-          <Link href="#" className="rounded-button" title="Build an avatar now">
+          <Link href="#" className="secondary-button" title="Build an avatar now">
             {ctaLabel}
           </Link>
         </div>

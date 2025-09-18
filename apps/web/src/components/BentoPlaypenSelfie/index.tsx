@@ -16,7 +16,7 @@ const BentoPlaypenSelfie: FC = () => {
         className="group-hover:-rotate-5 transition-transform duration-300"
         alt=""
       />
-      <button className="rounded-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
+      <button className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
         Take a space selfie
       </button>
     </Bento>

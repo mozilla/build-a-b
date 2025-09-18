@@ -5,10 +5,10 @@ export interface HeroProps extends BentoProps {
   children: ReactNode;
 }
 
-const Hero: FC<HeroProps> = ({ children, image, imageAlt, priority, bgEffect }) => {
+const Hero: FC<HeroProps> = ({ children, image, imageAlt }) => {
   return (
     <section>
-      <Bento image={image} imageAlt={imageAlt} bgEffect priority>
+      <Bento image={image} imageAlt={imageAlt} priority className="aspect-[328/139] mb-8">
         {children}
       </Bento>
     </section>
