@@ -124,7 +124,7 @@ html {
 @layer components {
   /* "#BillionaireBlastOff" */
   .text-title-1 {
-    @apply text-4xl-custom font-sharp font-extrabold;
+    @apply text-4xl-custom font-sharp font-extrabold break-words;
   }
 
   /* "Unlimited power. Zero accountability. What could go wrong?" */

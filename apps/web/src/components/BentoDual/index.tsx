@@ -14,10 +14,9 @@ const baseBentoClasses =
 const frontFlipCardClasses = 'absolute w-full h-full backface-hidden';
 const backFlipCardClasses = `${frontFlipCardClasses} [transform:rotateY(180deg)]`;
 
-const frontFadeCardClasses =
-  'absolute inset-0 transition-opacity duration-700 group-hover:opacity-0';
+const frontFadeCardClasses = 'absolute inset-0';
 const backFadeCardClasses =
-  'absolute inset-0 transition-opacity duration-700 opacity-0 group-hover:opacity-100';
+  'absolute inset-0 transition-opacity duration-700 opacity-0 group-hover:opacity-100 z-10';
 
 const BentoDual: FC<BentoDualProps> = ({
   className,
