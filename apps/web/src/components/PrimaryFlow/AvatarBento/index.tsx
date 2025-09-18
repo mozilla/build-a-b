@@ -5,7 +5,8 @@ import MeetAstroBento, { type MeetAstroBentoProps } from '../../MeetAstroBento';
 import AvatarView, { type AvatarViewProps } from './AvatarView';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import { PrimaryContextProvider } from '../PrimaryFlowContext';
-import BentoSelfie from '@/components/BentoSelfie';
+import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
+import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 
 export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
   /**
@@ -40,15 +41,21 @@ const AvatarBento: FC<AvatarBentoProps> = ({
 
   return (
     <div className="portrait:flex-col landscape:grid landscape:grid-cols-2 landscape:grid-rows-3 landscape:gap-8 h-full">
-      <div className={`portrait:mb-4 landscape:col-span-2 landscape:row-span-1 h-[43.75rem] landscape:h-full ${hasGeneratedAvatar ? 'landscape:row-span-2' : 'landscape:row-span-3'}`}>
+      <div
+        className={`portrait:mb-4 landscape:col-span-2 landscape:row-span-1 h-[43.75rem] landscape:h-full ${hasGeneratedAvatar ? 'landscape:row-span-2' : 'landscape:row-span-3'}`}
+      >
         <Bento
           className={`
-            ${hasGeneratedAvatar 
-              ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple group' 
-              : 'bg-gray-100'} 
-            ${!hasGeneratedAvatar 
-              ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out' 
-              : ''} 
+            ${
+              hasGeneratedAvatar
+                ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple group'
+                : 'bg-gray-100'
+            } 
+            ${
+              !hasGeneratedAvatar
+                ? 'group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out'
+                : ''
+            } 
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
           image={hasGeneratedAvatar ? '/assets/images/Blue_Grid.svg' : image}
@@ -86,10 +93,10 @@ const AvatarBento: FC<AvatarBentoProps> = ({
       {hasGeneratedAvatar && (
         <>
           <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
-            <BentoSelfie />
+            <BentoPlaypenSelfie />
           </div>
           <div className="portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
-            <BentoSelfie />
+            <BentoPlaypenComingSoon />
           </div>
         </>
       )}

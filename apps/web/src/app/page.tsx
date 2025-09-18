@@ -5,17 +5,12 @@ import Ticker from '@/components/Ticker';
 import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import BentoScale from '@/components/BentoScale';
-import BentoRotate from '@/components/BentoRotate';
 import BentoPlanet from '@/components/BentoPlanet';
 import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
 import Image from 'next/image';
 
 const flags = {
-  demoAvatarBento: true,
-  demoLargeTeaserBento: true,
-  demoActionItems: true,
-  demoBBOOWYWBento: true,
   demoSmallTeaserBento: true,
   demoGalleryBento: true,
 };
@@ -122,74 +117,69 @@ export default async function Home({
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">
           <AvatarBento
             {...avatarBentoData}
-            // demoAvatarBento query param = 1 will show the generated avatar UI.
+            // Demo: `?demoAvatarBento=1` will show the generated avatar UI.
             avatarData={params.demoAvatarBento === '1' ? avatarBentoData.avatarData : null}
           />
         </div>
         <div className="portrait:mb-4 portrait:order-10 portrait:w-full h-[27.3125rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
-          {flags?.demoLargeTeaserBento ? (
-            <BentoDual
-              className="flex w-full h-full"
-              back={
-                <Window>
-                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
-                  <p>
-                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
-                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
-                    for the world to see live at the climax of TwitchCon.{' '}
-                    <strong>To the mooooon!</strong>
-                  </p>
-                  <a className="rounded-button mt-6" href="#">
-                    Button
-                  </a>
-                </Window>
-              }
-              effect="fade"
-              image="/assets/images/rocket.webp"
-            >
-              <h3 className="text-title-1 max-w-sm mt-12 ml-8">
-                Send Your Fake Little Billionaires Into Very Real Orbit.
-              </h3>
-              <p className="max-w-2xs mt-4 ml-8">
-                Post content of your billionaire for a shot at sending them to actual, for-real-real
-                space.
-              </p>
-            </BentoDual>
-          ) : null}
+          <BentoDual
+            className="flex w-full h-full"
+            back={
+              <Window>
+                <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
+                <p>
+                  Every post gets you closer to the stratosphere, which is where we&apos;ll be
+                  sending only the noisiest little billionaire avatars aboard a rocket, streamed for
+                  the world to see live at the climax of TwitchCon. <strong>To the mooooon!</strong>
+                </p>
+                <a className="rounded-button mt-6" href="#">
+                  Button
+                </a>
+              </Window>
+            }
+            effect="fade"
+            image="/assets/images/rocket.webp"
+          >
+            <h3 className="text-title-1 max-w-sm mt-12 ml-8">
+              Send Your Fake Little Billionaires Into Very Real Orbit.
+            </h3>
+            <p className="max-w-2xs mt-4 ml-8">
+              Post content of your billionaire for a shot at sending them to actual, for-real-real
+              space.
+            </p>
+          </BentoDual>
         </div>
         <div className="h-[15.625rem] portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 landscape:row-start-4">
           {/* BBOOWYW Bento */}
-          {flags?.demoBBOOWYWBento ? (
-            <BentoDual
-              className="h-full"
-              effect="fade"
-              back={
-                <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
-                  <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
-                    <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
-                    <p className="text-body-small text-[0.9rem]">
-                      With all the billionaires permanently off-planet, we can finally browse in
-                      peace, indulge our curiosities, and open what we want.
-                    </p>
-                  </div>
-                  <Image
-                    src="/assets/images/firefox-open.webp"
-                    width={120}
-                    height={43}
-                    alt=""
-                    className="absolute right-12 bottom-1"
-                  />
+          <BentoDual
+            className="h-full"
+            effect="fade"
+            back={
+              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
+                  <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
+                  <p className="text-body-small text-[0.9rem]">
+                    With all the billionaires permanently off-planet, we can finally browse in
+                    peace, indulge our curiosities, and open what we want.
+                  </p>
                 </div>
-              }
-            >
-              <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
-                <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
-                <p className="text-body-regular">
-                  The go to space on rockets of your data. But there is another way.
-                </p>
+                <Image
+                  src="/assets/images/firefox-open.webp"
+                  width={120}
+                  height={43}
+                  alt=""
+                  className="absolute right-12 bottom-1"
+                />
               </div>
-            </BentoDual>
-          ) : null}
+            }
+          >
+            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+              <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
+              <p className="text-body-regular">
+                The go to space on rockets of your data. But there is another way.
+              </p>
+            </div>
+          </BentoDual>
         </div>
         <div className="portrait:mb-4 portrait:order-11 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
           {/* Small Teaser Bento (Data War) */}
@@ -212,9 +202,7 @@ export default async function Home({
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute bottom-6 left-6 text-title-1">
-                  Data War
-                </h2>
+                <h2 className="absolute bottom-6 left-6 text-title-1">Data War</h2>
               </div>
             </BentoDual>
           ) : null}
