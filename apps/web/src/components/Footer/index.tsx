@@ -43,7 +43,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
       </Link>
 
       <div className="landscape:flex landscape:justify-between landscape:mt-14 landscape:mb-16">
-        <nav className="text-accent uppercase font-bold" aria-label="Footer navigation">
+        <nav className="text-accent text-nav-item" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
             {links.map(({ href, label, title }) => (
               <li key={href}>
