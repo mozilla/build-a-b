@@ -59,7 +59,7 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                   </span>
                 ))}
               </p>
-              <Link href="#" className="rounded-button" title="Build an avatar now">
+              <Link href="#" className="secondary-button" title="Build an avatar now">
                 {ctaLabel}
               </Link>
             </div>
