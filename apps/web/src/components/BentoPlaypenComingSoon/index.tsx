@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 
-const BentoRotate: FC = () => {
+const BentoPlaypenComingSoon: FC = () => {
   return (
     <Bento className="group h-full py-8 bg-secondary-gray flex flex-col justify-center items-center cursor-pointer">
       <Image
@@ -12,11 +12,9 @@ const BentoRotate: FC = () => {
         className="group-hover:rotate-15 transition-transform duration-300 h-auto"
         alt=""
       />
-      <span className="text-charcoal mt-2 font-extrabold group-hover:-translate-y-0.5">
-        Coming Soon
-      </span>
+      <span className="text-charcoal mt-2 font-extrabold">Coming Soon</span>
     </Bento>
   );
 };
 
-export default BentoRotate;
+export default BentoPlaypenComingSoon;
