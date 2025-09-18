@@ -11,7 +11,8 @@ interface ConfirmSelectionScreenProps {
 }
 
 const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }) => {
-  const { userChoices, setShowConfirmation, setActiveGroup, setAvatarData } = usePrimaryFlowContext();
+  const { userChoices, setShowConfirmation, setActiveGroup, setAvatarData } =
+    usePrimaryFlowContext();
   const selectedConfig = userChoices[activeGroup];
 
   if (!selectedConfig) return null;
@@ -30,8 +31,8 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
     } else {
       // This is the last choice, generate avatar before showing completion screen
       const allChoices = groupKeys
-        .filter(group => userChoices[group])
-        .map(group => userChoices[group]!.id);
+        .filter((group) => userChoices[group])
+        .map((group) => userChoices[group]!.id);
 
       try {
         const result = await generateAvatar(allChoices);
@@ -99,7 +100,9 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       <div className="hidden landscape:flex landscape:flex-col landscape:items-center landscape:mt-8 landscape:flex-col-reverse">
         {/* Text content */}
         <div className="text-center space-y-4 mt-4">
-          <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">{choiceName}</h1>
+          <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">
+            {choiceName}
+          </h1>
           <p className="text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[35rem] mx-auto">
             {selectedConfig.phrase}
           </p>

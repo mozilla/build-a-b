@@ -49,12 +49,12 @@ const CompletionScreen: FC = () => {
                 const containerClasses = [
                   'w-[5.75rem] h-[5.75rem] translate-y-0 translate-x-[-0.5rem]',
                   'w-[5.75rem] h-[5.75rem] translate-y-[0.75rem] translate-x-0',
-                  'w-[5.75rem] h-[5.75rem] translate-y-0 translate-x-[0.5rem]'
+                  'w-[5.75rem] h-[5.75rem] translate-y-0 translate-x-[0.5rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[-8deg]',
                   'w-full h-full object-contain rotate-[12deg]',
-                  'w-full h-full object-contain rotate-[-10deg]'
+                  'w-full h-full object-contain rotate-[-10deg]',
                 ];
                 return (
                   <div
@@ -81,11 +81,11 @@ const CompletionScreen: FC = () => {
               {selectedChoices.slice(3, 5).map((choice, index) => {
                 const containerClasses = [
                   'w-[5.75rem] h-[5.75rem] translate-y-[0.5rem] translate-x-[-1rem]',
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-0.5rem] translate-x-[1rem]'
+                  'w-[5.75rem] h-[5.75rem] translate-y-[-0.5rem] translate-x-[1rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[9deg]',
-                  'w-full h-full object-contain rotate-[-11deg]'
+                  'w-full h-full object-contain rotate-[-11deg]',
                 ];
                 return (
                   <div
@@ -116,12 +116,12 @@ const CompletionScreen: FC = () => {
                 const containerClasses = [
                   'w-[5.75rem] h-[5.75rem] absolute top-[-5.75rem] left-0',
                   'w-[5.75rem] h-[5.75rem] absolute top-[0.75rem] left-[7rem]',
-                  'w-[5.75rem] h-[5.75rem] absolute top-[4.25rem] left-[3.5rem]'
+                  'w-[5.75rem] h-[5.75rem] absolute top-[4.25rem] left-[3.5rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[-7deg]',
                   'w-full h-full object-contain rotate-[11deg]',
-                  'w-full h-full object-contain rotate-[-9deg]'
+                  'w-full h-full object-contain rotate-[-9deg]',
                 ];
                 return (
                   <div
@@ -148,11 +148,11 @@ const CompletionScreen: FC = () => {
               {selectedChoices.slice(3, 5).map((choice, index) => {
                 const containerClasses = [
                   'w-[5.75rem] h-[5.75rem] absolute top-[-3.25rem] left-[3.5rem]',
-                  'w-[5.75rem] h-[5.75rem] absolute top-[1.75rem] left-0'
+                  'w-[5.75rem] h-[5.75rem] absolute top-[1.75rem] left-0',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[8deg]',
-                  'w-full h-full object-contain rotate-[-12deg]'
+                  'w-full h-full object-contain rotate-[-12deg]',
                 ];
                 return (
                   <div

@@ -68,7 +68,13 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                     className="flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
                     aria-label="Close modal"
                   >
-                    <Image src="/assets/images/close-icon.svg" alt="Close" width={24} height={24} className="h-auto" />
+                    <Image
+                      src="/assets/images/close-icon.svg"
+                      alt="Close"
+                      width={24}
+                      height={24}
+                      className="h-auto"
+                    />
                   </Button>
                 </div>
 
@@ -80,7 +86,13 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                   className="landscape:hidden absolute top-4 right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
                   aria-label="Close modal"
                 >
-                  <Image src="/assets/images/close-icon.svg" alt="Close" width={24} height={24} className="h-auto" />
+                  <Image
+                    src="/assets/images/close-icon.svg"
+                    alt="Close"
+                    width={24}
+                    height={24}
+                    className="h-auto"
+                  />
                 </Button>
                 <ModalBody className="overflow-y-auto flex-1 p-0">{children}</ModalBody>
               </div>
