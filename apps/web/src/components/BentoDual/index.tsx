@@ -8,6 +8,10 @@ export interface BentoDualProps extends BentoProps {
   effect: 'flip' | 'fade';
 }
 
+const wrapperFlipClasses =
+  'relative w-full h-full backface-hidden transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]';
+const wrapperFadeClasses = '';
+
 const baseBentoClasses =
   'w-full h-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal';
 
@@ -27,10 +31,7 @@ const BentoDual: FC<BentoDualProps> = ({
   bgEffect,
   effect = 'flip',
 }) => {
-  const wrapperEffectClasses =
-    effect == 'flip'
-      ? 'relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]'
-      : '';
+  const wrapperEffectClasses = effect == 'flip' ? wrapperFlipClasses : wrapperFadeClasses;
 
   const wrapperClasses = clsx(wrapperEffectClasses, className);
   const frontCardClasses = clsx(
