@@ -1,5 +1,6 @@
 import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
+import { generateAvatar } from '@/utils/actions/generate-avatar';
 import Image from 'next/image';
 import type { FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
@@ -10,7 +11,7 @@ interface ConfirmSelectionScreenProps {
 }
 
 const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }) => {
-  const { userChoices, setShowConfirmation, setActiveGroup } = usePrimaryFlowContext();
+  const { userChoices, setShowConfirmation, setActiveGroup, setAvatarData } = usePrimaryFlowContext();
   const selectedConfig = userChoices[activeGroup];
 
   if (!selectedConfig) return null;
@@ -19,11 +20,27 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
   const currentIndex = groupKeys.indexOf(activeGroup);
   const nextGroup = currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null;
+  const choiceName = selectedConfig.id.replace('.', ' ');
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     setShowConfirmation(null);
+
     if (nextGroup) {
       setActiveGroup(nextGroup);
+    } else {
+      // This is the last choice, generate avatar before showing completion screen
+      const allChoices = groupKeys
+        .filter(group => userChoices[group])
+        .map(group => userChoices[group]!.id);
+
+      try {
+        const result = await generateAvatar(allChoices);
+        if (result) {
+          setAvatarData(result);
+        }
+      } catch (error) {
+        console.error('Error generating avatar:', error);
+      }
     }
   };
 
@@ -50,8 +67,8 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         {/* Text content - appears before icon on mobile */}
         <div className="flex-1 flex flex-col items-center justify-center mt-4">
           <div className="text-center space-y-2 mb-4">
-            <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash">
-              {selectedConfig.id.charAt(0).toUpperCase() + selectedConfig.id.slice(1)}
+            <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash capitalize">
+              {choiceName}
             </h1>
             <p className="text-lg-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] mx-auto">
               {selectedConfig.phrase}
@@ -82,9 +99,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       <div className="hidden landscape:flex landscape:flex-col landscape:items-center landscape:mt-8 landscape:flex-col-reverse">
         {/* Text content */}
         <div className="text-center space-y-4 mt-4">
-          <h1 className="text-5xl-custom font-sharp font-bold text-common-ash">
-            {selectedConfig.id.charAt(0).toUpperCase() + selectedConfig.id.slice(1)}
-          </h1>
+          <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">{choiceName}</h1>
           <p className="text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[35rem] mx-auto">
             {selectedConfig.phrase}
           </p>
