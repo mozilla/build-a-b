@@ -5,7 +5,6 @@ import Ticker from '@/components/Ticker';
 import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import BentoScale from '@/components/BentoScale';
-import BentoSelfie from '@/components/BentoSelfie';
 import BentoRotate from '@/components/BentoRotate';
 import BentoPlanet from '@/components/BentoPlanet';
 import BentoDual from '@/components/BentoDual';
@@ -119,15 +118,15 @@ export default async function Home({
 
       <Ticker items={tickerData} />
 
-      <main className="mt-6 grid grid-cols-12 grid-rows-5 gap-8 landscape:mt-8">
-        <div className="col-span-12 row-span-2 landscape:col-span-7 landscape:row-span-2">
+      <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
+        <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">
           <AvatarBento
             {...avatarBentoData}
             // demoAvatarBento query param = 1 will show the generated avatar UI.
             avatarData={params.demoAvatarBento === '1' ? avatarBentoData.avatarData : null}
           />
         </div>
-        <div className="col-span-12 row-span-1 landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
+        <div className="portrait:mb-4 portrait:order-10 portrait:w-full h-[27.3125rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           {flags?.demoLargeTeaserBento ? (
             <BentoDual
               className="flex w-full h-full"
@@ -158,20 +157,7 @@ export default async function Home({
             </BentoDual>
           ) : null}
         </div>
-        <div className="col-span-12 row-start-4 landscape:col-span-7 landscape:row-start-3">
-          <div className="grid grid-cols-12 grid-rows-1 gap-8 h-full">
-            <div className="col-span-12 landscape:col-span-4">
-              {flags?.demoActionItems ? <BentoSelfie /> : null}
-            </div>
-            <div className="col-span-6 landscape:col-span-4">
-              {flags?.demoActionItems ? <BentoRotate /> : null}
-            </div>
-            <div className="col-span-6 landscape:col-span-4">
-              {flags?.demoActionItems ? <BentoRotate /> : null}
-            </div>
-          </div>
-        </div>
-        <div className="col-span-12 row-start-5 landscape:col-span-4 landscape:row-start-4">
+        <div className="h-[15.625rem] portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 landscape:row-start-4">
           {/* BBOOWYW Bento */}
           {flags?.demoBBOOWYWBento ? (
             <BentoDual
@@ -205,7 +191,7 @@ export default async function Home({
             </BentoDual>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-6 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
+        <div className="portrait:mb-4 portrait:order-11 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
           {/* Small Teaser Bento (Data War) */}
           {flags?.demoSmallTeaserBento ? (
             <BentoDual
@@ -227,15 +213,13 @@ export default async function Home({
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
                 <h2 className="absolute bottom-6 left-6 text-title-1">
-                  Join us at
-                  <br />
-                  Twitchcon
+                  Data War
                 </h2>
               </div>
             </BentoDual>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-8 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
+        <div className="portrait:mb-4 portrait:order-12 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
           {/* Small Teaser Bento (Twitchcon) */}
           {flags?.demoSmallTeaserBento ? (
             <BentoDual
@@ -265,29 +249,29 @@ export default async function Home({
             </BentoDual>
           ) : null}
         </div>
-        <div className="col-span-12 row-span-2 row-start-10 landscape:col-span-4 landscape:row-start-5">
+        <div className="portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5">
           {/* Gallery Bento (Large) */}
           {flags?.demoGalleryBento ? <BentoPlanet className="h-full" /> : null}
         </div>
-        <div className="col-span-6 row-start-12 landscape:col-span-2 landscape:col-start-5 landscape:row-start-6">
+        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-5 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
             <BentoScale image="/assets/images/placeholders/diamond.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 col-start-7 row-start-12 landscape:col-span-2 landscape:col-start-7 landscape:row-start-6">
+        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-7 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
             <BentoScale image="/assets/images/placeholders/rocket.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 row-start-13 landscape:col-span-2 landscape:col-start-9 landscape:row-start-6">
+        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-9 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
             <BentoScale image="/assets/images/placeholders/crown.jpg" />
           ) : null}
         </div>
-        <div className="col-span-6 col-start-7 row-start-13 landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
+        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
           {/* Gallery Bento (Small) */}
           {flags?.demoGalleryBento ? (
             <BentoScale image="/assets/images/placeholders/meteor.jpg" />
