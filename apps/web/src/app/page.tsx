@@ -1,8 +1,5 @@
 // import { getAllFlags } from '@/app/flags';
-import Container from '@/components/Container';
-import Header from '@/components/Header';
 import Ticker from '@/components/Ticker';
-import Footer, { FooterProps } from '@/components/Footer';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import BentoScale from '@/components/BentoScale';
 import BentoPlanet from '@/components/BentoPlanet';
@@ -62,38 +59,6 @@ const avatarBentoData: AvatarBentoProps = {
     'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
 };
 
-const navigationData: FooterProps = {
-  links: [
-    { href: '/', label: 'Home', title: 'Go to home' },
-    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
-    { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
-    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
-  ],
-  socials: [
-    {
-      href: 'https://www.tiktok.com/@firefox',
-      title: 'Visit our TikTok',
-      alt: 'TikTok',
-      src: '/assets/images/social/tiktok.svg',
-    },
-    {
-      href: 'https://www.instagram.com/firefox/',
-      title: 'Check our Instagram',
-      alt: 'Instagram',
-      src: '/assets/images/social/instagram.svg',
-    },
-    {
-      href: 'https://www.youtube.com/firefoxchannel',
-      title: 'Watch our YouTube channel',
-      alt: 'YouTube',
-      src: '/assets/images/social/youtube.svg',
-    },
-  ],
-  ctaCopy: ['Big Tech wants to own your orbit.', 'We say—go launch yourself!'],
-  ctaLabel: 'Build a Billionaire',
-  message: 'Some kind of messaging goes here.',
-};
-
 export default async function Home({
   searchParams,
 }: {
@@ -103,14 +68,7 @@ export default async function Home({
   const params = await searchParams;
 
   return (
-    <Container>
-      <Header
-        links={navigationData.links}
-        socials={navigationData.socials}
-        ctaCopy={navigationData.ctaCopy}
-        ctaLabel={navigationData.ctaLabel}
-      />
-
+    <>
       <Ticker items={tickerData} />
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
@@ -266,14 +224,6 @@ export default async function Home({
           ) : null}
         </div>
       </main>
-
-      <Footer
-        links={navigationData.links}
-        socials={navigationData.socials}
-        ctaCopy={navigationData.ctaCopy}
-        ctaLabel={navigationData.ctaLabel}
-        message={navigationData.message}
-      />
-    </Container>
+    </>
   );
 }

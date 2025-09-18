@@ -29,7 +29,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
     <Bento className="h-16 landscape:h-[10.9375rem] mb-4 landscape:mb-8 bg-no-repeat bg-cover bg-[url(/assets/images/night-sky.webp)]">
       <div className="header-container flex justify-between h-full pl-4 pr-4 landscape:pl-8 landscape:pr-8">
         <div className="left-side flex flex-row h-full">
-          <Link href="/home" tabIndex={0} className="flex flex-row items-center">
+          <Link href="/" tabIndex={0} className="flex flex-row items-center">
             <Image
               src="/assets/images/Billionaire-Logo.svg"
               alt="Billionaire Logo"
