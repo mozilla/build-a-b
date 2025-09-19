@@ -45,7 +45,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           <MobileMenu links={links} socials={socials} ctaCopy={ctaCopy} ctaLabel={ctaLabel} />
         </div>
       </div>
-      <div id="header-animations" className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div id="header-animations" className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden">
         {/* Fliers - shooting star effect */}
         <Image
           src="/assets/images/header-animations/flier1.svg"
