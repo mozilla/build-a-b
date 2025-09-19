@@ -112,7 +112,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             {ctaLabel}
           </Link>
         </div>
-        <p className="text-center landscape:self-end">
+        <p className="landscape:self-end">
           <Link
             href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
             aria-label="Go to Privacy Policy page"
