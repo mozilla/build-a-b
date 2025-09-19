@@ -12,8 +12,8 @@ export default async function Page() {
           <h6 className="text-nav-item">Billionaire Blast Off Presents</h6>
           <h1 className="text-title-1">Catch Billionaire Blastoff at TwitchCon 2025</h1>
           <p className="text-body-regular">
-            Build your absurd billionaire avatar. Play the game they don’t want you to win — whether
-            you’re in San Diego or tuning in from anywhere.
+            Build your absurd billionaire avatar. Play the game they don&apos;t want you to win —
+            whether you&apos;re in San Diego or tuning in from anywhere.
           </p>
           <div className="flex flex-col landscape:flex-row gap-4 items-start">
             <Link href="#" className="primary-button" title="Build an avatar now">
@@ -72,7 +72,7 @@ export default async function Page() {
             <h4 className="text-title-3">Watch the Space launch</h4>
             <p className="text-body-regular">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.{' '}
+              eros elementum tristique.
             </p>
           </IconCard>,
           <IconCard
@@ -82,16 +82,16 @@ export default async function Page() {
           >
             <h4 className="text-title-3">Party at the bar</h4>
             <p className="text-body-regular">
-              We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.{' '}
+              We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.
             </p>
           </IconCard>,
         ]}
       >
         <h2 className="text-title-1">Block party highlights</h2>
         <p className="text-body-regular">
-          On October 18 at 8:30 PM, the launch film premieres... If you’re at TwitchCon, catch the
-          secret screening at the Party. If you’re anywhere else, the only place to watch is right
-          here.
+          On October 18 at 8:30 PM, the launch film premieres... If you&apos;re at TwitchCon, catch
+          the secret screening at the Party. If you&apos;re anywhere else, the only place to watch
+          is right here.
         </p>
       </CardsSection>
     </>
