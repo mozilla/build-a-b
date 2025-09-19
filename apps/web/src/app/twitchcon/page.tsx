@@ -3,6 +3,8 @@ import Hero from '@/components/Hero';
 import Link from 'next/link';
 import IconCard from '@/components/IconCard';
 import CardsSection from '@/components/CardsSection';
+import Window from '@/components/Window';
+import Bento from '@/components/Bento';
 
 export default async function Page() {
   return (
@@ -60,6 +62,40 @@ export default async function Page() {
         <h2 className="text-title-1">[TwitchCon Summary]</h2>
         <p className="text-body-regular">This is copy that introduces the overarching narrative</p>
       </CardsSection>
+
+      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+        <Bento className="border-none">
+          <Window className="bg-common-ash">
+            <div className="p-12 flex flex-col gap-4">
+              <h2 className="text-title-1 text-charcoal">Build a Billionaire Hologram</h2>
+              <p className="text-body-regular text-charcoal">
+                Create your very own Billionaire at the Holographic Kiosk and then take control of
+                their every move.
+              </p>
+              <div className="flex flex-col landscape:flex-row gap-3">
+                <Link
+                  href="#"
+                  title="Generate a billionaire"
+                  className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                >
+                  Create a Billionaire
+                </Link>
+                <Link
+                  href="#"
+                  title="Generate a billionaire"
+                  className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                >
+                  Right Now!
+                </Link>
+              </div>
+            </div>
+          </Window>
+        </Bento>
+        <Bento
+          image="/assets/images/join-twitchcon.webp"
+          className="landscape:w-[30%] aspect-square border-none"
+        />
+      </section>
 
       <CardsSection
         className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
