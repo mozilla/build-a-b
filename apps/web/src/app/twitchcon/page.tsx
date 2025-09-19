@@ -1,4 +1,3 @@
-import Bento from '@/components/Bento';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Link from 'next/link';
@@ -31,22 +30,32 @@ export default async function Page() {
 
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
-        cards={
-          <>
-            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/snake.webp">
-              <p className="text-body-regular">Join the party at</p>
-              <h4 className="text-title-3">Booth #1234</h4>
-            </IconCard>
-            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/bulb.webp">
-              <p className="text-body-regular">The fun includes</p>
-              <h4 className="text-title-3">Hologram dances and Data War: the Game</h4>
-            </IconCard>
-            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/rocket.webp">
-              <p className="text-body-regular">Then, find us at the</p>
-              <h4 className="text-title-3">Block party space launch</h4>
-            </IconCard>
-          </>
-        }
+        cards={[
+          <IconCard
+            key="1"
+            image="/assets/images/night-sky.webp"
+            icon="/assets/images/icons/snake.webp"
+          >
+            <p className="text-body-regular">Join the party at</p>
+            <h4 className="text-title-3">Booth #1234</h4>
+          </IconCard>,
+          <IconCard
+            key="2"
+            image="/assets/images/night-sky.webp"
+            icon="/assets/images/icons/bulb.webp"
+          >
+            <p className="text-body-regular">The fun includes</p>
+            <h4 className="text-title-3">Hologram dances and Data War: the Game</h4>
+          </IconCard>,
+          <IconCard
+            key="3"
+            image="/assets/images/night-sky.webp"
+            icon="/assets/images/icons/rocket.webp"
+          >
+            <p className="text-body-regular">Then, find us at the</p>
+            <h4 className="text-title-3">Block party space launch</h4>
+          </IconCard>,
+        ]}
       >
         <h2 className="text-title-1">[TwitchCon Summary]</h2>
         <p className="text-body-regular">This is copy that introduces the overarching narrative</p>
@@ -54,23 +63,29 @@ export default async function Page() {
 
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
-        cards={
-          <>
-            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/star.webp">
-              <h4 className="text-title-3">Watch the Space launch</h4>
-              <p className="text-body-regular">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-                eros elementum tristique.{' '}
-              </p>
-            </IconCard>
-            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/star.webp">
-              <h4 className="text-title-3">Party at the bar</h4>
-              <p className="text-body-regular">
-                We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.{' '}
-              </p>
-            </IconCard>
-          </>
-        }
+        cards={[
+          <IconCard
+            key="1"
+            image="/assets/images/night-sky.webp"
+            icon="/assets/images/icons/star.webp"
+          >
+            <h4 className="text-title-3">Watch the Space launch</h4>
+            <p className="text-body-regular">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
+              eros elementum tristique.{' '}
+            </p>
+          </IconCard>,
+          <IconCard
+            key="2"
+            image="/assets/images/night-sky.webp"
+            icon="/assets/images/icons/star.webp"
+          >
+            <h4 className="text-title-3">Party at the bar</h4>
+            <p className="text-body-regular">
+              We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.{' '}
+            </p>
+          </IconCard>,
+        ]}
       >
         <h2 className="text-title-1">Block party highlights</h2>
         <p className="text-body-regular">

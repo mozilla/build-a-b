@@ -1,8 +1,9 @@
-import { FC, ReactNode } from 'react';
+import { FC, Fragment, ReactElement } from 'react';
 import Bento, { BentoProps } from '../Bento';
+import { IconCardProps } from '../IconCard';
 
 export interface CardsSectionProps extends BentoProps {
-  cards: ReactNode;
+  cards: ReactElement<IconCardProps>[];
 }
 
 const CardsSection: FC<CardsSectionProps> = ({ image, cards, children }) => {
@@ -12,7 +13,9 @@ const CardsSection: FC<CardsSectionProps> = ({ image, cards, children }) => {
         <div className="relative p-12 flex flex-col gap-4">
           {children}
           <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
-            {cards}
+            {cards.map((card, index) => (
+              <Fragment key={index}>{card}</Fragment>
+            ))}
           </div>
         </div>
       </Bento>
