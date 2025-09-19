@@ -90,7 +90,7 @@ export default async function Home({
                   sending only the noisiest little billionaire avatars aboard a rocket, streamed for
                   the world to see live at the climax of TwitchCon. <strong>To the mooooon!</strong>
                 </p>
-                <a className="rounded-button mt-6" href="#">
+                <a className="secondary-button mt-6" href="#">
                   Button
                 </a>
               </Window>
@@ -153,7 +153,7 @@ export default async function Home({
                     Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
                     world so you can build a toy rocket and go into space?
                   </p>
-                  <a className="rounded-button mt-6" href="#">
+                  <a className="secondary-button mt-6" href="#">
                     Button
                   </a>
                 </Window>
@@ -179,7 +179,7 @@ export default async function Home({
                     Join us IRL or right here during TwitchCon to help us send all the billionaires
                     off to space in style!
                   </p>
-                  <a className="rounded-button mt-6" href="#">
+                  <a className="secondary-button mt-6" href="#">
                     Button
                   </a>
                 </Window>
