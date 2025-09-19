@@ -62,6 +62,48 @@ export default async function Page() {
       </CardsSection>
 
       <CardsSection
+        className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
+        cards={[
+          <IconCard
+            key="1"
+            icon="/assets/images/icons/shield.webp"
+            className="bg-common-ash border-charcoal! border-solid border-2!"
+          >
+            <h4 className="text-title-3 text-charcoal">
+              Bring your expansion pack and battle against other players
+            </h4>
+            <p className="text-body-regular text-charcoal">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
+              eros elementum tristique.
+            </p>
+          </IconCard>,
+          <IconCard
+            key="2"
+            icon="/assets/images/icons/star.webp"
+            className="bg-common-ash border-charcoal! border-solid border-2!"
+          >
+            <h4 className="text-title-3 text-charcoal">
+              Featuring appearances by famous gamers like XXX and XXX
+            </h4>
+            <p className="text-body-regular text-charcoal">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
+              eros elementum tristique.
+            </p>
+          </IconCard>,
+        ]}
+      >
+        <h2 className="text-title-1 text-charcoal">Play Data War with Us</h2>
+        <p className="text-body-regular text-charcoal">Some body copy about the game</p>
+        <Link
+          href="#"
+          title="Read Data War instructions"
+          className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash w-auto mx-auto"
+        >
+          Learn Data War: The Game
+        </Link>
+      </CardsSection>
+
+      <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
         cards={[
           <IconCard
