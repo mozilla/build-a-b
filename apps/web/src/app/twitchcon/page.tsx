@@ -1,3 +1,4 @@
+import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Link from 'next/link';
 
@@ -22,6 +23,7 @@ export default async function Page() {
           </div>
         </div>
       </Hero>
+      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
     </>
   );
 }
