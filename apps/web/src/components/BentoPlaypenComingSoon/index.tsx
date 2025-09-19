@@ -9,7 +9,7 @@ const BentoPlaypenComingSoon: FC = () => {
         src="/assets/images/icons/plus.svg"
         width={60}
         height={70}
-        className="group-hover:rotate-15 transition-transform duration-300"
+        className="group-hover:rotate-15 transition-transform duration-300 h-auto"
         alt=""
       />
       <span className="text-charcoal mt-2 font-extrabold">Coming Soon</span>

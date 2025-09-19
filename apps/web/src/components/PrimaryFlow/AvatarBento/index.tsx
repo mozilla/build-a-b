@@ -66,7 +66,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
               src="/assets/images/grain-main.webp"
               alt=""
               fill
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="absolute inset-0 z-10 object-cover mix-blend-overlay"
             />
           )}

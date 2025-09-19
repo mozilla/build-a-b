@@ -14,29 +14,49 @@ export interface MeetAstroBentoProps {
    * Whether the component should be displayed in active state (white background, black borders).
    */
   active?: boolean;
+  /**
+   * Size variant for specific use cases
+   */
+  size?: 'default' | 'completion';
 }
 
 const MeetAstroBento: FC<MeetAstroBentoProps> = ({
   defaultContent,
   activeContent,
   active = false,
+  size = 'default',
 }) => {
+  // Size classes based on variant
+  const getSizeClasses = () => {
+    if (size === 'completion') {
+      return {
+        container: 'w-[20.375rem] h-[10.25rem] landscape:w-[26.6875rem] landscape:h-[7.6875rem]', // 326x164px and 427x123px in rem
+        body: 'h-[calc(8.699rem-4px)] landscape:h-[calc(6.1365rem-4px)]', // Adjusted body height to account for header
+      };
+    }
+    return {
+      container: active ? 'w-full' : 'w-[20.3125rem]',
+      body: 'h-[10.825rem]',
+    };
+  };
+
+  const sizeClasses = getSizeClasses();
   return (
     <div
-      className={`z-[1] ${active ? 'w-full' : 'w-[20.3125rem]'} rounded-[0.532rem] p-[2px] ${active ? 'bg-charcoal' : 'bg-charcoal group-hover:bg-gradient-to-r group-hover:from-secondary-blue group-hover:to-secondary-purple'} transition-all duration-500`}
+      className={`z-[1] ${sizeClasses.container} rounded-[0.532rem] p-[2px] ${active ? 'bg-gradient-to-r from-secondary-blue to-secondary-purple' : 'bg-charcoal group-hover:bg-gradient-to-r group-hover:from-secondary-blue group-hover:to-secondary-purple'} transition-all duration-500`}
     >
       <div className="rounded-[calc(0.532rem-2px)] overflow-hidden bg-transparent">
         <div
           id="header"
-          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-charcoal bg-common-ash' : 'border-charcoal group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-common-ash'} transition-all duration-500`}
+          className={`flex h-[1.551rem] px-[0.709rem] flex-row justify-start items-center shrink-0 self-stretch rounded-t-[calc(0.532rem-2px)] border-b-2 ${active ? 'border-b-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple' : 'border-charcoal group-hover:border-transparent bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:bg-common-ash'} transition-all duration-500`}
         >
           <ThreeDots
-            dotClassName={`${active ? 'border-charcoal' : 'border-charcoal group-hover:border-common-ash'} transition-colors duration-500`}
+            dotClassName={`${active ? 'border-common-ash' : 'border-charcoal group-hover:border-common-ash'} transition-colors duration-500`}
           />
         </div>
         <div
           id="body"
-          className="relative flex h-[10.825rem] flex-col justify-center items-start flex-1 self-stretch rounded-b-[0.532rem] overflow-hidden transition-all duration-500"
+          className={`relative flex ${sizeClasses.body} flex-col justify-center items-start flex-1 self-stretch rounded-b-[0.532rem] overflow-hidden transition-all duration-500`}
         >
           <div
             className={`absolute inset-0 ${active ? 'opacity-0' : 'bg-gradient-to-r from-secondary-blue to-secondary-purple group-hover:opacity-0'} transition-opacity duration-500`}

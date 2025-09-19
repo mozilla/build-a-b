@@ -52,6 +52,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                 src="/assets/images/night-sky.webp"
                 alt="Night Sky Background"
                 fill
+                sizes="100vw"
                 className="absolute inset-0 object-cover z-0"
               />
               <div className="relative z-10 flex flex-col h-full">
@@ -67,7 +68,13 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                     className="flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
                     aria-label="Close modal"
                   >
-                    <Image src="/assets/images/close-icon.svg" alt="Close" width={24} height={24} />
+                    <Image
+                      src="/assets/images/close-icon.svg"
+                      alt="Close"
+                      width={24}
+                      height={24}
+                      className="h-auto"
+                    />
                   </Button>
                 </div>
 
@@ -79,7 +86,13 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                   className="landscape:hidden absolute top-4 right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
                   aria-label="Close modal"
                 >
-                  <Image src="/assets/images/close-icon.svg" alt="Close" width={24} height={24} />
+                  <Image
+                    src="/assets/images/close-icon.svg"
+                    alt="Close"
+                    width={24}
+                    height={24}
+                    className="h-auto"
+                  />
                 </Button>
                 <ModalBody className="overflow-y-auto flex-1 p-0">{children}</ModalBody>
               </div>
