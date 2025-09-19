@@ -114,19 +114,21 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
         </div>
         <p className="landscape:self-end">
           <Link
-            href="#"
-            aria-label='Go to Privacy Policy page'
-            title='Go to Privacy Policy page'
-            className='underline'
+            href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            aria-label="Go to Privacy Policy page"
+            title="Go to Privacy Policy page"
+            className="underline"
+            target="_blank"
           >
             Privacy Policy
-          </Link>
-          {' '}&bull;{' '}
+          </Link>{' '}
+          &bull;{' '}
           <Link
-            href="#"
-            aria-label='Go to Terms and Conditions page'
-            title='Go to Terms and Conditions page'
-            className='underline'
+            href="https://www.mozilla.org/en-US/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            aria-label="Go to Terms and Conditions page"
+            title="Go to Terms and Conditions page"
+            className="underline"
+            target="_blank"
           >
             Terms & Conditions
           </Link>
@@ -135,33 +137,25 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
 
       <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
-        <span
-          className='flex gap-x-2 items-center'
-        >
+        <span className="flex gap-x-2 items-center">
           Powered by{' '}
-          
-          <span
-            className='font-bold'
-          >
+          <span className="font-bold">
             <Link
               href="https://www.firefox.com/"
               target="_blank"
               title="Go to Firefox page"
-              className='inline-block -mb-1 pr-1'
+              className="inline-block -mb-1 pr-1"
             >
               <Image
                 src="/assets/images/logo-firefox.webp"
                 width={26}
                 height={26}
-                alt='firefox logo'
-
+                alt="firefox logo"
               />
-            </Link>            
+            </Link>
             Firefox
-          </span>
-          
-          {' '}&bull;{' '}
-          Built by{' '}
+          </span>{' '}
+          &bull; Built by{' '}
           <Link
             href="https://www.mondorobot.com/"
             target="_blank"
@@ -169,16 +163,19 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             className="inline-block"
           >
             <Image
-                alt='mondorobot logo'
-                src="/assets/images/mondo-robot-logo.webp" 
-                width={128}
-                height={14}
+              alt="mondorobot logo"
+              src="/assets/images/mondo-robot-logo.webp"
+              width={128}
+              height={14}
             />
           </Link>
         </span>
       </div>
 
-      <div id="footer-animations" className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        id="footer-animations"
+        className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden"
+      >
         {/* Floaters - peek in from edges */}
         <Image
           src="/assets/images/header-animations/floater3.svg"
