@@ -1,12 +1,13 @@
 import Bento, { type BentoProps } from '@/components/Bento';
+import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
+import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
+import type { AvatarData } from '@/types';
 import Image from 'next/image';
 import type { FC } from 'react';
 import MeetAstroBento, { type MeetAstroBentoProps } from '../../MeetAstroBento';
-import AvatarView, { type AvatarViewProps } from './AvatarView';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import { PrimaryContextProvider } from '../PrimaryFlowContext';
-import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
-import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
+import AvatarView from './AvatarView';
 
 export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
   /**
@@ -18,14 +19,14 @@ export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
    * If provided the card will be updated to reflect
    * all options for users with already generated avatars.
    */
-  avatarData?: AvatarViewProps | null;
+  avatarData?: AvatarData | null;
   /**
    * Static content to display in the BaB flow init screen.
    */
   primaryFlowData?: GetStartedProps | null;
 }
 
-function hasAvatar(data?: AvatarViewProps | null): data is AvatarViewProps {
+function hasAvatar(data?: AvatarData | null): data is AvatarData {
   return Boolean(data?.url);
 }
 
@@ -76,7 +77,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
           ) : (
             <>
               {primaryFlowData && (
-                <PrimaryContextProvider>
+                <PrimaryContextProvider intialData={avatarData || null}>
                   <GetStarted {...primaryFlowData} />
                 </PrimaryContextProvider>
               )}

@@ -1,3 +1,5 @@
+import type { Database } from './database.types';
+
 export interface FlagType<T = boolean> {
   key: string;
   decide: (params?: unknown) => Promise<T> | T;
@@ -64,3 +66,17 @@ export type ChoiceConfig = {
 };
 
 export type GameChoices = Record<ChoiceGroup, Record<Choice, ChoiceConfig>>;
+
+export type AvatarData = {
+  url: string;
+  name: string;
+  bio: string;
+  homePath: string;
+};
+
+export type DatabaseAvatarResponse = Pick<
+  Database['public']['Tables']['avatars']['Row'],
+  'asset' | 'character_story' | 'first_name' | 'last_name' | 'id'
+>;
+
+export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
