@@ -3,6 +3,7 @@ import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Link from 'next/link';
 import IconCard from '@/components/IconCard';
+import CardsSection from '@/components/CardsSection';
 
 export default async function Page() {
   return (
@@ -28,13 +29,10 @@ export default async function Page() {
 
       <CountDown targetDate="2025-10-17T10:00:00-07:00" />
 
-      <Bento image="/assets/images/mixed-blue-grid.webp" className="mb-4 landscape:mb-8">
-        <div className="relative p-12 flex flex-col gap-4">
-          <h2 className="text-title-1">[TwitchCon Summary]</h2>
-          <p className="text-body-regular">
-            This is copy that introduces the overarching narrative
-          </p>
-          <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
+      <CardsSection
+        image="/assets/images/mixed-blue-grid.webp"
+        cards={
+          <>
             <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/snake.webp">
               <p className="text-body-regular">Join the party at</p>
               <h4 className="text-title-3">Booth #1234</h4>
@@ -47,19 +45,17 @@ export default async function Page() {
               <p className="text-body-regular">Then, find us at the</p>
               <h4 className="text-title-3">Block party space launch</h4>
             </IconCard>
-          </div>
-        </div>
-      </Bento>
+          </>
+        }
+      >
+        <h2 className="text-title-1">[TwitchCon Summary]</h2>
+        <p className="text-body-regular">This is copy that introduces the overarching narrative</p>
+      </CardsSection>
 
-      <Bento image="/assets/images/mixed-blue-grid.webp" className="mb-4 landscape:mb-8">
-        <div className="relative p-12 flex flex-col gap-4">
-          <h2 className="text-title-1">Block party highlights</h2>
-          <p className="text-body-regular">
-            On October 18 at 8:30 PM, the launch film premieres... If you’re at TwitchCon, catch the
-            secret screening at the Party. If you’re anywhere else, the only place to watch is right
-            here.
-          </p>
-          <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
+      <CardsSection
+        image="/assets/images/mixed-blue-grid.webp"
+        cards={
+          <>
             <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/star.webp">
               <h4 className="text-title-3">Watch the Space launch</h4>
               <p className="text-body-regular">
@@ -73,9 +69,16 @@ export default async function Page() {
                 We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.{' '}
               </p>
             </IconCard>
-          </div>
-        </div>
-      </Bento>
+          </>
+        }
+      >
+        <h2 className="text-title-1">Block party highlights</h2>
+        <p className="text-body-regular">
+          On October 18 at 8:30 PM, the launch film premieres... If you’re at TwitchCon, catch the
+          secret screening at the Party. If you’re anywhere else, the only place to watch is right
+          here.
+        </p>
+      </CardsSection>
     </>
   );
 }
