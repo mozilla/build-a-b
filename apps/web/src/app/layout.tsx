@@ -39,7 +39,6 @@ const navigationData = {
   ],
   ctaCopy: ['Big Tech wants to own your orbit.', 'We say—go launch yourself!'],
   ctaLabel: 'Build a Billionaire',
-  message: 'Some kind of messaging goes here.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -60,7 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               socials={navigationData.socials}
               ctaCopy={navigationData.ctaCopy}
               ctaLabel={navigationData.ctaLabel}
-              message={navigationData.message}
             />
           </Container>
         </Providers>

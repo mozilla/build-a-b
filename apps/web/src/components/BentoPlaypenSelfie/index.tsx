@@ -10,7 +10,7 @@ const BentoPlaypenSelfie: FC = () => {
                  hover:cursor-pointer"
     >
       <Image
-        src="/assets/images/icons/camera.svg"
+        src="/assets/images/icons/camera.webp"
         width={60}
         height={70}
         className="group-hover:-rotate-5 transition-transform duration-300 h-auto"
