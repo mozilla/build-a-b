@@ -61,7 +61,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
                 <div
                   className="flex flex-col-reverse relative
                              after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
-                             after:text-4xl-custom after:font-sharp after:font-extrabold"
+                             after:text-4xl-custom after:font-extrabold"
                 >
                   <dt className="text-nav-item">Days</dt>
                   <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
@@ -71,7 +71,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
                 <div
                   className="flex flex-col-reverse relative
                              after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
-                             after:text-4xl-custom after:font-sharp after:font-extrabold"
+                             after:text-4xl-custom after:font-extrabold"
                 >
                   <dt className="text-nav-item">Hours</dt>
                   <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
@@ -81,7 +81,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
                 <div
                   className="flex flex-col-reverse relative
                              after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
-                             after:text-4xl-custom after:font-sharp after:font-extrabold"
+                             after:text-4xl-custom after:font-extrabold"
                 >
                   <dt className="text-nav-item">Mins</dt>
                   <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
