@@ -82,7 +82,7 @@ export default async function Page() {
           >
             <h4 className="text-title-3">Party at the bar</h4>
             <p className="text-body-regular">
-              We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.
+              We&apos;re taking over Rockin Baja Lobster in the heart of the Gaslamp district.
             </p>
           </IconCard>,
         ]}
