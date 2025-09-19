@@ -4,21 +4,7 @@ import { Button } from '@heroui/react';
 import Image from 'next/image';
 import type { FC } from 'react';
 import MeetAstroBento from '../../MeetAstroBento';
-
-export interface AvatarViewProps {
-  /**
-   * The avatar image url.
-   */
-  url: string;
-  /**
-   * Avatar name
-   */
-  name: string;
-  /**
-   * Avatar attributes.
-   */
-  attributes: string;
-}
+import type { AvatarData } from '@/types';
 
 {
   /* TODO: Implement action handlers */
@@ -34,7 +20,7 @@ const actionButtonStyles =
 /**
  * Client side avatar view to use with the AvatarBento.
  */
-const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
+const AvatarView: FC<AvatarData> = ({ url, name, bio }) => {
   return (
     <div className="absolute inset-[1.5rem] flex flex-col gap-[1.5rem] md:flex-row md:items-center z-20">
       <div className="w-full max-w-[23.4375rem] h-[23.4375rem] mx-auto md:mx-0 md:flex-shrink-0 overflow-hidden rounded-lg">
@@ -43,7 +29,7 @@ const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
           alt="Avatar"
           width={375}
           height={375}
-          className="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-[3deg]"
+          className="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-[3deg] object-top"
         />
       </div>
       <div className="flex-1 flex flex-col gap-[1rem]">
@@ -54,7 +40,7 @@ const AvatarView: FC<AvatarViewProps> = ({ url, name, attributes }) => {
                 Meet <span className="text-secondary-purple">{name}</span>
               </span>
               <span className="text-charcoal text-base font-normal leading-5">
-                Your <span className="font-bold">{attributes}</span> Billionaire
+                <span className="font-bold">{bio}</span>
               </span>
             </div>
           }

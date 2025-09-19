@@ -86,22 +86,16 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, ...babFlowData }) => {
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
           {isOpen && getStepInfo()}
         </div>
-        <div className="relative">
+        <div className="relative h-full">
           <div className="absolute top-4 left-4 z-40 landscape:hidden">
             <ConfirmSelectionHeaderLogo />
           </div>
-          <div
-            className={`${!activeGroup || allChoicesCompleted ? '' : 'mt-[2.8125rem]'} landscape:mt-0`}
-          >
-            {shouldShowCompletionScreen && <CompletionScreen />}
-            {!allChoicesCompleted && !activeGroup && <Intro {...babFlowData} />}
-            {!allChoicesCompleted && !showConfirmation && activeGroup && (
-              <ChoiceBento activeGroup={activeGroup} />
-            )}
-            {showConfirmation && activeGroup && (
-              <ConfirmSelectionScreen activeGroup={activeGroup} />
-            )}
-          </div>
+          {shouldShowCompletionScreen && <CompletionScreen />}
+          {!allChoicesCompleted && !activeGroup && <Intro {...babFlowData} />}
+          {!allChoicesCompleted && !showConfirmation && activeGroup && (
+            <ChoiceBento activeGroup={activeGroup} />
+          )}
+          {showConfirmation && activeGroup && <ConfirmSelectionScreen activeGroup={activeGroup} />}
         </div>
       </Modal>
     </>
