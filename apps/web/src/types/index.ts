@@ -8,9 +8,9 @@ export interface FlagType<T = boolean> {
 export type Choice =
   | 'inherited'
   | 'manipulator'
-  | 'data-thief'
-  | 'crypto-king'
-  | 'med-mogul'
+  | 'data.thief'
+  | 'crypto.king'
+  | 'med.mogul'
   | 'power'
   | 'chaos'
   | 'immortality'
@@ -23,14 +23,14 @@ export type Choice =
   | 'genius'
   | 'raiders'
   | 'shadows'
-  | 'data-mine'
-  | 'media-spin'
-  | 'policy-hack'
+  | 'data.mine'
+  | 'media.spin'
+  | 'policy.hack'
   | 'mars'
-  | 'sea-lord'
-  | 'ai-god'
-  | 'blood-bank'
-  | 'forever-pill';
+  | 'sea.lord'
+  | 'ai.god'
+  | 'blood.bank'
+  | 'forever.pill';
 
 export type ChoiceGroup =
   | 'origin-story'

@@ -11,6 +11,11 @@ import {
   type SetStateAction,
 } from 'react';
 
+interface AvatarData {
+  filename: string;
+  url: string;
+}
+
 interface PrimaryFlowContextValue {
   activeGroup: ChoiceGroup | null;
   setActiveGroup: Dispatch<SetStateAction<ChoiceGroup | null>>;
@@ -18,6 +23,8 @@ interface PrimaryFlowContextValue {
   setUserChoices: Dispatch<SetStateAction<Record<ChoiceGroup, ChoiceConfig | null>>>;
   showConfirmation: ChoiceGroup | null;
   setShowConfirmation: Dispatch<SetStateAction<ChoiceGroup | null>>;
+  avatarData: AvatarData | null;
+  setAvatarData: Dispatch<SetStateAction<AvatarData | null>>;
 }
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
@@ -25,6 +32,7 @@ export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefi
 export const PrimaryContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
+  const [avatarData, setAvatarData] = useState<AvatarData | null>(null);
   const [userChoices, setUserChoices] = useState<Record<ChoiceGroup, ChoiceConfig | null>>({
     'core-drive': null,
     'legacy-plan': null,
@@ -42,6 +50,8 @@ export const PrimaryContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setUserChoices,
         showConfirmation,
         setShowConfirmation,
+        avatarData,
+        setAvatarData,
       }}
     >
       {children}

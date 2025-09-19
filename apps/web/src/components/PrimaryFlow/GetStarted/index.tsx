@@ -23,12 +23,16 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, ...babFlowData }) => {
     setActiveGroup,
     setShowConfirmation,
     setUserChoices,
+    setAvatarData,
   } = usePrimaryFlowContext();
 
   // Check if all choices are completed
   const totalGroups = Object.keys(choiceGroupMap).length;
   const completedChoices = Object.values(userChoices).filter((choice) => choice !== null).length;
   const allChoicesCompleted = completedChoices >= totalGroups;
+
+  // Only show completion screen if all choices are done AND we're not showing confirmation
+  const shouldShowCompletionScreen = allChoicesCompleted && !showConfirmation;
 
   // Get current step information for screen reader announcements
   const getStepInfo = () => {
@@ -56,6 +60,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, ...babFlowData }) => {
       // Reset all state when modal is closed
       setActiveGroup(null);
       setShowConfirmation(null);
+      setAvatarData(null);
       setUserChoices({
         'core-drive': null,
         'legacy-plan': null,
@@ -88,12 +93,12 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, ...babFlowData }) => {
           <div
             className={`${!activeGroup || allChoicesCompleted ? '' : 'mt-[2.8125rem]'} landscape:mt-0`}
           >
-            {allChoicesCompleted && <CompletionScreen />}
+            {shouldShowCompletionScreen && <CompletionScreen />}
             {!allChoicesCompleted && !activeGroup && <Intro {...babFlowData} />}
             {!allChoicesCompleted && !showConfirmation && activeGroup && (
               <ChoiceBento activeGroup={activeGroup} />
             )}
-            {!allChoicesCompleted && showConfirmation && activeGroup && (
+            {showConfirmation && activeGroup && (
               <ConfirmSelectionScreen activeGroup={activeGroup} />
             )}
           </div>
