@@ -1,6 +1,6 @@
 'use client';
 
-import { ChoiceGroup, type ChoiceConfig } from '@/types';
+import { ChoiceGroup, type AvatarData, type ChoiceConfig } from '@/types';
 import {
   createContext,
   useContext,
@@ -10,11 +10,6 @@ import {
   type PropsWithChildren,
   type SetStateAction,
 } from 'react';
-
-interface AvatarData {
-  filename: string;
-  url: string;
-}
 
 interface PrimaryFlowContextValue {
   activeGroup: ChoiceGroup | null;
@@ -29,10 +24,13 @@ interface PrimaryFlowContextValue {
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
 
-export const PrimaryContextProvider: FC<PropsWithChildren> = ({ children }) => {
+export const PrimaryContextProvider: FC<PropsWithChildren<{ intialData: AvatarData | null }>> = ({
+  children,
+  intialData,
+}) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
-  const [avatarData, setAvatarData] = useState<AvatarData | null>(null);
+  const [avatarData, setAvatarData] = useState<AvatarData | null>(intialData);
   const [userChoices, setUserChoices] = useState<Record<ChoiceGroup, ChoiceConfig | null>>({
     'core-drive': null,
     'legacy-plan': null,

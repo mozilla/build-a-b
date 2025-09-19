@@ -18,6 +18,10 @@ export interface MeetAstroBentoProps {
    * Size variant for specific use cases
    */
   size?: 'default' | 'completion';
+  /**
+   * Optional classes for the outter container.
+   */
+  className?: string;
 }
 
 const MeetAstroBento: FC<MeetAstroBentoProps> = ({
@@ -30,10 +34,11 @@ const MeetAstroBento: FC<MeetAstroBentoProps> = ({
   const getSizeClasses = () => {
     if (size === 'completion') {
       return {
-        container: 'w-[20.375rem] h-[10.25rem] landscape:w-[26.6875rem] landscape:h-[7.6875rem]', // 326x164px and 427x123px in rem
-        body: 'h-[calc(8.699rem-4px)] landscape:h-[calc(6.1365rem-4px)]', // Adjusted body height to account for header
+        container: 'w-[20.375rem] h-[10.25rem] landscape:w-[26.6875rem] landscape:h-[7.6875rem]',
+        body: 'h-[calc(8.699rem-4px)] landscape:h-[calc(6.1365rem-4px)]',
       };
     }
+
     return {
       container: active ? 'w-full' : 'w-[20.3125rem]',
       body: 'h-[10.825rem]',

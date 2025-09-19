@@ -1,35 +1,42 @@
 'use server';
-import type { Choice } from '@/types';
+import type { AvatarData, Choice, DatabaseAvatarResponse, DatabaseUserResponse } from '@/types';
+import { cookies } from 'next/headers';
+import { COOKIE_NAME } from '../constants';
+import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
 
-export async function generateAvatar(options: Choice[]) {
-  const supabase = await createClient();
+export async function generateAvatar(options: Choice[]): Promise<AvatarData | null> {
+  try {
+    const supabase = await createClient();
+    const searchPattern = options.join('-');
 
-  // Concatenate choices with - separator to match the file naming pattern
-  const searchPattern = options.join('-');
+    // TODO: FILTER BY POSE
+    const { data: selectedAvatar, error } = await supabase
+      .rpc('get_random_avatar', {
+        search_pattern: searchPattern,
+      })
+      .single<DatabaseAvatarResponse>();
 
-  // Filter files that start with the pattern and are webp format
-  const { data: files, error } = await supabase.storage.from('billionaires').list('', {
-    search: searchPattern + '_',
-  });
+    if (error || !selectedAvatar) return null;
 
-  // Further filter to only include webp files
-  const webpFiles = files?.filter((file) => file.name.endsWith('.webp')) || [];
+    const { data: newUser } = await supabase
+      .from('users')
+      .insert({ avatar_id: selectedAvatar.id })
+      .select()
+      .single<DatabaseUserResponse>();
 
-  if (error) return null;
+    if (newUser) {
+      const cookieStore = await cookies();
+      cookieStore.set(COOKIE_NAME, newUser.uuid);
+    }
 
-  if (webpFiles.length === 0) {
+    return {
+      url: buildImageUrl(selectedAvatar.asset),
+      bio: selectedAvatar.character_story || '',
+      name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,
+      homePath: `/a/${newUser?.uuid}`,
+    };
+  } catch (e) {
     return null;
   }
-
-  // Pick a random file from the filtered results
-  const randomIndex = Math.floor(Math.random() * webpFiles.length);
-  const selectedFile = webpFiles[randomIndex];
-
-  // Get the public URL for the selected file
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from('billionaires').getPublicUrl(selectedFile.name);
-
-  return { filename: selectedFile.name, url: publicUrl };
 }

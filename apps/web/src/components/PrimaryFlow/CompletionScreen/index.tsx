@@ -6,8 +6,10 @@ import Image from 'next/image';
 import { type FC } from 'react';
 import MeetAstroBento from '../../MeetAstroBento';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
+import { useRouter } from 'next/navigation';
 
 const CompletionScreen: FC = () => {
+  const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
 
   // Get all selected choices in the correct order
@@ -15,25 +17,6 @@ const CompletionScreen: FC = () => {
   const selectedChoices = groupKeys
     .filter((group) => userChoices[group])
     .map((group) => userChoices[group]!);
-
-  // Generate billionaire name and description based on choices
-  const getBillionaireName = () => {
-    return 'Astra Wealthington'; // This would be generated based on choices
-  };
-
-  /**
-   * TODO: Temporary workaround until we figure out bio from API.
-   */
-  const getBillionaireDescription = () => {
-    const traits = selectedChoices.map((choice) =>
-      choice.id
-        .replace('.', ' ')
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
-    );
-    return `Your ${traits.join(', ')} Billionaire.`;
-  };
 
   return (
     <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-4 pb-8 pt-[2rem] landscape:py-10 landscape:px-0 relative">
@@ -251,17 +234,13 @@ const CompletionScreen: FC = () => {
       <div className="flex flex-col items-center gap-4 z-10 mt-[2.5rem] landscape:mt-0">
         <div className="w-[22.4375rem] h-[28.5rem] landscape:w-[28.6875rem] landscape:h-[28.6875rem] relative overflow-hidden rounded-[0.532rem]">
           {/* Avatar Background Image */}
-          {avatarData ? (
+          {avatarData && (
             <Image
               src={avatarData.url}
               alt="Generated Billionaire Avatar"
               fill
-              className="object-cover"
+              className="object-cover object-top"
             />
-          ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500">Generating avatar...</span>
-            </div>
           )}
 
           {/* MeetAstroBento overlay - for both mobile and landscape */}
@@ -273,9 +252,9 @@ const CompletionScreen: FC = () => {
                 activeContent={
                   <div>
                     <div className="text-lg font-bold mb-1">
-                      Meet <span className="text-purple-600">{getBillionaireName()}</span>
+                      Meet <span className="text-purple-600">{avatarData.name}</span>
                     </div>
-                    <div className="text-sm">{getBillionaireDescription()}</div>
+                    <div className="text-sm">{avatarData.bio}</div>
                   </div>
                 }
               />
@@ -294,6 +273,16 @@ const CompletionScreen: FC = () => {
             Assembling unchecked wealth...
           </p>
         </div>
+      )}
+
+      {/* Continue button - only show when avatar is generated */}
+      {avatarData && (
+        <button
+          className="secondary-button absolute bottom-8 right-8"
+          onClick={() => router.push(avatarData.homePath)}
+        >
+          Continue
+        </button>
       )}
     </div>
   );
