@@ -131,7 +131,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
         </span>
       </div>
 
-      <div id="footer-animations" className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div id="footer-animations" className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden">
         {/* Floaters - peek in from edges */}
         <Image
           src="/assets/images/header-animations/floater3.svg"
