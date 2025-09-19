@@ -143,14 +143,11 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             href="https://www.firefox.com/"
             target="_blank"
             title="Go to Firefox website"
-            className="inline-flex items-center -mb-1 pr-1 gap-2 font-bold"
+            className="flex items-center pr-1 gap-1 font-bold"
           >
-            <Image
-              src="/assets/images/logo-firefox.webp"
-              width={26}
-              height={26}
-              alt="Firefox logo"
-            />
+            <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.5rem] landscape:h-[1.5rem]">
+              <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" fill />
+            </span>
             Firefox
           </Link>
           <span className="font-bold">&bull;</span>{' '}
@@ -159,14 +156,9 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             href="https://www.mondorobot.com/"
             target="_blank"
             title="Visit MondoRobot website"
-            className="inline-block"
+            className="inline-block relative w-[5.5rem] h-[0.7rem] landscape:w-[8.2rem] landscape:h-[1rem]"
           >
-            <Image
-              alt="mondorobot logo"
-              src="/assets/images/mondo-robot-logo.webp"
-              width={128}
-              height={14}
-            />
+            <Image alt="Mondorobot logo" src="/assets/images/mondo-robot-logo.webp" fill />
           </Link>
         </span>
       </div>
