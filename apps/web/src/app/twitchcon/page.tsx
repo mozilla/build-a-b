@@ -1,9 +1,11 @@
+import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Link from 'next/link';
 
 export default async function Page() {
   return (
     <>
+      <CountDown />
       <Hero image="/assets/images/hero-twitchcon.webp" ariaLabel="Hero section - TwitchCon 2025">
         <div className="relative flex flex-col p-10 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
           <h6 className="text-nav-item">Billionaire Blast Off Presents</h6>
