@@ -112,7 +112,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             {ctaLabel}
           </Link>
         </div>
-        <p className="landscape:self-end">
+        <p className="text-center landscape:self-end">
           <Link
             href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
             aria-label="Go to Privacy Policy page"
@@ -135,27 +135,26 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
         </p>
       </div>
 
-      <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
+      <div className="flex flex-col landscape:flex-row gap-1 justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
         <span className="flex gap-x-2 items-center">
-          Powered by{' '}
-          <span className="font-bold">
-            <Link
-              href="https://www.firefox.com/"
-              target="_blank"
-              title="Go to Firefox page"
-              className="inline-block -mb-1 pr-1"
-            >
-              <Image
-                src="/assets/images/logo-firefox.webp"
-                width={26}
-                height={26}
-                alt="firefox logo"
-              />
-            </Link>
+          <span className="whitespace-nowrap">Powered by</span>
+          <Link
+            href="https://www.firefox.com/"
+            target="_blank"
+            title="Go to Firefox website"
+            className="inline-flex items-center -mb-1 pr-1 gap-2 font-bold"
+          >
+            <Image
+              src="/assets/images/logo-firefox.webp"
+              width={26}
+              height={26}
+              alt="Firefox logo"
+            />
             Firefox
-          </span>{' '}
-          &bull; Built by{' '}
+          </Link>
+          <span className="font-bold">&bull;</span>{' '}
+          <span className="ml-1 whitespace-nowrap">Built by</span>
           <Link
             href="https://www.mondorobot.com/"
             target="_blank"
