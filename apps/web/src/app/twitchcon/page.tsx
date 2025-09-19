@@ -50,6 +50,32 @@ export default async function Page() {
           </div>
         </div>
       </Bento>
+
+      <Bento image="/assets/images/mixed-blue-grid.webp" className="mb-4 landscape:mb-8">
+        <div className="relative p-12 flex flex-col gap-4">
+          <h2 className="text-title-1">Block party highlights</h2>
+          <p className="text-body-regular">
+            On October 18 at 8:30 PM, the launch film premieres... If you’re at TwitchCon, catch the
+            secret screening at the Party. If you’re anywhere else, the only place to watch is right
+            here.
+          </p>
+          <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
+            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/star.webp">
+              <h4 className="text-title-3">Watch the Space launch</h4>
+              <p className="text-body-regular">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
+                eros elementum tristique.{' '}
+              </p>
+            </IconCard>
+            <IconCard image="/assets/images/night-sky.webp" icon="/assets/images/icons/star.webp">
+              <h4 className="text-title-3">Party at the bar</h4>
+              <p className="text-body-regular">
+                We’re taking over Rockin Baja Lobster in the heart of the Gaslamp district.{' '}
+              </p>
+            </IconCard>
+          </div>
+        </div>
+      </Bento>
     </>
   );
 }
