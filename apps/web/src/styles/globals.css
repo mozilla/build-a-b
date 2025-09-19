@@ -37,7 +37,7 @@
   .site-container {
     @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
     @variant landscape {
-      @apply max-w-[var(--container-width-landscape)] py-16;
+      @apply max-w-[var(--container-width-landscape)] py-20;
     }
   }
 
@@ -92,4 +92,117 @@ body {
 
 .backface-hidden {
   backface-visibility: hidden;
+}
+
+/* Header Animation Keyframes */
+@keyframes flier-1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  5.555% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+  100% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+}
+
+@keyframes flier-2 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  4.166% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+  100% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+}
+
+@keyframes flier-3 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  26.388% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+  100% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+}
+
+@keyframes floater-1 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(-11rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-2 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(2.9375rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-3 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  8.333% {
+    transform: translateY(4.4375rem) rotate(11.444deg);
+  }
+  91.666% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+/* Header Animation Classes */
+.animate-flier-1 {
+  animation: flier-1 36s linear infinite;
+  animation-delay: 0s;
+}
+
+.animate-flier-2 {
+  animation: flier-2 36s linear infinite;
+  animation-delay: 6s;
+}
+
+.animate-flier-3 {
+  animation: flier-3 36s linear infinite;
+  animation-delay: 18s;
+}
+
+.animate-floater-1 {
+  animation: floater-1 36s ease-in-out infinite;
+  animation-delay: 12s;
+}
+
+.animate-floater-2 {
+  animation: floater-2 36s ease-in-out infinite;
+  animation-delay: 28s;
+}
+
+.animate-floater-3 {
+  animation: floater-3 6s ease-in-out infinite;
+  animation-delay: 0s;
 }

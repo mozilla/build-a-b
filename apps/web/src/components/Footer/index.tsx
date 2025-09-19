@@ -38,7 +38,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
           width={373}
           height={220}
           alt="Billionaire Logo"
-          className="-ml-2 max-w-[14rem] landscape:max-w-[26rem]"
+          className="-ml-2 w-[13.375rem] landscape:w-[21.75rem]"
         />
       </Link>
 
@@ -176,6 +176,24 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             />
           </Link>
         </span>
+      </div>
+
+      <div id="footer-animations" className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Floaters - peek in from edges */}
+        <Image
+          src="/assets/images/header-animations/floater3.svg"
+          alt=""
+          width={88.3}
+          height={134}
+          className="absolute animate-floater-3"
+          style={{
+            top: '-7.5rem',
+            left: '67.88375rem',
+            transform: 'rotate(11.444deg)',
+            width: '5.51875rem',
+            height: '8.375rem',
+          }}
+        />
       </div>
     </footer>
   );
