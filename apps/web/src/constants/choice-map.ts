@@ -1,11 +1,11 @@
 import type { Choice, ChoiceConfig, ChoiceGroup, GameChoices } from '@/types';
 
 export const choiceGroupMap: Record<ChoiceGroup, Choice[]> = {
-  'origin-story': ['inherited', 'manipulator', 'data-thief', 'crypto-king', 'med-mogul'],
+  'origin-story': ['inherited', 'manipulator', 'data.thief', 'crypto.king', 'med.mogul'],
   'core-drive': ['power', 'chaos', 'immortality', 'control', 'fame'],
   'public-mask': ['eco-fake', 'visionary', 'rebel', 'savior', 'genius'],
-  'power-play': ['raiders', 'shadows', 'data-mine', 'media-spin', 'policy-hack'],
-  'legacy-plan': ['mars', 'forever-pill', 'blood-bank', 'ai-god', 'sea-lord'],
+  'power-play': ['raiders', 'shadows', 'data.mine', 'media.spin', 'policy.hack'],
+  'legacy-plan': ['mars', 'forever.pill', 'blood.bank', 'ai.god', 'sea.lord'],
 };
 
 export const groupDescriptionMap: Record<ChoiceGroup, { title: string; description: string }> = {
@@ -38,9 +38,9 @@ export const groupDescriptionMap: Record<ChoiceGroup, { title: string; descripti
 export const phrasesMap: Record<Choice, string> = {
   inherited: 'Nothing fuels the myth of rugged individualism like an absence of hardship.',
   manipulator: 'They’re not exploiting your data. They’re maximizing your experience.',
-  'data-thief': 'Pickpocketing scales indefinitely.',
-  'crypto-king': 'Stop saying “fiat.” Stop it.',
-  'med-mogul': 'Let’s play doctor. Let’s play God. I’m so bored.',
+  'data.thief': 'Pickpocketing scales indefinitely.',
+  'crypto.king': 'Stop saying “fiat.” Stop it.',
+  'med.mogul': 'Let’s play doctor. Let’s play God. I’m so bored.',
   power: 'The feeling of lightning striking right after you say something cool.',
   chaos: 'Some people just want to watch the world burn from space.',
   immortality: 'Chasing youth never gets old.',
@@ -55,15 +55,15 @@ export const phrasesMap: Record<Choice, string> = {
   genius: 'Anyone who says you’re actually an idiot is the idiot, idiot.',
   raiders: 'Finance films meant to be cautionary tales are your pre-workout.',
   shadows: 'This meeting never happened.',
-  'data-mine': 'To get to space, sometimes you have to dig.',
-  'media-spin': 'Talking heads don’t get their talking points from nowhere.',
-  'policy-hack': 'A couple whithertos and wherebys aaaand we are clear to test on otters. ',
+  'data.mine': 'To get to space, sometimes you have to dig.',
+  'media.spin': 'Talking heads don’t get their talking points from nowhere.',
+  'policy.hack': 'A couple whithertos and wherebys aaaand we are clear to test on otters. ',
   mars: 'One day, I’m going to have my own planet, and you won’t be invited, and you’ll all be sorry.',
-  'forever-pill':
+  'forever.pill':
     'Everyone’s trying to live longer. Some are just trying to live longer than those people.',
-  'blood-bank': 'No, you’re creepy.',
-  'ai-god': 'It’ll be the prompt to end all prompts to end all prompts to end all prompts.',
-  'sea-lord': 'Please attend my four-part lecture series on how Poseidon is real.',
+  'blood.bank': 'No, you’re creepy.',
+  'ai.god': 'It’ll be the prompt to end all prompts to end all prompts to end all prompts.',
+  'sea.lord': 'Please attend my four-part lecture series on how Poseidon is real.',
 };
 
 export const choiceMap: GameChoices = Object.entries(choiceGroupMap).reduce(

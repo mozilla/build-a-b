@@ -98,6 +98,7 @@ const Intro: FC<IntroProps> = ({
             src={`/assets/images/intro-modal/${id}.png`}
             alt={`Floating character ${id}`}
             fill
+            sizes="(max-width: 768px) 30vw, 20vw"
             className="object-contain"
           />
         </div>
