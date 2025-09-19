@@ -1,8 +1,48 @@
+'use client';
+
+import { FC, useEffect, useState } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const CountDown = () => {
+export interface CountDownProps {
+  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
+}
+
+const CountDown: FC<CountDownProps> = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    mins: 0,
+    secs: 0,
+  });
+
+  useEffect(() => {
+    const end = new Date(targetDate).getTime();
+
+    const tick = () => {
+      const now = Date.now();
+      const diff = end - now;
+
+      if (diff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft({ days, hours, mins, secs });
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
   return (
     <section aria-label="Countdown to event" className="mb-4 landscape:mb-8">
       <Bento image="/assets/images/space.webp">
@@ -17,14 +57,16 @@ const CountDown = () => {
               </p>
             </div>
             <div className="max-w-full landscape:min-w-[25rem] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg py-6 px-6">
-              <dl className="flex justify-center gap-7 text-center">
+              <dl className="flex justify-center gap-7 text-center" aria-live="polite">
                 <div
                   className="flex flex-col-reverse relative
                              after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
                              after:text-4xl-custom after:font-sharp after:font-extrabold"
                 >
                   <dt className="text-nav-item">Days</dt>
-                  <dd className="text-title-1 text-[1.8rem] landscape:text-[2.25rem]">12</dd>
+                  <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
+                    {String(timeLeft.days).padStart(2, '0')}
+                  </dd>
                 </div>
                 <div
                   className="flex flex-col-reverse relative
@@ -32,7 +74,9 @@ const CountDown = () => {
                              after:text-4xl-custom after:font-sharp after:font-extrabold"
                 >
                   <dt className="text-nav-item">Hours</dt>
-                  <dd className="text-title-1 text-[1.8rem] landscape:text-[2.25rem]">03</dd>
+                  <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
+                    {String(timeLeft.hours).padStart(2, '0')}
+                  </dd>
                 </div>
                 <div
                   className="flex flex-col-reverse relative
@@ -40,11 +84,15 @@ const CountDown = () => {
                              after:text-4xl-custom after:font-sharp after:font-extrabold"
                 >
                   <dt className="text-nav-item">Mins</dt>
-                  <dd className="text-title-1 text-[1.8rem] landscape:text-[2.25rem]">24</dd>
+                  <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
+                    {String(timeLeft.mins).padStart(2, '0')}
+                  </dd>
                 </div>
                 <div className="flex flex-col-reverse">
                   <dt className="text-nav-item">Secs</dt>
-                  <dd className="text-title-1 text-[1.8rem] landscape:text-[2.25rem]">59</dd>
+                  <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
+                    {String(timeLeft.secs).padStart(2, '0')}
+                  </dd>
                 </div>
               </dl>
             </div>
