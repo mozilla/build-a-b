@@ -44,7 +44,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
   }, [targetDate]);
 
   return (
-    <section aria-label="Countdown to event" className="mb-4 landscape:mb-8">
+    <section className="mb-4 landscape:mb-8">
       <Bento image="/assets/images/space.webp">
         <div className="relative p-10 landscape:pt-20 bg-gradient-to-r from-black to-transparent">
           <div className="flex flex-col landscape:flex-row gap-4 items-end">
