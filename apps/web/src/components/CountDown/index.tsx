@@ -99,7 +99,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
           </div>
           <div className="flex flex-col landscape:flex-row gap-4 mt-8 p-6 landscape:mt-12 landscape:py-12 pr-12 rounded-lg bg-white border-2 border-foreground">
             <Image
-              src="/assets/images/rocket.svg"
+              src="/assets/images/icons/rocket.webp"
               width={144}
               height={144}
               alt=""

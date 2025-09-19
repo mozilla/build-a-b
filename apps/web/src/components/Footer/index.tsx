@@ -19,10 +19,9 @@ export interface FooterProps {
   }[];
   ctaCopy: string[];
   ctaLabel: string;
-  message: string;
 }
 
-const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message }) => {
+const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   const currentYear = new Date();
   const pathname = usePathname();
 
