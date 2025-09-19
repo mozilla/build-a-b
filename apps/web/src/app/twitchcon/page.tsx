@@ -72,7 +72,7 @@ export default async function Page() {
                 Create your very own Billionaire at the Holographic Kiosk and then take control of
                 their every move.
               </p>
-              <div className="flex flex-col landscape:flex-row gap-3">
+              <div className="flex flex-col landscape:flex-row gap-3 items-start">
                 <Link
                   href="#"
                   title="Generate a billionaire"
