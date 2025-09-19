@@ -112,22 +112,69 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
             {ctaLabel}
           </Link>
         </div>
-        <p className="landscape:self-end">{message}</p>
+        <p className="landscape:self-end">
+          <Link
+            href="#"
+            aria-label='Go to Privacy Policy page'
+            title='Go to Privacy Policy page'
+            className='underline'
+          >
+            Privacy Policy
+          </Link>
+          {' '}&bull;{' '}
+          <Link
+            href="#"
+            aria-label='Go to Terms and Conditions page'
+            title='Go to Terms and Conditions page'
+            className='underline'
+          >
+            Terms & Conditions
+          </Link>
+        </p>
       </div>
 
       <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
-        <span>
+        <span
+          className='flex gap-x-2 items-center'
+        >
+          Powered by{' '}
+          
+          <span
+            className='font-bold'
+          >
+            <Link
+              href="https://www.firefox.com/"
+              target="_blank"
+              title="Go to Firefox page"
+              className='inline-block -mb-1 pr-1'
+            >
+              <Image
+                src="/assets/images/logo-firefox.webp"
+                width={26}
+                height={26}
+                alt='firefox logo'
+
+              />
+            </Link>            
+            Firefox
+          </span>
+          
+          {' '}&bull;{' '}
           Built by{' '}
           <Link
             href="https://www.mondorobot.com/"
             target="_blank"
             title="Visit MondoRobot website"
-            className="underline"
+            className="inline-block"
           >
-            mondorobot
+            <Image
+                alt='mondorobot logo'
+                src="/assets/images/mondo-robot-logo.webp" 
+                width={128}
+                height={14}
+            />
           </Link>
-          .
         </span>
       </div>
     </footer>
