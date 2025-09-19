@@ -119,7 +119,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
               }}
               aria-label={`Select ${choiceKey.replace('.', ' ')}`}
               aria-pressed={selectedChoice === choiceConfig.value}
-              className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] landscape:w-[12rem] landscape:h-[10.5rem] p-3 landscape:p-4 rounded-2xl flex flex-col items-center justify-center gap-1 landscape:gap-2 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`cursor-pointer bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] landscape:w-[12rem] landscape:h-[10.5rem] p-3 landscape:p-4 rounded-2xl flex flex-col items-center justify-center gap-1 landscape:gap-2 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 index === choices.length - 1 && choices.length % 2 === 1
                   ? 'col-span-2 justify-self-center'
                   : ''
