@@ -58,7 +58,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
             } 
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
-          image={hasGeneratedAvatar ? '/assets/images/Blue_Grid.svg' : image}
+          image={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : image}
           priority
         >
           {hasGeneratedAvatar && (
