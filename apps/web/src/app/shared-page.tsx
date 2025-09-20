@@ -1,4 +1,3 @@
-// import { getAllFlags } from '@/app/flags';
 import Ticker from '@/components/Ticker';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
