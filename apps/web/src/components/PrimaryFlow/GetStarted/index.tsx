@@ -93,7 +93,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
           {isOpen && getStepInfo()}
         </div>
-        <div className="relative h-full overflow-hidden">
+        <div className="relative h-full overflow-scroll">
           {!shouldShowIntroScreen && (
             <motion.div
               className="absolute top-4 left-4 z-40 landscape:hidden"

@@ -9,13 +9,13 @@ export const floatingImages = [
   {
     id: 2,
     className:
-      'landscape:block absolute bottom-[3rem] right-[15rem] landscape:bottom-[11rem] landscape:right-[1rem] w-[5.6875rem] h-[6.75rem] landscape:w-[10.6875rem] landscape:h-[12.6625rem] scale-x-[-1]',
+      'landscape:block absolute bottom-[3rem] right-[15rem] landscape:bottom-[4rem] landscape:right-[1rem] w-[5.6875rem] h-[6.75rem] landscape:w-[10.6875rem] landscape:h-[12.6625rem] scale-x-[-1] landscape:rotate-[12deg]',
     style: { animation: 'float 4s ease-in-out infinite 0.5s' },
   },
   {
     id: 3,
     className:
-      'landscape:block absolute left-[16rem] w-[6.5625rem] h-[6.375rem] rotate-[-25deg] top-[13rem] landscape:left-[20rem] landscape:w-[7.9375rem] landscape:h-[7.71875rem] landscape:rotate-0 z-1',
+      'landscape:block absolute left-[16rem] top-[18rem] w-[6.5625rem] landscape:top-[15rem] landscape:left-[20rem] h-[6.375rem] rotate-[-25deg] landscape:w-[7.9375rem] landscape:h-[7.71875rem] landscape:rotate-0 z-1',
     style: { animation: 'float 3.5s ease-in-out infinite 1s' },
   },
   {
@@ -39,19 +39,19 @@ export const floatingImages = [
   {
     id: 7,
     className:
-      'landscape:block absolute top-[15rem] left-[-4rem] w-[7.625rem] h-[7.625rem] rotate-[17deg] landscape:bottom-[-2rem] landscape:left-[2.5rem] landscape:w-[11.21875rem] landscape:h-[11.21875rem]',
+      'landscape:block absolute top-[15rem] left-[-4rem] landscape:top-[28rem] landscape:left-[2.5rem] w-[7.625rem] h-[7.625rem] rotate-[17deg] landscape:w-[11.21875rem] landscape:h-[11.21875rem]',
     style: { animation: 'float 3.8s ease-in-out infinite 1.2s' },
   },
   {
     id: 8,
     className:
-      'hidden landscape:block absolute bottom-[0rem] right-[18rem] w-[10.42375rem] h-[10.42375rem] rotate-[12deg]',
+      'hidden landscape:block absolute bottom-[0rem] right-[18rem] w-[10.42375rem] h-[10.42375rem] rotate-[12deg] landscape:bottom-[-4rem]',
     style: { animation: 'float 4.5s ease-in-out infinite 0.3s' },
   },
   {
     id: 9,
     className:
-      'landscape:block absolute top-[20rem] right-[-5rem] w-[9.75rem] h-[9.75rem] rotate-[-5.7deg] landscape:bottom-[-1rem] landscape:right-[28rem] landscape:w-[14.0625rem] landscape:h-[14.0625rem]',
+      'landscape:block absolute top-[20rem] right-[-5rem] w-[9.75rem] h-[9.75rem] rotate-[-5.7deg] landscape:top-[25rem] landscape:right-[28rem] landscape:w-[14.0625rem] landscape:h-[14.0625rem]',
     style: { animation: 'float 3.2s ease-in-out infinite 1.8s' },
   },
   {
