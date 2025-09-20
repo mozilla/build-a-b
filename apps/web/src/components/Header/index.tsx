@@ -26,8 +26,8 @@ export interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   return (
-    <Bento className="h-16 landscape:h-[10.9375rem] mb-4 landscape:mb-8 bg-no-repeat bg-cover bg-[url(/assets/images/night-sky.webp)]">
-      <div className="relative header-container flex justify-between h-full pl-4 pr-4 landscape:pl-8 landscape:pr-8">
+    <Bento className="h-[5.875rem] landscape:h-[10.9375rem] mb-4 landscape:mb-8 bg-no-repeat bg-cover bg-[url(/assets/images/night-sky.webp)]">
+      <div className="relative header-container flex justify-between h-full pl-3 pr-4 landscape:pl-8 landscape:pr-8">
         <div className="left-side flex flex-row h-full">
           <Link href="/" tabIndex={0} className="flex flex-row items-center">
             <Image
@@ -35,7 +35,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
               alt="Billionaire Logo"
               width={373}
               height={220}
-              className="max-w-[4.125rem] landscape:max-w-[14rem]"
+              className="w-[7.0625rem] landscape:w-[13.125rem] rotate-[-8deg] landscape:rotate-[-3deg]"
             />
           </Link>
         </div>
@@ -45,7 +45,10 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           <MobileMenu links={links} socials={socials} ctaCopy={ctaCopy} ctaLabel={ctaLabel} />
         </div>
       </div>
-      <div id="header-animations" className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        id="header-animations"
+        className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden"
+      >
         {/* Fliers - shooting star effect */}
         <Image
           src="/assets/images/header-animations/flier1.svg"
