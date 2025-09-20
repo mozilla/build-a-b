@@ -98,14 +98,10 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
             </div>
           </div>
           <div className="flex flex-col landscape:flex-row gap-4 mt-6 p-4 landscape:mt-12 landscape:py-12 pr-12 rounded-lg bg-white border-2 border-foreground">
-            <Image
-              src="/assets/images/icons/rocket.webp"
-              width={144}
-              height={144}
-              alt=""
-              className="relative -ml-4 landscape:ml-auto"
-            />
-            <div className="flex flex-col gap-4 items-start">
+            <div className="relative w-[8.5rem] h-[8.5rem] -ml-4 landscape:ml-auto">
+              <Image src="/assets/images/icons/rocket.webp" fill sizes="8.5rem" alt="" />
+            </div>
+            <div className="flex flex-1 flex-col gap-4 items-start">
               <p className="text-body-regular text-charcoal">
                 Share your Billionaire shenanigans by Friday, October 10th with{' '}
                 <strong>@Firefox</strong> and <strong>#BillionaireBlastOff</strong> for a chance to
