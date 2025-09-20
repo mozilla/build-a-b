@@ -197,6 +197,30 @@ export default async function Page() {
           is right here.
         </p>
       </CardsSection>
+
+      <section className="mb-4 landscape:mb-8 mt-12">
+        <h2 className="text-title-1 text-center mb-8">More of what you want</h2>
+        <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
+          <Bento image="/assets/images/hero-twitchcon.webp" className="flex-1 aspect-[320/200]">
+            <Link
+              href="#"
+              title="Go to lorem"
+              className="block relative bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full"
+            >
+              <h2 className="absolute bottom-6 left-6 text-title-1">Lorem Ipsum</h2>
+            </Link>
+          </Bento>
+          <Bento image="/assets/images/join-twitchcon.webp" className="flex-1 aspect-[320/200]">
+            <Link
+              href="#"
+              title="Go to adispiscing"
+              className="block relative bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full"
+            >
+              <h2 className="absolute bottom-6 left-6 text-title-1">Adipiscing Elit</h2>
+            </Link>
+          </Bento>
+        </div>
+      </section>
     </>
   );
 }
