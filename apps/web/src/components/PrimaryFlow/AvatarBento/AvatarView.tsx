@@ -3,7 +3,7 @@
 import { Button } from '@heroui/react';
 import Image from 'next/image';
 import type { FC } from 'react';
-import MeetAstroBento from '../../MeetAstroBento';
+import BrowserBento from '../../BrowserBento';
 import type { AvatarData } from '@/types';
 
 {
@@ -33,19 +33,15 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio }) => {
         />
       </div>
       <div className="flex-1 flex flex-col gap-[1rem]">
-        <MeetAstroBento
-          activeContent={
-            <div className="flex flex-col gap-1">
-              <span className="text-charcoal text-lg font-bold leading-6">
-                Meet <span className="text-secondary-purple">{name}</span>
-              </span>
-              <span className="text-charcoal text-base font-normal leading-5">
-                <span className="font-bold">{bio}</span>
+        <div className="w-[19.0625rem]">
+          <BrowserBento white>
+            <div className="flex flex-col gap-1 p-[1.5rem]">
+              <span className="text-charcoal text-base font-semibold leading-6">
+                Meet <span className="text-secondary-purple font-extrabold">{name}</span> - {bio}
               </span>
             </div>
-          }
-          active
-        />
+          </BrowserBento>
+        </div>
         <div className="flex gap-[0.5rem]">
           {actions.map(({ name, onPress }) => (
             <Button

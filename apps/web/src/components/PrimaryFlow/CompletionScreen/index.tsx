@@ -2,14 +2,13 @@
 
 import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
+import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
 import { type FC } from 'react';
-import MeetAstroBento from '../../MeetAstroBento';
+import BrowserBento from '../../BrowserBento';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import { useRouter } from 'next/navigation';
 
 const CompletionScreen: FC = () => {
-  const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
 
   // Get all selected choices in the correct order
@@ -19,7 +18,7 @@ const CompletionScreen: FC = () => {
     .map((group) => userChoices[group]!);
 
   return (
-    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-4 pb-8 pt-[2rem] landscape:py-10 landscape:px-0 relative">
+    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative">
       {/* Floating Icons */}
       {avatarData ? (
         /* When avatar is loaded, split icons: 3 to the left, 2 to the right (landscape) OR 3 top, 2 bottom (mobile) */
@@ -232,7 +231,11 @@ const CompletionScreen: FC = () => {
 
       {/* Avatar container - centered */}
       <div className="flex flex-col items-center gap-4 z-10 mt-[2.5rem] landscape:mt-0">
-        <div className="w-[22.4375rem] h-[28.5rem] landscape:w-[28.6875rem] landscape:h-[28.6875rem] relative overflow-hidden rounded-[0.532rem]">
+        <div
+          className="flex flex-col justify-end relative overflow-hidden 
+                        rounded-[0.532rem] w-[22.4375rem] h-[28.5rem] p-4 
+                        landscape:w-[28.6875rem] landscape:h-[28.6875rem]"
+        >
           {/* Avatar Background Image */}
           {avatarData && (
             <Image
@@ -245,20 +248,14 @@ const CompletionScreen: FC = () => {
 
           {/* MeetAstroBento overlay - for both mobile and landscape */}
           {avatarData && (
-            <div className="absolute inset-x-0 bottom-4 px-4">
-              <MeetAstroBento
-                active={true}
-                size="completion"
-                activeContent={
-                  <div>
-                    <div className="text-lg font-bold mb-1">
-                      Meet <span className="text-purple-600">{avatarData.name}</span>
-                    </div>
-                    <div className="text-sm">{avatarData.bio}</div>
-                  </div>
-                }
-              />
-            </div>
+            <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
+              <div className="p-4">
+                <div className="text-lg font-bold mb-1 text-charcoal">
+                  Meet <span className="text-purple-600">{avatarData.name}</span>
+                </div>
+                <div className="text-sm text-charcoal">{avatarData.bio}</div>
+              </div>
+            </BrowserBento>
           )}
         </div>
       </div>
@@ -279,7 +276,9 @@ const CompletionScreen: FC = () => {
       {avatarData && (
         <button
           className="secondary-button absolute bottom-8 right-8"
-          onClick={() => router.push(avatarData.homePath)}
+          onClick={() => {
+            saveUserAvatar(avatarData.uuid);
+          }}
         >
           Continue
         </button>

@@ -41,6 +41,8 @@ const tickerData: TickerItem[] = [
 
 const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
+    triggerClassNames:
+      'absolute left-[7rem] landscape:left-[11.5rem] top-[18rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
     ctaText: 'Get Started',
     title: 'Make Space a Better Place. Add a Billionaire.',
     description:
@@ -50,9 +52,6 @@ const avatarBentoData: AvatarBentoProps = {
   },
   image: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
-  defaultContent: 'Unlimited power.\n Zero accountability. \n What could go wrong?',
-  activeContent:
-    'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
 };
 
 interface PageProps {
@@ -73,18 +72,21 @@ export default async function Home({ avatarData }: PageProps) {
             className="flex w-full h-full"
             back={
               <Window>
-                <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
-                <p>
-                  Every post gets you closer to the stratosphere, which is where we&apos;ll be
-                  sending only the noisiest little billionaire avatars aboard a rocket, streamed for
-                  the world to see live at the climax of TwitchCon. <strong>To the mooooon!</strong>
-                </p>
-                <a className="secondary-button mt-6" href="#">
-                  Button
-                </a>
+                <div className="p-8">
+                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
+                  <p>
+                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
+                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
+                    for the world to see live at the climax of TwitchCon.{' '}
+                    <strong>To the mooooon!</strong>
+                  </p>
+                  <a className="secondary-button mt-6" href="#">
+                    Button
+                  </a>
+                </div>
               </Window>
             }
-            effect="fade"
+            effect="flip"
             image="/assets/images/rocket.webp"
           >
             <h3 className="text-title-1 max-w-sm mt-12 ml-8">
@@ -100,7 +102,7 @@ export default async function Home({ avatarData }: PageProps) {
           {/* BBOOWYW Bento */}
           <BentoDual
             className="h-full"
-            effect="fade"
+            effect="flip"
             back={
               <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
@@ -137,14 +139,16 @@ export default async function Home({ avatarData }: PageProps) {
               image="/assets/images/data-war.webp"
               back={
                 <Window>
-                  <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
-                  <p>
-                    Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
-                    world so you can build a toy rocket and go into space?
-                  </p>
-                  <a className="secondary-button mt-6" href="#">
-                    Button
-                  </a>
+                  <div className="p-8">
+                    <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
+                    <p>
+                      Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
+                      world so you can build a toy rocket and go into space?
+                    </p>
+                    <a className="secondary-button mt-6" href="#">
+                      Button
+                    </a>
+                  </div>
                 </Window>
               }
             >
@@ -163,14 +167,16 @@ export default async function Home({ avatarData }: PageProps) {
               image="/assets/images/join-twitchcon.webp"
               back={
                 <Window>
-                  <h4 className="text-title-1 pb-4">Party at the moontower</h4>
-                  <p>
-                    Join us IRL or right here during TwitchCon to help us send all the billionaires
-                    off to space in style!
-                  </p>
-                  <a className="secondary-button mt-6" href="#">
-                    Button
-                  </a>
+                  <div className="p-8">
+                    <h4 className="text-title-1 pb-4">Party at the moontower</h4>
+                    <p>
+                      Join us IRL or right here during TwitchCon to help us send all the
+                      billionaires off to space in style!
+                    </p>
+                    <a className="secondary-button mt-6" href="#">
+                      Button
+                    </a>
+                  </div>
                 </Window>
               }
             >
