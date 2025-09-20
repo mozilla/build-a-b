@@ -31,7 +31,7 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
       url: buildImageUrl(avatar.asset),
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
-      homePath: `/a/${userUuid}`,
+      uuid: userUuid,
     };
   } catch (e) {
     return null;

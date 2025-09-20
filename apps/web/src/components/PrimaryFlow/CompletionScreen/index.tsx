@@ -2,15 +2,13 @@
 
 import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
+import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
 import { type FC } from 'react';
-import MeetAstroBento from '../../MeetAstroBento';
 import BrowserBento from '../../BrowserBento';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import { useRouter } from 'next/navigation';
 
 const CompletionScreen: FC = () => {
-  const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
 
   // Get all selected choices in the correct order
@@ -278,7 +276,9 @@ const CompletionScreen: FC = () => {
       {avatarData && (
         <button
           className="secondary-button absolute bottom-8 right-8"
-          onClick={() => router.push(avatarData.homePath)}
+          onClick={() => {
+            saveUserAvatar(avatarData.uuid);
+          }}
         >
           Continue
         </button>

@@ -41,6 +41,7 @@ const tickerData: TickerItem[] = [
 
 const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
+    triggerClassNames: 'absolute left-[7rem] landscape:left-[11.5rem] top-[18rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
     ctaText: 'Get Started',
     title: 'Make Space a Better Place. Add a Billionaire.',
     description:

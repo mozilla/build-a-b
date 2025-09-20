@@ -71,7 +71,7 @@ export type AvatarData = {
   url: string;
   name: string;
   bio: string;
-  homePath: string;
+  uuid: string;
 };
 
 export type DatabaseAvatarResponse = Pick<
