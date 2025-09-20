@@ -7,6 +7,7 @@ export interface BentoProps {
   children?: ReactNode;
   image?: StaticImageData | string;
   imageAlt?: string;
+  imageClassName?: string;
   priority?: boolean;
   bgEffect?: boolean;
 }
@@ -14,7 +15,15 @@ export interface BentoProps {
 const defaultStyle =
   'relative bg-charcoal border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem]';
 
-const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority, bgEffect }) => (
+const Bento: FC<BentoProps> = ({
+  className,
+  children,
+  image,
+  imageAlt,
+  imageClassName,
+  priority,
+  bgEffect,
+}) => (
   <div className={clsx(defaultStyle, className)}>
     {image && (
       <Image
@@ -26,6 +35,7 @@ const Bento: FC<BentoProps> = ({ className, children, image, imageAlt, priority,
           'absolute inset-0 object-cover', // Expand to cover the entire card
           bgEffect &&
             'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
+          imageClassName,
         )}
         priority={priority}
         aria-hidden={!imageAlt}
