@@ -28,10 +28,10 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
     if (avatarError || !avatar) return null;
 
     return {
-      url: buildImageUrl(avatar.asset),
+      url: buildImageUrl(`${avatar.combination_key}.png`),
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
-      homePath: `/a/${userUuid}`,
+      uuid: userUuid,
     };
   } catch (e) {
     return null;

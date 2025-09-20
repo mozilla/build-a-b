@@ -71,12 +71,12 @@ export type AvatarData = {
   url: string;
   name: string;
   bio: string;
-  homePath: string;
+  uuid: string;
 };
 
 export type DatabaseAvatarResponse = Pick<
   Database['public']['Tables']['avatars']['Row'],
-  'asset' | 'character_story' | 'first_name' | 'last_name' | 'id'
+  'image_url' | 'character_story' | 'first_name' | 'last_name' | 'id' | 'combination_key'
 >;
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
