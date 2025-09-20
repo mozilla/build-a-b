@@ -20,7 +20,7 @@ const BentoPlanet: FC<BentoPlanetProps> = ({ className }) => {
       <div className="flex flex-col gap-4 p-4 relative rounded-[0.75rem] w-full h-full bg-white/50 justify-center items-center text-center">
         <h2 className="text-charcoal text-title-1">How would your avatar live in space?</h2>
         <Image
-          src="/assets/images/icons/camera.svg"
+          src="/assets/images/icons/camera.webp"
           width={60}
           height={70}
           className="h-auto"
