@@ -46,7 +46,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
   return (
     <section className="mb-4 landscape:mb-8">
       <Bento image="/assets/images/space.webp">
-        <div className="relative p-10 landscape:pt-20 bg-gradient-to-r from-black to-transparent">
+        <div className="relative p-4 landscape:p-8 landscape:pt-20 bg-gradient-to-r from-black to-transparent">
           <div className="flex flex-col landscape:flex-row gap-4 items-end">
             <div className="flex flex-col gap-4">
               <h2 className="text-title-1 text-balance">The Countdown is On</h2>
@@ -56,7 +56,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
                 that refused to play by Big Tech’s rules.
               </p>
             </div>
-            <div className="max-w-full landscape:min-w-[25rem] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg py-6 px-6">
+            <div className="max-w-full mx-auto landscape:min-w-[25rem] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg py-6 px-6">
               <dl className="flex justify-center gap-7 text-center" aria-live="polite">
                 <div
                   className="flex flex-col-reverse relative
@@ -97,15 +97,11 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
               </dl>
             </div>
           </div>
-          <div className="flex flex-col landscape:flex-row gap-4 mt-8 p-6 landscape:mt-12 landscape:py-12 pr-12 rounded-lg bg-white border-2 border-foreground">
-            <Image
-              src="/assets/images/icons/rocket.webp"
-              width={144}
-              height={144}
-              alt=""
-              className="relative -ml-4 landscape:ml-auto"
-            />
-            <div className="flex flex-col gap-4 items-start">
+          <div className="flex flex-col landscape:flex-row gap-4 mt-6 p-4 landscape:mt-12 landscape:py-12 pr-12 rounded-lg bg-white border-2 border-foreground">
+            <div className="relative w-[8.5rem] h-[8.5rem] -ml-4 landscape:ml-auto">
+              <Image src="/assets/images/icons/rocket.webp" fill sizes="8.5rem" alt="" />
+            </div>
+            <div className="flex flex-1 flex-col gap-4 items-start">
               <p className="text-body-regular text-charcoal">
                 Share your Billionaire shenanigans by Friday, October 10th with{' '}
                 <strong>@Firefox</strong> and <strong>#BillionaireBlastOff</strong> for a chance to

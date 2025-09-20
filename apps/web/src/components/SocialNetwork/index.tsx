@@ -28,17 +28,17 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
               title={title}
               aria-label={title}
               className="relative inline-flex
-                                    items-center justify-center
-                                    rounded-full overflow-hidden 
-                                    transition-transform duration-300
-                                    hover:-rotate-30 group"
+                         items-center justify-center
+                         rounded-full overflow-hidden 
+                         transition-transform duration-300
+                         hover:-rotate-30 group"
             >
-              <Image src={src} alt={alt} width={42} height={42} className="" />
+              <Image src={src} alt={alt} width={42} height={42} className="h-auto w-auto" />
               <span
                 className="absolute inset-0
-                                            bg-gradient-to-br from-transparent to-secondary-blue
-                                            opacity-0 group-hover:opacity-70
-                                            transition-opacity duration-300"
+                           bg-gradient-to-br from-transparent to-secondary-blue
+                           opacity-0 group-hover:opacity-70
+                           transition-opacity duration-300"
               />
             </Link>
           </li>
