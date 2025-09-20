@@ -8,6 +8,7 @@ import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import { PrimaryContextProvider } from '../PrimaryFlowContext';
 import AvatarView from './AvatarView';
+import { evaluateFlag } from '@/app/flags';
 
 export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
   /**
@@ -30,18 +31,19 @@ function hasAvatar(data?: AvatarData | null): data is AvatarData {
   return Boolean(data?.url);
 }
 
-const AvatarBento: FC<AvatarBentoProps> = ({
+const AvatarBento: FC<AvatarBentoProps> = async ({
   avatarData,
   primaryFlowData,
   image,
   ...bentoProps
 }) => {
   const hasGeneratedAvatar = hasAvatar(avatarData);
+  const showPlaypenButtons = await evaluateFlag('showAvatarPlaypenButtons');
 
   return (
     <div className="portrait:flex-col landscape:grid landscape:grid-cols-2 landscape:grid-rows-3 landscape:gap-8 h-full">
       <div
-        className={`portrait:mb-4 landscape:col-span-2 landscape:row-span-1 h-[43.75rem] landscape:h-full ${hasGeneratedAvatar ? 'landscape:row-span-2' : 'landscape:row-span-3'}`}
+        className={`landscape:col-span-2 landscape:row-span-1 h-[43.75rem] landscape:h-full ${hasGeneratedAvatar && showPlaypenButtons ? 'portrait:mb-4 landscape:row-span-2' : 'landscape:row-span-3'}`}
       >
         <Bento
           className={`
@@ -58,6 +60,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
           image={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : image}
+          imageClassName={hasGeneratedAvatar ? 'object-cover' : 'overflow-visible left-[-1.5rem]!'}
           priority
         >
           {hasGeneratedAvatar && (
@@ -107,7 +110,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
           )}
         </Bento>
       </div>
-      {hasGeneratedAvatar && (
+      {hasGeneratedAvatar && showPlaypenButtons && (
         <>
           <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
             <BentoPlaypenSelfie />
