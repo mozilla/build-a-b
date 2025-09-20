@@ -5,6 +5,7 @@ import type { ChoiceGroup } from '@/types';
 import Image from 'next/image';
 import { type FC } from 'react';
 import MeetAstroBento from '../../MeetAstroBento';
+import BrowserBento from '../../BrowserBento';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import { useRouter } from 'next/navigation';
 
@@ -232,7 +233,11 @@ const CompletionScreen: FC = () => {
 
       {/* Avatar container - centered */}
       <div className="flex flex-col items-center gap-4 z-10 mt-[2.5rem] landscape:mt-0">
-        <div className="w-[22.4375rem] h-[28.5rem] landscape:w-[28.6875rem] landscape:h-[28.6875rem] relative overflow-hidden rounded-[0.532rem]">
+        <div
+          className="flex flex-col justify-end relative overflow-hidden 
+                        rounded-[0.532rem] w-[22.4375rem] h-[28.5rem] p-4 
+                        landscape:w-[28.6875rem] landscape:h-[28.6875rem]"
+        >
           {/* Avatar Background Image */}
           {avatarData && (
             <Image
@@ -245,20 +250,14 @@ const CompletionScreen: FC = () => {
 
           {/* MeetAstroBento overlay - for both mobile and landscape */}
           {avatarData && (
-            <div className="absolute inset-x-0 bottom-4 px-4">
-              <MeetAstroBento
-                active={true}
-                size="completion"
-                activeContent={
-                  <div>
-                    <div className="text-lg font-bold mb-1">
-                      Meet <span className="text-purple-600">{avatarData.name}</span>
-                    </div>
-                    <div className="text-sm">{avatarData.bio}</div>
-                  </div>
-                }
-              />
-            </div>
+            <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
+              <div className="p-4">
+                <div className="text-lg font-bold mb-1 text-charcoal">
+                  Meet <span className="text-purple-600">{avatarData.name}</span>
+                </div>
+                <div className="text-sm text-charcoal">{avatarData.bio}</div>
+              </div>
+            </BrowserBento>
           )}
         </div>
       </div>
