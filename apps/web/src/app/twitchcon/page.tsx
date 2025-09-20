@@ -34,7 +34,7 @@ export default async function Page() {
   return (
     <>
       <Hero image="/assets/images/hero-twitchcon.webp" ariaLabel="Hero section - TwitchCon 2025">
-        <div className="relative flex flex-col p-10 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
+        <div className="relative flex flex-col p-4 landscape:p-8 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
           <h6 className="text-nav-item">Billionaire Blast Off Presents</h6>
           <h1 className="text-title-1">Catch Billionaire Blastoff at TwitchCon 2025</h1>
           <p className="text-body-regular">
@@ -90,7 +90,7 @@ export default async function Page() {
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
         <Bento className="border-none">
           <Window className="bg-common-ash">
-            <div className="p-12 flex flex-col gap-4">
+            <div className="p-4 landscape:p-8 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">Build a Billionaire Hologram</h2>
               <p className="text-body-regular text-charcoal">
                 Create your very own Billionaire at the Holographic Kiosk and then take control of
