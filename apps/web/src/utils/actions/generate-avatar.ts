@@ -10,7 +10,6 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
     const supabase = await createClient();
     const searchPattern = options.join('-');
 
-    // TODO: FILTER BY POSE
     const { data: selectedAvatar, error } = await supabase
       .rpc('get_random_avatar', {
         search_pattern: searchPattern,
@@ -26,7 +25,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       .single<DatabaseUserResponse>();
 
     return {
-      url: buildImageUrl(selectedAvatar.asset),
+      url: buildImageUrl(`${selectedAvatar.combination_key}.png`),
       bio: selectedAvatar.character_story || '',
       name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,
       uuid: newUser?.uuid || '',
