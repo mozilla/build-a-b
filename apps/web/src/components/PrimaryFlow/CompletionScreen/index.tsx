@@ -2,15 +2,13 @@
 
 import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
+import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
 import { type FC } from 'react';
-import MeetAstroBento from '../../MeetAstroBento';
 import BrowserBento from '../../BrowserBento';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import { useRouter } from 'next/navigation';
 
 const CompletionScreen: FC = () => {
-  const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
 
   // Get all selected choices in the correct order
@@ -20,7 +18,7 @@ const CompletionScreen: FC = () => {
     .map((group) => userChoices[group]!);
 
   return (
-    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-4 pb-8 pt-[2rem] landscape:py-10 landscape:px-0 relative">
+    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative">
       {/* Floating Icons */}
       {avatarData ? (
         /* When avatar is loaded, split icons: 3 to the left, 2 to the right (landscape) OR 3 top, 2 bottom (mobile) */
@@ -278,7 +276,9 @@ const CompletionScreen: FC = () => {
       {avatarData && (
         <button
           className="secondary-button absolute bottom-8 right-8"
-          onClick={() => router.push(avatarData.homePath)}
+          onClick={() => {
+            saveUserAvatar(avatarData.uuid);
+          }}
         >
           Continue
         </button>
