@@ -46,7 +46,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
   };
 
   return (
-    <div className="flex flex-col h-full p-4 pb-8 landscape:py-10 landscape:px-0 landscape:items-center">
+    <div className="flex flex-col h-full p-4 pb-8 landscape:py-2 landscape:px-0 landscape:items-center">
       {/* Logo - only show on landscape in body */}
       <div className="hidden landscape:block">
         <Image

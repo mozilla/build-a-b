@@ -18,7 +18,7 @@ const CompletionScreen: FC = () => {
     .map((group) => userChoices[group]!);
 
   return (
-    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-4 pb-8 pt-[2rem] landscape:py-10 landscape:px-0 relative">
+    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative">
       {/* Floating Icons */}
       {avatarData ? (
         /* When avatar is loaded, split icons: 3 to the left, 2 to the right (landscape) OR 3 top, 2 bottom (mobile) */

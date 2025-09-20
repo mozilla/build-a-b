@@ -17,7 +17,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const selectedChoice = userChoices[activeGroup]?.value;
 
   return (
-    <div className="flex flex-col h-full p-4 pb-8 landscape:py-10 landscape:px-0 landscape:items-center">
+    <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
       {/* Logo - only show on landscape */}
       <Image
         src="/assets/images/Billionaire-Logo.svg"
@@ -30,7 +30,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row or spacer */}
-        <div className="pt-[2.625rem] mb-6">
+        <div className="pt-[5rem] mb-6">
           <SelectedIconsRow />
         </div>
 
