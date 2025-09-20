@@ -71,7 +71,7 @@ export default async function Home({ avatarData }: PageProps) {
             className="flex w-full h-full"
             back={
               <Window>
-                <div className="p-8">
+                <div className="p-4 landscape:p-8">
                   <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
                   <p>
                     Every post gets you closer to the stratosphere, which is where we&apos;ll be
@@ -79,19 +79,16 @@ export default async function Home({ avatarData }: PageProps) {
                     for the world to see live at the climax of TwitchCon.{' '}
                     <strong>To the mooooon!</strong>
                   </p>
-                  <a className="secondary-button mt-6" href="#">
-                    Button
-                  </a>
                 </div>
               </Window>
             }
             effect="flip"
             image="/assets/images/rocket.webp"
           >
-            <h3 className="text-title-1 max-w-sm mt-12 ml-8">
+            <h3 className="text-title-1 max-w-sm mt-12 ml-4 landscape:ml-8">
               Send Your Fake Little Billionaires Into Very Real Orbit.
             </h3>
-            <p className="max-w-2xs mt-4 ml-8">
+            <p className="max-w-2xs mt-4 ml-4 landscape:ml-8">
               Post content of your billionaire for a shot at sending them to actual, for-real-real
               space.
             </p>
@@ -103,7 +100,7 @@ export default async function Home({ avatarData }: PageProps) {
             className="h-full"
             effect="flip"
             back={
-              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+              <div className="h-full w-full p-4 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
                   <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
                   <p className="text-body-small text-[0.9rem]">
@@ -121,7 +118,7 @@ export default async function Home({ avatarData }: PageProps) {
               </div>
             }
           >
-            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+            <div className="h-full w-full px-4 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
               <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
               <p className="text-body-regular">
                 The go to space on rockets of your data. But there is another way.
@@ -138,21 +135,20 @@ export default async function Home({ avatarData }: PageProps) {
               image="/assets/images/data-war.webp"
               back={
                 <Window>
-                  <div className="p-8">
+                  <div className="p-4 landscape:p-8">
                     <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
                     <p>
                       Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
                       world so you can build a toy rocket and go into space?
                     </p>
-                    <a className="secondary-button mt-6" href="#">
-                      Button
-                    </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute bottom-6 left-6 text-title-1">Data War</h2>
+                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  Data War
+                </h2>
               </div>
             </BentoDual>
           ) : null}
@@ -166,21 +162,18 @@ export default async function Home({ avatarData }: PageProps) {
               image="/assets/images/join-twitchcon.webp"
               back={
                 <Window>
-                  <div className="p-8">
+                  <div className="p-4 landscape:p-8">
                     <h4 className="text-title-1 pb-4">Party at the moontower</h4>
                     <p>
                       Join us IRL or right here during TwitchCon to help us send all the
                       billionaires off to space in style!
                     </p>
-                    <a className="secondary-button mt-6" href="#">
-                      Button
-                    </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute bottom-6 left-6 text-title-1">
+                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
                   Join us at
                   <br />
                   Twitchcon
