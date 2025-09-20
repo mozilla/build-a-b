@@ -50,9 +50,6 @@ const avatarBentoData: AvatarBentoProps = {
   },
   image: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
-  defaultContent: 'Unlimited power.\n Zero accountability. \n What could go wrong?',
-  activeContent:
-    'Unlike Big Tech billionaires watching your every click, Firefox lets you play (and browse) without being tracked. Build your avatar and see what chaos unfolds when power goes unchecked.',
 };
 
 interface PageProps {
