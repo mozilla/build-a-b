@@ -3,11 +3,12 @@ import BentoDual from '../BentoDual';
 import clsx from 'clsx';
 import Image from 'next/image';
 
-export interface BentoPlanetProps {
+export interface GalleryBentoLargeProps {
   className?: string;
+  disabled?: boolean;
 }
 
-const BentoPlanet: FC<BentoPlanetProps> = ({ className }) => {
+const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled }) => {
   const back = (
     <div className="relative rounded-[0.75rem] w-full h-full">
       <Image
@@ -36,9 +37,11 @@ const BentoPlanet: FC<BentoPlanetProps> = ({ className }) => {
       className={clsx('aspect-square', className)}
       image="/assets/images/placeholders/planet.jpg"
       effect="flip"
+      bgEffect={disabled}
       back={back}
+      disabled={disabled}
     />
   );
 };
 
-export default BentoPlanet;
+export default GalleryBentoLarge;

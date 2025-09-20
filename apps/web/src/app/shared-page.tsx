@@ -1,8 +1,7 @@
-// import { getAllFlags } from '@/app/flags';
 import Ticker from '@/components/Ticker';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
-import BentoScale from '@/components/BentoScale';
-import BentoPlanet from '@/components/BentoPlanet';
+import GalleryBentoSmall from '@/components/GalleryBentoSmall';
+import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
 import Image from 'next/image';
@@ -191,32 +190,19 @@ export default async function Home({ avatarData }: PageProps) {
           ) : null}
         </div>
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5">
-          {/* Gallery Bento (Large) */}
-          {flags?.demoGalleryBento ? <BentoPlanet className="h-full" /> : null}
+          <GalleryBentoLarge className="h-full" disabled />
         </div>
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-5 landscape:row-start-6">
-          {/* Gallery Bento (Small) */}
-          {flags?.demoGalleryBento ? (
-            <BentoScale image="/assets/images/placeholders/diamond.jpg" />
-          ) : null}
+          <GalleryBentoSmall image="/assets/images/placeholders/diamond.jpg" />
         </div>
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-7 landscape:row-start-6">
-          {/* Gallery Bento (Small) */}
-          {flags?.demoGalleryBento ? (
-            <BentoScale image="/assets/images/placeholders/rocket.jpg" />
-          ) : null}
+          <GalleryBentoSmall image="/assets/images/placeholders/rocket.jpg" />
         </div>
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-9 landscape:row-start-6">
-          {/* Gallery Bento (Small) */}
-          {flags?.demoGalleryBento ? (
-            <BentoScale image="/assets/images/placeholders/crown.jpg" />
-          ) : null}
+          <GalleryBentoSmall image="/assets/images/placeholders/crown.jpg" />
         </div>
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
-          {/* Gallery Bento (Small) */}
-          {flags?.demoGalleryBento ? (
-            <BentoScale image="/assets/images/placeholders/meteor.jpg" />
-          ) : null}
+          <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
         </div>
       </main>
     </>
