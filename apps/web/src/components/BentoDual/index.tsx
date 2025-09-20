@@ -6,6 +6,7 @@ import { BentoProps } from '../Bento';
 export interface BentoDualProps extends BentoProps {
   back: ReactNode;
   effect: 'flip' | 'fade';
+  disabled?: boolean;
 }
 
 const wrapperFlipClasses =
@@ -13,7 +14,7 @@ const wrapperFlipClasses =
 const wrapperFadeClasses = '';
 
 const baseBentoClasses =
-  'w-full h-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal';
+  'absolute w-full h-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal';
 
 const frontFlipCardClasses = 'absolute w-full h-full backface-hidden';
 const backFlipCardClasses = `${frontFlipCardClasses} [transform:rotateY(180deg)]`;
@@ -30,24 +31,23 @@ const BentoDual: FC<BentoDualProps> = ({
   imageAlt,
   bgEffect,
   effect = 'flip',
+  disabled,
 }) => {
   const wrapperEffectClasses = effect == 'flip' ? wrapperFlipClasses : wrapperFadeClasses;
 
-  const wrapperClasses = clsx(wrapperEffectClasses, className);
+  const wrapperClasses = disabled ? clsx(className) : clsx(wrapperEffectClasses, className);
   const frontCardClasses = clsx(
-    baseBentoClasses,
     effect === 'flip' ? frontFlipCardClasses : frontFadeCardClasses,
   );
   const backCardClasses = clsx(
-    baseBentoClasses,
     effect === 'flip' ? backFlipCardClasses : backFadeCardClasses,
   );
 
   return (
-    <div className="group [perspective:1000px] rounded-[0.75rem] w-full h-full cursor-pointer">
+    <div className={`group [perspective:1000px] rounded-[0.75rem] w-full h-full ${disabled ? '' : 'cursor-pointer'}`}>
       <div className={wrapperClasses}>
         {/* Front Face */}
-        <div className={frontCardClasses}>
+        <div className={`${baseBentoClasses} ${disabled ? '' : frontCardClasses}`}>
           {image && (
             <Image
               src={image}
@@ -64,7 +64,10 @@ const BentoDual: FC<BentoDualProps> = ({
           <div className="absolute inset-0 z-1">{children}</div>
         </div>
         {/* Back Face */}
-        <div className={backCardClasses}>{back}</div>
+        {disabled ? 
+          null : (
+          <div className={`${baseBentoClasses} ${backCardClasses}`}>{back}</div>
+        )}
       </div>
     </div>
   );
