@@ -46,8 +46,8 @@ const avatarBentoData: AvatarBentoProps = {
     title: 'Make Space a Better Place. Add a Billionaire.',
     description:
       'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
-    createAvatarCtaText: 'Make a Custom Billionaire',
-    randomAvatarCtaText: 'Get a Surprise Billionaire',
+    createAvatarCtaText: 'Start Building Your Billionaire',
+    randomAvatarCtaText: 'Create a Random Billionaire',
   },
   image: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
