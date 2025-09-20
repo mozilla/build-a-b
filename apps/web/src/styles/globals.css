@@ -13,6 +13,7 @@
 
 @theme {
   --color-charcoal: #333336;
+  --color-foreground: #11181c;
   --color-common-ash: #f8f6f4;
   --color-secondary-blue: #00a6f9;
   --color-secondary-purple: #754fe0;
@@ -24,11 +25,8 @@
 
 /* Theming overrides */
 @theme inline {
-  --color-foreground: var(--foreground);
-
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-
   --container-width-landscape: 82.0625rem;
   --container-width-portrait: 22.375rem;
 }
@@ -37,7 +35,7 @@
   .site-container {
     @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
     @variant landscape {
-      @apply max-w-[var(--container-width-landscape)] py-16;
+      @apply max-w-[var(--container-width-landscape)] py-20;
     }
   }
 
@@ -45,8 +43,12 @@
     @apply relative p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-2 border-common-ash rounded-xl;
   }
 
-  .rounded-button {
-    @apply inline-flex px-4 py-1 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
+  .primary-button {
+    @apply inline-flex px-4 py-1 rounded-3xl border-2 bg-accent border-accent text-charcoal font-bold hover:bg-transparent hover:text-accent transition-colors duration-300 cursor-pointer;
+  }
+
+  .secondary-button {
+    @apply inline-flex items-center justify-center px-4 h-12 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer bg-[rgba(24,24,27,0.30)];
   }
 }
 
@@ -88,4 +90,117 @@ body {
 
 .backface-hidden {
   backface-visibility: hidden;
+}
+
+/* Header Animation Keyframes */
+@keyframes flier-1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  5.555% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+  100% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+}
+
+@keyframes flier-2 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  4.166% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+  100% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+}
+
+@keyframes flier-3 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  26.388% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+  100% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+}
+
+@keyframes floater-1 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(-11rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-2 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(2.9375rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-3 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  8.333% {
+    transform: translateY(4.4375rem) rotate(11.444deg);
+  }
+  91.666% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+/* Header Animation Classes */
+.animate-flier-1 {
+  animation: flier-1 36s linear infinite;
+  animation-delay: 0s;
+}
+
+.animate-flier-2 {
+  animation: flier-2 36s linear infinite;
+  animation-delay: 6s;
+}
+
+.animate-flier-3 {
+  animation: flier-3 36s linear infinite;
+  animation-delay: 18s;
+}
+
+.animate-floater-1 {
+  animation: floater-1 36s ease-in-out infinite;
+  animation-delay: 12s;
+}
+
+.animate-floater-2 {
+  animation: floater-2 36s ease-in-out infinite;
+  animation-delay: 28s;
+}
+
+.animate-floater-3 {
+  animation: floater-3 6s ease-in-out infinite;
+  animation-delay: 0s;
 }

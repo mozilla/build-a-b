@@ -1,15 +1,24 @@
 'use client';
 
-import { ChoiceGroup, type ChoiceConfig } from '@/types';
+import { ChoiceGroup, type AvatarData, type ChoiceConfig } from '@/types';
 import {
   createContext,
   useContext,
+  useMemo,
   useState,
   type Dispatch,
   type FC,
   type PropsWithChildren,
   type SetStateAction,
 } from 'react';
+
+const initialChoices = {
+  'core-drive': null,
+  'legacy-plan': null,
+  'origin-story': null,
+  'power-play': null,
+  'public-mask': null,
+};
 
 interface PrimaryFlowContextValue {
   activeGroup: ChoiceGroup | null;
@@ -18,20 +27,29 @@ interface PrimaryFlowContextValue {
   setUserChoices: Dispatch<SetStateAction<Record<ChoiceGroup, ChoiceConfig | null>>>;
   showConfirmation: ChoiceGroup | null;
   setShowConfirmation: Dispatch<SetStateAction<ChoiceGroup | null>>;
+  avatarData: AvatarData | null;
+  setAvatarData: Dispatch<SetStateAction<AvatarData | null>>;
+  reset: () => void;
 }
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
 
-export const PrimaryContextProvider: FC<PropsWithChildren> = ({ children }) => {
+export const PrimaryContextProvider: FC<PropsWithChildren<{ intialData: AvatarData | null }>> = ({
+  children,
+  intialData,
+}) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
-  const [userChoices, setUserChoices] = useState<Record<ChoiceGroup, ChoiceConfig | null>>({
-    'core-drive': null,
-    'legacy-plan': null,
-    'origin-story': null,
-    'power-play': null,
-    'public-mask': null,
-  });
+  const [avatarData, setAvatarData] = useState<AvatarData | null>(intialData);
+  const [userChoices, setUserChoices] =
+    useState<Record<ChoiceGroup, ChoiceConfig | null>>(initialChoices);
+
+  const reset = () => {
+    setUserChoices(initialChoices);
+    setShowConfirmation(null);
+    setActiveGroup(null);
+    setAvatarData(null);
+  };
 
   return (
     <PrimaryFlowContext
@@ -42,6 +60,9 @@ export const PrimaryContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setUserChoices,
         showConfirmation,
         setShowConfirmation,
+        avatarData,
+        setAvatarData,
+        reset,
       }}
     >
       {children}

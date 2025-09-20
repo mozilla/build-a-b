@@ -19,10 +19,9 @@ export interface FooterProps {
   }[];
   ctaCopy: string[];
   ctaLabel: string;
-  message: string;
 }
 
-const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message }) => {
+const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   const currentYear = new Date();
   const pathname = usePathname();
 
@@ -38,12 +37,12 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
           width={373}
           height={220}
           alt="Billionaire Logo"
-          className="-ml-2 max-w-[14rem] landscape:max-w-[26rem]"
+          className="-ml-2 w-[13.375rem] landscape:w-[21.75rem]"
         />
       </Link>
 
       <div className="landscape:flex landscape:justify-between landscape:mt-14 landscape:mb-16">
-        <nav className="text-accent uppercase font-bold" aria-label="Footer navigation">
+        <nav className="text-accent text-nav-item" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
             {links.map(({ href, label, title }) => (
               <li key={href}>
@@ -108,27 +107,80 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, message })
               </span>
             ))}
           </p>
-          <Link href="#" className="rounded-button" title="Build an avatar now">
+          <Link href="#" className="secondary-button" title="Build an avatar now">
             {ctaLabel}
           </Link>
         </div>
-        <p className="landscape:self-end">{message}</p>
+        <p className="landscape:self-end">
+          <Link
+            href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            aria-label="Go to Privacy Policy page"
+            title="Go to Privacy Policy page"
+            className="underline"
+            target="_blank"
+          >
+            Privacy Policy
+          </Link>{' '}
+          &bull;{' '}
+          <Link
+            href="https://www.mozilla.org/en-US/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            aria-label="Go to Terms and Conditions page"
+            title="Go to Terms and Conditions page"
+            className="underline"
+            target="_blank"
+          >
+            Terms & Conditions
+          </Link>
+        </p>
       </div>
 
-      <div className="flex flex-row justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
+      <div className="flex flex-col landscape:flex-row gap-1 justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
-        <span>
-          Built by{' '}
+        <span className="flex gap-x-2 items-center">
+          <span className="whitespace-nowrap">Powered by</span>
+          <Link
+            href="https://www.firefox.com/"
+            target="_blank"
+            title="Go to Firefox website"
+            className="flex items-center pr-1 gap-1 font-bold"
+          >
+            <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.5rem] landscape:h-[1.5rem]">
+              <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" fill />
+            </span>
+            Firefox
+          </Link>
+          <span className="font-bold">&bull;</span>{' '}
+          <span className="ml-1 whitespace-nowrap">Built by</span>
           <Link
             href="https://www.mondorobot.com/"
             target="_blank"
             title="Visit MondoRobot website"
-            className="underline"
+            className="inline-block relative w-[5.5rem] h-[0.7rem] landscape:w-[8.2rem] landscape:h-[1rem]"
           >
-            mondorobot
+            <Image alt="Mondorobot logo" src="/assets/images/mondo-robot-logo.webp" fill />
           </Link>
-          .
         </span>
+      </div>
+
+      <div
+        id="footer-animations"
+        className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden"
+      >
+        {/* Floaters - peek in from edges */}
+        <Image
+          src="/assets/images/header-animations/floater3.svg"
+          alt=""
+          width={88.3}
+          height={134}
+          className="absolute animate-floater-3"
+          style={{
+            top: '-7.5rem',
+            left: '67.88375rem',
+            transform: 'rotate(11.444deg)',
+            width: '5.51875rem',
+            height: '8.375rem',
+          }}
+        />
       </div>
     </footer>
   );
