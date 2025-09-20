@@ -18,6 +18,14 @@ const flags = {
       return process.env.FLAG_DEMO_LARGE_TEASER_BENTO === 'true';
     },
   }),
+  showAvatarPlaypenButtons: flag({
+    key: 'show-avatar-playpen-buttons',
+    description: 'Shows the avatar playpen buttons when avatar is generated',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';
+    },
+  }),
 } as const;
 
 /**
