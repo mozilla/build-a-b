@@ -86,7 +86,7 @@ export default async function Home({ avatarData }: PageProps) {
                 </div>
               </Window>
             }
-            effect="fade"
+            effect="flip"
             image="/assets/images/rocket.webp"
           >
             <h3 className="text-title-1 max-w-sm mt-12 ml-8">
@@ -102,7 +102,7 @@ export default async function Home({ avatarData }: PageProps) {
           {/* BBOOWYW Bento */}
           <BentoDual
             className="h-full"
-            effect="fade"
+            effect="flip"
             back={
               <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
