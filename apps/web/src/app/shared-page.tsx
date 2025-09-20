@@ -72,28 +72,40 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window>
                 <div className="p-8">
-                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
-                  <p>
-                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
-                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
-                    for the world to see live at the climax of TwitchCon.{' '}
-                    <strong>To the mooooon!</strong>
-                  </p>
-                  <a className="secondary-button mt-6" href="#">
-                    Button
-                  </a>
+                  <h4 className="text-title-1 pb-4">Get your Billionaire on board for launch.</h4>
+                  <ul className='flex flex-col'>
+                    <li className='flex flex-row items-center mb-4'>
+                      <span className='pt-4 pb-3 pl-7 pr-7 border-2 mr-8 rounded-full text-[1.5rem]'>1</span>
+                      <span>
+                        Share your Billionaire avatar by <strong>Friday, October 10th </strong> 
+                        with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
+                      </span>
+                    </li>
+                    <li className='flex flex-row items-center mb-4'>
+                      <span className='pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]'>2</span>
+                      <span>
+                        Keep an eye on your comments and DMs to see if your little Billionaire was chosen for launch.
+                      </span>
+                      </li>
+                      <li className='flex flex-row items-center mb-4'>
+                        <span className='pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]'>3</span>
+                        <span>
+                          Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed at the <strong className='underline'>TwitchCon Block Party</strong> and right here on this site.
+                        </span>
+                      </li>
+                  </ul>
+                 
                 </div>
               </Window>
             }
             effect="flip"
             image="/assets/images/rocket.webp"
           >
-            <h3 className="text-title-1 max-w-sm mt-12 ml-8">
-              Send Your Fake Little Billionaires Into Very Real Orbit.
+            <h3 className="text-title-1 max-w-2sm mt-12 ml-8">
+              Rocket your Billionaire into a permanent time-out
             </h3>
-            <p className="max-w-2xs mt-4 ml-8">
-              Post content of your billionaire for a shot at sending them to actual, for-real-real
-              space.
+            <p className="max-w-4xs mt-4 ml-8">
+              Post content of your Billionaire with <b>@Firefox</b> and <b>#BillionaireBlastOff</b> for a shot at sending them to actual, for-real-real space.
             </p>
           </BentoDual>
         </div>
@@ -139,20 +151,21 @@ export default async function Home({ avatarData }: PageProps) {
               back={
                 <Window>
                   <div className="p-8">
-                    <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
+                    <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
                     <p>
-                      Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
-                      world so you can build a toy rocket and go into space?
+                      Data War is a game of Billionaire brinksmanship where space is the place,
+                       data is the currency, and chaos reigns. Dropping this week at TwitchCon!
                     </p>
                     <a className="secondary-button mt-6" href="#">
-                      Button
+                      Check out Data War
                     </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute bottom-6 left-6 text-title-1">Data War</h2>
+                <p className='absolute bottom-26 left-6'>DROPPING SOON</p>
+                <h2 className="absolute bottom-6 left-6 text-title-1">Data War:<br/>The Card Game</h2>
               </div>
             </BentoDual>
           ) : null}
@@ -167,21 +180,21 @@ export default async function Home({ avatarData }: PageProps) {
               back={
                 <Window>
                   <div className="p-8">
-                    <h4 className="text-title-1 pb-4">Party at the moontower</h4>
+                    <h4 className="text-title-1 pb-4">Two Launches in One</h4>
                     <p>
-                      Join us IRL or right here during TwitchCon to help us send all the
-                      billionaires off to space in style!
+                      We&apos;re launching a new card game, Data War, and launching Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this site to follow along.
                     </p>
                     <a className="secondary-button mt-6" href="#">
-                      Button
+                      TwitchCon Details
                     </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+                <p className='absolute bottom-26 left-6'>EYEBROW</p>
                 <h2 className="absolute bottom-6 left-6 text-title-1">
-                  Join us at
+                  Blast off at
                   <br />
                   Twitchcon
                 </h2>
