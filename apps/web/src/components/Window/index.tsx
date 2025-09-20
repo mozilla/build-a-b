@@ -14,7 +14,9 @@ const Window: FC<WindowProps> = ({ children, className }) => {
         <span className="w-2.5 h-2.5 rounded-full border-2"></span>
         <span className="w-2.5 h-2.5 rounded-full border-2"></span>
       </div>
-      <div className={clsx('h-full flex flex-col justify-center', className)}>{children}</div>
+      <div className={clsx('h-[calc(100%-1.75rem)] flex flex-col justify-center', className)}>
+        {children}
+      </div>
     </div>
   );
 };
