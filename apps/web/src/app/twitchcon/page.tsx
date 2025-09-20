@@ -5,8 +5,32 @@ import IconCard from '@/components/IconCard';
 import CardsSection from '@/components/CardsSection';
 import Window from '@/components/Window';
 import Bento from '@/components/Bento';
+import ImageGallery from '@/components/ImageGallery';
 
 export default async function Page() {
+  const imagesForGallery = [
+    {
+      alt: 'Alt Text 1',
+      src: '/assets/images/test.webp',
+      href: 'http://www.firefox.com/',
+      title: 'Go to Firefox',
+    },
+    {
+      alt: 'Alt Text 2',
+      src: '/assets/images/test.webp',
+    },
+    {
+      alt: 'Alt Text 3',
+      src: '/assets/images/test.webp',
+      href: 'http://mondorobot.com',
+      title: 'Learn more',
+    },
+    {
+      alt: 'Alt Text 4',
+      src: '/assets/images/test.webp',
+    },
+  ];
+
   return (
     <>
       <Hero image="/assets/images/hero-twitchcon.webp" ariaLabel="Hero section - TwitchCon 2025">
@@ -96,7 +120,6 @@ export default async function Page() {
           className="landscape:w-[30%] aspect-square border-none"
         />
       </section>
-
       <CardsSection
         className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
         cards={[
@@ -138,6 +161,8 @@ export default async function Page() {
           Learn Data War: The Game
         </Link>
       </CardsSection>
+
+      <ImageGallery images={imagesForGallery} />
 
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
