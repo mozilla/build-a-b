@@ -6,6 +6,7 @@ import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
 import { type FC } from 'react';
 import BrowserBento from '../../BrowserBento';
+import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 
 const CompletionScreen: FC = () => {
@@ -19,19 +20,30 @@ const CompletionScreen: FC = () => {
 
   return (
     <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative">
+      {/* Logo - only show on landscape */}
+      {!avatarData && (
+        <Image
+          src="/assets/images/Billionaire-Logo.svg"
+          alt="Billionaire Logo"
+          width={162}
+          height={79}
+          className="hidden landscape:block landscape:self-center landscape:w-[10rem] landscape:h-[5rem] landscape:-rotate-[-8deg] absolute top-4 left-1/2 -translate-x-1/2 z-20"
+        />
+      )}
+
       {/* Floating Icons */}
       {avatarData ? (
         /* When avatar is loaded, split icons: 3 to the left, 2 to the right (landscape) OR 3 top, 2 bottom (mobile) */
         <>
           {/* Mobile layout - 3 top, 2 bottom with staggered positioning */}
-          <div className="landscape:hidden">
+          <div className="landscape:hidden z-30">
             {/* Top 3 icons */}
-            <div className="absolute top-[7rem] left-1/2 -translate-x-1/2 flex gap-[2rem]">
+            <div className="absolute top-[7rem] left-1/2 -translate-x-1/2 flex gap-[2rem] z-30">
               {selectedChoices.slice(0, 3).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] translate-y-0 translate-x-[-0.5rem]',
+                  'w-[5.75rem] h-[5.75rem] translate-y-[-2rem] translate-x-[-0.5rem]',
                   'w-[5.75rem] h-[5.75rem] translate-y-[0.75rem] translate-x-0',
-                  'w-[5.75rem] h-[5.75rem] translate-y-0 translate-x-[0.5rem]',
+                  'w-[5.75rem] h-[5.75rem] translate-y-[-1.5rem] translate-x-[0.5rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[-8deg]',
@@ -59,11 +71,11 @@ const CompletionScreen: FC = () => {
             </div>
 
             {/* Bottom 2 icons */}
-            <div className="absolute bottom-[1.5rem] left-1/2 -translate-x-1/2 flex gap-[3rem]">
+            <div className="absolute bottom-[1.5rem] left-1/2 -translate-x-1/2 flex gap-[3rem] z-30">
               {selectedChoices.slice(3, 5).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] translate-y-[0.5rem] translate-x-[-1rem]',
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-0.5rem] translate-x-[1rem]',
+                  'w-[5.75rem] h-[5.75rem] translate-y-[-5.5rem] translate-x-[-1rem]',
+                  'w-[5.75rem] h-[5.75rem] translate-y-[-4.8rem] translate-x-[1rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[9deg]',
@@ -96,8 +108,8 @@ const CompletionScreen: FC = () => {
             <div className="absolute left-[3.5rem] top-1/2 -translate-y-1/2">
               {selectedChoices.slice(0, 3).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] absolute top-[-5.75rem] left-0',
-                  'w-[5.75rem] h-[5.75rem] absolute top-[0.75rem] left-[7rem]',
+                  'w-[5.75rem] h-[5.75rem] absolute top-[-8.75rem] left-0',
+                  'w-[5.75rem] h-[5.75rem] absolute top-[-4.75rem] left-[7rem]',
                   'w-[5.75rem] h-[5.75rem] absolute top-[4.25rem] left-[3.5rem]',
                 ];
                 const imageClasses = [
@@ -129,7 +141,7 @@ const CompletionScreen: FC = () => {
             <div className="absolute right-[10rem] top-1/2 -translate-y-1/2">
               {selectedChoices.slice(3, 5).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] absolute top-[-3.25rem] left-[3.5rem]',
+                  'w-[5.75rem] h-[5.75rem] absolute top-[-6.25rem] left-[-2.5rem]',
                   'w-[5.75rem] h-[5.75rem] absolute top-[1.75rem] left-0',
                 ];
                 const imageClasses = [
@@ -161,7 +173,7 @@ const CompletionScreen: FC = () => {
         /* When loading, show icons in traditional layout */
         <>
           {/* Mobile layout - 3 top, 2 bottom */}
-          <div className="absolute top-8 left-1/2 -translate-x-1/2 landscape:hidden">
+          <div className="absolute top-1/2 -translate-y-[10rem] left-1/2 -translate-x-1/2 landscape:hidden">
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-4">
                 {selectedChoices.slice(0, 3).map((choice, index) => (
@@ -205,7 +217,7 @@ const CompletionScreen: FC = () => {
           </div>
 
           {/* Landscape layout - all 5 in a row */}
-          <div className="hidden landscape:block absolute top-8 left-1/2 -translate-x-1/2">
+          <div className="hidden landscape:block absolute top-1/2 -translate-y-[8rem] left-1/2 -translate-x-1/2">
             <div className="flex items-center gap-6">
               {selectedChoices.map((choice, index) => (
                 <div
@@ -246,7 +258,7 @@ const CompletionScreen: FC = () => {
             />
           )}
 
-          {/* MeetAstroBento overlay - for both mobile and landscape */}
+          {/* BrowserBento overlay - for both mobile and landscape */}
           {avatarData && (
             <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
               <div className="p-4">
@@ -262,13 +274,14 @@ const CompletionScreen: FC = () => {
 
       {/* Loading message when no avatar */}
       {!avatarData && (
-        <div className="absolute bottom-8 text-center">
-          <h1 className="text-mobile-title-2 landscape:text-5xl-custom font-sharp font-bold text-common-ash mb-2">
+        <div className="absolute left-1/2 -translate-x-1/2 text-center top-1/2 translate-y-8 landscape:translate-y-0">
+          <h1 className="text-mobile-title-2 landscape:text-5xl-custom font-sharp font-bold text-common-ash mb-2 landscape:mb-10 landscape:max-w-none landscape:whitespace-nowrap">
             We&apos;re Minting Your Billionaire
           </h1>
-          <p className="text-lg-custom landscape:text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] landscape:max-w-[35rem] mx-auto">
+          <p className="text-lg-custom landscape:text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] landscape:max-w-[35rem] mx-auto mb-[2rem]">
             Assembling unchecked wealth...
           </p>
+          <ProgressBar />
         </div>
       )}
 
