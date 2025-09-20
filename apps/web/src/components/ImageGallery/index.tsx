@@ -1,68 +1,48 @@
 import Link from 'next/link';
-import {FC} from 'react';
-import Image from 'next/image';
+import { FC } from 'react';
 import Bento from '@/components/Bento';
 
-export interface ImageGalleryProps{
-    images?: {
-        alt: string;
-        src: string;
-        href: string;
+export interface ImageGalleryProps {
+  images: {
+    alt: string;
+    src: string;
+    href?: string;
+    title?: string;
   }[];
 }
 
-
-const ImageGallery: FC<ImageGalleryProps> = ({images}) => {
-    const imagesToDisplay = images != undefined ?  images.slice(0, 4) : [];
-    return(
-        <section
-            className='mb-4 landscape:mb-8'
-        >
-            <div 
-                className='gallery-container flex 
-                            flex-row flex-wrap
-                            landscape:flex-nowrap
-                            justify-between gap-4'
-            >
-                {imagesToDisplay.map(({ href, alt, src}) => (
-                    <div
-                        key={href}
-                        className='gallery-image-item flex
-                                    flex-row
-                                    rounded-[0.75rem] relative'
-                    >
-                        {href.length > 0 && (
-                            <Link
-                                href={href}
-                                target='_blank'
-                                title={alt}
-                                aria-label={alt}
-                                className='w-full h-full'
-                            >
-
-                                <Bento
-                                    image={src}
-                                    imageAlt={alt}
-                                    className='w-[10.5rem] landscape:w-[18rem] border-none aspect-square' 
-                                />
-
-                            </Link>
-                        )}
-
-                        {href.length === 0 && (
-                            <Bento
-                                image={src}
-                                imageAlt=''
-                                className='w-[10.5rem] landscape:w-[18rem] border-none aspect-square' 
-                            />
-                        )}
-                    </div>
-                ))}
-            </div>
-
-        </section>
-    );
+const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
+  console.log(images.length);
+  return (
+    <section className="mb-4 landscape:mb-8 flex flex-row flex-wrap justify-between gap-y-4 landscape:gap-8">
+      {images.map(({ href, title, alt, src }, index) => {
+        const img = (
+          <Bento
+            image={src}
+            imageAlt=""
+            className="w-[10.5rem] landscape:w-[19rem] border-none aspect-square"
+          />
+        );
+        return (
+          <div key={index} className="relative">
+            {href ? (
+              <Link
+                href={href}
+                target="_blank"
+                title={title}
+                aria-label={alt}
+                className="w-full h-full"
+              >
+                {img}
+              </Link>
+            ) : (
+              img
+            )}
+          </div>
+        );
+      })}
+    </section>
+  );
 };
 
 export default ImageGallery;
-

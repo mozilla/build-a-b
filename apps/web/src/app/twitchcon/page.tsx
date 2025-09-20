@@ -8,33 +8,27 @@ import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
 
 export default async function Page() {
-
   const imagesForGallery = [
     {
-      alt: "Alt Text 1",
-      src: "/assets/images/image_gallery_test.webp",
-      href: "http://firefox.com"
+      alt: 'Alt Text 1',
+      src: '/assets/images/image_gallery_test.webp',
+      href: 'http://www.firefox.com/',
+      title: 'Go to Firefox',
     },
     {
-      alt: "Alt Text 2",
-      src: "/assets/images/image_gallery_test.webp",
-      href: ""
+      alt: 'Alt Text 2',
+      src: '/assets/images/image_gallery_test.webp',
     },
     {
-      alt: "Alt Text 3",
-      src: "/assets/images/image_gallery_test.webp",
-      href: "http://mondorobot.com"
+      alt: 'Alt Text 3',
+      src: '/assets/images/image_gallery_test.webp',
+      href: 'http://mondorobot.com',
+      title: 'Learn more',
     },
     {
-      alt: "Alt Text 4",
-      src: "/assets/images/image_gallery_test.webp",
-      href: "http://mysite.com"
+      alt: 'Alt Text 4',
+      src: '/assets/images/image_gallery_test.webp',
     },
-    {
-      alt: "Alt Text 5",
-      src: "/assets/images/image_gallery_test.webp",
-      href: "http://firefox.com"
-    }
   ];
 
   return (
@@ -168,6 +162,8 @@ export default async function Page() {
         </Link>
       </CardsSection>
 
+      <ImageGallery images={imagesForGallery} />
+
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
         cards={[
@@ -201,10 +197,6 @@ export default async function Page() {
           is right here.
         </p>
       </CardsSection>
-      <ImageGallery
-        images={imagesForGallery} 
-      />
-
     </>
   );
 }
