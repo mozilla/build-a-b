@@ -24,7 +24,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         alt="Billionaire Logo"
         width={162}
         height={79}
-        className="hidden landscape:block landscape:self-center landscape:w-[10rem] landscape:h-[5rem] landscape:-rotate-[8deg]"
+        className="hidden landscape:block landscape:self-center landscape:w-[10rem] landscape:h-[5rem] landscape:-rotate-[-8deg]"
       />
 
       {/* Mobile layout */}

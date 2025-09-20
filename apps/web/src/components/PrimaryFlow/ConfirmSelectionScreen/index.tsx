@@ -54,7 +54,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
           alt="Billionaire Logo"
           width={162}
           height={79}
-          className="w-[10rem] h-[5rem] -rotate-[8deg]"
+          className="w-[10rem] h-[5rem] -rotate-[-8deg]"
         />
       </div>
 
@@ -137,7 +137,7 @@ export const ConfirmSelectionHeaderLogo: FC = () => (
     alt="Billionaire Logo"
     width={162}
     height={79}
-    className="w-[8rem] h-[4rem] -rotate-[8deg]"
+    className="w-[8rem] h-[4rem] -rotate-[-8deg]"
   />
 );
 
