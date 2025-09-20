@@ -11,23 +11,23 @@ export default async function Page() {
   const imagesForGallery = [
     {
       alt: 'Alt Text 1',
-      src: '/assets/images/image_gallery_test.webp',
+      src: '/assets/images/test.webp',
       href: 'http://www.firefox.com/',
       title: 'Go to Firefox',
     },
     {
       alt: 'Alt Text 2',
-      src: '/assets/images/image_gallery_test.webp',
+      src: '/assets/images/test.webp',
     },
     {
       alt: 'Alt Text 3',
-      src: '/assets/images/image_gallery_test.webp',
+      src: '/assets/images/test.webp',
       href: 'http://mondorobot.com',
       title: 'Learn more',
     },
     {
       alt: 'Alt Text 4',
-      src: '/assets/images/image_gallery_test.webp',
+      src: '/assets/images/test.webp',
     },
   ];
 
