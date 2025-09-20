@@ -258,7 +258,7 @@ const CompletionScreen: FC = () => {
             />
           )}
 
-          {/* MeetAstroBento overlay - for both mobile and landscape */}
+          {/* BrowserBento overlay - for both mobile and landscape */}
           {avatarData && (
             <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
               <div className="p-4">
