@@ -96,8 +96,13 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
       {/* Landscape layout */}
       <div className="hidden landscape:block landscape:w-full">
+        {/* Selected Icons Row */}
+        <div className="mt-4 mb-6">
+          <SelectedIconsRow excludeGroup={activeGroup} />
+        </div>
+
         {/* Centered text content */}
-        <div className="flex items-center justify-center mt-8 mb-8">
+        <div className="flex items-center justify-center mt-8 mb-8 relative z-10">
           <div className="text-center space-y-4">
             <h1 className="text-5xl-custom font-sharp font-bold text-common-ash">
               {groupContent.title}
@@ -109,7 +114,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Cards */}
-        <div className="flex flex-row gap-4 justify-center flex-wrap max-w-none justify-items-center mx-auto">
+        <div className="flex flex-row gap-4 justify-center flex-wrap max-w-none justify-items-center mx-auto relative z-10">
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
