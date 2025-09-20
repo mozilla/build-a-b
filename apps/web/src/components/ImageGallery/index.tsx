@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Bento from '@/components/Bento';
 
 export interface ImageGalleryProps{
-    images: {
+    images?: {
         alt: string;
         src: string;
         href: string;
@@ -13,7 +13,7 @@ export interface ImageGalleryProps{
 
 
 const ImageGallery: FC<ImageGalleryProps> = ({images}) => {
-    const imagesToDisplay = images.slice(0, 4);
+    const imagesToDisplay = images != undefined ?  images.slice(0, 4) : [];
     return(
         <section
             className='mb-4 landscape:mb-8'
