@@ -1,14 +1,15 @@
 import Bento, { type BentoProps } from '@/components/Bento';
+import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
+import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
+import type { AvatarData } from '@/types';
 import Image from 'next/image';
 import type { FC } from 'react';
-import MeetAstroBento, { type MeetAstroBentoProps } from '../../MeetAstroBento';
-import AvatarView, { type AvatarViewProps } from './AvatarView';
+import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import { PrimaryContextProvider } from '../PrimaryFlowContext';
-import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
-import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
+import AvatarView from './AvatarView';
 
-export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
+export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
   /**
    * Get started CTA text.
    */
@@ -18,20 +19,18 @@ export interface AvatarBentoProps extends BentoProps, MeetAstroBentoProps {
    * If provided the card will be updated to reflect
    * all options for users with already generated avatars.
    */
-  avatarData?: AvatarViewProps | null;
+  avatarData?: AvatarData | null;
   /**
    * Static content to display in the BaB flow init screen.
    */
   primaryFlowData?: GetStartedProps | null;
 }
 
-function hasAvatar(data?: AvatarViewProps | null): data is AvatarViewProps {
+function hasAvatar(data?: AvatarData | null): data is AvatarData {
   return Boolean(data?.url);
 }
 
 const AvatarBento: FC<AvatarBentoProps> = ({
-  defaultContent,
-  activeContent,
   avatarData,
   primaryFlowData,
   image,
@@ -58,7 +57,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
             } 
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
-          image={hasGeneratedAvatar ? '/assets/images/Blue_Grid.svg' : image}
+          image={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : image}
           priority
         >
           {hasGeneratedAvatar && (
@@ -66,7 +65,7 @@ const AvatarBento: FC<AvatarBentoProps> = ({
               src="/assets/images/grain-main.webp"
               alt=""
               fill
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="absolute inset-0 z-10 object-cover mix-blend-overlay"
             />
           )}
@@ -76,14 +75,32 @@ const AvatarBento: FC<AvatarBentoProps> = ({
           ) : (
             <>
               {primaryFlowData && (
-                <PrimaryContextProvider>
+                <PrimaryContextProvider intialData={avatarData || null}>
                   <GetStarted {...primaryFlowData} />
                 </PrimaryContextProvider>
               )}
 
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 landscape:bottom-0 landscape:right-0 landscape:left-auto landscape:translate-x-0 landscape:pr-[3rem] landscape:pb-[7rem] z-20">
-                <div className="scale-75 landscape:scale-100">
-                  <MeetAstroBento defaultContent={defaultContent} activeContent={activeContent} />
+              <div
+                className="absolute z-20 bottom-0 w-full h-[14.3125rem] px-4 pb-4
+                              landscape:bottom-[12.9375rem] landscape:right-[3rem] landscape:px-0 landscape:pb-0
+                              landscape:w-[20.5625rem] landscape:h-[12.625rem]"
+              >
+                <div className="relative w-full h-full">
+                  <BrowserBento gradient className="absolute h-full">
+                    <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
+                      Make Space a Better Place. Add a Billionaire.
+                    </span>
+                  </BrowserBento>
+                  <BrowserBento
+                    inverse
+                    className="absolute h-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-500"
+                  >
+                    <span className="text-charcoal text-sm-custom font-semibold p-6">
+                      Unlike Big Tech Billionaires watching your every click, Firefox lets you play
+                      (and browse) with privacy as the default. So let&apos;s build our own spoiled
+                      little Billionaires and send them off-planet for good.
+                    </span>
+                  </BrowserBento>
                 </div>
               </div>
             </>

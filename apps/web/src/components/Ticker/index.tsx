@@ -45,7 +45,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
               role="listitem"
               arial-label={`${item.text} ${item.hashtag ? `with hashtag ${item.hashtag}` : ''}`}
               key={`${item.id}-${index}`}
-              className="flex items-center gap-[0.875rem] landscape:gap-[3.5rem] mx-auto landscape:mx-auto h-full"
+              className="flex items-center gap-[0.875rem] landscape:gap-[1.75rem] mx-auto landscape:mx-auto h-full"
             >
               <span
                 role="text"

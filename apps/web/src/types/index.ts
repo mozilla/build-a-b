@@ -1,3 +1,5 @@
+import type { Database } from './database.types';
+
 export interface FlagType<T = boolean> {
   key: string;
   decide: (params?: unknown) => Promise<T> | T;
@@ -8,9 +10,9 @@ export interface FlagType<T = boolean> {
 export type Choice =
   | 'inherited'
   | 'manipulator'
-  | 'data-thief'
-  | 'crypto-king'
-  | 'med-mogul'
+  | 'data.thief'
+  | 'crypto.king'
+  | 'med.mogul'
   | 'power'
   | 'chaos'
   | 'immortality'
@@ -23,14 +25,14 @@ export type Choice =
   | 'genius'
   | 'raiders'
   | 'shadows'
-  | 'data-mine'
-  | 'media-spin'
-  | 'policy-hack'
+  | 'data.mine'
+  | 'media.spin'
+  | 'policy.hack'
   | 'mars'
-  | 'sea-lord'
-  | 'ai-god'
-  | 'blood-bank'
-  | 'forever-pill';
+  | 'sea.lord'
+  | 'ai.god'
+  | 'blood.bank'
+  | 'forever.pill';
 
 export type ChoiceGroup =
   | 'origin-story'
@@ -64,3 +66,17 @@ export type ChoiceConfig = {
 };
 
 export type GameChoices = Record<ChoiceGroup, Record<Choice, ChoiceConfig>>;
+
+export type AvatarData = {
+  url: string;
+  name: string;
+  bio: string;
+  uuid: string;
+};
+
+export type DatabaseAvatarResponse = Pick<
+  Database['public']['Tables']['avatars']['Row'],
+  'image_url' | 'character_story' | 'first_name' | 'last_name' | 'id' | 'combination_key'
+>;
+
+export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
