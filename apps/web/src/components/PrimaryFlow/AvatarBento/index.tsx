@@ -65,9 +65,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
             } 
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
-          imageSrcLandscape={
-            hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcLandscape
-          }
+          imageSrcLandscape={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcLandscape}
           imageSrcPortrait={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcPortrait}
           imageClassName={hasGeneratedAvatar ? 'object-cover' : 'overflow-visible'}
           imagePropsLandscape={hasGeneratedAvatar ? {} : { objectPosition: '29%' }}
