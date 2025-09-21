@@ -145,7 +145,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             className="flex items-center pr-1 gap-1 font-bold"
           >
             <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.5rem] landscape:h-[1.5rem]">
-              <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" fill />
+              <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" sizes="10vw" fill />
             </span>
             Firefox
           </Link>
@@ -157,7 +157,12 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             title="Visit MondoRobot website"
             className="inline-block relative w-[5.5rem] h-[0.7rem] landscape:w-[8.2rem] landscape:h-[1rem]"
           >
-            <Image alt="Mondorobot logo" src="/assets/images/mondo-robot-logo.webp" fill />
+            <Image
+              alt="Mondorobot logo"
+              src="/assets/images/mondo-robot-logo.webp"
+              sizes="10vw"
+              fill
+            />
           </Link>
         </span>
       </div>

@@ -1,4 +1,4 @@
-import { choiceGroupMap, choiceMap, groupDescriptionMap } from '@/constants/choice-map';
+import { choiceMap, groupDescriptionMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
 import Image from 'next/image';
 import type { FC } from 'react';
@@ -20,7 +20,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
       {/* Logo - only show on landscape */}
       <Image
-        src="/assets/images/Billionaire-Logo.svg"
+        src="/assets/images/billionaire-logo.svg"
         alt="Billionaire Logo"
         width={162}
         height={79}
@@ -30,8 +30,8 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row or spacer */}
-        <div className="pt-[5rem] mb-6">
-          <SelectedIconsRow />
+        <div className="pt-[6rem] mb-4">
+          <SelectedIconsRow excludeGroup={activeGroup} />
         </div>
 
         {/* Centered text content */}

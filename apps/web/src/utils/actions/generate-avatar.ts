@@ -1,7 +1,5 @@
 'use server';
 import type { AvatarData, Choice, DatabaseAvatarResponse, DatabaseUserResponse } from '@/types';
-import { cookies } from 'next/headers';
-import { COOKIE_NAME } from '../constants';
 import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
 
@@ -16,13 +14,19 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       })
       .single<DatabaseAvatarResponse>();
 
-    if (error || !selectedAvatar) return null;
+    if (error || !selectedAvatar) {
+      throw new Error(error?.message || 'Could not retrieve an avatar.');
+    }
 
-    const { data: newUser } = await supabase
+    const { data: newUser, error: userError } = await supabase
       .from('users')
       .insert({ avatar_id: selectedAvatar.id })
       .select()
       .single<DatabaseUserResponse>();
+
+    if (userError) {
+      throw userError;
+    }
 
     return {
       url: buildImageUrl(`${selectedAvatar.combination_key}.png`),
@@ -31,6 +35,8 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       uuid: newUser?.uuid || '',
     };
   } catch (e) {
-    return null;
+    // Log the error to have it in server logs and re-throw to reset state.
+    console.error(e);
+    throw e;
   }
 }

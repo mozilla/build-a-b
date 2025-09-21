@@ -39,10 +39,10 @@ const Intro: FC<IntroProps> = ({
       groupKeys.filter((group) => randomChoices[group]).map((group) => randomChoices[group]!.id),
     )
       .then((avatarData) => setAvatarData(avatarData))
-      .catch((e) => {
+      .catch(() => {
         reset();
       });
-  }, [setUserChoices, setAvatarData]);
+  }, [setUserChoices, setAvatarData, reset]);
 
   return (
     <div className="relative p-4 flex flex-col items-center justify-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:px-16 landscape:pt-[6rem] landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
@@ -61,7 +61,7 @@ const Intro: FC<IntroProps> = ({
 
       <div className="mb-4 mt-[-4rem] landscape:relative landscape:top-[6rem] mb-2 flex-shrink-0 landscape:mb-0 landscape:flex-1">
         <Image
-          src="/assets/images/Billionaire-Logo.svg"
+          src="/assets/images/billionaire-logo.svg"
           alt="Billionaire Logo"
           width={213}
           height={104}

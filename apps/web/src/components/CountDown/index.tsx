@@ -108,7 +108,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
                 </div>
               </dl>
               <div className="absolute w-[4rem] h-[7rem] landscape:w-[6rem] landscape:h-[10rem] top-[-0.5rem] left-[-2rem] landscape:top-[-1rem] landscape:left-[-4rem] rotate-[16deg]">
-                <Image src="/assets/images/rocket-countdown.webp" alt="Rocket" fill />
+                <Image src="/assets/images/rocket-countdown.webp" sizes="25vw" alt="Rocket" fill />
               </div>
             </div>
             <div className="flex justify-end items-center gap-2 text-lg-custom text-title-3 mt-2">
