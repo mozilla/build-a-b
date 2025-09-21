@@ -82,7 +82,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                     alt={alt}
                     width={42}
                     height={42}
-                    className="w-8 landscape:w-10"
+                    className="w-[2.625rem] landscape:w-10"
                   />
                   <span
                     className="absolute inset-0
