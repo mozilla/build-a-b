@@ -41,7 +41,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         />
       </Link>
 
-      <div className="landscape:flex landscape:justify-between landscape:mt-14 landscape:mb-16">
+      <div className="landscape:flex landscape:justify-between landscape:mt-10 landscape:mb-4">
         <nav className="text-accent text-nav-item" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
             {links.map(({ href, label, title }) => (
@@ -82,7 +82,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                     alt={alt}
                     width={42}
                     height={42}
-                    className="w-8 landscape:w-10"
+                    className="w-[2.625rem] landscape:w-10"
                   />
                   <span
                     className="absolute inset-0
@@ -98,7 +98,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       </div>
 
       <div className="landscape:flex landscape:justify-between">
-        <div className="ml-auto text-right mb-20 landscape:ml-0 landscape:mb-0 landscape:text-left">
+        <div className="ml-auto text-right mb-8 landscape:ml-0 landscape:mb-0 landscape:text-left">
           <p className="mb-4">
             {ctaCopy.map((line, inx) => (
               <span key={inx}>

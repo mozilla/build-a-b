@@ -13,7 +13,8 @@ const Hero: FC<HeroProps> = ({ children, ariaLabel, image, imageAlt }) => {
         image={image}
         imageAlt={imageAlt}
         priority
-        className="landscape:aspect-[328/139] mb-4 landscape:mb-8"
+        className="landscape:aspect-[164/67] mb-4 landscape:mb-8"
+        imageSizes="100vw"
       >
         {children}
       </Bento>
