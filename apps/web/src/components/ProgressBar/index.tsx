@@ -35,9 +35,9 @@ const ProgressBar: FC<ProgressBarProps> = ({ className = '' }) => {
         value={value}
         className="w-[14.625rem] h-[0.75rem] landscape:w-[39rem] landscape:h-[0.75rem]"
         classNames={{
-          base: "max-w-none",
-          track: "bg-common-ash h-full rounded-full",
-          indicator: "bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full",
+          base: 'max-w-none',
+          track: 'bg-common-ash h-full rounded-full',
+          indicator: 'bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full',
         }}
         aria-label="Minting progress"
       />
