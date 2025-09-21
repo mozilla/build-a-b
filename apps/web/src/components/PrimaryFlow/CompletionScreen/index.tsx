@@ -4,13 +4,14 @@ import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
 import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 import BrowserBento from '../../BrowserBento';
 import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 
 const CompletionScreen: FC = () => {
   const { userChoices, avatarData } = usePrimaryFlowContext();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Get all selected choices in the correct order
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
@@ -250,12 +251,23 @@ const CompletionScreen: FC = () => {
         >
           {/* Avatar Background Image */}
           {avatarData && (
-            <Image
-              src={avatarData.url}
-              alt="Generated Billionaire Avatar"
-              fill
-              className="object-cover object-top"
-            />
+            <>
+              {/* Loading shimmer background */}
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-white overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-gray-400 to-transparent animate-shimmer w-full h-full"></div>
+                </div>
+              )}
+              <Image
+                src={avatarData.url}
+                alt="Generated Billionaire Avatar"
+                fill
+                className={`object-cover object-top transition-opacity duration-500 ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onLoad={() => setImageLoaded(true)}
+              />
+            </>
           )}
 
           {/* BrowserBento overlay - for both mobile and landscape */}

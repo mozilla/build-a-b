@@ -1,7 +1,7 @@
 'use client';
 
 import { choiceGroupMap } from '@/constants/choice-map';
-import { Button, useDisclosure } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FC } from 'react';
 import Modal from '../../Modal';

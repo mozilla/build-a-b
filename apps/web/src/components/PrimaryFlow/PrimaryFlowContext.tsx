@@ -4,7 +4,6 @@ import { ChoiceGroup, type AvatarData, type ChoiceConfig } from '@/types';
 import {
   createContext,
   useContext,
-  useMemo,
   useState,
   type Dispatch,
   type FC,

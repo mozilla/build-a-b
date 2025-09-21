@@ -1,16 +1,15 @@
-import type { FC, PropsWithChildren, ReactNode } from 'react';
 import {
-  Modal as HeroModal,
-  ModalContent,
-  ModalBody,
   Button,
+  Modal as HeroModal,
+  ModalBody,
+  ModalContent,
   type ModalProps,
 } from '@heroui/react';
 import Image from 'next/image';
+import type { FC, PropsWithChildren } from 'react';
 import ThreeDots from '../ThreeDots';
 
 interface CustomModalProps extends ModalProps {
-  headerContent?: ReactNode;
   modalTitle?: string;
 }
 
@@ -18,7 +17,6 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
   children,
   isOpen,
   onOpenChange,
-  headerContent,
   modalTitle = 'Build a Billionaire',
   ...modalProps
 }) => {
