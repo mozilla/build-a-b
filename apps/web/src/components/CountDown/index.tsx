@@ -4,12 +4,14 @@ import { FC, useEffect, useState } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 import Link from 'next/link';
+import clsx from 'clsx';
 
 export interface CountDownProps {
   targetDate: string; // Format "2025-10-10T23:59:59-05:00"
+  className?: string;
 }
 
-const CountDown: FC<CountDownProps> = ({ targetDate }) => {
+const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -44,24 +46,30 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
   }, [targetDate]);
 
   return (
-    <section className="mb-4 landscape:mb-8">
+    <section className={clsx('mb-4 landscape:mb-8', className)}>
       <Bento image="/assets/images/space.webp">
-        <div className="relative p-4 landscape:p-8 landscape:pt-20 bg-gradient-to-r from-black to-transparent">
-          <div className="flex flex-col landscape:flex-row gap-4 items-end">
-            <div className="flex flex-col gap-4">
-              <h2 className="text-title-1 text-balance">The Countdown is On</h2>
-              <p className="text-body-regular">
-                All the avatars, all the gameplay, all the satire — it all leads to this. A real
-                rocket, built with Sent Into Space, carrying the absurd creations of a community
-                that refused to play by Big Tech’s rules.
-              </p>
-            </div>
-            <div className="max-w-full mx-auto landscape:min-w-[25rem] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg py-6 px-6">
+        <div
+          className="relative p-4 landscape:p-12 landscape:py-16 bg-gradient-to-r from-black to-transparent
+                     flex flex-col landscape:flex-row gap-18 justify-center items-center"
+        >
+          <div className="flex flex-col gap-4 items-start">
+            <h2 className="text-title-1 text-balance">The Countdown is On</h2>
+            <p className="text-body-regular">
+              All the avatars, all the gameplay, all the satire — it all leads to this. A real
+              rocket, built with Sent Into Space, carrying the absurd creations of a community that
+              refused to play by Big Tech&apos;s rules.
+            </p>
+            <Link href="#" className="secondary-button" title="Generate an avatar">
+              Build a Billionaire
+            </Link>
+          </div>
+          <div className="w-full flex flex-col items-end">
+            <div className="relative w-fit bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6">
               <dl className="flex justify-center gap-7 text-center" aria-live="polite">
                 <div
                   className="flex flex-col-reverse relative
-                             after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
-                             after:text-4xl-custom after:font-extrabold"
+                           after:content-[':'] after:absolute after:right-[-1.2rem] after:top-[-0.15rem]
+                           after:text-4xl-custom after:font-extrabold"
                 >
                   <dt className="text-nav-item">Days</dt>
                   <dd className="tabular-nums text-title-1 text-[1.8rem] landscape:text-[2.25rem]">
@@ -95,27 +103,15 @@ const CountDown: FC<CountDownProps> = ({ targetDate }) => {
                   </dd>
                 </div>
               </dl>
+              <div className="absolute w-[4rem] h-[7rem] landscape:w-[6rem] landscape:h-[10rem] top-[-0.5rem] left-[-2rem] landscape:top-[-1rem] landscape:left-[-4rem] rotate-[16deg]">
+                <Image src="/assets/images/rocket-countdown.webp" alt="Rocket" fill />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col landscape:flex-row gap-4 mt-6 p-4 landscape:mt-12 landscape:py-12 pr-12 rounded-lg bg-white border-2 border-foreground">
-            <div className="relative w-[8.5rem] h-[8.5rem] -ml-4 landscape:ml-auto">
-              <Image src="/assets/images/icons/rocket.webp" fill sizes="8.5rem" alt="" />
-            </div>
-            <div className="flex flex-1 flex-col gap-4 items-start">
-              <p className="text-body-regular text-charcoal">
-                Share your Billionaire shenanigans by Friday, October 10th with{' '}
-                <strong>@Firefox</strong> and <strong>#BillionaireBlastOff</strong> for a chance to
-                board the rocket! Every post gets your Billionaire closer to piercing the
-                stratosphere on a rocket with only the noisiest little Billionaire avatars, streamed
-                for the world to see, straight from TwitchCon. To the mooooon!
-              </p>
-              <Link
-                href="#"
-                title="Generate your own billionaire"
-                className="secondary-button border-foreground text-foreground whitespace-nowrap"
-              >
-                Build a Billionaire
-              </Link>
+            <div className="flex justify-end items-center gap-2 text-lg-custom text-title-3 mt-2">
+              <div className="relative h-[2rem] w-[2rem]">
+                <Image src="/assets/images/firefox.svg" fill alt="Firefox logo" />
+              </div>
+              Powered by Firefox
             </div>
           </div>
         </div>

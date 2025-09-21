@@ -6,6 +6,7 @@ import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
 import Image from 'next/image';
 import type { AvatarData } from '@/types';
+import CountDown from '@/components/CountDown';
 
 const flags = {
   demoSmallTeaserBento: true,
@@ -197,6 +198,10 @@ export default async function Home({ avatarData }: PageProps) {
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
           <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
         </div>
+        <CountDown
+          targetDate="2025-10-17T10:00:00-07:00"
+          className="portrait:order-13 landscape:col-span-12 landscape:mb-0!"
+        />
       </main>
     </>
   );

@@ -34,22 +34,18 @@ export default async function Page() {
   return (
     <>
       <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
-        <div className="relative flex flex-col p-4 landscape:p-8 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
+        <div className="relative flex flex-col p-4 landscape:p-12 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
           <h6 className="text-nav-item">October 17-19, 2025</h6>
           <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
           <p className="text-body-regular">
             Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
             floor or follow along online.
           </p>
-          <div className="flex flex-col landscape:flex-row gap-4 items-start">
-            <Link href="#" className="secondary-button" title="Get your event tickets">
-              Get Tickets
-            </Link>
-          </div>
+          <Link href="#" className="secondary-button w-fit" title="Get your event tickets">
+            Get Tickets
+          </Link>
         </div>
       </Hero>
-
-      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
 
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
@@ -91,7 +87,7 @@ export default async function Page() {
         />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
-            <div className="p-4 landscape:p-8 flex flex-col gap-4">
+            <div className="p-4 landscape:p-12 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">Reclaim your main character energy</h2>
               <p className="text-body-regular text-charcoal">
                 Use our super futuristic hologram kiosk to build a Billionaire and make them dance
@@ -203,6 +199,8 @@ export default async function Page() {
           </Bento>
         </div>
       </section>
+
+      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
     </>
   );
 }
