@@ -8,6 +8,7 @@ export interface BentoProps {
   image?: StaticImageData | string;
   imageAlt?: string;
   imageClassName?: string;
+  imageSizes?: string;
   priority?: boolean;
   bgEffect?: boolean;
 }
@@ -21,6 +22,7 @@ const Bento: FC<BentoProps> = ({
   image,
   imageAlt,
   imageClassName,
+  imageSizes,
   priority,
   bgEffect,
 }) => (
@@ -30,7 +32,7 @@ const Bento: FC<BentoProps> = ({
         src={image}
         alt={imageAlt ?? ''}
         fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        sizes={imageSizes ?? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
         className={clsx(
           'absolute inset-0 object-cover', // Expand to cover the entire card
           bgEffect &&
