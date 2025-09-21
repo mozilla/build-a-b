@@ -3,7 +3,7 @@ import Bento, { type BentoProps } from '@/components/Bento';
 import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import type { FC } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
