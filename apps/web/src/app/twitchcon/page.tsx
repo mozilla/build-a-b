@@ -1,5 +1,6 @@
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
+import Image from 'next/image';
 import Link from 'next/link';
 import IconCard from '@/components/IconCard';
 import CardsSection from '@/components/CardsSection';
@@ -53,31 +54,40 @@ export default async function Page() {
           <IconCard
             key="1"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/snake.webp"
+            icon="/assets/images/icons/chain.webp"
           >
-            <p className="text-body-regular">Join the party at</p>
-            <h4 className="text-title-3">Booth #1234</h4>
+            <p className="text-body-regular">Booth #2805</p>
+            <h4 className="text-title-3">
+              We’re not the biggest booth, but we&apos;re the billionaire-iest booth.
+            </h4>
           </IconCard>,
           <IconCard
             key="2"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/bulb.webp"
+            icon="/assets/images/icons/tshirt.webp"
           >
-            <p className="text-body-regular">The fun includes</p>
-            <h4 className="text-title-3">Hologram dances and Data War: the Game</h4>
+            <p className="text-body-regular">What&apos;s on deck</p>
+            <h4 className="text-title-3">
+              Data War, Build-a-Billionaire, merch drops, and mystery moments.
+            </h4>
           </IconCard>,
           <IconCard
             key="3"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/rocket.webp"
+            icon="/assets/images/icons/launch.webp"
           >
             <p className="text-body-regular">Then, find us at the</p>
-            <h4 className="text-title-3">Block party space launch</h4>
+            <h4 className="text-title-3">TwitchCon Block Party for the space-launch screening.</h4>
           </IconCard>,
         ]}
       >
-        <h2 className="text-title-1">[TwitchCon Summary]</h2>
-        <p className="text-body-regular">This is copy that introduces the overarching narrative</p>
+        <figure className="absolute top-4 right-8 w-[8.75rem] h-[8.75rem] hidden landscape:block">
+          <Image src="/assets/images/sticker.webp" sizes="25vw" fill alt="Firefox pet sticker" />
+        </figure>
+        <h2 className="text-title-1">Hello, San Diego</h2>
+        <p className="text-body-regular">
+          We brought the chaos, cards, and a rocket countdown. Come play with us.
+        </p>
       </CardsSection>
 
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
