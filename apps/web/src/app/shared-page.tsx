@@ -41,7 +41,7 @@ const tickerData: TickerItem[] = [
 const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
     triggerClassNames:
-      'absolute left-[7rem] landscape:left-[8.125rem] top-[18rem] landscape:top-[18.5rem] px-[2.125rem] py-[1rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
+      'absolute left-[6rem] landscape:left-[8.125rem] top-[18rem] landscape:top-[18.5rem] px-[2.125rem] py-[0.75rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
     ctaText: 'Get Started',
     title: 'Make Space a Better Place. Add a Billionaire.',
     description:
@@ -49,7 +49,8 @@ const avatarBentoData: AvatarBentoProps = {
     createAvatarCtaText: 'Start Building Your Billionaire',
     randomAvatarCtaText: 'Create a Random Billionaire',
   },
-  image: '/assets/images/avatar-square.webp',
+  imageSrcLandscape: '/assets/images/avatar-square.webp',
+  imageSrcPortrait: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
 };
 
