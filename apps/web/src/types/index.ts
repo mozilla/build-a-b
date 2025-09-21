@@ -76,7 +76,7 @@ export type AvatarData = {
 
 export type DatabaseAvatarResponse = Pick<
   Database['public']['Tables']['avatars']['Row'],
-  'image_url' | 'character_story' | 'first_name' | 'last_name' | 'id' | 'combination_key'
+  'character_story' | 'first_name' | 'last_name' | 'id' | 'combination_key' | 'asset_riding'
 >;
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
