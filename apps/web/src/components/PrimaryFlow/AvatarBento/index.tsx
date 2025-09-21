@@ -1,14 +1,14 @@
+import { evaluateFlag } from '@/app/flags';
 import Bento, { type BentoProps } from '@/components/Bento';
 import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
-import Image, { ImageProps } from 'next/image';
+import Image from 'next/image';
 import type { FC } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import { PrimaryContextProvider } from '../PrimaryFlowContext';
 import AvatarView from './AvatarView';
-import { evaluateFlag } from '@/app/flags';
 
 export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
   /**
@@ -35,12 +35,8 @@ function hasAvatar(data?: AvatarData | null): data is AvatarData {
 const AvatarBento: FC<AvatarBentoProps> = async ({
   avatarData,
   primaryFlowData,
-  image,
   imageSrcLandscape,
   imageSrcPortrait,
-  imageProps,
-  imagePropsPortrait,
-  imagePropsLandscape,
   ...bentoProps
 }) => {
   const hasGeneratedAvatar = hasAvatar(avatarData);

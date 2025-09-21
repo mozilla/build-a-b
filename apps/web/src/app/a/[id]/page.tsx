@@ -8,6 +8,7 @@ interface PageProps {
 
 export default async function DynamicPage({ params }: PageProps) {
   const { id } = await params;
+
   const avatarData = await getUserAvatar(id);
 
   if (!avatarData?.url) return redirect('/');
