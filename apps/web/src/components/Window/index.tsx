@@ -25,7 +25,9 @@ const Window: FC<WindowProps> = ({ children, className, flip }) => {
           />
         )}
       </div>
-      <div className={clsx('h-full flex flex-col justify-center', className)}>{children}</div>
+      <div className={clsx('h-[calc(100%-1.75rem)] flex flex-col justify-center', className)}>
+        {children}
+      </div>
     </div>
   );
 };
