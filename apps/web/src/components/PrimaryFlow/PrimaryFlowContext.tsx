@@ -34,13 +34,13 @@ interface PrimaryFlowContextValue {
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
 
-export const PrimaryContextProvider: FC<PropsWithChildren<{ intialData: AvatarData | null }>> = ({
+export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarData | null }>> = ({
   children,
-  intialData,
+  initialData,
 }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
-  const [avatarData, setAvatarData] = useState<AvatarData | null>(intialData);
+  const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
   const [userChoices, setUserChoices] =
     useState<Record<ChoiceGroup, ChoiceConfig | null>>(initialChoices);
 
