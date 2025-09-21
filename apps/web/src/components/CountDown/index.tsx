@@ -59,7 +59,11 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               rocket, built with Sent Into Space, carrying the absurd creations of a community that
               refused to play by Big Tech&apos;s rules.
             </p>
-            <Link href="#" className="secondary-button" title="Generate an avatar">
+            <Link
+              href="#"
+              className="secondary-button hidden landscape:flex"
+              title="Generate an avatar"
+            >
               Build a Billionaire
             </Link>
           </div>
@@ -113,6 +117,11 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               </div>
               Powered by Firefox
             </div>
+          </div>
+          <div className="landscape:hidden">
+            <Link href="#" className="secondary-button" title="Generate an avatar">
+              Build a Billionaire
+            </Link>
           </div>
         </div>
       </Bento>
