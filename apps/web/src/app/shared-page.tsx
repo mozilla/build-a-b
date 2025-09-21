@@ -206,7 +206,7 @@ export default async function Home({ avatarData }: PageProps) {
                     <Link
                       href="/twitchcon"
                       title="Visit TwitchCon page"
-                      className="secondary-button mt-4 bg-[#1373b4]"
+                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
                     >
                       TwitchCon Details
                     </Link>
