@@ -61,7 +61,7 @@ const Intro: FC<IntroProps> = ({
 
       <div className="mb-4 mt-[-4rem] landscape:relative landscape:top-[6rem] mb-2 flex-shrink-0 landscape:mb-0 landscape:flex-1">
         <Image
-          src="/assets/images/Billionaire-Logo.svg"
+          src="/assets/images/billionaire-logo.svg"
           alt="Billionaire Logo"
           width={213}
           height={104}

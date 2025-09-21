@@ -31,7 +31,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         <div className="left-side flex flex-row h-full">
           <Link href="/" tabIndex={0} className="flex flex-row items-center">
             <Image
-              src="/assets/images/Billionaire-Logo.svg"
+              src="/assets/images/billionaire-logo.svg"
               alt="Billionaire Logo"
               width={373}
               height={220}
