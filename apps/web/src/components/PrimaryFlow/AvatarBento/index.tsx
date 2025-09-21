@@ -45,7 +45,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
   return (
     <div className="portrait:flex-col landscape:grid landscape:grid-cols-2 landscape:grid-rows-3 landscape:gap-8 h-full">
       <div
-        className={`landscape:col-span-2 landscape:row-span-1 h-[43.75rem] landscape:h-full ${hasGeneratedAvatar && showPlaypenButtons ? 'portrait:mb-4 landscape:row-span-2' : 'landscape:row-span-3'}`}
+        className={`landscape:col-span-2 landscape:row-span-1 h-[38.5625rem] landscape:h-full ${hasGeneratedAvatar && showPlaypenButtons ? 'portrait:mb-4 landscape:row-span-2' : 'landscape:row-span-3'}`}
       >
         <Bento
           className={`
@@ -67,7 +67,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
           imageSrcPortrait={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcPortrait}
           imageClassName={hasGeneratedAvatar ? 'object-cover' : 'overflow-visible'}
           imagePropsLandscape={hasGeneratedAvatar ? {} : { objectPosition: '29%' }}
-          imagePropsPortrait={hasGeneratedAvatar ? {} : {}}
+          imagePropsPortrait={hasGeneratedAvatar ? {} : { objectPosition: '18%' }}
           priority
         >
           {hasGeneratedAvatar && (
