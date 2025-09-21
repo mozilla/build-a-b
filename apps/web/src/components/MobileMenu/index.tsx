@@ -16,7 +16,13 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   return (
     <div className="mobile-menu flex flex-row center-content items-center landscape:hidden">
       <button onClick={() => setOpen(!open)} className="w-6 h-6 cursor-pointer flex justify-end">
-        <Image src={srcIcon} width={24} height={24} alt={altText} />
+        <Image
+          src={srcIcon}
+          width={24}
+          height={24}
+          alt={altText}
+          className="w-[1.5rem] h-[1.5rem]"
+        />
       </button>
 
       {open && (
@@ -29,13 +35,19 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         >
           <div className="modal-container relative flex flex-col">
             <button onClick={() => setOpen(false)} className="absolute z-60 right-0 cursor-pointer">
-              <Image src={closeIcon} width={24} height={24} alt={altText} />
+              <Image
+                src={closeIcon}
+                width={24}
+                height={24}
+                alt={altText}
+                className="w-[1.5rem] h-[1.5rem]"
+              />
             </button>
 
             <div className="logo-container">
               <Link href="/" tabIndex={0} className="inline-block">
                 <Image
-                  src="/assets/images/Billionaire-Logo.svg"
+                  src="/assets/images/billionaire-logo.svg"
                   alt="Billionaire Logo"
                   width={373}
                   height={220}

@@ -6,6 +6,7 @@ import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
 import Image from 'next/image';
 import type { AvatarData } from '@/types';
+import CountDown from '@/components/CountDown';
 
 const flags = {
   demoSmallTeaserBento: true,
@@ -41,15 +42,16 @@ const tickerData: TickerItem[] = [
 const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
     triggerClassNames:
-      'absolute left-[7rem] landscape:left-[11.5rem] top-[18rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
+      'absolute left-[6rem] landscape:left-[8.125rem] top-[18rem] landscape:top-[18.5rem] px-[2.125rem] py-[0.75rem] transition-all duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
     ctaText: 'Get Started',
     title: 'Make Space a Better Place. Add a Billionaire.',
     description:
       'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
-    createAvatarCtaText: 'Make a Custom Billionaire',
-    randomAvatarCtaText: 'Get a Surprise Billionaire',
+    createAvatarCtaText: 'Start Building Your Billionaire',
+    randomAvatarCtaText: 'Create a Random Billionaire',
   },
-  image: '/assets/images/avatar-square.webp',
+  imageSrcLandscape: '/assets/images/avatar-square.webp',
+  imageSrcPortrait: '/assets/images/avatar-square.webp',
   imageAlt: '', // Decorative image
 };
 
@@ -70,42 +72,28 @@ export default async function Home({ avatarData }: PageProps) {
           <BentoDual
             className="flex w-full h-full"
             back={
-              <Window>
-                <div className="p-8">
-                  <h4 className="text-title-1 pb-4">Get your Billionaire on board for launch.</h4>
-                  <ul className='flex flex-col'>
-                    <li className='flex flex-row items-center mb-4'>
-                      <span className='pt-4 pb-3 pl-7 pr-7 border-2 mr-8 rounded-full text-[1.5rem]'>1</span>
-                      <span>
-                        Share your Billionaire avatar by <strong>Friday, October 10th </strong> 
-                        with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
-                      </span>
-                    </li>
-                    <li className='flex flex-row items-center mb-4'>
-                      <span className='pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]'>2</span>
-                      <span>
-                        Keep an eye on your comments and DMs to see if your little Billionaire was chosen for launch.
-                      </span>
-                      </li>
-                      <li className='flex flex-row items-center mb-4'>
-                        <span className='pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]'>3</span>
-                        <span>
-                          Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed at the <strong className='underline'>TwitchCon Block Party</strong> and right here on this site.
-                        </span>
-                      </li>
-                  </ul>
-                 
+              <Window flip>
+                <div className="p-4 landscape:p-8">
+                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
+                  <p>
+                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
+                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
+                    for the world to see live at the climax of TwitchCon.{' '}
+                    <strong>To the mooooon!</strong>
+                  </p>
                 </div>
               </Window>
             }
             effect="flip"
             image="/assets/images/rocket.webp"
+            priority
           >
-            <h3 className="text-title-1 max-w-2sm mt-12 ml-8">
-              Rocket your Billionaire into a permanent time-out
+            <h3 className="text-title-1 max-w-sm mt-12 ml-4 landscape:ml-8">
+              Send Your Fake Little Billionaires Into Very Real Orbit.
             </h3>
-            <p className="max-w-4xs mt-4 ml-8">
-              Post content of your Billionaire with <b>@Firefox</b> and <b>#BillionaireBlastOff</b> for a shot at sending them to actual, for-real-real space.
+            <p className="max-w-2xs mt-4 ml-4 landscape:ml-8">
+              Post content of your billionaire for a shot at sending them to actual, for-real-real
+              space.
             </p>
           </BentoDual>
         </div>
@@ -115,7 +103,7 @@ export default async function Home({ avatarData }: PageProps) {
             className="h-full"
             effect="flip"
             back={
-              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+              <div className="h-full w-full p-4 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
                   <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
                   <p className="text-body-small text-[0.9rem]">
@@ -133,7 +121,7 @@ export default async function Home({ avatarData }: PageProps) {
               </div>
             }
           >
-            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+            <div className="h-full w-full px-4 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
               <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
               <p className="text-body-regular">
                 The go to space on rockets of your data. But there is another way.
@@ -149,23 +137,21 @@ export default async function Home({ avatarData }: PageProps) {
               effect="flip"
               image="/assets/images/data-war.webp"
               back={
-                <Window>
-                  <div className="p-8">
-                    <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
                     <p>
-                      Data War is a game of Billionaire brinksmanship where space is the place,
-                       data is the currency, and chaos reigns. Dropping this week at TwitchCon!
+                      Data War is a game of Billionaire brinksmanship where space is the place, data
+                      is the currency, and chaos reigns. Dropping this week at TwitchCon!
                     </p>
-                    <a className="secondary-button mt-6" href="#">
-                      Check out Data War
-                    </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <p className='absolute bottom-26 left-6'>DROPPING SOON</p>
-                <h2 className="absolute bottom-6 left-6 text-title-1">Data War:<br/>The Card Game</h2>
+                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  Data War
+                </h2>
               </div>
             </BentoDual>
           ) : null}
@@ -178,23 +164,21 @@ export default async function Home({ avatarData }: PageProps) {
               effect="flip"
               image="/assets/images/join-twitchcon.webp"
               back={
-                <Window>
-                  <div className="p-8">
-                    <h4 className="text-title-1 pb-4">Two Launches in One</h4>
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h4 className="text-title-1 pb-4">Party at the moontower</h4>
                     <p>
-                      We&apos;re launching a new card game, Data War, and launching Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this site to follow along.
+                      We&apos;re launching a new card game, Data War, and launching Billionaires to
+                      space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                      along.
                     </p>
-                    <a className="secondary-button mt-6" href="#">
-                      TwitchCon Details
-                    </a>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <p className='absolute bottom-26 left-6'>EYEBROW</p>
-                <h2 className="absolute bottom-6 left-6 text-title-1">
-                  Blast off at
+                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  Join us at
                   <br />
                   Twitchcon
                 </h2>
@@ -216,6 +200,9 @@ export default async function Home({ avatarData }: PageProps) {
         </div>
         <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
           <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
+        </div>
+        <div className="portrait:order-13 landscape:col-span-12">
+          <CountDown targetDate="2025-10-17T10:00:00-07:00" className="landscape:mb-0!" />
         </div>
       </main>
     </>

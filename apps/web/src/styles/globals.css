@@ -44,11 +44,11 @@
   }
 
   .primary-button {
-    @apply inline-flex px-4 py-1 rounded-3xl border-2 bg-accent border-accent text-charcoal font-bold hover:bg-transparent hover:text-accent transition-colors duration-300 cursor-pointer;
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 bg-accent border-accent text-charcoal font-bold hover:bg-transparent hover:text-accent transition-colors duration-300 cursor-pointer;
   }
 
   .secondary-button {
-    @apply inline-flex items-center justify-center px-4 h-12 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer bg-[rgba(24,24,27,0.30)];
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
   }
 }
 
@@ -75,12 +75,25 @@ body {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .animate-scroll-without-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 .animate-scroll-with-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
 }
 
 /* Pause on hover */

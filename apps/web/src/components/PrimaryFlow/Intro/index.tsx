@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback, type FC } from 'react';
-import Image from 'next/image';
-import { Button } from '@heroui/react';
-import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import { floatingImages } from './constants';
 import { choiceGroupMap, choiceMap } from '@/constants/choice-map';
 import type { ChoiceConfig, ChoiceGroup } from '@/types';
 import { generateAvatar } from '@/utils/actions/generate-avatar';
+import { Button } from '@heroui/react';
+import Image from 'next/image';
+import { useCallback, type FC } from 'react';
+import { usePrimaryFlowContext } from '../PrimaryFlowContext';
+import { floatingImages } from './constants';
 
 export interface IntroProps {
   title: string;
@@ -39,10 +39,10 @@ const Intro: FC<IntroProps> = ({
       groupKeys.filter((group) => randomChoices[group]).map((group) => randomChoices[group]!.id),
     )
       .then((avatarData) => setAvatarData(avatarData))
-      .catch((e) => {
+      .catch(() => {
         reset();
       });
-  }, [setUserChoices, setAvatarData]);
+  }, [setUserChoices, setAvatarData, reset]);
 
   return (
     <div className="relative p-4 flex flex-col items-center justify-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:px-16 landscape:pt-[6rem] landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
@@ -59,22 +59,23 @@ const Intro: FC<IntroProps> = ({
         </div>
       ))}
 
-      <div className="mb-4 mt-[-4rem] landscape:relative landscape:top-[0] mb-2 flex-shrink-0 landscape:mb-0 landscape:flex-1">
+      <div className="mb-4 mt-[-4rem] landscape:relative landscape:top-[6rem] mb-2 flex-shrink-0 landscape:mb-0 landscape:flex-1">
         <Image
-          src="/assets/images/Billionaire-Logo.svg"
+          src="/assets/images/billionaire-logo.svg"
           alt="Billionaire Logo"
           width={213}
           height={104}
           className="w-[17.187rem] h-[8.5rem] -rotate-[8deg] landscape:block landscape:w-[22.375rem] landscape:h-[11rem] landscape:-rotate-[15deg]"
         />
       </div>
-      <div className="flex flex-col items-center text-center landscape:flex-1 landscape:items-start landscape:text-left">
+      <div className="flex flex-col items-center text-center landscape:flex-1 landscape:items-start landscape:text-left z-1">
         <h1 className="text-2xl font-extrabold mb-3 landscape:text-4xl-custom landscape:mb-6">
           {title}
         </h1>
         <p className="mb-4 font-sharp font-semibold text-sm leading-[140%] text-[#F8F6F4] landscape:mb-8 landscape:text-lg">
           {description}
         </p>
+
         <div className="flex flex-col items-center w-full gap-6 landscape:items-start landscape:gap-0">
           <Button
             autoFocus

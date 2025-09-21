@@ -1,5 +1,6 @@
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
+import Image from 'next/image';
 import Link from 'next/link';
 import IconCard from '@/components/IconCard';
 import CardsSection from '@/components/CardsSection';
@@ -33,26 +34,19 @@ export default async function Page() {
 
   return (
     <>
-      <Hero image="/assets/images/hero-twitchcon.webp" ariaLabel="Hero section - TwitchCon 2025">
-        <div className="relative flex flex-col p-10 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
-          <h6 className="text-nav-item">Billionaire Blast Off Presents</h6>
-          <h1 className="text-title-1">Catch Billionaire Blastoff at TwitchCon 2025</h1>
+      <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
+        <div className="relative flex flex-col p-4 landscape:p-12 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
+          <h6 className="text-nav-item">October 17-19, 2025</h6>
+          <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
           <p className="text-body-regular">
-            Build your absurd billionaire avatar. Play the game they don&apos;t want you to win —
-            whether you&apos;re in San Diego or tuning in from anywhere.
+            Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
+            floor or follow along online.
           </p>
-          <div className="flex flex-col landscape:flex-row gap-4 items-start">
-            <Link href="#" className="primary-button" title="Build an avatar now">
-              Make Your Avatar →
-            </Link>
-            <Link href="#" className="secondary-button" title="See how the event is approaching">
-              Countdown to the Launch
-            </Link>
-          </div>
+          <Link href="#" className="secondary-button w-fit" title="Get your event tickets">
+            Get Tickets
+          </Link>
         </div>
       </Hero>
-
-      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
 
       <CardsSection
         image="/assets/images/mixed-blue-grid.webp"
@@ -60,66 +54,60 @@ export default async function Page() {
           <IconCard
             key="1"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/snake.webp"
+            icon="/assets/images/icons/chain.webp"
           >
-            <p className="text-body-regular">Join the party at</p>
-            <h4 className="text-title-3">Booth #1234</h4>
+            <p className="text-body-regular">Booth #2805</p>
+            <h4 className="text-title-3">
+              We’re not the biggest booth, but we&apos;re the billionaire-iest booth.
+            </h4>
           </IconCard>,
           <IconCard
             key="2"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/bulb.webp"
+            icon="/assets/images/icons/tshirt.webp"
           >
-            <p className="text-body-regular">The fun includes</p>
-            <h4 className="text-title-3">Hologram dances and Data War: the Game</h4>
+            <p className="text-body-regular">What&apos;s on deck</p>
+            <h4 className="text-title-3">
+              Data War, Build-a-Billionaire, merch drops, and mystery moments.
+            </h4>
           </IconCard>,
           <IconCard
             key="3"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/rocket.webp"
+            icon="/assets/images/icons/launch.webp"
           >
             <p className="text-body-regular">Then, find us at the</p>
-            <h4 className="text-title-3">Block party space launch</h4>
+            <h4 className="text-title-3">TwitchCon Block Party for the space-launch screening.</h4>
           </IconCard>,
         ]}
       >
-        <h2 className="text-title-1">[TwitchCon Summary]</h2>
-        <p className="text-body-regular">This is copy that introduces the overarching narrative</p>
+        <figure className="absolute top-4 right-8 w-[8.75rem] h-[8.75rem] hidden landscape:block">
+          <Image src="/assets/images/sticker.webp" sizes="25vw" fill alt="Firefox pet sticker" />
+        </figure>
+        <h2 className="text-title-1">Hello, San Diego</h2>
+        <p className="text-body-regular">
+          We brought the chaos, cards, and a rocket countdown. Come play with us.
+        </p>
       </CardsSection>
 
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-        <Bento className="border-none">
+        <Bento
+          image="/assets/images/boxer.webp"
+          className="landscape:w-[30%] aspect-[377/267] border-none"
+        />
+        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
-            <div className="p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">Build a Billionaire Hologram</h2>
+            <div className="p-4 landscape:p-12 flex flex-col gap-4">
+              <h2 className="text-title-1 text-charcoal">Reclaim your main character energy</h2>
               <p className="text-body-regular text-charcoal">
-                Create your very own Billionaire at the Holographic Kiosk and then take control of
-                their every move.
+                Use our super futuristic hologram kiosk to build a Billionaire and make them dance
+                till peak cringe.
               </p>
-              <div className="flex flex-col landscape:flex-row gap-3 items-start">
-                <Link
-                  href="#"
-                  title="Generate a billionaire"
-                  className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
-                >
-                  Create a Billionaire
-                </Link>
-                <Link
-                  href="#"
-                  title="Generate a billionaire"
-                  className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
-                >
-                  Right Now!
-                </Link>
-              </div>
             </div>
           </Window>
         </Bento>
-        <Bento
-          image="/assets/images/join-twitchcon.webp"
-          className="landscape:w-[30%] aspect-square border-none"
-        />
       </section>
+
       <CardsSection
         className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
         cards={[
@@ -221,6 +209,8 @@ export default async function Page() {
           </Bento>
         </div>
       </section>
+
+      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
     </>
   );
 }
