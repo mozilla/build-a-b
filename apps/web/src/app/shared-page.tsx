@@ -86,6 +86,7 @@ export default async function Home({ avatarData }: PageProps) {
             }
             effect="flip"
             image="/assets/images/rocket.webp"
+            priority
           >
             <h3 className="text-title-1 max-w-sm mt-12 ml-4 landscape:ml-8">
               Send Your Fake Little Billionaires Into Very Real Orbit.
