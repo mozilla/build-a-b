@@ -20,7 +20,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
       {/* Logo - only show on landscape */}
       <Image
-        src="/assets/images/Billionaire-Logo.svg"
+        src="/assets/images/billionaire-logo.svg"
         alt="Billionaire Logo"
         width={162}
         height={79}

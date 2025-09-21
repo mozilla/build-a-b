@@ -24,7 +24,7 @@ const CompletionScreen: FC = () => {
       {/* Logo - only show on landscape */}
       {!avatarData && (
         <Image
-          src="/assets/images/Billionaire-Logo.svg"
+          src="/assets/images/billionaire-logo.svg"
           alt="Billionaire Logo"
           width={162}
           height={79}

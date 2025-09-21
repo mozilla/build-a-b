@@ -47,7 +47,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       {/* Logo - only show on landscape in body */}
       <div className="hidden landscape:block">
         <Image
-          src="/assets/images/Billionaire-Logo.svg"
+          src="/assets/images/billionaire-logo.svg"
           alt="Billionaire Logo"
           width={162}
           height={79}
@@ -133,7 +133,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
 // Logo component for mobile header
 export const ConfirmSelectionHeaderLogo: FC = () => (
   <Image
-    src="/assets/images/Billionaire-Logo.svg"
+    src="/assets/images/billionaire-logo.svg"
     alt="Billionaire Logo"
     width={162}
     height={79}
