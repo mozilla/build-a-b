@@ -33,7 +33,7 @@ export default async function Page() {
 
   return (
     <>
-      <Hero image="/assets/images/hero-twitchcon.webp" ariaLabel="Hero section - TwitchCon 2025">
+      <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
         <div className="relative flex flex-col p-4 landscape:p-8 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
           <h6 className="text-nav-item">October 17-19, 2025</h6>
           <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
