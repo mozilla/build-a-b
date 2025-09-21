@@ -75,12 +75,25 @@ body {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .animate-scroll-without-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
 
 .animate-scroll-with-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
 }
 
 /* Pause on hover */

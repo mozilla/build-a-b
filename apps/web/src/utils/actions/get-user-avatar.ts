@@ -16,7 +16,9 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
       .eq('uuid', userUuid)
       .single<{ avatar_id: string }>();
 
-    if (userError || !user?.avatar_id) return null;
+    if (userError || !user?.avatar_id) {
+      throw new Error(userError?.message || 'User not found.');
+    }
 
     // Get avatar data using the avatar_id
     const { data: avatar, error: avatarError } = await supabase
@@ -25,7 +27,9 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
       .eq('id', user.avatar_id)
       .single<Database['public']['Tables']['avatars']['Row']>();
 
-    if (avatarError || !avatar) return null;
+    if (avatarError || !avatar) {
+      throw new Error(avatarError?.message || 'Could no retrieve user avatar.');
+    }
 
     return {
       url: buildImageUrl(`${avatar.combination_key}.png`),
@@ -34,6 +38,8 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
       uuid: userUuid,
     };
   } catch (e) {
+    // This will be available via server logs.
+    console.error(e);
     return null;
   }
 }
