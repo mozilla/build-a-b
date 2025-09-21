@@ -1,11 +1,12 @@
+import Image from 'next/image';
+import Link from 'next/link';
 import Ticker from '@/components/Ticker';
+import type { AvatarData } from '@/types';
 import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
 import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
-import Image from 'next/image';
-import type { AvatarData } from '@/types';
 import CountDown from '@/components/CountDown';
 
 const flags = {
@@ -74,13 +75,37 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
-                  <p>
-                    Every post gets you closer to the stratosphere, which is where we&apos;ll be
-                    sending only the noisiest little billionaire avatars aboard a rocket, streamed
-                    for the world to see live at the climax of TwitchCon.{' '}
-                    <strong>To the mooooon!</strong>
-                  </p>
+                  <h4 className="text-title-1 pb-4">Get your Billionaire on board for launch.</h4>
+                  <ul className="flex flex-col">
+                    <li className="flex flex-row items-center mb-4">
+                      <span className="pt-4 pb-3 pl-7 pr-7 border-2 mr-8 rounded-full text-[1.5rem]">
+                        1
+                      </span>
+                      <span>
+                        Share your Billionaire avatar by <strong>Friday, October 10th </strong>
+                        with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
+                      </span>
+                    </li>
+                    <li className="flex flex-row items-center mb-4">
+                      <span className="pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]">
+                        2
+                      </span>
+                      <span>
+                        Keep an eye on your comments and DMs to see if your little Billionaire was
+                        chosen for launch.
+                      </span>
+                    </li>
+                    <li className="flex flex-row items-center mb-4">
+                      <span className="pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]">
+                        3
+                      </span>
+                      <span>
+                        Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed
+                        at the <strong className="underline">TwitchCon Block Party</strong> and
+                        right here on this site.
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               </Window>
             }
@@ -89,11 +114,12 @@ export default async function Home({ avatarData }: PageProps) {
             priority
           >
             <h3 className="text-title-1 max-w-sm mt-12 ml-4 landscape:ml-8">
-              Send Your Fake Little Billionaires Into Very Real Orbit.
+              Rocket your Billionaire into a permanent time-out
             </h3>
             <p className="max-w-2xs mt-4 ml-4 landscape:ml-8">
-              Post content of your billionaire for a shot at sending them to actual, for-real-real
-              space.
+              Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
+              <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
+              for-real-real space.
             </p>
           </BentoDual>
         </div>
@@ -105,10 +131,10 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <div className="h-full w-full p-4 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
-                  <h4 className="text-title-1 mb-2 text-[2rem]">#OpenWhatYouWant</h4>
+                  <h4 className="text-title-1 mb-2 text-[2rem]">#BillionaireBlastOff</h4>
                   <p className="text-body-small text-[0.9rem]">
-                    With all the billionaires permanently off-planet, we can finally browse in
-                    peace, indulge our curiosities, and open what we want.
+                    Let’s help them. With all the Billionaires in space, you can be free to Open
+                    What You Want.
                   </p>
                 </div>
                 <Image
@@ -124,7 +150,7 @@ export default async function Home({ avatarData }: PageProps) {
             <div className="h-full w-full px-4 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
               <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
               <p className="text-body-regular">
-                The go to space on rockets of your data. But there is another way.
+                Billionaires go to space on rockets fueled by your data. We know a better way.
               </p>
             </div>
           </BentoDual>
@@ -139,19 +165,24 @@ export default async function Home({ avatarData }: PageProps) {
               back={
                 <Window flip>
                   <div className="p-4 landscape:p-8">
-                    <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
+                    <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
                     <p>
-                      Ever wonder what it&apos;s like to trade people&apos;s data and manipulate the
-                      world so you can build a toy rocket and go into space?
+                      Data War is a game of Billionaire brinksmanship where space is the place, data
+                      is the currency, and chaos reigns. Get your copy at TwitchCon!
                     </p>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                  Data War
-                </h2>
+                <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  <p className="text-nav-item pb-2">DROPPING SOON</p>
+                  <h2 className="text-title-1">
+                    Data War:
+                    <br />
+                    The Card Game
+                  </h2>
+                </div>
               </div>
             </BentoDual>
           ) : null}
@@ -162,25 +193,36 @@ export default async function Home({ avatarData }: PageProps) {
             <BentoDual
               className="h-full aspect-square"
               effect="flip"
-              image="/assets/images/join-twitchcon.webp"
+              image="/assets/images/blast-twitchcon.webp"
               back={
                 <Window flip>
                   <div className="p-4 landscape:p-8">
-                    <h4 className="text-title-1 pb-4">Party at the moontower</h4>
+                    <h4 className="text-title-1 pb-4">Two Launches in One</h4>
                     <p>
-                      Join us IRL or right here during TwitchCon to help us send all the
-                      billionaires off to space in style!
+                      We&apos;re launching a new card game, Data War, and launching Billionaires to
+                      space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                      along.
                     </p>
+                    <Link
+                      href="/twitchcon"
+                      title="Visit TwitchCon page"
+                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                    >
+                      TwitchCon Details
+                    </Link>
                   </div>
                 </Window>
               }
             >
               <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <h2 className="absolute text-title-1 bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                  Join us at
-                  <br />
-                  Twitchcon
-                </h2>
+                <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  <p className="text-nav-item pb-2">JOIN US IRL</p>
+                  <h2 className="text-title-1">
+                    Blast off at
+                    <br />
+                    TwitchCon
+                  </h2>
+                </div>
               </div>
             </BentoDual>
           ) : null}
