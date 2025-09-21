@@ -13,8 +13,9 @@ const BentoPlaypenSelfie: FC = () => {
         src="/assets/images/icons/camera.webp"
         width={60}
         height={70}
-        className="group-hover:-rotate-5 transition-transform duration-300 h-auto"
+        className="group-hover:-rotate-5 transition-transform duration-300 h-auto w-auto"
         alt=""
+        priority
       />
       <button className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
         Take a space selfie

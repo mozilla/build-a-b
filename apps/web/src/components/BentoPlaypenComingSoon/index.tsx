@@ -6,7 +6,7 @@ const BentoPlaypenComingSoon: FC = () => {
   return (
     <Bento className="group h-full py-8 bg-secondary-gray flex flex-col justify-center items-center cursor-pointer">
       <Image
-        src="/assets/images/icons/plus.svg"
+        src="/assets/images/icons/plus.webp"
         width={60}
         height={70}
         className="group-hover:rotate-15 transition-transform duration-300 h-auto"
