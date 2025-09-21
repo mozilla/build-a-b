@@ -33,7 +33,13 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
                          transition-transform duration-300
                          hover:-rotate-30 group"
             >
-              <Image src={src} alt={alt} width={42} height={42} className="w-[2.625rem] h-[2.625rem]" />
+              <Image
+                src={src}
+                alt={alt}
+                width={42}
+                height={42}
+                className="w-[2.625rem] h-[2.625rem]"
+              />
               <span
                 className="absolute inset-0
                            bg-gradient-to-br from-transparent to-secondary-blue

@@ -71,7 +71,7 @@ export default async function Home({ avatarData }: PageProps) {
           <BentoDual
             className="flex w-full h-full"
             back={
-              <Window>
+              <Window flip>
                 <div className="p-4 landscape:p-8">
                   <h4 className="text-title-1 pb-4">We don&apos;t say for-real-real lightly.</h4>
                   <p>
@@ -135,7 +135,7 @@ export default async function Home({ avatarData }: PageProps) {
               effect="flip"
               image="/assets/images/data-war.webp"
               back={
-                <Window>
+                <Window flip>
                   <div className="p-4 landscape:p-8">
                     <h4 className="text-title-1 pb-4">Play your way to galactic dominance</h4>
                     <p>
@@ -162,7 +162,7 @@ export default async function Home({ avatarData }: PageProps) {
               effect="flip"
               image="/assets/images/join-twitchcon.webp"
               back={
-                <Window>
+                <Window flip>
                   <div className="p-4 landscape:p-8">
                     <h4 className="text-title-1 pb-4">Party at the moontower</h4>
                     <p>
