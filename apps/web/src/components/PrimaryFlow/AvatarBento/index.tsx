@@ -2,7 +2,7 @@ import Bento, { type BentoProps } from '@/components/Bento';
 import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import type { FC } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
@@ -25,6 +25,7 @@ export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
    * Static content to display in the BaB flow init screen.
    */
   primaryFlowData?: GetStartedProps | null;
+  // imageProps?: ImageProps;
 }
 
 function hasAvatar(data?: AvatarData | null): data is AvatarData {
@@ -35,6 +36,11 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
   avatarData,
   primaryFlowData,
   image,
+  imageSrcLandscape,
+  imageSrcPortrait,
+  imageProps,
+  imagePropsPortrait,
+  imagePropsLandscape,
   ...bentoProps
 }) => {
   const hasGeneratedAvatar = hasAvatar(avatarData);
@@ -59,8 +65,11 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
             } 
             h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover`}
           {...bentoProps}
-          image={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : image}
-          imageClassName={hasGeneratedAvatar ? 'object-cover' : 'overflow-visible left-[-1.5rem]!'}
+          imageSrcLandscape={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcLandscape}
+          imageSrcPortrait={hasGeneratedAvatar ? '/assets/images/blue-grid.svg' : imageSrcPortrait}
+          imageClassName={hasGeneratedAvatar ? 'object-cover' : 'overflow-visible'}
+          imagePropsLandscape={hasGeneratedAvatar ? {} : { objectPosition: '29%' }}
+          imagePropsPortrait={hasGeneratedAvatar ? {} : {}}
           priority
         >
           {hasGeneratedAvatar && (
@@ -78,7 +87,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
           ) : (
             <>
               {primaryFlowData && (
-                <PrimaryContextProvider intialData={avatarData || null}>
+                <PrimaryContextProvider initialData={avatarData || null}>
                   <GetStarted {...primaryFlowData} />
                 </PrimaryContextProvider>
               )}
