@@ -1,10 +1,9 @@
-import { FC, ReactNode } from 'react';
-import Image, { StaticImageData, ImageProps } from 'next/image';
 import clsx from 'clsx';
+import Image, { ImageProps, StaticImageData } from 'next/image';
+import type { FC, PropsWithChildren } from 'react';
 
-export interface BentoProps {
+export interface BentoProps extends PropsWithChildren {
   className?: string;
-  children?: ReactNode;
   image?: StaticImageData | string;
   imageSrcLandscape?: StaticImageData | string;
   imageSrcPortrait?: StaticImageData | string;
@@ -39,7 +38,6 @@ const Bento: FC<BentoProps> = ({
   imageProps,
   imagePropsPortrait,
   imagePropsLandscape,
-  ...restProps
 }) => (
   <div className={clsx(defaultStyle, className)}>
     {image && (
@@ -62,7 +60,7 @@ const Bento: FC<BentoProps> = ({
     {imageSrcLandscape && (
       <Image
         src={imageSrcLandscape}
-        alt={imageAlt ?? ''}
+        alt={imageAltLandscape ?? imageAlt ?? ''}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={clsx(

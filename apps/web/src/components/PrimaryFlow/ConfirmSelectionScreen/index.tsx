@@ -11,7 +11,7 @@ interface ConfirmSelectionScreenProps {
 }
 
 const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }) => {
-  const { userChoices, setShowConfirmation, setActiveGroup, setAvatarData } =
+  const { userChoices, setShowConfirmation, setActiveGroup, setAvatarData, reset } =
     usePrimaryFlowContext();
   const selectedConfig = userChoices[activeGroup];
 
@@ -34,14 +34,11 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         .filter((group) => userChoices[group])
         .map((group) => userChoices[group]!.id);
 
-      try {
-        const result = await generateAvatar(allChoices);
-        if (result) {
-          setAvatarData(result);
-        }
-      } catch (error) {
-        console.error('Error generating avatar:', error);
-      }
+      generateAvatar(allChoices)
+        .then((data) => setAvatarData(data))
+        .catch(() => {
+          reset();
+        });
     }
   };
 
@@ -61,8 +58,8 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row */}
-        <div className="pt-[2.625rem]">
-          <SelectedIconsRow className="mb-6" excludeGroup={activeGroup} />
+        <div className="pt-[6.625rem] mb-[-2rem]">
+          <SelectedIconsRow excludeGroup={activeGroup} />
         </div>
 
         {/* Text content - appears before icon on mobile */}
@@ -97,7 +94,10 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       </div>
 
       {/* Landscape layout - keep original structure */}
-      <div className="hidden landscape:flex landscape:flex-col landscape:items-center landscape:mt-8 landscape:flex-col-reverse">
+      <div className="hidden landscape:flex landscape:flex-col landscape:items-center landscape:mt-12 landscape:flex-col-reverse">
+        <div className="pt-[2.625rem]">
+          <SelectedIconsRow className="mb-6" excludeGroup={activeGroup} />
+        </div>
         {/* Text content */}
         <div className="text-center space-y-4 mt-4">
           <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">
