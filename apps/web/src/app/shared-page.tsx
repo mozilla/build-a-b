@@ -1,3 +1,4 @@
+import { evaluateFlag } from '@/app/flags';
 import Image from 'next/image';
 import Link from 'next/link';
 import Ticker from '@/components/Ticker';
@@ -8,11 +9,6 @@ import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import BentoDual from '@/components/BentoDual';
 import Window from '@/components/Window';
 import CountDown from '@/components/CountDown';
-
-const flags = {
-  demoSmallTeaserBento: true,
-  demoGalleryBento: true,
-};
 
 interface TickerItem {
   id?: number;
@@ -61,6 +57,8 @@ interface PageProps {
 }
 
 export default async function Home({ avatarData }: PageProps) {
+  const showPlaypenButtons = await evaluateFlag('showAvatarPlaypenButtons');
+
   return (
     <>
       <Ticker items={tickerData} />
@@ -69,7 +67,7 @@ export default async function Home({ avatarData }: PageProps) {
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">
           <AvatarBento {...avatarBentoData} avatarData={avatarData} />
         </div>
-        <div className="portrait:mb-4 portrait:order-10 portrait:w-full h-[27.3125rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
+        <div className="portrait:mb-4 portrait:w-full h-[27.3125rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           <BentoDual
             className="flex w-full h-full"
             back={
@@ -167,89 +165,95 @@ export default async function Home({ avatarData }: PageProps) {
         </div>
         <div className="portrait:mb-4 portrait:order-11 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
           {/* Small Teaser Bento (Data War) */}
-          {flags?.demoSmallTeaserBento ? (
-            <BentoDual
-              className="h-full aspect-square"
-              effect="flip"
-              image="/assets/images/data-war.webp"
-              back={
-                <Window flip>
-                  <div className="p-4 landscape:p-8">
-                    <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
-                    <p>
-                      Data War is a game of Billionaire brinksmanship where space is the place, data
-                      is the currency, and chaos reigns. Get your copy at TwitchCon!
-                    </p>
-                  </div>
-                </Window>
-              }
-            >
-              <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                  <p className="text-nav-item pb-2">DROPPING SOON</p>
-                  <h2 className="text-title-1">
-                    Data War:
-                    <br />
-                    The Card Game
-                  </h2>
+          <BentoDual
+            className="h-full aspect-square"
+            effect="flip"
+            image="/assets/images/data-war.webp"
+            back={
+              <Window flip>
+                <div className="p-4 landscape:p-8">
+                  <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
+                  <p>
+                    Data War is a game of Billionaire brinksmanship where space is the place, data
+                    is the currency, and chaos reigns. Get your copy at TwitchCon!
+                  </p>
                 </div>
+              </Window>
+            }
+          >
+            <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+              <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                <p className="text-nav-item pb-2">DROPPING SOON</p>
+                <h2 className="text-title-1">
+                  Data War:
+                  <br />
+                  The Card Game
+                </h2>
               </div>
-            </BentoDual>
-          ) : null}
+            </div>
+          </BentoDual>
         </div>
         <div className="portrait:mb-4 portrait:order-12 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
           {/* Small Teaser Bento (Twitchcon) */}
-          {flags?.demoSmallTeaserBento ? (
-            <BentoDual
-              className="h-full aspect-square"
-              effect="flip"
-              image="/assets/images/blast-twitchcon.webp"
-              back={
-                <Window flip>
-                  <div className="p-4 landscape:p-8">
-                    <h4 className="text-title-1 pb-4">Two Launches in One</h4>
-                    <p>
-                      We&apos;re launching a new card game, Data War, and launching Billionaires to
-                      space, one-way. Join us IRL at TwitchCon or right here on this site to follow
-                      along.
-                    </p>
-                    <Link
-                      href="/twitchcon"
-                      title="Visit TwitchCon page"
-                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
-                    >
-                      TwitchCon Details
-                    </Link>
-                  </div>
-                </Window>
-              }
-            >
-              <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
-                <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                  <p className="text-nav-item pb-2">JOIN US IRL</p>
-                  <h2 className="text-title-1">
-                    Blast off at
-                    <br />
-                    TwitchCon
-                  </h2>
+          <BentoDual
+            className="h-full aspect-square"
+            effect="flip"
+            image="/assets/images/blast-twitchcon.webp"
+            back={
+              <Window flip>
+                <div className="p-4 landscape:p-8">
+                  <h4 className="text-title-1 pb-4">Two Launches in One</h4>
+                  <p>
+                    We&apos;re launching a new card game, Data War, and launching Billionaires to
+                    space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                    along.
+                  </p>
+                  <Link
+                    href="/twitchcon"
+                    title="Visit TwitchCon page"
+                    className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                  >
+                    TwitchCon Details
+                  </Link>
                 </div>
+              </Window>
+            }
+          >
+            <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+              <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                <p className="text-nav-item pb-2">JOIN US IRL</p>
+                <h2 className="text-title-1">
+                  Blast off at
+                  <br />
+                  TwitchCon
+                </h2>
               </div>
-            </BentoDual>
-          ) : null}
+            </div>
+          </BentoDual>
         </div>
-        <div className="portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5">
+        <div
+          className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5'`}
+        >
           <GalleryBentoLarge className="h-full" disabled />
         </div>
-        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-5 landscape:row-start-6">
+        <div
+          className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-5 landscape:row-start-6`}
+        >
           <GalleryBentoSmall image="/assets/images/placeholders/diamond.jpg" />
         </div>
-        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-7 landscape:row-start-6">
+        <div
+          className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-7 landscape:row-start-6`}
+        >
           <GalleryBentoSmall image="/assets/images/placeholders/rocket.jpg" />
         </div>
-        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-9 landscape:row-start-6">
+        <div
+          className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-9 landscape:row-start-6`}
+        >
           <GalleryBentoSmall image="/assets/images/placeholders/crown.jpg" />
         </div>
-        <div className="portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6">
+        <div
+          className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6`}
+        >
           <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
         </div>
         <div className="portrait:order-13 landscape:col-span-12">
