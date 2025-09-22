@@ -218,51 +218,22 @@ body {
   animation-delay: 0s;
 }
 
-
-/* Data War animation */
-@keyframes left-icon-card {
-  0% {
-    transform: translateY(0);
-  }
-  35% {
-    transform: translateY(-1.625rem);
-  }
-  60% {
-    transform: translate(0.8125rem, -0.8125rem);
-  }
-  80% {
-    transform: translate(0.8125rem, -1.625rem);
-  }
+@keyframes floatTilt {
+  0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3rem) rotate(20deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2.5rem) rotate(-15deg);
   }
 }
 
-@keyframes right-icon-card {
-  0% {
-    transform: translateY(0) rotate(-11.444deg);
-  }
-  35% {
-    transform: translateY(-1.625rem) rotate(0);
-  }
-  60% {
-    transform: translate(0.8125rem, -0.8125rem) rotate(-22deg);
-  }
-  80% {
-    transform: translate(0.8125rem, -1.625rem) rotate(18deg);
-  }
-  100% {
-    transform: translateY(0) rotate(-11.444deg);
-  }
-  
-}
-
-.animate-left-card-icon img.icon-card {
-  animation: left-icon-card 6s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.animate-right-card-icon img.icon-card {
-  animation: right-icon-card 6s ease-in-out infinite;
-  animation-delay: 0s;
+@utility animate-float-tilt {
+  animation: floatTilt 6s ease-in-out infinite;
 }

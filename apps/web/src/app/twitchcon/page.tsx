@@ -120,8 +120,9 @@ export default async function Page() {
             key="1"
             icon="/assets/images/icons/deck.webp"
             image="/assets/images/hall.webp"
-            className="border-none aspect-[139/64] animate-left-card-icon"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Play with a full deck</h4>
             <p className="text-body-regular">
@@ -133,8 +134,9 @@ export default async function Page() {
             key="2"
             icon="/assets/images/icons/hand.webp"
             image="/assets/images/pile.webp"
-            className="bg-common-ash border-none aspect-[139/64] animate-right-card-icon"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Stay and Play</h4>
             <p className="text-body-regular">

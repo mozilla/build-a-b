@@ -6,6 +6,7 @@ import clsx from 'clsx';
 export interface IconCardProps extends BentoProps {
   icon: StaticImageData | string;
   iconAlt?: string;
+  iconEffect?: boolean;
   wrapperClassName?: string;
 }
 
@@ -15,13 +16,24 @@ const IconCard: FC<IconCardProps> = ({
   image,
   icon,
   iconAlt = '',
+  iconEffect,
   children,
 }) => {
   return (
-    <Bento image={image} className={clsx('border-none rounded-xl flex-1', className)}>
-      <div className={clsx('relative p-6 flex flex-col gap-2 h-full', wrapperClassName)}>
+    <Bento
+      image={image}
+      imageClassName="rounded-xl"
+      className={clsx('border-none flex-1 overflow-visible', className)}
+    >
+      <div className={clsx('relative p-6 flex flex-col gap-2 h-full rounded-xl', wrapperClassName)}>
         <div className="relative w-[4rem] h-[4rem]">
-          <Image src={icon} alt={iconAlt} fill sizes="4rem" className="icon-card" />
+          <Image
+            src={icon}
+            alt={iconAlt}
+            fill
+            sizes="10vw"
+            className={iconEffect ? 'animate-float-tilt' : ''}
+          />
         </div>
         {children}
       </div>
