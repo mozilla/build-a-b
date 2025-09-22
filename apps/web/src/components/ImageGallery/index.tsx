@@ -25,9 +25,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => (
       );
 
       const video = (
-        <div 
-          className='overflow-hidden w-[10.5rem] landscape:w-[19rem] border-none aspect-square relative'
-        >
+        <div className="overflow-hidden w-[10.5rem] landscape:w-[19rem] border-none aspect-square relative">
           <video
             src={src}
             width={640}
@@ -37,19 +35,19 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => (
             loop
             playsInline
             controls
-            preload='metadata'
-            className='block rounded-[0.75rem]'
+            preload="metadata"
+            className="block rounded-[0.75rem]"
           >
             Your browser does not support HTML5 video.
           </video>
         </div>
       );
-      
+
       return (
         <div key={index} className="relative">
           {isVideo ? (
             video
-          ): (href ? (
+          ) : href ? (
             <Link
               href={href}
               target="_blank"
@@ -61,8 +59,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => (
             </Link>
           ) : (
             img
-          ))}
-
+          )}
         </div>
       );
     })}

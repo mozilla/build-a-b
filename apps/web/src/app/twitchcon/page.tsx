@@ -33,7 +33,7 @@ export default async function Page() {
       alt: 'Video',
       src: '/assets/videos/sample-card-game-clip-640x640.webm',
       isVideo: true,
-      videoPosterPath: '/assets/videos/sample-card-game-poster-640x640.png'
+      videoPosterPath: '/assets/videos/sample-card-game-poster-640x640.png',
     },
   ];
 
