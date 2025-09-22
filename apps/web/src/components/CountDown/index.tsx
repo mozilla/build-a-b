@@ -1,10 +1,12 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
-import Bento from '../Bento';
+import { avatarBentoData } from '@/utils/constants';
+import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
-import clsx from 'clsx';
+import { FC, useEffect, useState } from 'react';
+import Bento from '../Bento';
+import GetStarted from '../PrimaryFlow/GetStarted';
 
 export interface CountDownProps {
   targetDate: string; // Format "2025-10-10T23:59:59-05:00"
@@ -59,13 +61,13 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               rocket, built with Sent Into Space, carrying the absurd creations of a community that
               refused to play by Big Tech&apos;s rules.
             </p>
-            <Link
-              href="#"
-              className="secondary-button hidden landscape:flex"
-              title="Generate an avatar"
-            >
-              Build a Billionaire
-            </Link>
+            {avatarBentoData?.primaryFlowData && (
+              <GetStarted
+                {...avatarBentoData.primaryFlowData}
+                ctaText="Build a Billionaire"
+                triggerClassNames="secondary-button hidden landscape:flex"
+              />
+            )}
           </div>
           <div className="w-full flex flex-col items-end">
             <div className="relative w-fit bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6">
