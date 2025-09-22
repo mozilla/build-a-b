@@ -55,7 +55,7 @@ const BentoDual: FC<BentoDualProps> = ({
     effect === 'flip' ? backFlipCardClasses : getBackFadeCardClasses(isFlipped);
 
   const handleTouch = () => {
-    if (!disabled) {
+    if (!disabled && window.matchMedia('(hover: none)').matches) {
       setIsFlipped(!isFlipped);
     }
   };
@@ -63,7 +63,7 @@ const BentoDual: FC<BentoDualProps> = ({
   return (
     <div
       className={`group perspective-distant landscape:perspective-[100rem] rounded-[0.75rem] w-full h-full`}
-      onTouchEnd={handleTouch}
+      onClick={handleTouch}
     >
       <div className={getWrapperClasses()}>
         {/* Front Face */}
@@ -83,7 +83,7 @@ const BentoDual: FC<BentoDualProps> = ({
           )}
           {/* Flip Icon - Portrait Only */}
           {disabled ? null : (
-            <div className="absolute top-0 right-0 z-20 portrait:block landscape:hidden">
+            <div className="absolute top-0 right-0 portrait:block landscape:hidden">
               <Image
                 src="/assets/images/icons/flip.svg"
                 alt="Flip card"
@@ -93,7 +93,7 @@ const BentoDual: FC<BentoDualProps> = ({
               />
             </div>
           )}
-          <div className="absolute inset-0 z-1">{children}</div>
+          <div className="absolute inset-0">{children}</div>
         </div>
         {/* Back Face */}
         {disabled ? null : <div className={`${baseBentoClasses} ${backCardClasses}`}>{back}</div>}
