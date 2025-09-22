@@ -18,7 +18,7 @@ export type Choice =
   | 'immortality'
   | 'control'
   | 'fame'
-  | 'eco-fake'
+  | 'eco.fake'
   | 'visionary'
   | 'rebel'
   | 'savior'
