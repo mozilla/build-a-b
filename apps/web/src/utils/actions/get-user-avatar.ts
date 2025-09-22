@@ -32,7 +32,7 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
     }
 
     return {
-      url: buildImageUrl(`${avatar.combination_key}.png`),
+      url: buildImageUrl(avatar.asset_riding),
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userUuid,
