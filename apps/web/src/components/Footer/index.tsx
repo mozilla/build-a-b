@@ -1,9 +1,11 @@
 'use client';
 
+import { avatarBentoData } from '@/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FC } from 'react';
+import GetStarted from '../PrimaryFlow/GetStarted';
 
 export interface FooterProps {
   links: {
@@ -107,9 +109,13 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
               </span>
             ))}
           </p>
-          <Link href="#" className="secondary-button" title="Build an avatar now">
-            {ctaLabel}
-          </Link>
+          {avatarBentoData?.primaryFlowData && (
+            <GetStarted
+              {...avatarBentoData.primaryFlowData}
+              ctaText={ctaLabel}
+              triggerClassNames="secondary-button"
+            />
+          )}
         </div>
         <p className="landscape:self-end">
           <Link

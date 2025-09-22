@@ -1,14 +1,15 @@
 import { evaluateFlag } from '@/app/flags';
+import BentoDual from '@/components/BentoDual';
+import CountDown from '@/components/CountDown';
+import GalleryBentoLarge from '@/components/GalleryBentoLarge';
+import GalleryBentoSmall from '@/components/GalleryBentoSmall';
+import AvatarBento from '@/components/PrimaryFlow/AvatarBento';
+import Ticker from '@/components/Ticker';
+import Window from '@/components/Window';
+import type { AvatarData } from '@/types';
+import { avatarBentoData } from '@/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';
-import Ticker from '@/components/Ticker';
-import type { AvatarData } from '@/types';
-import AvatarBento, { type AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
-import GalleryBentoSmall from '@/components/GalleryBentoSmall';
-import GalleryBentoLarge from '@/components/GalleryBentoLarge';
-import BentoDual from '@/components/BentoDual';
-import Window from '@/components/Window';
-import CountDown from '@/components/CountDown';
 
 interface TickerItem {
   id?: number;
@@ -35,22 +36,6 @@ const tickerData: TickerItem[] = [
     emoji: '💰',
   },
 ];
-
-const avatarBentoData: AvatarBentoProps = {
-  primaryFlowData: {
-    triggerClassNames:
-      'absolute left-[5rem] landscape:left-[8.125rem] top-[17rem] landscape:top-[18.5rem] px-[3rem] landscape:px-[2.125rem] py-[0.75rem] bg-charcoal/30 rotate-[9deg] landscape:rotate-0 transition-[bg-color, color] transition-transform duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
-    ctaText: 'Get Started',
-    title: 'Make Space a Better Place. Add a Billionaire.',
-    description:
-      'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
-    createAvatarCtaText: 'Start Building Your Billionaire',
-    randomAvatarCtaText: 'Create a Random Billionaire',
-  },
-  imageSrcLandscape: '/assets/images/avatar-square.webp',
-  imageSrcPortrait: '/assets/images/avatar-portrait.png',
-  imageAlt: '', // Decorative image
-};
 
 interface PageProps {
   avatarData?: AvatarData | null;

@@ -97,11 +97,12 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
       };
 
       await navigator.share(sharePayload);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const error = e as { name: string };
       /**
        * User cancelled share action - no action needed
        */
-      if ('name' in e && e.name === 'AbortError') return;
+      if ('name' in error && error.name === 'AbortError') return;
       console.error(e);
     }
   };
