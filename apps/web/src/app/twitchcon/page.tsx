@@ -99,21 +99,24 @@ export default async function Page() {
       </CardsSection>
 
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-        <Bento
-          image="/assets/images/boxer.webp"
-          className="landscape:w-[30%] aspect-[377/267] border-none"
-        />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">Reclaim your main character energy</h2>
+              <h2 className="text-title-1 text-charcoal">Make your Billionaire dance</h2>
               <p className="text-body-regular text-charcoal">
-                Use our super futuristic hologram kiosk to build a Billionaire and make them dance
-                till peak cringe.
+                It&apos;s your Billionaire. Make them perform for your amusement in 3D for everyone
+                to mock and post. Can&apos;t make it to the Holobox at TwitchCon? You can still
+                build a Billionaire and join the dance party with the new TikTok Dance Generator,
+                dropping TwitchCon weekend!
               </p>
             </div>
           </Window>
         </Bento>
+        <Bento
+          image="/assets/images/doll.webp"
+          imageAlt="Avatar in a box"
+          className="landscape:w-[30%] aspect-[377/315] border-none"
+        />
       </section>
 
       <CardsSection
