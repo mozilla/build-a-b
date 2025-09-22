@@ -11,29 +11,24 @@ import ImageGallery from '@/components/ImageGallery';
 export default async function Page() {
   const imagesForGallery = [
     {
-      alt: 'Alt Text 1',
-      src: '/assets/images/test.webp',
-      href: 'http://www.firefox.com/',
-      title: 'Go to Firefox',
+      alt: 'Rocket blueprint',
+      src: '/assets/images/gallery/1.webp',
       isVideo: false,
     },
     {
-      alt: 'Alt Text 2',
-      src: '/assets/images/test.webp',
+      alt: 'Launch planning',
+      src: '/assets/images/gallery/2.webp',
       isVideo: false,
     },
     {
-      alt: 'Alt Text 3',
-      src: '/assets/images/test.webp',
-      href: 'http://mondorobot.com',
-      title: 'Learn more',
+      alt: 'Rocket mockup',
+      src: '/assets/images/gallery/3.webp',
       isVideo: false,
     },
     {
-      alt: 'Video',
-      src: '/assets/videos/sample-card-game-clip-640x640.webm',
-      isVideo: true,
-      videoPosterPath: '/assets/videos/sample-card-game-poster-640x640.png',
+      alt: 'Launch simulation',
+      src: '/assets/images/gallery/4.webp',
+      isVideo: false,
     },
   ];
 
