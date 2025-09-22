@@ -194,6 +194,32 @@ export default async function Page() {
             </p>
           </IconCard>,
         ]}
+        postContent={
+          <div className="flex flex-col landscape:flex-row justify-center items-center p-4 landscape:p-8 mt-4 gap-4 rounded-xl border-common-ash border-2">
+            <figure className="relative w-15 h-15">
+              <Image src="/assets/images/icons/bitcoin.webp" alt="Bitcoin" sizes="10wv" fill />
+            </figure>
+            <div className="flex-1">
+              <h4 className="text-title-3 mb-2">
+                You don&apos;t need a one-way ticket to space to party
+              </h4>
+              <p className="text-body-regular">
+                But you do need Block Party tickets to join us live. Luckily, they&apos;re right
+                here, on the internet.
+              </p>
+            </div>
+            <div>
+              <Link
+                href="#"
+                title="Buy your ticket"
+                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                target="_blank"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
+        }
       >
         <h2 className="text-title-1">Blast off at the Block Party</h2>
         <p className="text-body-small">
