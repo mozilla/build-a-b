@@ -114,45 +114,42 @@ export default async function Page() {
       </section>
 
       <CardsSection
-        className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
+        className="bg-[url(/assets/images/data-war/bg-data-war.webp)] bg-no-repeat bg-center bg-cover flex-warp"
         cards={[
           <IconCard
             key="1"
-            icon="/assets/images/icons/shield.webp"
-            className="bg-common-ash border-charcoal! border-solid border-2!"
+            icon="/assets/images/data-war/data-war-left-icon.webp"
+            image="/assets/images/data-war/data-war-left-card.webp"
+            className="bg-common-ash border-none border-2! h-[16rem] animate-left-card-icon"
           >
-            <h4 className="text-title-3 text-charcoal">
-              Bring your expansion pack and battle against other players
+            <h4 className="text-title-3">
+              Play with a full deck
             </h4>
-            <p className="text-body-regular text-charcoal">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.
+            <p className="text-body-regular">
+              Everyone gets an exclusive expansion in the swag bag. Play at our tables to score the full set.
             </p>
           </IconCard>,
           <IconCard
             key="2"
-            icon="/assets/images/icons/star.webp"
-            className="bg-common-ash border-charcoal! border-solid border-2!"
+            icon="/assets/images/data-war/data-war-right-icon.webp"
+            image="/assets/images/data-war/data-war-right-card.webp"
+            className="bg-common-ash border-none border-2! h-[16rem] animate-right-card-icon"
           >
-            <h4 className="text-title-3 text-charcoal">
-              Featuring appearances by famous gamers like XXX and XXX
+            <h4 className="text-title-3">
+              Stay and Play
             </h4>
-            <p className="text-body-regular text-charcoal">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.
+            <p className="text-body-regular">
+              Play a few rounds, float some ideas, chat with creators, and (maybe) walk away with more than a free deck. 
             </p>
           </IconCard>,
+          
         ]}
       >
-        <h2 className="text-title-1 text-charcoal">Play Data War with Us</h2>
-        <p className="text-body-regular text-charcoal">Some body copy about the game</p>
-        <Link
-          href="#"
-          title="Read Data War instructions"
-          className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash w-auto mx-auto"
-        >
-          Learn Data War: The Game
-        </Link>
+        <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
+        <p className="text-body-regular text-charcoal">
+          Data War is the chaotic-casual card game where players compete to send egomaniacal, 
+          tantrum-prone little Billionaires on a One-Way Ticket to Space. Created by Firefox, 
+          presented by Billionaire Blast Off, and only available at TwitchCon. </p>
       </CardsSection>
 
       <ImageGallery images={imagesForGallery} />

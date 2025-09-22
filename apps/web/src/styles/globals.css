@@ -217,3 +217,52 @@ body {
   animation: floater-3 6s ease-in-out infinite;
   animation-delay: 0s;
 }
+
+
+/* Data War animation */
+@keyframes left-icon-card {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-1.625rem);
+  }
+  60% {
+    transform: translate(0.8125rem, -0.8125rem);
+  }
+  80% {
+    transform: translate(0.8125rem, -1.625rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes right-icon-card {
+  0% {
+    transform: translateY(0) rotate(-11.444deg);
+  }
+  35% {
+    transform: translateY(-1.625rem) rotate(0);
+  }
+  60% {
+    transform: translate(0.8125rem, -0.8125rem) rotate(-22deg);
+  }
+  80% {
+    transform: translate(0.8125rem, -1.625rem) rotate(18deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-11.444deg);
+  }
+  
+}
+
+.animate-left-card-icon img.icon-card {
+  animation: left-icon-card 6s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-right-card-icon img.icon-card {
+  animation: right-icon-card 6s ease-in-out infinite;
+  animation-delay: 0s;
+}
