@@ -95,7 +95,3 @@ export const parseJsonCookie = <T>(cookieValue: string | null): T | null => {
     return null;
   }
 };
-
-export const cookieExists = (name: string): boolean => {
-  return getCookie(name) !== null;
-};

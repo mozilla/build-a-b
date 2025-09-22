@@ -1,3 +1,5 @@
+'use client';
+
 import Bento from '@/components/Bento';
 import { Close } from '@/components/PlaypenPopup/Close.svg';
 import { Delete } from '@/components/PlaypenPopup/Delete.svg';

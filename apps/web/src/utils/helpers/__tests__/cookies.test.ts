@@ -6,43 +6,29 @@ import { deleteCookie, getCookie, parseJsonCookie, setCookie } from '../cookies'
 
 let cookieStore = '';
 
-// Mocks document.cookie in a way that accurately reflects the in-browser setter
+// Mocks document.cookie to accurately reflect the in-browser setter behavior
 Object.defineProperty(document, 'cookie', {
   get: () => cookieStore,
   set: (value: string) => {
-    // Parse the new cookie being set
     const [cookiePart] = value.split(';');
     const [name, val] = cookiePart.split('=');
+    /**
+     * Overwriting a same-name cookie is handled via filtering
+     */
+    const existingCookies = cookieStore ? cookieStore.split('; ') : [];
+    const filteredCookies = existingCookies.filter((cookie) => {
+      const [cookieName] = cookie.split('=');
+      return cookieName !== name;
+    });
 
-    // Check if this is a deletion (expired date or max-age=0)
-    const isDeleting = value.includes('expires=Thu, 01 Jan 1970') || value.includes('max-age=0');
-
-    if (isDeleting) {
-      // Remove the cookie from the store
-      const cookies = cookieStore.split('; ').filter((cookie) => {
-        const [cookieName] = cookie.split('=');
-        return cookieName !== name;
-      });
-      cookieStore = cookies.join('; ');
-    } else {
-      // Remove existing cookie with same name if it exists
-      const existingCookies = cookieStore ? cookieStore.split('; ') : [];
-      const filteredCookies = existingCookies.filter((cookie) => {
-        const [cookieName] = cookie.split('=');
-        return cookieName !== name;
-      });
-
-      // Add the new cookie
-      filteredCookies.push(`${name}=${val}`);
-      cookieStore = filteredCookies.join('; ');
-    }
+    filteredCookies.push(`${name}=${val}`);
+    cookieStore = filteredCookies.join('; ');
   },
   configurable: true,
 });
 
 describe('Cookie utilities', () => {
   beforeEach(() => {
-    // Clear cookies before each test
     cookieStore = '';
   });
 
@@ -66,7 +52,7 @@ describe('Cookie utilities', () => {
   });
 
   describe('deleteCookie', () => {
-    it('should delete an existing cookie', () => {
+    it('should delete a cookie', () => {
       setCookie('test', 'value');
       expect(getCookie('test')).toBe('value');
 
