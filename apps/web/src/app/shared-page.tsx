@@ -58,31 +58,27 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-title-1 pb-4">Get your Billionaire on board for launch.</h4>
-                  <ul className="flex flex-col">
-                    <li className="flex flex-row items-center mb-4">
-                      <span className="pt-4 pb-3 pl-7 pr-7 border-2 mr-8 rounded-full text-[1.5rem]">
-                        1
-                      </span>
-                      <span>
+                  <h4 className="text-title-1 pb-4">
+                    Don&apos;t let your Billionaire get left behind.{' '}
+                  </h4>
+                  <ul className="flex flex-col text-sm-custom landscape:text-regular-custom">
+                    <li className="flex flex-row items-center mb-2 landscape:mb-4 gap-4">
+                      <span className="rounded-bullet">1</span>
+                      <span className="flex-1 ">
                         Share your Billionaire avatar by <strong>Friday, October 10th </strong>
                         with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
                       </span>
                     </li>
-                    <li className="flex flex-row items-center mb-4">
-                      <span className="pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]">
-                        2
-                      </span>
-                      <span>
+                    <li className="flex flex-row items-center mb-2 landscape:mb-4 gap-4">
+                      <span className="rounded-bullet">2</span>
+                      <span className="flex-1">
                         Keep an eye on your comments and DMs to see if your little Billionaire was
                         chosen for launch.
                       </span>
                     </li>
-                    <li className="flex flex-row items-center mb-4">
-                      <span className="pt-4 pb-3 pl-7 pr-6 border-2 mr-8 rounded-full text-[1.5rem]">
-                        3
-                      </span>
-                      <span>
+                    <li className="flex flex-row items-center mb-2 landscape:mb-4 gap-4">
+                      <span className="rounded-bullet">3</span>
+                      <span className="flex-1">
                         Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed
                         at the{' '}
                         <Link href="/twitchcon">
