@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:https": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -24,6 +25,7 @@
     "pnpm": "^10.15.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-qr-code": "^2.0.18",
     "supabase": "^2.40.7",
     "tailwind-plugin": "link:@heroui/react/tailwind-plugin"
   },

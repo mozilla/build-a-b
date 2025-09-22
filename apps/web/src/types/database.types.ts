@@ -10,16 +10,21 @@ export type Database = {
     Tables: {
       avatars: {
         Row: {
-          asset: string | null;
+          asset_instagram: string | null;
+          asset_landscape: string | null;
+          asset_riding: string | null;
+          asset_share: string | null;
+          asset_standing: string | null;
+          asset_stories: string | null;
           character_story: string | null;
           combination_key: string | null;
           core_drive: string | null;
           created_at: string;
           first_name: string | null;
           id: number;
-          image_url: string | null;
           last_name: string | null;
           legacy_plan: string | null;
+          meta_data: Json | null;
           name: string | null;
           origin_story: string | null;
           parsed_successfully: boolean | null;
@@ -31,16 +36,21 @@ export type Database = {
           uploaded_at: string | null;
         };
         Insert: {
-          asset?: string | null;
+          asset_instagram?: string | null;
+          asset_landscape?: string | null;
+          asset_riding?: string | null;
+          asset_share?: string | null;
+          asset_standing?: string | null;
+          asset_stories?: string | null;
           character_story?: string | null;
           combination_key?: string | null;
           core_drive?: string | null;
           created_at?: string;
           first_name?: string | null;
           id?: number;
-          image_url?: string | null;
           last_name?: string | null;
           legacy_plan?: string | null;
+          meta_data?: Json | null;
           name?: string | null;
           origin_story?: string | null;
           parsed_successfully?: boolean | null;
@@ -52,16 +62,21 @@ export type Database = {
           uploaded_at?: string | null;
         };
         Update: {
-          asset?: string | null;
+          asset_instagram?: string | null;
+          asset_landscape?: string | null;
+          asset_riding?: string | null;
+          asset_share?: string | null;
+          asset_standing?: string | null;
+          asset_stories?: string | null;
           character_story?: string | null;
           combination_key?: string | null;
           core_drive?: string | null;
           created_at?: string;
           first_name?: string | null;
           id?: number;
-          image_url?: string | null;
           last_name?: string | null;
           legacy_plan?: string | null;
+          meta_data?: Json | null;
           name?: string | null;
           origin_story?: string | null;
           parsed_successfully?: boolean | null;
@@ -151,10 +166,11 @@ export type Database = {
       get_random_avatar: {
         Args: { search_pattern: string };
         Returns: {
-          asset: string;
+          asset_riding: string;
           character_story: string;
           combination_key: string;
           first_name: string;
+          id: number;
           last_name: string;
         }[];
       };

@@ -129,27 +129,37 @@ export default async function Home({ avatarData }: PageProps) {
             className="h-full"
             effect="flip"
             back={
-              <div className="h-full w-full p-4 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
-                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center ">
-                  <h4 className="text-title-1 mb-2 text-[2rem]">#BillionaireBlastOff</h4>
-                  <p className="text-body-small text-[0.9rem]">
+              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-3 flex flex-col justify-start mb-2">
+                  <h4 className="text-title-1 mb-2 text-[2rem]">
+                    #Billionaire
+                    <br className="landscape:hidden" />
+                    BlastOff
+                  </h4>
+                  <p className="text-body-small">
                     Let’s help them. With all the Billionaires in space, you can be free to Open
                     What You Want.
                   </p>
                 </div>
-                <Image
-                  src="/assets/images/firefox-open.webp"
-                  width={120}
-                  height={43}
-                  alt=""
-                  className="absolute right-12 bottom-1"
-                />
+                <a href="https://www.mozilla.org/firefox/new/" target="_blank">
+                  <Image
+                    src="/assets/images/firefox-open.webp"
+                    width={120}
+                    height={43}
+                    alt=""
+                    className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
+                  />
+                </a>
               </div>
             }
           >
-            <div className="h-full w-full px-4 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
-              <h4 className="text-title-1 mb-3">#BillionaireBlastOff</h4>
-              <p className="text-body-regular">
+            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+              <h4 className="text-title-1 mb-3">
+                #Billionaire
+                <br className="landscape:hidden" />
+                BlastOff
+              </h4>
+              <p className="text-body-small">
                 Billionaires go to space on rockets fueled by your data. We know a better way.
               </p>
             </div>

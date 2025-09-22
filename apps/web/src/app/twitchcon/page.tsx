@@ -15,20 +15,25 @@ export default async function Page() {
       src: '/assets/images/test.webp',
       href: 'http://www.firefox.com/',
       title: 'Go to Firefox',
+      isVideo: false,
     },
     {
       alt: 'Alt Text 2',
       src: '/assets/images/test.webp',
+      isVideo: false,
     },
     {
       alt: 'Alt Text 3',
       src: '/assets/images/test.webp',
       href: 'http://mondorobot.com',
       title: 'Learn more',
+      isVideo: false,
     },
     {
-      alt: 'Alt Text 4',
-      src: '/assets/images/test.webp',
+      alt: 'Video',
+      src: '/assets/videos/sample-card-game-clip-640x640.webm',
+      isVideo: true,
+      videoPosterPath: '/assets/videos/sample-card-game-poster-640x640.png',
     },
   ];
 
