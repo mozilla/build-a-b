@@ -59,7 +59,7 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid }) => {
       save: {
         onPress: () => setActionType('save'),
         content: {
-          title: 'Your Alll Access Pass',
+          title: 'Your All Access Pass',
           description:
             'Here’s your personal portal to everything you’ve amassed — bully Billionaires, playpen pandemonium, and exclusive content. Use the link or scan the QR code to return to your collection anytime.',
         },
