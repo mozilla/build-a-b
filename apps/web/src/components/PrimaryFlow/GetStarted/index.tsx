@@ -3,6 +3,7 @@
 import { choiceGroupMap } from '@/constants/choice-map';
 import { useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useParams } from 'next/navigation';
 import { type FC } from 'react';
 import Modal from '../../Modal';
 import ChoiceBento from '../ChoiceBento';
@@ -23,8 +24,11 @@ export interface GetStartedProps extends IntroProps {
 }
 
 const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlowData }) => {
+  const pathParams = useParams<{ id?: string }>();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { activeGroup, showConfirmation, userChoices, reset } = usePrimaryFlowContext();
+
+  if (pathParams.id) return null;
 
   // Check if all choices are completed
   const totalGroups = Object.keys(choiceGroupMap).length;
