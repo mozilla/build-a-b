@@ -58,7 +58,9 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-title-1 pb-4">Get your Billionaire on board for launch.</h4>
+                  <h4 className="text-title-1 pb-4">
+                    Don&apos;t let your Billionaire get left behind.{' '}
+                  </h4>
                   <ul className="flex flex-col text-sm-custom landscape:text-regular-custom">
                     <li className="flex flex-row items-center mb-2 landscape:mb-4 gap-4">
                       <span className="rounded-bullet">1</span>
