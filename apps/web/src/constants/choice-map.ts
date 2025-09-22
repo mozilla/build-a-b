@@ -3,7 +3,7 @@ import type { Choice, ChoiceConfig, ChoiceGroup, GameChoices } from '@/types';
 export const choiceGroupMap: Record<ChoiceGroup, Choice[]> = {
   'origin-story': ['inherited', 'manipulator', 'data.thief', 'crypto.king', 'med.mogul'],
   'core-drive': ['power', 'chaos', 'immortality', 'control', 'fame'],
-  'public-mask': ['eco-fake', 'visionary', 'rebel', 'savior', 'genius'],
+  'public-mask': ['eco.fake', 'visionary', 'rebel', 'savior', 'genius'],
   'power-play': ['raiders', 'shadows', 'data.mine', 'media.spin', 'policy.hack'],
   'legacy-plan': ['mars', 'forever.pill', 'blood.bank', 'ai.god', 'sea.lord'],
 };
@@ -46,7 +46,7 @@ export const phrasesMap: Record<Choice, string> = {
   immortality: 'Chasing youth never gets old.',
   control: 'Unquestioning obedience is the real wealth.',
   fame: 'Some people just need the attention they never got from their parents from EVERYONE, ALL THE TIME.',
-  'eco-fake':
+  'eco.fake':
     'When clearcutting a rainforest saves you more money than you’re fined for doing it, what’s the issue?',
   visionary: 'Being psychic’s easy when you brute-force the future you predicted.',
   rebel:
