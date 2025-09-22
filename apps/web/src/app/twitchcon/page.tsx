@@ -60,6 +60,7 @@ export default async function Page() {
             key="1"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/chain.webp"
+            iconEffect
           >
             <p className="text-body-regular">Booth #2805</p>
             <h4 className="text-title-3">
@@ -70,6 +71,7 @@ export default async function Page() {
             key="2"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/tshirt.webp"
+            iconEffect
           >
             <p className="text-body-regular">What&apos;s on deck</p>
             <h4 className="text-title-3">
@@ -80,6 +82,7 @@ export default async function Page() {
             key="3"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/launch.webp"
+            iconEffect
           >
             <p className="text-body-regular">Then, find us at the</p>
             <h4 className="text-title-3">TwitchCon Block Party for the space-launch screening.</h4>
