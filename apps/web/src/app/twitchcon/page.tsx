@@ -167,8 +167,11 @@ export default async function Page() {
         cards={[
           <IconCard
             key="1"
-            image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/star.webp"
+            image="/assets/images/space-rocket.webp"
+            icon="/assets/images/icons/rocket.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Blast off, Billionaires!</h4>
             <p className="text-body-small max-w-[26.25rem]">
@@ -178,13 +181,16 @@ export default async function Page() {
           </IconCard>,
           <IconCard
             key="2"
-            image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/star.webp"
+            image="/assets/images/pub.webp"
+            icon="/assets/images/icons/beer.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Party at Rockin Baja Lobster</h4>
             <p className="text-body-small max-w-[26.25rem]">
-              We’re taking over Gaslamp’s seafood mainstay with cocktails, swag, and stacks of Data
-              War.
+              We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag, and
+              stacks of Data War.
             </p>
           </IconCard>,
         ]}
