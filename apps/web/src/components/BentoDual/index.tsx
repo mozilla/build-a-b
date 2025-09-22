@@ -62,7 +62,7 @@ const BentoDual: FC<BentoDualProps> = ({
 
   return (
     <div
-      className={`group [perspective:1000px] rounded-[0.75rem] w-full h-full ${disabled ? '' : 'cursor-pointer'}`}
+      className={`group [perspective:1000px] rounded-[0.75rem] w-full h-full`}
       onTouchEnd={handleTouch}
     >
       <div className={getWrapperClasses()}>
