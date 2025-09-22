@@ -1,5 +1,23 @@
+import type { AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
+
 export const BUCKET_NAME = 'billionaires';
 export const COOKIE_NAME = 'user_id';
 export const ID_HISTORY_COOKIE = 'id_history';
 export const DEFAULT_AVATAR_WIDTH = 500;
 export const DEFAULT_AVATAR_HEIGHT = 600;
+
+export const avatarBentoData: AvatarBentoProps = {
+  primaryFlowData: {
+    triggerClassNames:
+      'absolute left-[5rem] landscape:left-[8.125rem] top-[17rem] landscape:top-[18.5rem] px-[3rem] landscape:px-[2.125rem] py-[0.75rem] bg-charcoal/30 rotate-[9deg] landscape:rotate-0 transition-[bg-color, color] transition-transform duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
+    ctaText: 'Get Started',
+    title: 'Make Space a Better Place. Add a Billionaire.',
+    description:
+      'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
+    createAvatarCtaText: 'Start Building Your Billionaire',
+    randomAvatarCtaText: 'Create a Random Billionaire',
+  },
+  imageSrcLandscape: '/assets/images/avatar-square.webp',
+  imageSrcPortrait: '/assets/images/avatar-portrait.png',
+  imageAlt: '', // Decorative image
+};

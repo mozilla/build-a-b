@@ -261,6 +261,7 @@ const CompletionScreen: FC = () => {
               <Image
                 src={avatarData.url}
                 alt="Generated Billionaire Avatar"
+                sizes="(orientation: landscape) 50vw, (max-width: 768px) 90vw, 30vw"
                 fill
                 className={`object-cover object-top transition-opacity duration-500 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -275,7 +276,7 @@ const CompletionScreen: FC = () => {
             <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
               <div className="p-4">
                 <div className="text-lg font-bold mb-1 text-charcoal">
-                  Meet <span className="text-purple-600">{avatarData.name}</span>
+                  Meet <span className="text-purple-600 capitalize">{avatarData.name}</span>
                 </div>
                 <div className="text-sm text-charcoal">{avatarData.bio}</div>
               </div>
