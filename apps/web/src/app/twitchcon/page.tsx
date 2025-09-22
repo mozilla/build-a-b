@@ -11,29 +11,24 @@ import ImageGallery from '@/components/ImageGallery';
 export default async function Page() {
   const imagesForGallery = [
     {
-      alt: 'Alt Text 1',
-      src: '/assets/images/test.webp',
-      href: 'http://www.firefox.com/',
-      title: 'Go to Firefox',
+      alt: 'Rocket blueprint',
+      src: '/assets/images/gallery/1.webp',
       isVideo: false,
     },
     {
-      alt: 'Alt Text 2',
-      src: '/assets/images/test.webp',
+      alt: 'Launch planning',
+      src: '/assets/images/gallery/2.webp',
       isVideo: false,
     },
     {
-      alt: 'Alt Text 3',
-      src: '/assets/images/test.webp',
-      href: 'http://mondorobot.com',
-      title: 'Learn more',
+      alt: 'Rocket mockup',
+      src: '/assets/images/gallery/3.webp',
       isVideo: false,
     },
     {
-      alt: 'Video',
-      src: '/assets/videos/sample-card-game-clip-640x640.webm',
-      isVideo: true,
-      videoPosterPath: '/assets/videos/sample-card-game-poster-640x640.png',
+      alt: 'Launch simulation',
+      src: '/assets/images/gallery/4.webp',
+      isVideo: false,
     },
   ];
 
@@ -104,21 +99,24 @@ export default async function Page() {
       </CardsSection>
 
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-        <Bento
-          image="/assets/images/boxer.webp"
-          className="landscape:w-[30%] aspect-[377/267] border-none"
-        />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">Reclaim your main character energy</h2>
+              <h2 className="text-title-1 text-charcoal">Make your Billionaire dance</h2>
               <p className="text-body-regular text-charcoal">
-                Use our super futuristic hologram kiosk to build a Billionaire and make them dance
-                till peak cringe.
+                It&apos;s your Billionaire. Make them perform for your amusement in 3D for everyone
+                to mock and post. Can&apos;t make it to the Holobox at TwitchCon? You can still
+                build a Billionaire and join the dance party with the new TikTok Dance Generator,
+                dropping TwitchCon weekend!
               </p>
             </div>
           </Window>
         </Bento>
+        <Bento
+          image="/assets/images/doll.webp"
+          imageAlt="Avatar in a box"
+          className="landscape:w-[30%] aspect-[377/315] border-none"
+        />
       </section>
 
       <CardsSection
@@ -169,8 +167,11 @@ export default async function Page() {
         cards={[
           <IconCard
             key="1"
-            image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/star.webp"
+            image="/assets/images/space-rocket.webp"
+            icon="/assets/images/icons/rocket.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Blast off, Billionaires!</h4>
             <p className="text-body-small max-w-[26.25rem]">
@@ -180,16 +181,45 @@ export default async function Page() {
           </IconCard>,
           <IconCard
             key="2"
-            image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/star.webp"
+            image="/assets/images/pub.webp"
+            icon="/assets/images/icons/beer.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
             <h4 className="text-title-3">Party at Rockin Baja Lobster</h4>
             <p className="text-body-small max-w-[26.25rem]">
-              We’re taking over Gaslamp’s seafood mainstay with cocktails, swag, and stacks of Data
-              War.
+              We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag, and
+              stacks of Data War.
             </p>
           </IconCard>,
         ]}
+        postContent={
+          <div className="flex flex-col landscape:flex-row justify-center items-center p-4 landscape:p-8 mt-4 gap-4 rounded-xl border-common-ash border-2">
+            <figure className="relative w-15 h-15">
+              <Image src="/assets/images/icons/bitcoin.webp" alt="Bitcoin" sizes="10wv" fill />
+            </figure>
+            <div className="flex-1">
+              <h4 className="text-title-3 mb-2">
+                You don&apos;t need a one-way ticket to space to party
+              </h4>
+              <p className="text-body-regular">
+                But you do need Block Party tickets to join us live. Luckily, they&apos;re right
+                here, on the internet.
+              </p>
+            </div>
+            <div>
+              <Link
+                href="https://www.twitchcon.com/san-diego-2025/tickets/"
+                title="Buy your ticket"
+                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                target="_blank"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
+        }
       >
         <h2 className="text-title-1">Blast off at the Block Party</h2>
         <p className="text-body-small">
