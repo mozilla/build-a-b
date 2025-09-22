@@ -7,6 +7,10 @@ export interface BrowserBentoProps {
    */
   inverse?: boolean;
   /**
+   * A specific element that should be inversed.
+   */
+  inverseElement?: 'dots';
+  /**
    * Whether the component should be displayed in white state (white background, black borders).
    */
   white?: boolean;
@@ -26,6 +30,7 @@ export interface BrowserBentoProps {
 
 const BrowserBento: FC<BrowserBentoProps> = ({
   inverse = false,
+  inverseElement,
   white = false,
   gradient = false,
   className,
@@ -46,7 +51,9 @@ const BrowserBento: FC<BrowserBentoProps> = ({
                       ${white ? 'bg-common-ash' : ''}
                       `}
       >
-        <ThreeDots dotClassName={`${inverse ? 'border-common-ash' : 'border-charcoal'}`} />
+        <ThreeDots
+          dotClassName={`${inverse || inverseElement === 'dots' ? 'border-common-ash' : 'border-charcoal'}`}
+        />
       </div>
       <div
         id="browser-bento-body"
