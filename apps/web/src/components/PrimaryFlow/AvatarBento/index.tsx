@@ -3,11 +3,10 @@ import Bento, { type BentoProps } from '@/components/Bento';
 import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
-import Image, { ImageProps } from 'next/image';
+import Image from 'next/image';
 import type { FC } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
-import { PrimaryContextProvider } from '../PrimaryFlowContext';
 import AvatarView from './AvatarView';
 
 export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
@@ -84,11 +83,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
             <AvatarView {...avatarData} />
           ) : (
             <>
-              {primaryFlowData && (
-                <PrimaryContextProvider initialData={avatarData || null}>
-                  <GetStarted {...primaryFlowData} />
-                </PrimaryContextProvider>
-              )}
+              {primaryFlowData && <GetStarted {...primaryFlowData} />}
 
               <div
                 className="absolute z-20 bottom-0 w-full h-[14.3125rem] px-4 pb-4
