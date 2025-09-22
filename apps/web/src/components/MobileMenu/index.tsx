@@ -40,7 +40,7 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             <Image src={closeIcon} fill alt={altText} />
           </button>
           <div>
-            <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6">
+            <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6 -ml-4">
               <Image src="/assets/images/billionaire-logo.svg" alt="Billionaire Logo" fill />
             </Link>
             <HeaderMenu
