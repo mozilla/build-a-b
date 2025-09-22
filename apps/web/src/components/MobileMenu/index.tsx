@@ -28,58 +28,41 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       {open && (
         <div
           role="dialog"
-          className="fixed top-0 left-0 w-full 
-                    bg-white shadow-md border-t h-dvh z-50
-                    bg-[url(/assets/images/bg-mobile.webp)]
-                    bg-no-repeat bg-center bg-cover p-8"
+          className="fixed top-0 left-0 w-full h-dvh z-50
+                     bg-[url(/assets/images/bg-mobile.webp)]
+                     bg-no-repeat bg-center bg-cover p-8
+                     flex flex-col justify-between"
         >
-          <div className="modal-container relative flex flex-col">
-            <button onClick={() => setOpen(false)} className="absolute z-60 right-0 cursor-pointer">
-              <Image
-                src={closeIcon}
-                width={24}
-                height={24}
-                alt={altText}
-                className="w-[1.5rem] h-[1.5rem]"
-              />
-            </button>
-
-            <div className="logo-container">
-              <Link href="/" tabIndex={0} className="inline-block">
-                <Image
-                  src="/assets/images/billionaire-logo.svg"
-                  alt="Billionaire Logo"
-                  width={373}
-                  height={220}
-                  className="w-45"
-                />
-              </Link>
-            </div>
-
-            <div className="menu-section pt-6">
-              <HeaderMenu
-                links={links}
-                isHorizontal={false}
-                isInModal={true}
-                onLinkClick={() => setTimeout(() => setOpen(false), 200)}
-              />
-            </div>
-            <div className="social-media-section pt-6">
-              <SocialNetwork socials={socials} isInModal={true} />
-            </div>
-            <div className="additional-data pt-6 text-[0.75rem]">
-              <p className="mb-4">
-                {ctaCopy.map((line, inx) => (
-                  <span key={inx}>
-                    {inx > 0 ? <br /> : null}
-                    {line}
-                  </span>
-                ))}
-              </p>
-              <Link href="#" className="secondary-button" title="Build an avatar now">
-                {ctaLabel}
-              </Link>
-            </div>
+          <button
+            onClick={() => setOpen(false)}
+            className="absolute z-60 top-12 right-4 cursor-pointer w-8 h-8"
+          >
+            <Image src={closeIcon} fill alt={altText} />
+          </button>
+          <div>
+            <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6 -ml-4">
+              <Image src="/assets/images/billionaire-logo.svg" alt="Billionaire Logo" fill />
+            </Link>
+            <HeaderMenu
+              links={links}
+              isHorizontal={false}
+              isInModal={true}
+              onLinkClick={() => setTimeout(() => setOpen(false), 200)}
+            />
+          </div>
+          <div className="flex flex-col justify-center items-center">
+            <Link href="#" className="secondary-button w-full" title="Build an avatar now">
+              {ctaLabel}
+            </Link>
+            <p className="mt-4 mb-10 text-sm-custom text-center">
+              {ctaCopy.map((line, inx) => (
+                <span key={inx}>
+                  {inx > 0 ? <br /> : null}
+                  {line}
+                </span>
+              ))}
+            </p>
+            <SocialNetwork socials={socials} isInModal={true} />
           </div>
         </div>
       )}
