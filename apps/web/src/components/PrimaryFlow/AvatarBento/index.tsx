@@ -93,7 +93,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
                 <div className="relative w-full h-full">
                   <BrowserBento gradient className="absolute h-full">
                     <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
-                      Make Space a Better Place. Add a Billionaire.
+                      Make space a better place. Add a Billionaire.
                     </span>
                   </BrowserBento>
                   <BrowserBento

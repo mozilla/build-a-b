@@ -8,6 +8,9 @@ import Footer from '@/components/Footer';
 export const metadata: Metadata = {
   title: 'Billionaire Blast-Off',
   description: '',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 const navigationData = {
