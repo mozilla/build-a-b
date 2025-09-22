@@ -210,7 +210,7 @@ export default async function Page() {
             </div>
             <div>
               <Link
-                href="#"
+                href="https://www.twitchcon.com/san-diego-2025/tickets/"
                 title="Buy your ticket"
                 className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
                 target="_blank"
