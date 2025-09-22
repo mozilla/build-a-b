@@ -1,12 +1,19 @@
-import { FC, Fragment, ReactElement } from 'react';
+import { FC, Fragment, ReactElement, ReactNode } from 'react';
 import Bento, { BentoProps } from '../Bento';
 import { IconCardProps } from '../IconCard';
 
 export interface CardsSectionProps extends BentoProps {
   cards: ReactElement<IconCardProps>[];
+  postContent: ReactNode;
 }
 
-const CardsSection: FC<CardsSectionProps> = ({ className, image, cards, children }) => {
+const CardsSection: FC<CardsSectionProps> = ({
+  className,
+  image,
+  cards,
+  children,
+  postContent,
+}) => {
   return (
     <section className="mb-4 landscape:mb-8">
       <Bento image={image} className={className}>
@@ -17,6 +24,7 @@ const CardsSection: FC<CardsSectionProps> = ({ className, image, cards, children
               <Fragment key={index}>{card}</Fragment>
             ))}
           </div>
+          {postContent}
         </div>
       </Bento>
     </section>
