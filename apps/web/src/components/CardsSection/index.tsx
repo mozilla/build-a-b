@@ -4,7 +4,7 @@ import { IconCardProps } from '../IconCard';
 
 export interface CardsSectionProps extends BentoProps {
   cards: ReactElement<IconCardProps>[];
-  postContent: ReactNode;
+  postContent?: ReactNode;
 }
 
 const CardsSection: FC<CardsSectionProps> = ({
