@@ -84,8 +84,11 @@ export default async function Home({ avatarData }: PageProps) {
                       </span>
                       <span>
                         Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed
-                        at the <strong className="underline">TwitchCon Block Party</strong> and
-                        right here on this site.
+                        at the{' '}
+                        <Link href="/twitchcon">
+                          <strong className="underline">TwitchCon Block Party</strong>
+                        </Link>{' '}
+                        and right here on this site.
                       </span>
                     </li>
                   </ul>
