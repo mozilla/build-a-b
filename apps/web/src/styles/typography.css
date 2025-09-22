@@ -142,7 +142,7 @@ html {
 
   /* "Post content of your billionaire for a shot at sending them to actual, for-real-real space." */
   .text-body-small {
-    @apply text-sm-custom font-sharp font-medium;
+    @apply text-regular-custom font-sharp font-medium;
     @variant landscape {
       @apply text-lg-custom;
     }
