@@ -12,7 +12,7 @@ const CardsSection: FC<CardsSectionProps> = ({ className, image, cards, children
       <Bento image={image} className={className}>
         <div className="relative p-4 landscape:p-12 flex flex-col gap-4">
           {children}
-          <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4 flex-wrap">
+          <div className="flex flex-col landscape:flex-row gap-5 landscape:gap-10 justify-between mt-4">
             {cards.map((card, index) => (
               <Fragment key={index}>{card}</Fragment>
             ))}
