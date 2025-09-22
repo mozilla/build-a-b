@@ -8,6 +8,9 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
     const supabase = await createClient();
     const searchPattern = options.join('-');
 
+    // Keep this log for server debugging
+    console.log('Starting search with parameters: ', searchPattern);
+
     const { data: selectedAvatar, error } = await supabase
       .rpc('get_random_avatar', {
         search_pattern: searchPattern,
