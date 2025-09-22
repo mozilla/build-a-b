@@ -114,13 +114,14 @@ export default async function Page() {
       </section>
 
       <CardsSection
-        className="bg-[url(/assets/images/data-war/bg-data-war.webp)] bg-no-repeat bg-center bg-cover flex-warp"
+        className="bg-[url(/assets/images/yellow-grid.webp)] bg-no-repeat bg-center bg-cover flex-warp"
         cards={[
           <IconCard
             key="1"
-            icon="/assets/images/data-war/data-war-left-icon.webp"
-            image="/assets/images/data-war/data-war-left-card.webp"
-            className="bg-common-ash border-none border-2! h-[16rem] animate-left-card-icon"
+            icon="/assets/images/icons/deck.webp"
+            image="/assets/images/hall.webp"
+            className="border-none aspect-[139/64] animate-left-card-icon"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
           >
             <h4 className="text-title-3">Play with a full deck</h4>
             <p className="text-body-regular">
@@ -130,9 +131,10 @@ export default async function Page() {
           </IconCard>,
           <IconCard
             key="2"
-            icon="/assets/images/data-war/data-war-right-icon.webp"
-            image="/assets/images/data-war/data-war-right-card.webp"
-            className="bg-common-ash border-none border-2! h-[16rem] animate-right-card-icon"
+            icon="/assets/images/icons/hand.webp"
+            image="/assets/images/pile.webp"
+            className="bg-common-ash border-none aspect-[139/64] animate-right-card-icon"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
           >
             <h4 className="text-title-3">Stay and Play</h4>
             <p className="text-body-regular">
