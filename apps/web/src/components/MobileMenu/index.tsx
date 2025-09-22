@@ -57,7 +57,12 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             </div>
 
             <div className="menu-section pt-6">
-              <HeaderMenu links={links} isHorizontal={false} isInModal={true} />
+              <HeaderMenu
+                links={links}
+                isHorizontal={false}
+                isInModal={true}
+                onLinkClick={() => setTimeout(() => setOpen(false), 200)}
+              />
             </div>
             <div className="social-media-section pt-6">
               <SocialNetwork socials={socials} isInModal={true} />
