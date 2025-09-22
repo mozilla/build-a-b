@@ -218,7 +218,7 @@ body {
   animation-delay: 0s;
 }
 
-@keyframes floatTilt {
+@keyframes float-tilt {
   0%,
   100% {
     transform: translateY(0) rotate(0deg);
@@ -235,5 +235,5 @@ body {
 }
 
 @utility animate-float-tilt {
-  animation: floatTilt 6s ease-in-out infinite;
+  animation: float-tilt 6s ease-in-out infinite;
 }
