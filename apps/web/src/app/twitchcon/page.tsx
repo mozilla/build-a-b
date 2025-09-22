@@ -47,7 +47,12 @@ export default async function Page() {
             Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
             floor or follow along online.
           </p>
-          <Link href="#" className="secondary-button w-fit" title="Get your event tickets">
+          <Link
+            href="https://www.twitchcon.com/san-diego-2025/tickets/"
+            className="secondary-button w-fit"
+            title="Get your event tickets"
+            target="_blank"
+          >
             Get Tickets
           </Link>
         </div>
@@ -60,6 +65,7 @@ export default async function Page() {
             key="1"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/chain.webp"
+            iconEffect
           >
             <p className="text-body-regular">Booth #2805</p>
             <h4 className="text-title-3">
@@ -70,6 +76,7 @@ export default async function Page() {
             key="2"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/tshirt.webp"
+            iconEffect
           >
             <p className="text-body-regular">What&apos;s on deck</p>
             <h4 className="text-title-3">
@@ -80,6 +87,7 @@ export default async function Page() {
             key="3"
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/launch.webp"
+            iconEffect
           >
             <p className="text-body-regular">Then, find us at the</p>
             <h4 className="text-title-3">TwitchCon Block Party for the space-launch screening.</h4>
@@ -114,45 +122,44 @@ export default async function Page() {
       </section>
 
       <CardsSection
-        className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50]"
+        className="bg-[url(/assets/images/yellow-grid.webp)] bg-no-repeat bg-center bg-cover flex-warp"
         cards={[
           <IconCard
             key="1"
-            icon="/assets/images/icons/shield.webp"
-            className="bg-common-ash border-charcoal! border-solid border-2!"
+            icon="/assets/images/icons/deck.webp"
+            image="/assets/images/hall.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
-            <h4 className="text-title-3 text-charcoal">
-              Bring your expansion pack and battle against other players
-            </h4>
-            <p className="text-body-regular text-charcoal">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.
+            <h4 className="text-title-3">Play with a full deck</h4>
+            <p className="text-body-regular">
+              Everyone gets an exclusive expansion in the swag bag. Play at our tables to score the
+              full set.
             </p>
           </IconCard>,
           <IconCard
             key="2"
-            icon="/assets/images/icons/star.webp"
-            className="bg-common-ash border-charcoal! border-solid border-2!"
+            icon="/assets/images/icons/hand.webp"
+            image="/assets/images/pile.webp"
+            className="aspect-[163/128] landscape:aspect-[139/64]"
+            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            iconEffect
           >
-            <h4 className="text-title-3 text-charcoal">
-              Featuring appearances by famous gamers like XXX and XXX
-            </h4>
-            <p className="text-body-regular text-charcoal">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.
+            <h4 className="text-title-3">Stay and Play</h4>
+            <p className="text-body-regular">
+              Play a few rounds, float some ideas, chat with creators, and (maybe) walk away with
+              more than a free deck.
             </p>
           </IconCard>,
         ]}
       >
-        <h2 className="text-title-1 text-charcoal">Play Data War with Us</h2>
-        <p className="text-body-regular text-charcoal">Some body copy about the game</p>
-        <Link
-          href="#"
-          title="Read Data War instructions"
-          className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash w-auto mx-auto"
-        >
-          Learn Data War: The Game
-        </Link>
+        <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
+        <p className="text-body-regular text-charcoal">
+          Data War is the chaotic-casual card game where players compete to send egomaniacal,
+          tantrum-prone little Billionaires on a One-Way Ticket to Space. Created by Firefox,
+          presented by Billionaire Blast Off, and only available at TwitchCon.
+        </p>
       </CardsSection>
 
       <ImageGallery images={imagesForGallery} />
@@ -165,10 +172,10 @@ export default async function Page() {
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/star.webp"
           >
-            <h4 className="text-title-3">Watch the Space launch</h4>
-            <p className="text-body-regular">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in
-              eros elementum tristique.
+            <h4 className="text-title-3">Blast off, Billionaires!</h4>
+            <p className="text-body-small max-w-[26.25rem]">
+              Watch the for-real-for-real space launch, wave goodbye to the Billionaires, and Open
+              What You Want.
             </p>
           </IconCard>,
           <IconCard
@@ -176,18 +183,18 @@ export default async function Page() {
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/star.webp"
           >
-            <h4 className="text-title-3">Party at the bar</h4>
-            <p className="text-body-regular">
-              We&apos;re taking over Rockin Baja Lobster in the heart of the Gaslamp district.
+            <h4 className="text-title-3">Party at Rockin Baja Lobster</h4>
+            <p className="text-body-small max-w-[26.25rem]">
+              We’re taking over Gaslamp’s seafood mainstay with cocktails, swag, and stacks of Data
+              War.
             </p>
           </IconCard>,
         ]}
       >
-        <h2 className="text-title-1">Block party highlights</h2>
-        <p className="text-body-regular">
-          On October 18 at 8:30 PM, the launch film premieres... If you&apos;re at TwitchCon, catch
-          the secret screening at the Party. If you&apos;re anywhere else, the only place to watch
-          is right here.
+        <h2 className="text-title-1">Blast off at the Block Party</h2>
+        <p className="text-body-small">
+          Oct 18, 8:30 PM. Join us after hours as we count down, drink up and send all the
+          Billionaires off in style—or stream along right here.
         </p>
       </CardsSection>
 

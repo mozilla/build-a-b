@@ -217,3 +217,23 @@ body {
   animation: floater-3 6s ease-in-out infinite;
   animation-delay: 0s;
 }
+
+@keyframes float-tilt {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3rem) rotate(20deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2.5rem) rotate(-15deg);
+  }
+}
+
+@utility animate-float-tilt {
+  animation: float-tilt 6s ease-in-out infinite;
+}
