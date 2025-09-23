@@ -30,7 +30,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row or spacer */}
-        <div className="pt-[6rem] mb-4">
+        <div className="pt-[10rem] mb-4">
           <SelectedIconsRow excludeGroup={activeGroup} />
         </div>
 
@@ -47,7 +47,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto pt-8">
+        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto">
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}

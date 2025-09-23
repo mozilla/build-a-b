@@ -50,6 +50,12 @@ html {
   line-height: 2.5rem; /* 40px */
 }
 
+/* text-3xl */
+@utility text-3xl-custom {
+  font-size: 2.125rem; /* 34px */
+  line-height: 2.5rem; /* 40px */
+}
+
 /* text-2xl */
 @utility text-2xl-custom {
   font-size: 1.5rem; /* 24px */
