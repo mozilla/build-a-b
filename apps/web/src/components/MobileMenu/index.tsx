@@ -5,7 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
+import GetStarted from '../PrimaryFlow/GetStarted';
 import { HeaderProps } from '@/components/Header';
+import { avatarBentoData } from '@/utils/constants';
 
 const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
   const [open, setOpen] = useState(false);
@@ -51,9 +53,13 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             />
           </div>
           <div className="flex flex-col justify-center items-center">
-            <Link href="#" className="secondary-button w-full" title="Build an avatar now">
-              {ctaLabel}
-            </Link>
+            {avatarBentoData?.primaryFlowData && (
+              <GetStarted
+                {...avatarBentoData.primaryFlowData}
+                ctaText={ctaLabel}
+                triggerClassNames="secondary-button w-full"
+              />
+            )}
             <p className="mt-4 mb-10 text-sm-custom text-center">
               {ctaCopy.map((line, inx) => (
                 <span key={inx}>
