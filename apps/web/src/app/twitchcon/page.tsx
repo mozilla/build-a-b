@@ -99,6 +99,11 @@ export default async function Page() {
       </CardsSection>
 
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+        <Bento
+          image="/assets/images/doll.webp"
+          imageAlt="Avatar in a box"
+          className="landscape:w-[30%] aspect-[377/315] border-none"
+        />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
@@ -112,11 +117,6 @@ export default async function Page() {
             </div>
           </Window>
         </Bento>
-        <Bento
-          image="/assets/images/doll.webp"
-          imageAlt="Avatar in a box"
-          className="landscape:w-[30%] aspect-[377/315] border-none"
-        />
       </section>
 
       <CardsSection
