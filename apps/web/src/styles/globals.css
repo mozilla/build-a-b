@@ -52,7 +52,7 @@
   }
 
   .rounded-bullet {
-    @apply block border-2 rounded-full text-2xl-custom text-center w-12 h-12 leading-12 landscape:w-16 landscape:h-16 landscape:leading-16;
+    @apply block border-2 rounded-full text-2xl-custom landscape:text-3xl-custom text-center w-12 h-12 leading-12 landscape:w-16 landscape:h-16 landscape:leading-16;
   }
 }
 
