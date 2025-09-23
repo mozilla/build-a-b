@@ -119,7 +119,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         </div>
         <p className="landscape:self-end">
           <Link
-            href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            href="https://www.mozilla.org/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
             aria-label="Go to Privacy Policy page"
             title="Go to Privacy Policy page"
             className="underline"
@@ -129,7 +129,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           </Link>{' '}
           &bull;{' '}
           <Link
-            href="https://www.mozilla.org/en-US/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            href="https://www.mozilla.org/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
             aria-label="Go to Terms and Conditions page"
             title="Go to Terms and Conditions page"
             className="underline"
