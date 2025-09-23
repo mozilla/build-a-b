@@ -38,7 +38,7 @@ const BentoDual: FC<BentoDualProps> = ({
     if (disabled) return clsx(className);
 
     const baseClasses =
-      'relative w-full h-full backface-hidden transition-transform duration-700 [transform-style:preserve-3d]';
+      'relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d]';
 
     if (effect === 'flip') {
       const flipClasses = isFlipped
