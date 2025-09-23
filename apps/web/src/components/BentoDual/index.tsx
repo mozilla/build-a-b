@@ -27,6 +27,8 @@ const BentoDual: FC<BentoDualProps> = ({
   back,
   image,
   imageAlt,
+  imageSrcPortrait,
+  imageAltPortrait,
   bgEffect,
   effect = 'flip',
   disabled,
@@ -76,6 +78,20 @@ const BentoDual: FC<BentoDualProps> = ({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className={clsx(
                 'absolute inset-0 z-0 object-cover',
+                bgEffect &&
+                  'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
+                imageSrcPortrait && 'portrait:hidden',
+              )}
+            />
+          )}
+          {imageSrcPortrait && (
+            <Image
+              src={imageSrcPortrait}
+              alt={imageAltPortrait ?? imageAlt ?? ''}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className={clsx(
+                'landscape:hidden absolute inset-0 z-0 object-cover',
                 bgEffect &&
                   'transition-transform duration-500 ease-out group-hover:scale-120 group-hover:rotate-10',
               )}
