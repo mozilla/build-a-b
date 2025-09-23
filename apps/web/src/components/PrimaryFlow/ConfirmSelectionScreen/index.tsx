@@ -58,7 +58,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       {/* Mobile layout */}
       <div className="flex flex-col h-full landscape:hidden">
         {/* Icon row */}
-        <div className="pt-[6.625rem] mb-[-2rem]">
+        <div className="pt-[10rem] mb-[-2rem]">
           <SelectedIconsRow excludeGroup={activeGroup} />
         </div>
 

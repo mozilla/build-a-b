@@ -47,11 +47,11 @@ const Intro: FC<IntroProps> = ({
   return (
     <div className="relative p-4 flex flex-col items-center justify-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:px-16 landscape:pt-[6rem] landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
       {/* Floating Images */}
-      {floatingImages.map(({ id, className, style }) => (
-        <div key={id} className={className} style={style}>
+      {floatingImages.map(({ id, className, style }, index) => (
+        <div key={index} className={className} style={style}>
           <Image
-            src={`/assets/images/intro-modal/${id}.png`}
-            alt={`Floating character ${id}`}
+            src={`/assets/images/intro-modal/${id}.webp`}
+            alt={`Floating character ${index + 1}`}
             fill
             sizes="(max-width: 768px) 30vw, 20vw"
             className="object-contain"

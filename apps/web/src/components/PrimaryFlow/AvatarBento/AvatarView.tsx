@@ -84,7 +84,7 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid }) => {
           alt="Avatar"
           width={375}
           height={375}
-          className="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-[3deg] object-top"
+          className="w-full h-full transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-[3deg] object-cover"
           style={{ objectPosition: 'center 5%' }}
         />
       </div>

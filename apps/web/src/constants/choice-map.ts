@@ -15,23 +15,19 @@ export const groupDescriptionMap: Record<ChoiceGroup, { title: string; descripti
   },
   'core-drive': {
     title: 'Pick a Core Drive',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
   },
   'legacy-plan': {
     title: 'Pick a Legacy Plan',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
   },
   'power-play': {
     title: 'Pick a Power Play',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
   },
   'public-mask': {
     title: 'Pick a Public Mask',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas pellentesqu ipsum, sit amet porttitor purus ultrices vitae.',
+    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
   },
 };
 
