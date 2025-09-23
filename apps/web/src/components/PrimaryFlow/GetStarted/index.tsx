@@ -102,7 +102,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
             <motion.div
               className="absolute top-4 left-4 z-40 landscape:hidden"
               initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: '2.5rem' }}
               transition={{ delay: 0.2, duration: 0.3 }}
             >
               <ConfirmSelectionHeaderLogo />

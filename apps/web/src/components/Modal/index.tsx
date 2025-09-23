@@ -38,7 +38,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
         classNames={{
           wrapper:
             'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:103%] [--slide-enter:0px] [--slide-exit:0px]',
-          base: 'w-full h-full landscape:w-[71.8125rem] landscape:h-auto landscape:min-h-[36.5625rem] landscape:rounded-[0.75rem] z-[1000] overflow-hidden',
+          base: 'landscape:w-[71.8125rem] landscape:h-auto landscape:min-h-[36.5625rem] landscape:rounded-[0.75rem] z-[1000] overflow-hidden',
           backdrop: 'bg-black/50 z-[998] w-screen h-screen fixed inset-0',
         }}
         {...modalProps}
@@ -81,7 +81,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                   onPress={onClose}
                   isIconOnly
                   variant="light"
-                  className="landscape:hidden absolute top-4 right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
+                  className="landscape:hidden absolute top-[3.5rem] right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
                   aria-label="Close modal"
                 >
                   <Image
