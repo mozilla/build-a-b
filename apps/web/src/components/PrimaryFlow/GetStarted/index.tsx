@@ -3,7 +3,7 @@
 import { choiceGroupMap } from '@/constants/choice-map';
 import { useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { type FC } from 'react';
 import Modal from '../../Modal';
 import ChoiceBento from '../ChoiceBento';
@@ -25,8 +25,9 @@ export interface GetStartedProps extends IntroProps {
 
 const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlowData }) => {
   const pathParams = useParams<{ id?: string }>();
+  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { activeGroup, showConfirmation, userChoices, reset } = usePrimaryFlowContext();
+  const { activeGroup, showConfirmation, userChoices, avatarData } = usePrimaryFlowContext();
 
   if (pathParams.id) return null;
 
@@ -61,8 +62,12 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
 
   // Reset everything when modal closes
   const handleModalClose = (open: boolean) => {
-    if (!open) reset();
-    onOpenChange();
+    if (!open) {
+      if (avatarData) {
+        router.push(`/a/${avatarData.uuid}`);
+        onOpenChange();
+      }
+    }
   };
 
   // Animation variants for smooth transitions

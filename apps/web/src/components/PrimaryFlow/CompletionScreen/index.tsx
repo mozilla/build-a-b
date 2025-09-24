@@ -2,7 +2,6 @@
 
 import { choiceGroupMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
-import { saveUserAvatar } from '@/utils/actions/save-user-avatar';
 import Image from 'next/image';
 import { type FC, useState } from 'react';
 import BrowserBento from '../../BrowserBento';
@@ -325,19 +324,8 @@ const CompletionScreen: FC = () => {
           }
           onPress={() => {
             setIsRedirecting(true);
-            saveUserAvatar(avatarData.uuid)
-              .then(() => router.push(`/a/${avatarData.uuid}`))
-              .catch(() => {
-                /**
-                 * The action just saves the cookie so if something fails
-                 * we still take the user to the avatar page so
-                 * they can bookmark it.
-                 */
-                return router.push(`/a/${avatarData.uuid}`);
-              })
-              .finally(() => {
-                setIsRedirecting(true);
-              });
+            router.push(`/a/${avatarData.uuid}`);
+            setIsRedirecting(false);
           }}
         >
           <span className={isRedirecting ? 'hidden' : 'block'}>Continue</span>
