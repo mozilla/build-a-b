@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers';
 import { COOKIE_NAME } from '../constants';
-import { redirect } from 'next/navigation';
 
 /**
  * Saves the user information in the cookie and performs the redirect.
@@ -13,5 +12,5 @@ import { redirect } from 'next/navigation';
 export async function saveUserAvatar(uuid: string) {
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, uuid);
-  return redirect(`/a/${uuid}`);
+  return;
 }
