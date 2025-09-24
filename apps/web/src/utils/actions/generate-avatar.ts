@@ -32,6 +32,8 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
     }
 
     return {
+      originalRidingAsset: selectedAvatar.asset_riding || '',
+      instragramAsset: selectedAvatar.asset_instagram || '',
       url: buildImageUrl(selectedAvatar.asset_riding),
       bio: selectedAvatar.character_story || '',
       name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,

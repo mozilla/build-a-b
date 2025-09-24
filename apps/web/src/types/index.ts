@@ -68,6 +68,8 @@ export type ChoiceConfig = {
 export type GameChoices = Record<ChoiceGroup, Record<Choice, ChoiceConfig>>;
 
 export type AvatarData = {
+  originalRidingAsset: string;
+  instragramAsset: string;
   url: string;
   name: string;
   bio: string;
@@ -76,7 +78,13 @@ export type AvatarData = {
 
 export type DatabaseAvatarResponse = Pick<
   Database['public']['Tables']['avatars']['Row'],
-  'character_story' | 'first_name' | 'last_name' | 'id' | 'combination_key' | 'asset_riding'
+  | 'character_story'
+  | 'first_name'
+  | 'last_name'
+  | 'id'
+  | 'combination_key'
+  | 'asset_riding'
+  | 'asset_instagram'
 >;
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];

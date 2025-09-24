@@ -28,7 +28,7 @@ const actionButtonStyles =
 /**
  * Client side avatar view to use with the AvatarBento.
  */
-const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid }) => {
+const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid, instragramAsset, originalRidingAsset }) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
   const [actionType, setActionType] = useState<AvatarViewActionTypeOrNull>(null);
 
@@ -130,7 +130,7 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid }) => {
                     <PlaypenShare
                       action={action}
                       navigatorShareAvailable={navigatorShareAvailable}
-                      avatar={{ url, name, bio, uuid }}
+                      avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
                       setActionType={setActionType}
                     />
                   )}
@@ -138,7 +138,7 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid }) => {
                   {actionName === 'restart' && (
                     <PlaypenRestart
                       action={action}
-                      avatar={{ url, name, bio, uuid }}
+                      avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
                       onCancel={() => setActionType(null)}
                     />
                   )}
