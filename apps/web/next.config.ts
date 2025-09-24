@@ -15,17 +15,6 @@ const nextConfig: NextConfig = {
         destination: '/a/:id',
         permanent: false,
       },
-      {
-        source: '/a/:id',
-        missing: [
-          {
-            type: 'cookie',
-            key: 'user_id',
-          },
-        ],
-        destination: '/',
-        permanent: false,
-      },
     ];
   },
 
