@@ -39,7 +39,7 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             onClick={() => setOpen(false)}
             className="absolute z-60 top-12 right-4 cursor-pointer w-8 h-8"
           >
-            <Image src={closeIcon} fill alt={altText} />
+            <Image src={closeIcon} fill alt={altText} className="w-6 h-6" />
           </button>
           <div>
             <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6 -ml-4">
