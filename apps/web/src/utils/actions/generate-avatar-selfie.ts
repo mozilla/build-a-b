@@ -3,7 +3,7 @@ import type { AvatarData, Choice, DatabaseAvatarResponse, DatabaseUserResponse }
 import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
 
-export async function generateAvatar(options: Choice[]): Promise<AvatarData | null> {
+export async function generateAvatarSelfie(options: Choice[]): Promise<AvatarData | null> {
   try {
     const supabase = await createClient();
     const searchPattern = options.join('-');
