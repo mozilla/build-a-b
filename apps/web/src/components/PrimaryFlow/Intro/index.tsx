@@ -72,7 +72,7 @@ const Intro: FC<IntroProps> = ({
         <h1 className="text-2xl font-extrabold mb-3 landscape:text-4xl-custom landscape:mb-6">
           {title}
         </h1>
-        <p className="mb-4 font-sharp font-semibold text-sm leading-[140%] text-[#F8F6F4] landscape:mb-8 landscape:text-lg">
+        <p className="mb-4 font-sharp font-semibold text-sm leading-[140%] text-[#F8F6F4] landscape:mb-8 landscape:text-lg landscape:w-[24.3125rem]">
           {description}
         </p>
 
@@ -81,14 +81,14 @@ const Intro: FC<IntroProps> = ({
             autoFocus
             onPress={() => setActiveGroup('origin-story')}
             type="button"
-            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 rotate-[2.259deg] landscape:text-base landscape:h-12 landscape:w-[24.3125rem]"
+            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] landscape:w-[24rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[2.259deg] landscape:text-base landscape:h-12 landscape:w-[24.3125rem]"
           >
             {createAvatarCtaText}
           </Button>
           <Button
             onPress={generateRandomAvatar}
             type="button"
-            className="border border-accent font-bold text-sm text-accent rounded-full w-[calc(100%-2rem)] max-w-[24.3125rem] h-10 cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 -rotate-[1.772deg] landscape:mt-6 landscape:text-base landscape:h-12 landscape:w-[24.3125rem] landscape:ml-16"
+            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] landscape:w-[24rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 -rotate-[1.772deg] landscape:mt-6 landscape:text-base landscape:h-12 landscape:w-[24.3125rem] landscape:ml-8"
           >
             {randomAvatarCtaText}
           </Button>
