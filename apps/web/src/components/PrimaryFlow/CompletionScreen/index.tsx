@@ -8,8 +8,10 @@ import { type FC, useState } from 'react';
 import BrowserBento from '../../BrowserBento';
 import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
+import { useRouter } from 'next/navigation';
 
 const CompletionScreen: FC = () => {
+  const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -302,7 +304,16 @@ const CompletionScreen: FC = () => {
         <button
           className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8"
           onClick={() => {
-            saveUserAvatar(avatarData.uuid);
+            saveUserAvatar(avatarData.uuid)
+              .then(() => router.push(`/a/${avatarData.uuid}`))
+              .catch(() => {
+                /**
+                 * The action just saves the cookie so if something fails
+                 * we still take the user to the avatar page so
+                 * they can bookmark it.
+                 */
+                return router.push(`/a/${avatarData.uuid}`);
+              });
           }}
         >
           Continue
