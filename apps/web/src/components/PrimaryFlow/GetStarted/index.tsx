@@ -117,7 +117,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
                 exit="out"
                 variants={pageVariants}
                 transition={pageTransition}
-                className="absolute inset-0"
+                className="relative inset-0"
               >
                 <CompletionScreen />
               </motion.div>

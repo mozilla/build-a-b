@@ -42,9 +42,9 @@ const CompletionScreen: FC = () => {
             <div className="absolute top-[7rem] left-1/2 -translate-x-1/2 flex gap-[2rem] z-30">
               {selectedChoices.slice(0, 3).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-2rem] translate-x-[-0.5rem]',
-                  'w-[5.75rem] h-[5.75rem] translate-y-[0.75rem] translate-x-0',
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-1.5rem] translate-x-[0.5rem]',
+                  'w-[3.75rem] h-[5.625rem] landscape:w-[5.75rem] landscape:h-[5.75rem] translate-x-[-0.5rem]',
+                  'w-[3.75rem] h-[5.625rem] landscape:w-[5.75rem] landscape:h-[5.75rem] translate-y-[0.75rem] translate-x-0',
+                  'w-[3.75rem] h-[5.625rem] landscape:w-[5.75rem] landscape:h-[5.75rem] translate-y-[-1.5rem] translate-x-[0.5rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[-8deg]',
@@ -75,8 +75,8 @@ const CompletionScreen: FC = () => {
             <div className="absolute bottom-[1.5rem] left-1/2 -translate-x-1/2 flex gap-[3rem] z-30">
               {selectedChoices.slice(3, 5).map((choice, index) => {
                 const containerClasses = [
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-5.5rem] translate-x-[-1rem]',
-                  'w-[5.75rem] h-[5.75rem] translate-y-[-4.8rem] translate-x-[1rem]',
+                  'w-[3.75rem] h-[5.625rem] landscape:w-[5.75rem] landscape:h-[5.75rem] translate-y-[-1rem] translate-x-[-6rem]',
+                  'w-[3.75rem] h-[5.625rem] landscape:w-[5.75rem] landscape:h-[5.75rem] translate-y-[-3rem] translate-x-[6rem]',
                 ];
                 const imageClasses = [
                   'w-full h-full object-contain rotate-[9deg]',
@@ -243,7 +243,7 @@ const CompletionScreen: FC = () => {
       )}
 
       {/* Avatar container - centered */}
-      <div className="flex flex-col items-center gap-4 z-10 mt-[2.5rem] landscape:mt-0">
+      <div className="flex flex-col items-center gap-4 z-10 mt-[9rem] landscape:mt-0 ">
         <div
           className="flex flex-col justify-end relative overflow-hidden 
                         rounded-[0.532rem] w-[22.4375rem] h-[28.5rem] p-4 
@@ -261,7 +261,6 @@ const CompletionScreen: FC = () => {
               <Image
                 src={avatarData.url}
                 alt="Generated Billionaire Avatar"
-                sizes="(orientation: landscape) 50vw, (max-width: 768px) 90vw, 30vw"
                 fill
                 className={`object-cover object-top transition-opacity duration-500 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -301,7 +300,7 @@ const CompletionScreen: FC = () => {
       {/* Continue button - only show when avatar is generated */}
       {avatarData && (
         <button
-          className="secondary-button absolute bottom-8 right-8"
+          className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8"
           onClick={() => {
             saveUserAvatar(avatarData.uuid);
           }}

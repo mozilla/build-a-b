@@ -73,8 +73,8 @@ export const choiceMap: GameChoices = Object.entries(choiceGroupMap).reduce(
         if (choicesConf[currentChoice]) return choicesConf;
 
         choicesConf[currentChoice] = {
-          icon: `/assets/images/choice-cards/${currentChoice}.png`,
-          iconWhenConfirmed: `/assets/images/choice-confirmation/${currentChoice}.png`,
+          icon: `/assets/images/choice-cards/${currentChoice}.svg`,
+          iconWhenConfirmed: `/assets/images/choice-confirmation/${currentChoice}.svg`,
           phrase: phrasesMap[currentChoice],
           value: choiceIndex + 1,
           id: currentChoice,
