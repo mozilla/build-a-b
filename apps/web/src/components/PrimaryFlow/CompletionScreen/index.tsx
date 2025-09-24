@@ -9,11 +9,13 @@ import BrowserBento from '../../BrowserBento';
 import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import { useRouter } from 'next/navigation';
+import { Button } from '@heroui/react';
 
 const CompletionScreen: FC = () => {
   const router = useRouter();
   const { userChoices, avatarData } = usePrimaryFlowContext();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Get all selected choices in the correct order
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
@@ -301,9 +303,28 @@ const CompletionScreen: FC = () => {
 
       {/* Continue button - only show when avatar is generated */}
       {avatarData && (
-        <button
-          className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8 z-1000"
-          onClick={() => {
+        <Button
+          isLoading={isRedirecting}
+          className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8 min-w-[10.25rem] z-1000"
+          spinner={
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          }
+          onPress={() => {
+            setIsRedirecting(true);
             saveUserAvatar(avatarData.uuid)
               .then(() => router.push(`/a/${avatarData.uuid}`))
               .catch(() => {
@@ -313,11 +334,14 @@ const CompletionScreen: FC = () => {
                  * they can bookmark it.
                  */
                 return router.push(`/a/${avatarData.uuid}`);
+              })
+              .finally(() => {
+                setIsRedirecting(true);
               });
           }}
         >
-          Continue
-        </button>
+          <span className={isRedirecting ? 'hidden' : 'block'}>Continue</span>
+        </Button>
       )}
     </div>
   );

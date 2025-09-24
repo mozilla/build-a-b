@@ -1,6 +1,9 @@
+'use client';
+
 import { FC } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
+import { Button } from '@heroui/react';
 
 const BentoPlaypenSelfie: FC = () => {
   return (
@@ -17,9 +20,9 @@ const BentoPlaypenSelfie: FC = () => {
         alt=""
         priority
       />
-      <button className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
+      <Button className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
         Take a space selfie
-      </button>
+      </Button>
     </Bento>
   );
 };

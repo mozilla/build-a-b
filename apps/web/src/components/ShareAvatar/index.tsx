@@ -6,7 +6,6 @@ import { Instagram } from '@/components/ShareAvatar/Instagram.svg';
 import { Share } from '@/components/ShareAvatar/Share.svg';
 import { Threads } from '@/components/ShareAvatar/Threads.svg';
 import { AvatarData } from '@/types';
-import { getImageProps } from 'next/image';
 import { FC, MouseEvent, useEffect, useState } from 'react';
 
 export interface ShareAvatarProps {
@@ -33,19 +32,13 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
     fileName: `${avatar.name.replaceAll(' ', '-')}.${AVATAR_FILE_TYPE}`,
   });
   const [currentHref, setCurrentHref] = useState<string>('');
-  const nextOptimzedImage = getImageProps({
-    src: avatar.url,
-    alt: avatar.name,
-    width: 768,
-    height: 1224,
-  });
 
   useEffect(() => {
     let fileHref = '';
 
     const prepDownloadFile = async () => {
       try {
-        const response = await fetch(avatar.url);
+        const response = await fetch(avatar.instragramAsset);
         const blob = await response.blob();
         fileHref = URL.createObjectURL(blob);
 
@@ -64,7 +57,7 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
     return () => {
       URL.revokeObjectURL(fileHref);
     };
-  }, [setCurrentHref, avatar.url]);
+  }, [setCurrentHref, avatar.instragramAsset]);
 
   const safeHref = (url: string) => {
     if (!currentHref) return '#';
@@ -84,7 +77,7 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
 
   const handleNavigatorShare = async () => {
     try {
-      const response = await fetch(nextOptimzedImage.props.src);
+      const response = await fetch(avatar.instragramAsset);
       const blob = await response.blob();
 
       const file = new File([blob], `${avatar.name}.${AVATAR_FILE_TYPE}`, {
