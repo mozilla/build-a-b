@@ -166,7 +166,7 @@ export default async function Home({ avatarData }: PageProps) {
               </Window>
             }
           >
-            <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+            <div className="bg-gradient-to-t from-charcoal to-transparent h-full w-full">
               <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
                 <p className="text-nav-item pb-2">DROPPING SOON</p>
                 <h2 className="text-title-1">
@@ -204,7 +204,7 @@ export default async function Home({ avatarData }: PageProps) {
               </Window>
             }
           >
-            <div className="bg-gradient-to-tr from-[#33333650] to-transparent h-full w-full">
+            <div className="bg-gradient-to-t from-charcoal to-transparent h-full w-full">
               <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
                 <p className="text-nav-item pb-2">JOIN US IRL</p>
                 <h2 className="text-title-1">
