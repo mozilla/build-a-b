@@ -32,6 +32,8 @@ export async function getUserAvatar(userUuid: string): Promise<AvatarData | null
     }
 
     return {
+      originalRidingAsset: avatar.asset_riding || '',
+      instragramAsset: avatar.asset_instagram || '',
       url: buildImageUrl(avatar.asset_riding),
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
