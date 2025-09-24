@@ -71,7 +71,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                       alt="Close"
                       width={24}
                       height={24}
-                      className="h-auto"
+                      className="h-auto w-6 h-6"
                     />
                   </Button>
                 </div>
@@ -89,7 +89,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                     alt="Close"
                     width={24}
                     height={24}
-                    className="h-auto"
+                    className="h-auto w-6 h-6"
                   />
                 </Button>
                 <ModalBody className="overflow-y-auto flex-1 p-0">{children}</ModalBody>

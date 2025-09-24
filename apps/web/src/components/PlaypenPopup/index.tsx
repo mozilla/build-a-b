@@ -76,13 +76,13 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                 className="absolute top-4 right-4 landscape:top-6 landscape:right-6 z-50 w-10 h-10 p-1 hover:opacity-70 transition-opacity"
                 aria-label="Close modal"
               >
-                <div className="flex items-center justify-center rounded-full border border-[2px] border-accent w-full h-full">
+                <div className="flex items-center justify-center w-full h-full">
                   <Image
                     src="/assets/images/close-icon.svg"
                     alt="Close"
                     width={24}
                     height={24}
-                    className="h-auto w-3 h-3"
+                    className="h-auto w-6 h-6"
                   />
                 </div>
               </Button>
