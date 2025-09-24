@@ -302,7 +302,7 @@ const CompletionScreen: FC = () => {
       {/* Continue button - only show when avatar is generated */}
       {avatarData && (
         <button
-          className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8"
+          className="secondary-button mt-4 landscape:absolute landscape:bottom-8 landscape:right-8 z-1000"
           onClick={() => {
             saveUserAvatar(avatarData.uuid)
               .then(() => router.push(`/a/${avatarData.uuid}`))
