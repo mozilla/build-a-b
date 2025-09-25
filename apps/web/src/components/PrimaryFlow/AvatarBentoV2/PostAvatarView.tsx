@@ -48,21 +48,25 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
         <div className="relative portrait:w-full portrait:mb-4">
           <Bento
             className={clsx(
-              'w-full max-w-[29.25rem] mx-auto portrait:h-[28.5rem] landscape:aspect-square flex justify-center items-end',
+              'w-full max-w-[29.25rem] mx-auto portrait:h-[33rem] landscape:aspect-square flex justify-center items-end p-3',
               {
                 'landscape:max-w-[23rem]': playpenButtonsShowing,
               },
             )}
           >
             <Image
-              className="w-full object-cover object-center"
+              className="w-full object-contain lamdscape:object-cover landscape:object-center object-top!"
               src={avatar.url}
               alt={avatar.name}
               fill
               sizes="(orientation: portrait) 100vw, 32.45vw"
             />
+            <div className="landscape:hidden absolute flex flex-col bottom-0 left-0 right-0">
+              <div className="h-[2rem] bg-gradient-to-t from-common-ash to-transparent"></div>
+              <div className="h-[13rem] bg-common-ash"></div>
+            </div>
             <BrowserBento
-              className="portrait:hidden relative w-full max-w-[85.47%] mb-6"
+              className="relative w-full landscape:max-w-[85.47%] landscape:mb-6"
               gradient
               inverseElement="dots"
             >
@@ -73,12 +77,6 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
             </BrowserBento>
           </Bento>
         </div>
-        <BrowserBento className="landscape:hidden relative w-full mb-4" white>
-          <p className="bg-white p-[1.5rem] text-black">
-            {microcopy.bioPrefix}
-            <span className="text-secondary-purple font-bold">{avatar.name}</span>, {avatar.bio}
-          </p>
-        </BrowserBento>
         <ActionMenu avatar={avatar} navigatorShareAvailable={isNavigatorShareAvailable} />
       </div>
     </Bento>
