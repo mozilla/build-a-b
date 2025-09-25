@@ -6,7 +6,9 @@ import { useCallback } from 'react';
 const AVATAR_FILE_TYPE = 'png';
 
 const microcopy = {
-  shareMessage: 'Check out my billionaire avatar,',
+  shareTitle: 'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff',
+  shareText:
+    'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff \nMake yours here https://billionaireblastoff.firefox.com/',
 } as const;
 
 export interface UseNavigatorShareActionOptions {
@@ -37,8 +39,10 @@ export const useNavigatorShareAction = ({
       });
 
       const sharePayload: ShareData = {
-        title: `${microcopy.shareMessage} ${avatar.name} #BillionaireBlastOff`,
+        title: microcopy.shareTitle,
+        text: microcopy.shareText,
         files: [file],
+        url: 'https://billionaireblastoff.firefox.com/',
       };
 
       await navigator.share(sharePayload);
