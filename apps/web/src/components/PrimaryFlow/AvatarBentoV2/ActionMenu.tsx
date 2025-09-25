@@ -5,6 +5,8 @@ import { Trash } from '@/components/PrimaryFlow/AvatarBentoV2/Trash.svg';
 import { Bookmark } from '@/components/ShareAvatar/Bookmark.svg';
 import { Download } from '@/components/ShareAvatar/Download.svg';
 import { Share } from '@/components/ShareAvatar/Share.svg';
+import { Instagram } from '@/components/ShareAvatar/Instagram.svg';
+import { Threads } from '@/components/ShareAvatar/Threads.svg';
 import { useAvatarDownload, useNavigatorShareAction, useSafeClick, useShareUrls } from '@/hooks';
 import { AvatarData } from '@/types';
 import clsx from 'clsx';
@@ -32,6 +34,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
   const { handleNavigatorShare } = useNavigatorShareAction({ avatar });
   const { downloadFile, isDownloadReady } = useAvatarDownload({ avatar });
   const { safeHref } = useShareUrls();
+  const { threadsShareUrl } = useShareUrls();
   const { preventInvalidClick } = useSafeClick();
 
   const handleModalClose = (open: boolean) => {
@@ -127,21 +130,45 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             </span>
           </a>
         </li>
-        <li>
-          <button
-            className={clsx('duration-300 transition-opacity text-accent', {
-              'cursor-pointer': navigatorShareAvailable,
-              'cursor-not-allowed opacity-50': !navigatorShareAvailable,
-            })}
-            onClick={actions.share.onPress}
-            disabled={!navigatorShareAvailable}
-          >
-            <span className="sr-only">Share</span>
-            <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square">
-              <Share width="100%" height="100%" role="presentation" />
-            </span>
-          </button>
-        </li>
+        {navigatorShareAvailable ? (
+          <li>
+            <button
+              className={clsx('duration-300 transition-opacity text-accent cursor-pointer')}
+              onClick={actions.share.onPress}
+              disabled={!navigatorShareAvailable}
+            >
+              <span className="sr-only">Share</span>
+              <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square">
+                <Share width="100%" height="100%" role="presentation" />
+              </span>
+            </button>
+          </li>
+        ) : (
+          <>
+            <li>
+              <a href="https://www.instagram.com" rel="noopener noreferrer" target="_blank">
+                <span className="sr-only">Instagram</span>
+                <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+                  <Instagram width="100%" height="100%" role="presentation" />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                className="block cursor-pointer"
+                href={safeHref(threadsShareUrl)}
+                onClick={(e) => preventInvalidClick(e, threadsShareUrl !== '#')}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="sr-only">Share to Threads</span>
+                <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+                  <Threads width="100%" height="100%" role="presentation" />
+                </span>
+              </a>
+            </li>
+          </>
+        )}
       </ul>
     </nav>
   );

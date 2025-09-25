@@ -15,11 +15,13 @@ export const groupDescriptionMap: Record<ChoiceGroup, { title: string; descripti
   },
   'core-drive': {
     title: 'Pick a Core Drive',
-    description: 'Being a Billionaire comes with some very motivating benefits. Or symptoms, as the rest of us call them.',
+    description:
+      'Being a Billionaire comes with some very motivating benefits. Or symptoms, as the rest of us call them.',
   },
   'legacy-plan': {
     title: 'Pick a Legacy Plan',
-    description: 'How will you be remembered when your only heir records over your uploaded consciousness with their AI “companion?”',
+    description:
+      'How will you be remembered when your only heir records over your uploaded consciousness with their AI “companion?”',
   },
   'power-play': {
     title: 'Pick a Power Play',
@@ -27,7 +29,8 @@ export const groupDescriptionMap: Record<ChoiceGroup, { title: string; descripti
   },
   'public-mask': {
     title: 'Pick a Public Mask',
-    description: 'Coming right out with your transparent plans and motives never plays well with the board.',
+    description:
+      'Coming right out with your transparent plans and motives never plays well with the board.',
   },
 };
 
@@ -45,8 +48,7 @@ export const phrasesMap: Record<Choice, string> = {
   'eco.fake':
     'With some carbon credit cunning, you can earn your pollution fines back and then some!',
   visionary: 'If the people understand, you’re not doing it right.',
-  rebel:
-    'Wearing a t-shirt and flip flops to the board meeting lets them know who’s in charge.',
+  rebel: 'Wearing a t-shirt and flip flops to the board meeting lets them know who’s in charge.',
   savior: 'Nothing says “philanthropist” like your name on a building.',
   genius: 'Beyond a certain level of wealth, seeming dumber makes you seem smarter.',
   raiders: 'Finance films meant to be cautionary tales are your pre-workout.',
