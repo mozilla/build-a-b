@@ -9,16 +9,18 @@ import { COOKIE_NAME, ID_HISTORY_COOKIE } from '@/utils/constants';
 import { deleteCookie, getCookie, parseJsonCookie, setCookie } from '@/utils/helpers/cookies';
 import { Button } from '@heroui/react';
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 interface PlaypenRestartProps {
   action: AvatarViewAction;
   avatar: AvatarData;
   onCancel: () => void;
+  asset?: 'riding' | 'instagram';
 }
 
 const microcopy = {
-  deleteLabel: 'Delete and Restart',
+  deleteLabelPortrait: 'Delete',
+  deleteLabelLandscape: 'Delete and Restart',
   cancelLabel: 'Cancel',
 } as const;
 
@@ -37,7 +39,13 @@ export const moveUserIdToHistory = (): void => {
   deleteCookie(COOKIE_NAME, { path: '/' });
 };
 
-const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, onCancel }) => {
+const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCancel }) => {
+  const selectedAsset = useMemo(() => {
+    if (asset === 'instagram') return avatar.instragramAsset;
+    if (asset === 'riding') return avatar.originalRidingAsset;
+    return avatar.url;
+  }, [avatar, asset]);
+
   const handleRestart = () => {
     moveUserIdToHistory();
     window.location.href = '/';
@@ -49,28 +57,37 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, onCancel }) =
         <p className="text-lg-custom">{action.content.description}</p>
       </div>
       <div className="relative mx-auto w-full pb-[1.75rem]">
-        <Bento className="w-full max-w-[29.25rem] mx-auto portrait:h-[28.5rem] landscape:aspect-square flex justify-center items-end">
+        <Bento className="w-full max-w-[29.25rem] mx-auto aspect-square flex justify-center items-end">
           <Image
             className="object-cover object-center"
-            src={avatar.url}
+            src={selectedAsset}
             alt={avatar.name}
             fill
             sizes="(orientation: portrait) 100vw, 32.45vw"
           />
         </Bento>
       </div>
-      <div className="flex flex-col landscape:flex-row gap-4">
-        <Button type="button" className="secondary-button group" onPress={handleRestart}>
-          <span className="bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
+      <div className="flex portrait:w-full gap-4">
+        <Button
+          type="button"
+          className="portrait:shadow-[0_10px_15px_-3px_rgba(0,_0,_0,_0.10),_0_4px_6px_-4px_rgba(0,_0,_0,_0.10)] portrait:flex-1 portrait:bg-accent portrait:text-charcoal secondary-button group"
+          onPress={handleRestart}
+        >
+          <span className="portrait:hidden bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
           <span className="relative inline-flex gap-x-2 items-center">
             <span className="inline-block w-7 h-7">
               <Delete width="100%" height="100%" role="presentation" />
             </span>
-            {microcopy.deleteLabel}
+            <span className="landscape:hidden">{microcopy.deleteLabelPortrait}</span>
+            <span className="portrait:hidden">{microcopy.deleteLabelLandscape}</span>
           </span>
         </Button>
-        <Button type="button" className="secondary-button group" onPress={onCancel}>
-          <span className="bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
+        <Button
+          type="button"
+          className="portrait:shadow-[0_10px_15px_-3px_rgba(0,_0,_0,_0.10),_0_4px_6px_-4px_rgba(0,_0,_0,_0.10)] portrait:flex-1 portrait:bg-accent portrait:text-charcoal secondary-button group"
+          onPress={onCancel}
+        >
+          <span className="portrait:hidden bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
           <span className="relative inline-flex gap-x-2 items-center">
             <span className="inline-block w-7 h-7">
               <Close width="100%" height="100%" role="presentation" />
