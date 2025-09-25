@@ -35,6 +35,12 @@ const navigationData = {
       src: '/assets/images/social/instagram.svg',
     },
     {
+      href: 'https://www.threads.com/@firefox',
+      title: 'Check our Threads',
+      alt: 'Threads',
+      src: '/assets/images/social/threads.svg',
+    },
+    {
       href: 'https://www.youtube.com/firefoxchannel',
       title: 'Watch our YouTube channel',
       alt: 'YouTube',
