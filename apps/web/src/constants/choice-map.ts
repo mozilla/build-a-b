@@ -5,7 +5,7 @@ export const choiceGroupMap: Record<ChoiceGroup, Choice[]> = {
   'core-drive': ['power', 'chaos', 'immortality', 'control', 'fame'],
   'public-mask': ['eco.fake', 'visionary', 'rebel', 'savior', 'genius'],
   'power-play': ['raiders', 'shadows', 'data.mine', 'media.spin', 'policy.hack'],
-  'legacy-plan': ['mars', 'forever.pill', 'blood.bank', 'ai.god', 'sea.lord'],
+  'legacy-plan': ['mars', 'fountain.of.youth', 'clone.library', 'ai.diety', 'sea.lord'],
 };
 
 export const groupDescriptionMap: Record<ChoiceGroup, { title: string; description: string }> = {
@@ -57,10 +57,10 @@ export const phrasesMap: Record<Choice, string> = {
   'media.spin': 'Talking heads don’t get their talking points from nowhere.',
   'policy.hack': 'A couple whithertos and wherebys aaaand we are clear to test on unicorns. ',
   mars: 'One day, I’m going to have my own planet, and you won’t be invited, and you’ll all be sorry.',
-  'forever.pill':
-    'Everyone’s trying to live longer. Some are just trying to live longer than those people.',
-  'blood.bank': 'What would the future do without your exact gene sequence?',
-  'ai.god': 'It’ll be the prompt to end all prompts to end all prompts to end all prompts.',
+  'fountain.of.youth':
+    "Everyone's trying to live longer. Some are just trying to live longer than those people.",
+  'clone.library': 'What would the future do without your exact gene sequence?',
+  'ai.diety': "It'll be the prompt to end all prompts to end all prompts to end all prompts.",
   'sea.lord': 'Please attend my four-part lecture series on how Poseidon is real.',
 };
 
@@ -76,7 +76,7 @@ export const choiceMap: GameChoices = Object.entries(choiceGroupMap).reduce(
 
         choicesConf[currentChoice] = {
           icon: `/assets/images/choice-cards/${currentChoice}.svg`,
-          iconWhenConfirmed: `/assets/images/choice-confirmation/${currentChoice}.svg`,
+          iconWhenConfirmed: `/assets/images/choice-cards/${currentChoice}.svg`,
           phrase: phrasesMap[currentChoice],
           value: choiceIndex + 1,
           id: currentChoice,
