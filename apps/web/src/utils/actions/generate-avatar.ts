@@ -2,10 +2,12 @@
 import type { AvatarData, Choice, DatabaseAvatarResponse, DatabaseUserResponse } from '@/types';
 import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
+import { cookies } from 'next/headers';
+import { COOKIE_NAME } from '../constants';
 
 export async function generateAvatar(options: Choice[]): Promise<AvatarData | null> {
   try {
-    const supabase = await createClient();
+    const [supabase, cookieStore] = await Promise.all([createClient(), cookies()]);
     const searchPattern = options.join('-');
 
     // Keep this log for server debugging
@@ -30,6 +32,8 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
     if (userError) {
       throw userError;
     }
+
+    cookieStore.set(COOKIE_NAME, newUser?.uuid || '');
 
     return {
       originalRidingAsset: selectedAvatar.asset_riding || '',

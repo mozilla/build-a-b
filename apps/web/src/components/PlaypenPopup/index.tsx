@@ -73,7 +73,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                 onPress={onClose}
                 isIconOnly
                 variant="light"
-                className="absolute top-4 right-4 landscape:top-6 landscape:right-6 z-50 w-10 h-10 p-1 hover:opacity-70 transition-opacity"
+                className="absolute top-4 right-4 landscape:top-6 landscape:right-6 z-50 w-10 h-10 hover:opacity-70 transition-opacity"
                 aria-label="Close modal"
               >
                 <div className="flex items-center justify-center w-full h-full">
@@ -82,7 +82,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                     alt="Close"
                     width={24}
                     height={24}
-                    className="h-auto w-6 h-6"
+                    className="w-full h-full"
                   />
                 </div>
               </Button>

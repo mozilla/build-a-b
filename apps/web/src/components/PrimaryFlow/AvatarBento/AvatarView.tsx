@@ -28,7 +28,14 @@ const actionButtonStyles =
 /**
  * Client side avatar view to use with the AvatarBento.
  */
-const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid, instragramAsset, originalRidingAsset }) => {
+const AvatarView: FC<AvatarData> = ({
+  url,
+  name,
+  bio,
+  uuid,
+  instragramAsset,
+  originalRidingAsset,
+}) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
   const [actionType, setActionType] = useState<AvatarViewActionTypeOrNull>(null);
 
@@ -127,11 +134,12 @@ const AvatarView: FC<AvatarData> = ({ url, name, bio, uuid, instragramAsset, ori
                   onOpenChange={handleModalClose}
                 >
                   {actionName === 'share' && (
-                    <PlaypenShare
+                    <PlaypenShare<AvatarViewActionType>
                       action={action}
                       navigatorShareAvailable={navigatorShareAvailable}
                       avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
                       setActionType={setActionType}
+                      saveActionValue="save"
                     />
                   )}
                   {actionName === 'save' && <PlaypenSave action={action} />}

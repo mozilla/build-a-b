@@ -1,7 +1,7 @@
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import SharedPage from '../../shared-page';
 import { redirect } from 'next/navigation';
-import ClientPageWrapper from './page.client';
+import ClientPageWrapper from '../../../utils/page.client';
 
 interface PageProps {
   params: Promise<{ id: string }>;

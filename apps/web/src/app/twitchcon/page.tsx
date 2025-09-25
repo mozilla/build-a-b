@@ -7,6 +7,8 @@ import CardsSection from '@/components/CardsSection';
 import Window from '@/components/Window';
 import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
+import ClientPageWrapper from '@/utils/page.client';
+import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 
 export default async function Page() {
   const imagesForGallery = [
@@ -32,8 +34,10 @@ export default async function Page() {
     },
   ];
 
+  const avatarData = await getUserAvatar();
+
   return (
-    <>
+    <ClientPageWrapper avatarData={avatarData}>
       <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
         <div className="relative flex flex-col p-4 landscape:p-12 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
           <h6 className="text-nav-item">October 17-19, 2025</h6>
@@ -229,6 +233,6 @@ export default async function Page() {
       </CardsSection>
 
       <CountDown targetDate="2025-10-17T10:00:00-07:00" />
-    </>
+    </ClientPageWrapper>
   );
 }
