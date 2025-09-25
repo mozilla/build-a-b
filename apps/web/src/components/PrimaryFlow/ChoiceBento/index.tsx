@@ -35,12 +35,12 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Centered text content */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center mt-[-1rem]">
           <div className="text-center space-y-2">
             <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash">
               {groupContent.title}
             </h1>
-            <p className="text-lg-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] mx-auto">
+            <p className="text-lg-custom font-sharp font-bold text-common-ash max-w-[20rem] mx-auto mb-[1.5rem]">
               {groupContent.description}
             </p>
           </div>
