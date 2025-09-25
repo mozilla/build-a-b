@@ -25,7 +25,12 @@ const IconCard: FC<IconCardProps> = ({
       imageClassName="rounded-xl"
       className={clsx('border-none flex-1 overflow-visible', className)}
     >
-      <div className={clsx('relative p-6 flex flex-col gap-2 h-full rounded-xl', wrapperClassName)}>
+      <div
+        className={clsx(
+          'relative p-6 flex flex-col gap-2 h-full rounded-xl justify-center',
+          wrapperClassName,
+        )}
+      >
         <div className="relative w-[4rem] h-[4rem]">
           <Image
             src={icon}
