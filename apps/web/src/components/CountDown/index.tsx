@@ -4,7 +4,7 @@ import { avatarBentoData } from '@/utils/constants';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FC, useEffect, useState } from 'react';
+import { FC, Suspense, useEffect, useState } from 'react';
 import Bento from '../Bento';
 import GetStarted from '../PrimaryFlow/GetStarted';
 
