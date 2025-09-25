@@ -11,9 +11,6 @@ import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import { Suspense } from 'react';
-import GetStarted from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -102,9 +99,9 @@ export default async function Page() {
             iconEffect
           >
             <p className="text-body-regular">Where we&apos;ll be</p>
-            <h4 className="text-title-3">
+            <h3 className="text-title-3">
               Come by Booth #2805 (near Exhibit Hall F) for all of the Billionaire Blast Off fun!
-            </h4>
+            </h3>
           </IconCard>,
           <IconCard
             key="2"
@@ -113,9 +110,9 @@ export default async function Page() {
             iconEffect
           >
             <p className="text-body-regular">What&apos;s on deck</p>
-            <h4 className="text-title-3">
+            <h3 className="text-title-3">
               Data War, Build-a-Billionaire, merch drops, and a healthy helping of utter chaos.
-            </h4>
+            </h3>
           </IconCard>,
           <IconCard
             key="3"
@@ -124,7 +121,7 @@ export default async function Page() {
             iconEffect
           >
             <p className="text-body-regular">Join us at the</p>
-            <h4 className="text-title-3">TwitchCon Block Party for the Space Launch screening!</h4>
+            <h3 className="text-title-3">TwitchCon Block Party for the Space Launch screening!</h3>
           </IconCard>,
         ]}
       >
@@ -167,7 +164,7 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Complete your deck</h4>
+            <h3 className="text-title-3">Complete your deck</h3>
             <p className="text-body-regular">
               Everyone gets an exclusive expansion in the swag bag. Play at our tables for a chance
               to score the full set.
@@ -181,7 +178,7 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Stay and Play</h4>
+            <h3 className="text-title-3">Stay and Play</h3>
             <p className="text-body-regular">
               Play a few rounds, float some ideas, chat with creators and develop some lifelong
               friendships.
@@ -210,7 +207,7 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Blast off, Billionaires!</h4>
+            <h3 className="text-title-3">Blast off, Billionaires!</h3>
             <p className="text-body-small max-w-[26.25rem]">
               Countdown to launch. Bring your Block Party ticket and your party pants.
             </p>
@@ -223,7 +220,7 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Party at the Rockin&apos; Baja Lobster!!</h4>
+            <h3 className="text-title-3">Party at the Rockin&apos; Baja Lobster!!</h3>
             <p className="text-body-small max-w-[26.25rem]">
               We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag and stacks
               of Data War.
@@ -236,9 +233,9 @@ export default async function Page() {
               <Image src="/assets/images/icons/bitcoin.webp" alt="Bitcoin" sizes="10wv" fill />
             </figure>
             <div className="flex-1">
-              <h4 className="text-title-3 mb-2">
+              <h3 className="text-title-3 mb-2">
                 You don&apos;t need a one-way ticket to space to join
-              </h4>
+              </h3>
               <p className="text-body-regular">
                 But you do need Block Party tickets to join us live. Luckily, they&apos;re right
                 here.
@@ -267,17 +264,9 @@ export default async function Page() {
       <CountDown
         targetDate="2025-10-17T10:00:00-07:00"
         cta={
-          <div>
-            {avatarBentoData?.primaryFlowData && (
-              <Suspense fallback={<div>Loading...</div>}>
-                <GetStarted
-                  {...avatarBentoData.primaryFlowData}
-                  ctaText="Build a Billionaire"
-                  triggerClassNames="secondary-button"
-                />
-              </Suspense>
-            )}
-          </div>
+          <Link href="/" title="Generate your billionaire" className="secondary-button flex">
+            Build a Billionaire
+          </Link>
         }
       />
     </ClientPageWrapper>
