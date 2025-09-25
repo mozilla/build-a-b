@@ -9,6 +9,9 @@ import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
+import { Suspense } from 'react';
+import GetStarted from '@/components/PrimaryFlow/GetStarted';
+import { avatarBentoData } from '@/utils/constants';
 
 export default async function Page() {
   const imagesForGallery = [
@@ -235,7 +238,22 @@ export default async function Page() {
         </p>
       </CardsSection>
 
-      <CountDown targetDate="2025-10-17T10:00:00-07:00" />
+      <CountDown
+        targetDate="2025-10-17T10:00:00-07:00"
+        cta={
+          <div>
+            {avatarBentoData?.primaryFlowData && (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText="Build a Billionaire"
+                  triggerClassNames="secondary-button"
+                />
+              </Suspense>
+            )}
+          </div>
+        }
+      />
     </ClientPageWrapper>
   );
 }
