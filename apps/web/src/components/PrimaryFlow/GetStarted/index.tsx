@@ -29,7 +29,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { activeGroup, showConfirmation, userChoices, avatarData } = usePrimaryFlowContext();
+  const { activeGroup, showConfirmation, userChoices, avatarData, reset } = usePrimaryFlowContext();
   const [displayFlow, setDisplayFlow] = useState(true);
 
   // Check if all choices are completed
@@ -68,6 +68,8 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
         router.push(`/a/${avatarData.uuid}`);
         onOpenChange();
       } else {
+        reset();
+        router.replace('/');
         onOpenChange();
       }
     }
