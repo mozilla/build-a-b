@@ -5,100 +5,33 @@ import { Download } from '@/components/ShareAvatar/Download.svg';
 import { Instagram } from '@/components/ShareAvatar/Instagram.svg';
 import { Share } from '@/components/ShareAvatar/Share.svg';
 import { Threads } from '@/components/ShareAvatar/Threads.svg';
+import { useAvatarActions } from '@/hooks';
 import { AvatarData } from '@/types';
-import { FC, MouseEvent, useEffect, useState } from 'react';
+import { FC } from 'react';
 
 export interface ShareAvatarProps {
   avatar: AvatarData;
   onBookmarkClick: () => void;
-  navigatorShareAvailable: boolean;
+  navigatorShareAvailable?: boolean;
 }
-
-const AVATAR_FILE_TYPE = 'png';
-
-const microcopy = {
-  sharePrefix: 'Share to',
-  shareMessage: 'Check out my billionaire avatar,',
-  threadsIntentShare: '@firefox #billionaireblastoff',
-} as const;
 
 const ShareAvatar: FC<ShareAvatarProps> = ({
   avatar,
   onBookmarkClick,
-  navigatorShareAvailable,
+  navigatorShareAvailable: externalNavigatorShareAvailable,
 }) => {
-  const [downloadFile, setDownloadFile] = useState<{ href: string; fileName: string }>({
-    href: '#',
-    fileName: `${avatar.name.replaceAll(' ', '-')}.${AVATAR_FILE_TYPE}`,
-  });
-  const [currentHref, setCurrentHref] = useState<string>('');
+  const {
+    isNavigatorShareAvailable,
+    handleNavigatorShare,
+    downloadFile,
+    isDownloadReady,
+    threadsShareUrl,
+    safeHref,
+    preventInvalidClick,
+  } = useAvatarActions({ avatar });
 
-  useEffect(() => {
-    let fileHref = '';
-
-    const prepDownloadFile = async () => {
-      try {
-        const response = await fetch(avatar.instragramAsset);
-        const blob = await response.blob();
-        fileHref = URL.createObjectURL(blob);
-
-        setDownloadFile((current) => ({
-          ...current,
-          href: fileHref,
-        }));
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    setCurrentHref(window.location.href);
-
-    prepDownloadFile();
-
-    return () => {
-      URL.revokeObjectURL(fileHref);
-    };
-  }, [setCurrentHref, avatar.instragramAsset]);
-
-  const safeHref = (url: string) => {
-    if (!currentHref) return '#';
-    return url;
-  };
-  /**
-   * Safeguards click functionality by calling `preventDefault` when necessary.
-   *
-   * @param e - MouseEvent
-   * @param test - The condition deeming the click invalid.
-   * @param cb - An optional callback to invoke once the test passes.
-   */
-  const preventInvalidClick = (e: MouseEvent, test: boolean, cb?: () => void) => {
-    if (!test) e.preventDefault();
-    if (cb) cb();
-  };
-
-  const handleNavigatorShare = async () => {
-    try {
-      const response = await fetch(avatar.instragramAsset);
-      const blob = await response.blob();
-
-      const file = new File([blob], `${avatar.name}.${AVATAR_FILE_TYPE}`, {
-        type: `image/${AVATAR_FILE_TYPE}`,
-      });
-
-      const sharePayload: ShareData = {
-        title: `${microcopy.shareMessage} ${avatar.name}`,
-        files: [file],
-      };
-
-      await navigator.share(sharePayload);
-    } catch (e: unknown) {
-      const error = e as { name: string };
-      /**
-       * User cancelled share action - no action needed
-       */
-      if ('name' in error && error.name === 'AbortError') return;
-      console.error(e);
-    }
-  };
+  // The external prop takes precedence to avoid visible conditional rendering.
+  const navigatorShareAvailable = externalNavigatorShareAvailable ?? isNavigatorShareAvailable;
 
   return (
     <nav aria-label="Share billionaire">
@@ -124,10 +57,8 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
           <li>
             <a
               className="block cursor-pointer"
-              href={safeHref(
-                `https://threads.net/intent/post?url=${encodeURIComponent(currentHref)}&text=${encodeURIComponent(microcopy.threadsIntentShare)}`,
-              )}
-              onClick={(e) => preventInvalidClick(e, Boolean(currentHref))}
+              href={safeHref(threadsShareUrl)}
+              onClick={(e) => preventInvalidClick(e, threadsShareUrl !== '#')}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -142,7 +73,7 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
           <a
             className="block cursor-pointer"
             href={safeHref(downloadFile.href)}
-            onClick={(e) => preventInvalidClick(e, downloadFile.href !== '#')}
+            onClick={(e) => preventInvalidClick(e, isDownloadReady)}
             download={downloadFile.fileName}
           >
             <span className="sr-only">Download</span>

@@ -134,11 +134,12 @@ const AvatarView: FC<AvatarData> = ({
                   onOpenChange={handleModalClose}
                 >
                   {actionName === 'share' && (
-                    <PlaypenShare
+                    <PlaypenShare<AvatarViewActionType>
                       action={action}
                       navigatorShareAvailable={navigatorShareAvailable}
                       avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
                       setActionType={setActionType}
+                      saveActionValue="save"
                     />
                   )}
                   {actionName === 'save' && <PlaypenSave action={action} />}
