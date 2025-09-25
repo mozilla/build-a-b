@@ -11,7 +11,10 @@ import QRCode from 'react-qr-code';
 
 interface PlaypenSaveProps {
   action: AvatarViewAction;
-  v2?: boolean;
+  /**
+   * Applies alternate styling to align with AvatarBentoV2 screens.
+   */
+  V2?: boolean;
 }
 
 const microcopy = {
@@ -23,7 +26,7 @@ const microcopy = {
   },
 } as const;
 
-const PlaypenSave: FC<PlaypenSaveProps> = ({ action, v2 }) => {
+const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
   const [currentHref, setCurrentHref] = useState('');
   const [copyButtonLabel, setCopyButtonLabel] = useState<string>(microcopy.copyLabel);
 
@@ -41,8 +44,8 @@ const PlaypenSave: FC<PlaypenSaveProps> = ({ action, v2 }) => {
     <div className="mx-auto max-w-[61.4375rem] flex flex-col items-center">
       <div
         className={clsx('text-center max-w-[39.0625rem] mx-auto flex flex-col gap-y-[0.5rem]', {
-          'pb-[1.25rem]': !v2,
-          'pb-[2.375rem]': v2,
+          'pb-[1.25rem]': !V2,
+          'pb-[2.375rem]': V2,
         })}
       >
         <p className="text-title-3">{action.content.title}</p>
@@ -50,8 +53,8 @@ const PlaypenSave: FC<PlaypenSaveProps> = ({ action, v2 }) => {
       </div>
       <div
         className={clsx('relative mx-auto w-full flex justify-center', {
-          'pb-[1.75rem]': !v2,
-          'pb-[2.375rem]': v2,
+          'pb-[1.75rem]': !V2,
+          'pb-[2.375rem]': V2,
         })}
       >
         <div className="portrait:w-44 portrait:p-4 inline-flex items-center justify-center p-7 rounded-xl bg-white">

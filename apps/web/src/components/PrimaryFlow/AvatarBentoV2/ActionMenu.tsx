@@ -111,7 +111,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             isOpen={actionType === 'save'}
             onOpenChange={handleModalClose}
           >
-            <PlaypenSave action={actions.save} v2 />
+            <PlaypenSave action={actions.save} V2 />
           </PlaypenPopup>
         </li>
         <li>
