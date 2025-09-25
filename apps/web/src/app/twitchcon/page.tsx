@@ -265,7 +265,7 @@ export default async function Page() {
         targetDate="2025-10-17T10:00:00-07:00"
         cta={
           <Link href="/" title="Generate your billionaire" className="secondary-button flex">
-            Build a Millionaire
+            Build a Billionaire
           </Link>
         }
       />

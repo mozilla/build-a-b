@@ -113,7 +113,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
               Firefox
             </div>
           </div>
-          <div className="landscape:hidden flex">{cta}</div>
+          <div className="landscape:hidden w-full">{cta}</div>
         </div>
       </Bento>
     </section>
