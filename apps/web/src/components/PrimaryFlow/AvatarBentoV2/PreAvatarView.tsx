@@ -1,5 +1,5 @@
 import Bento, { type BentoProps } from '@/components/Bento';
-import { FC } from 'react';
+import { FC, Suspense } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 
@@ -24,7 +24,11 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
       imagePropsPortrait={{ objectPosition: '18%' }}
       priority
     >
-      {primaryFlowData && <GetStarted {...primaryFlowData} />}
+      {primaryFlowData && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <GetStarted {...primaryFlowData} />
+        </Suspense>
+      )}
 
       <div
         className="absolute z-20 bottom-0 w-full h-[14.3125rem] px-4 pb-4
