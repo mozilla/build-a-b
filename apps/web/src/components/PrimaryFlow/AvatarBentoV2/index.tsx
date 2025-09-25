@@ -10,7 +10,7 @@ import { type GetStartedProps } from '../GetStarted';
 import PostAvatarView from './PostAvatarView';
 import PreAvatarView from './PreAvatarView';
 
-export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
+export interface AvatarBentoV2Props extends BentoProps, BrowserBentoProps {
   /**
    * Get started CTA text.
    */
@@ -32,7 +32,7 @@ function hasAvatar(data?: AvatarData | null): data is AvatarData {
   return Boolean(data?.url);
 }
 
-const AvatarBentoV2: FC<AvatarBentoProps> = async ({
+const AvatarBentoV2: FC<AvatarBentoV2Props> = async ({
   avatar,
   primaryFlowData,
   imageSrcLandscape,
