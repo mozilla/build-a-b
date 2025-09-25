@@ -145,17 +145,18 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       <div className="flex flex-col landscape:flex-row gap-1 justify-between font-medium text-xs10 landscape:text-base mt-2 pt-2 border-t-2 border-common-ash landscape:mt-6 landscape:pt-6">
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
         <span className="flex gap-x-2 items-center">
-          <span className="whitespace-nowrap">Powered by</span>
+          <span className="whitespace-nowrap"></span>
           <Link
             href="https://www.firefox.com/"
             target="_blank"
             title="Go to Firefox website"
-            className="flex items-center pr-1 gap-1 font-bold"
+            className="flex items-center pr-1 gap-1"
           >
-            <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.5rem] landscape:h-[1.5rem]">
+            Powered by
+            <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.6rem] landscape:h-[1.6rem]">
               <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" sizes="10vw" fill />
             </span>
-            Firefox
+            <strong>Firefox</strong>
           </Link>
           <span className="font-bold">&bull;</span>{' '}
           <span className="ml-1 whitespace-nowrap">Built by</span>

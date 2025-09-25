@@ -41,21 +41,27 @@ export default async function Page() {
   return (
     <ClientPageWrapper avatarData={avatarData}>
       <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
-        <div className="relative flex flex-col p-4 landscape:p-12 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
-          <h6 className="text-nav-item">October 17-19, 2025</h6>
-          <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
-          <p className="text-body-regular">
-            Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
-            floor or follow along online.
-          </p>
-          <Link
-            href="https://www.twitchcon.com/san-diego-2025/tickets/"
-            className="secondary-button w-fit"
-            title="Get your event tickets"
-            target="_blank"
-          >
-            Get Tickets
-          </Link>
+        <div
+          className="relative aspect-[179/310] landscape:aspect-[164/67] p-4 landscape:p-12
+                        bg-gradient-to-t from-black from-[20%] to-transparent
+                        landscape:bg-gradient-to-r"
+        >
+          <div className="h-full flex flex-col gap-6 justify-end landscape:justify-center landscape:max-w-1/2">
+            <h6 className="text-nav-item">October 17-19, 2025</h6>
+            <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
+            <p className="text-body-small">
+              Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
+              floor or follow along online.
+            </p>
+            <Link
+              href="https://www.twitchcon.com/san-diego-2025/tickets/"
+              className="secondary-button landscape:w-fit"
+              title="Get your event tickets"
+              target="_blank"
+            >
+              Get Tickets
+            </Link>
+          </div>
         </div>
       </Hero>
 
@@ -65,12 +71,12 @@ export default async function Page() {
           <IconCard
             key="1"
             image="/assets/images/night-sky.webp"
-            icon="/assets/images/icons/chain.webp"
+            icon="/assets/images/icons/world.webp"
             iconEffect
           >
-            <p className="text-body-regular">Booth #2805</p>
+            <p className="text-body-regular">Where we&apos;ll be</p>
             <h4 className="text-title-3">
-              We’re not the biggest booth, but we&apos;re the billionaire-iest booth.
+              Come by Booth #2805 (near Exhibit Hall F) for all of the Billionaire Blast Off fun!
             </h4>
           </IconCard>,
           <IconCard
@@ -81,7 +87,7 @@ export default async function Page() {
           >
             <p className="text-body-regular">What&apos;s on deck</p>
             <h4 className="text-title-3">
-              Data War, Build-a-Billionaire, merch drops, and mystery moments.
+              Data War, Build-a-Billionaire, merch drops, and a healthy helping of utter chaos.
             </h4>
           </IconCard>,
           <IconCard
@@ -90,8 +96,8 @@ export default async function Page() {
             icon="/assets/images/icons/launch.webp"
             iconEffect
           >
-            <p className="text-body-regular">Then, find us at the</p>
-            <h4 className="text-title-3">TwitchCon Block Party for the space-launch screening.</h4>
+            <p className="text-body-regular">Join us at the</p>
+            <h4 className="text-title-3">TwitchCon Block Party for the Space Launch screening!</h4>
           </IconCard>,
         ]}
       >
@@ -108,17 +114,15 @@ export default async function Page() {
         <Bento
           image="/assets/images/doll.webp"
           imageAlt="Avatar in a box"
-          className="landscape:w-[30%] aspect-[377/315] border-none"
+          className="landscape:w-[30%] aspect-[377/275] border-none"
         />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">Make your Billionaire dance</h2>
               <p className="text-body-regular text-charcoal">
-                It&apos;s your Billionaire. Make them perform for your amusement in 3D for everyone
-                to mock and post. Can&apos;t make it to the Holobox at TwitchCon? You can still
-                build a Billionaire and join the dance party with the new TikTok Dance Generator,
-                dropping TwitchCon weekend!
+                Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
+                move.
               </p>
             </div>
           </Window>
@@ -136,10 +140,10 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Play with a full deck</h4>
+            <h4 className="text-title-3">Complete your deck</h4>
             <p className="text-body-regular">
-              Everyone gets an exclusive expansion in the swag bag. Play at our tables to score the
-              full set.
+              Everyone gets an exclusive expansion in the swag bag. Play at our tables for a chance
+              to score the full set.
             </p>
           </IconCard>,
           <IconCard
@@ -152,8 +156,8 @@ export default async function Page() {
           >
             <h4 className="text-title-3">Stay and Play</h4>
             <p className="text-body-regular">
-              Play a few rounds, float some ideas, chat with creators, and (maybe) walk away with
-              more than a free deck.
+              Play a few rounds, float some ideas, chat with creators and develop some lifelong
+              friendships.
             </p>
           </IconCard>,
         ]}
@@ -161,8 +165,8 @@ export default async function Page() {
         <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
         <p className="text-body-regular text-charcoal">
           Data War is the chaotic-casual card game where players compete to send egomaniacal,
-          tantrum-prone little Billionaires on a One-Way Ticket to Space. Created by Firefox,
-          presented by Billionaire Blast Off, and only available at TwitchCon.
+          tantrum-prone little Billionaires on a one-way ticket to space. Created by Firefox, and
+          only available at TwitchCon.
         </p>
       </CardsSection>
 
@@ -174,15 +178,14 @@ export default async function Page() {
           <IconCard
             key="1"
             image="/assets/images/space-rocket.webp"
-            icon="/assets/images/icons/rocket.webp"
+            icon="/assets/images/icons/launch.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
             <h4 className="text-title-3">Blast off, Billionaires!</h4>
             <p className="text-body-small max-w-[26.25rem]">
-              Watch the for-real-for-real space launch, wave goodbye to the Billionaires, and Open
-              What You Want.
+              Countdown to launch. Bring your Block Party ticket and your party pants.
             </p>
           </IconCard>,
           <IconCard
@@ -193,10 +196,10 @@ export default async function Page() {
             wrapperClassName="bg-gradient-to-r from-black to-transparent"
             iconEffect
           >
-            <h4 className="text-title-3">Party at Rockin Baja Lobster</h4>
+            <h4 className="text-title-3">Party at the Rockin&apos; Baja Lobster!!</h4>
             <p className="text-body-small max-w-[26.25rem]">
-              We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag, and
-              stacks of Data War.
+              We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag and stacks
+              of Data War.
             </p>
           </IconCard>,
         ]}
@@ -207,11 +210,11 @@ export default async function Page() {
             </figure>
             <div className="flex-1">
               <h4 className="text-title-3 mb-2">
-                You don&apos;t need a one-way ticket to space to party
+                You don&apos;t need a one-way ticket to space to join
               </h4>
               <p className="text-body-regular">
                 But you do need Block Party tickets to join us live. Luckily, they&apos;re right
-                here, on the internet.
+                here.
               </p>
             </div>
             <div>
@@ -221,7 +224,7 @@ export default async function Page() {
                 className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
                 target="_blank"
               >
-                Learn More
+                Get Tickets
               </Link>
             </div>
           </div>
@@ -230,7 +233,7 @@ export default async function Page() {
         <h2 className="text-title-1">Blast off at the Block Party</h2>
         <p className="text-body-small">
           Oct 18, 8:30 PM. Join us after hours as we count down, drink up and send all the
-          Billionaires off in style—or stream along right here.
+          Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
 

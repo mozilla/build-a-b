@@ -61,15 +61,14 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               rocket, built with Sent Into Space, carrying the absurd creations of a community that
               refused to play by Big Tech&apos;s rules.
             </p>
-            {avatarBentoData?.primaryFlowData && (
-              <Suspense fallback={<div>Loading...</div>}>
-                <GetStarted
-                  {...avatarBentoData.primaryFlowData}
-                  ctaText="Build a Billionaire"
-                  triggerClassNames="secondary-button hidden landscape:flex"
-                />
-              </Suspense>
-            )}
+            <Link
+              href="#"
+              target="_blank"
+              title="Learn more about the launch"
+              className="secondary-button"
+            >
+              Space Launch Details
+            </Link>
           </div>
           <div className="w-full flex flex-col items-end">
             <div className="relative w-fit bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6">
@@ -116,10 +115,11 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               </div>
             </div>
             <div className="flex justify-end items-center gap-2 text-lg-custom text-title-3 mt-2">
+              Powered by
               <div className="relative h-[2rem] w-[2rem]">
                 <Image src="/assets/images/firefox.svg" fill alt="Firefox logo" />
               </div>
-              Powered by Firefox
+              Firefox
             </div>
           </div>
           <div className="landscape:hidden">
