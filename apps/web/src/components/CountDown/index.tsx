@@ -1,19 +1,17 @@
 'use client';
 
-import { avatarBentoData } from '@/utils/constants';
 import clsx from 'clsx';
 import Image from 'next/image';
-import Link from 'next/link';
-import { FC, Suspense, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import Bento from '../Bento';
-import GetStarted from '../PrimaryFlow/GetStarted';
 
 export interface CountDownProps {
   targetDate: string; // Format "2025-10-10T23:59:59-05:00"
   className?: string;
+  cta?: ReactNode;
 }
 
-const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
+const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -61,14 +59,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               rocket, built with Sent Into Space, carrying the absurd creations of a community that
               refused to play by Big Tech&apos;s rules.
             </p>
-            <Link
-              href="#"
-              target="_blank"
-              title="Learn more about the launch"
-              className="secondary-button"
-            >
-              Space Launch Details
-            </Link>
+            <div className="hidden landscape:block">{cta}</div>
           </div>
           <div className="w-full flex flex-col items-end">
             <div className="relative w-fit bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6">
@@ -122,11 +113,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               Firefox
             </div>
           </div>
-          <div className="landscape:hidden">
-            <Link href="#" className="secondary-button" title="Generate an avatar">
-              Build a Billionaire
-            </Link>
-          </div>
+          <div className="landscape:hidden flex">{cta}</div>
         </div>
       </Bento>
     </section>
