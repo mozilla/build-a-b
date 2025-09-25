@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
