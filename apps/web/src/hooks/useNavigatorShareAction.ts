@@ -37,7 +37,7 @@ export const useNavigatorShareAction = ({
       });
 
       const sharePayload: ShareData = {
-        title: `${microcopy.shareMessage} ${avatar.name}`,
+        title: `${microcopy.shareMessage} ${avatar.name} #BillionaireBlastOff`,
         files: [file],
       };
 
