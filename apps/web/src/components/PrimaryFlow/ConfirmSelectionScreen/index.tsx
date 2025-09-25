@@ -63,18 +63,25 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         </div>
 
         {/* Text content - appears before icon on mobile */}
-        <div className="flex-1 flex flex-col items-center justify-center mt-4">
-          <div className="text-center space-y-2 mb-4">
+        <div className="flex-1 flex flex-col items-center justify-center mt-4 relative">
+          <Image
+            src="/assets/images/scrim.png"
+            alt=""
+            width={443}
+            height={332}
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+          />
+          <div className="text-center space-y-2 mb-4 relative z-10">
             <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash capitalize">
               {choiceName}
             </h1>
-            <p className="text-lg-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] mx-auto">
+            <p className="text-lg-custom font-sharp font-bold text-common-ash max-w-[20rem] mx-auto">
               {selectedConfig.phrase}
             </p>
           </div>
 
           {/* Icon - centered */}
-          <div>
+          <div className="relative z-10">
             <Image
               src={selectedConfig.iconWhenConfirmed}
               alt={selectedConfig.id}
@@ -86,7 +93,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         </div>
 
         {/* Button */}
-        <div className="pt-4 flex justify-center">
+        <div className="pt-4 flex justify-center relative z-10">
           <button onClick={handleContinue} className="secondary-button">
             Continue
           </button>
@@ -95,20 +102,29 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
 
       {/* Landscape layout - keep original structure */}
       <div className="hidden landscape:flex landscape:flex-col landscape:items-center landscape:mt-12 landscape:flex-col-reverse">
-        <div className="pt-[2.625rem]">
+        <div className="pt-[2.625rem] z-10">
           <SelectedIconsRow className="mb-6" excludeGroup={activeGroup} />
         </div>
         {/* Text content */}
-        <div className="text-center space-y-4 mt-4">
-          <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">
-            {choiceName}
-          </h1>
-          <p className="text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[35rem] mx-auto">
-            {selectedConfig.phrase}
-          </p>
+        <div className="text-center space-y-4 mt-4 relative">
+          <Image
+            src="/assets/images/scrim.png"
+            alt=""
+            width={443}
+            height={332}
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+          />
+          <div className="relative z-10">
+            <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">
+              {choiceName}
+            </h1>
+            <p className="text-regular-custom font-sharp font-bold text-common-ash max-w-[35rem] mx-auto">
+              {selectedConfig.phrase}
+            </p>
+          </div>
 
           {/* Button - appears after description on landscape */}
-          <div className="pt-4 flex justify-center">
+          <div className="pt-4 flex justify-center relative z-10">
             <button onClick={handleContinue} className="secondary-button">
               Continue
             </button>
@@ -122,7 +138,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
             alt={selectedConfig.id}
             width={292}
             height={192}
-            className="w-[5rem] h-[7.375rem] object-contain"
+            className="w-[5rem] h-[7.375rem] object-contain z-10 relative"
           />
         </div>
       </div>
