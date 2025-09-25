@@ -4,13 +4,14 @@ import { choiceGroupMap } from '@/constants/choice-map';
 import { useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
-import { type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import Modal from '../../Modal';
 import ChoiceBento from '../ChoiceBento';
 import CompletionScreen from '../CompletionScreen';
 import ConfirmSelectionScreen, { ConfirmSelectionHeaderLogo } from '../ConfirmSelectionScreen';
 import Intro, { type IntroProps } from '../Intro';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
+import { isAvatarSaved } from '@/utils/actions/is-avatar-saved';
 
 export interface GetStartedProps extends IntroProps {
   /**
@@ -28,8 +29,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { activeGroup, showConfirmation, userChoices, avatarData } = usePrimaryFlowContext();
-
-  if (pathParams.id) return null;
+  const [displayFlow, setDisplayFlow] = useState(true);
 
   // Check if all choices are completed
   const totalGroups = Object.keys(choiceGroupMap).length;
@@ -66,6 +66,8 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
       if (avatarData) {
         router.push(`/a/${avatarData.uuid}`);
         onOpenChange();
+      } else {
+        onOpenChange();
       }
     }
   };
@@ -92,84 +94,100 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
     duration: 0.3,
   };
 
+  useEffect(() => {
+    if (pathParams?.id) {
+      setDisplayFlow(false);
+    }
+
+    isAvatarSaved()
+      .then((isSaved) => {
+        setDisplayFlow(!isSaved);
+      })
+      .catch(() => {
+        // Do nothing
+      });
+  }, [pathParams]);
+
   return (
-    <>
-      <button onClick={onOpen} type="button" className={`secondary-button ${triggerClassNames}`}>
-        {ctaText}
-      </button>
-      <Modal isOpen={isOpen} onOpenChange={handleModalClose}>
-        {/* Screen reader announcements for step changes */}
-        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-          {isOpen && getStepInfo()}
-        </div>
-        <div className="relative h-full overflow-scroll">
-          {!shouldShowIntroScreen && (
-            <motion.div
-              className="absolute top-4 left-4 z-40 landscape:hidden"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: '2.5rem' }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-            >
-              <ConfirmSelectionHeaderLogo />
-            </motion.div>
-          )}
-          <AnimatePresence mode="wait">
-            {shouldShowCompletionScreen && (
+    displayFlow && (
+      <>
+        <button onClick={onOpen} type="button" className={`secondary-button ${triggerClassNames}`}>
+          {ctaText}
+        </button>
+        <Modal isOpen={isOpen} onOpenChange={handleModalClose}>
+          {/* Screen reader announcements for step changes */}
+          <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+            {isOpen && getStepInfo()}
+          </div>
+          <div className="relative h-full overflow-scroll">
+            {!shouldShowIntroScreen && (
               <motion.div
-                key="completion"
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="relative inset-0"
+                className="absolute top-4 left-4 z-40 landscape:hidden"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: '2.5rem' }}
+                transition={{ delay: 0.2, duration: 0.3 }}
               >
-                <CompletionScreen />
+                <ConfirmSelectionHeaderLogo />
               </motion.div>
             )}
-            {shouldShowIntroScreen && (
-              <motion.div
-                key="intro"
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="absolute inset-0"
-              >
-                <Intro {...babFlowData} />
-              </motion.div>
-            )}
-            {!allChoicesCompleted && !showConfirmation && activeGroup && (
-              <motion.div
-                key={`choice-${activeGroup}`}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="absolute inset-0"
-              >
-                <ChoiceBento activeGroup={activeGroup} />
-              </motion.div>
-            )}
-            {showConfirmation && activeGroup && (
-              <motion.div
-                key={`confirm-${activeGroup}`}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="absolute inset-0"
-              >
-                <ConfirmSelectionScreen activeGroup={activeGroup} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </Modal>
-    </>
+            <AnimatePresence mode="wait">
+              {shouldShowCompletionScreen && (
+                <motion.div
+                  key="completion"
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  className="relative inset-0"
+                >
+                  <CompletionScreen />
+                </motion.div>
+              )}
+              {shouldShowIntroScreen && (
+                <motion.div
+                  key="intro"
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  className="absolute inset-0"
+                >
+                  <Intro {...babFlowData} />
+                </motion.div>
+              )}
+              {!allChoicesCompleted && !showConfirmation && activeGroup && (
+                <motion.div
+                  key={`choice-${activeGroup}`}
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  className="absolute inset-0"
+                >
+                  <ChoiceBento activeGroup={activeGroup} />
+                </motion.div>
+              )}
+              {showConfirmation && activeGroup && (
+                <motion.div
+                  key={`confirm-${activeGroup}`}
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  className="absolute inset-0"
+                >
+                  <ConfirmSelectionScreen activeGroup={activeGroup} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </Modal>
+      </>
+    )
   );
 };
 
