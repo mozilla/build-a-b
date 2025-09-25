@@ -23,17 +23,17 @@ interface TickerItem {
 const tickerData: TickerItem[] = [
   {
     id: 4,
-    text: 'SEND YOUR BILLIONAIRE TO SPACE',
+    text: 'Battle for Data Supremacy!',
     emoji: '🚀',
   },
   {
     id: 5,
-    text: 'JOIN US AT TWITCHCON',
+    text: 'Join us at TwitchCon',
     emoji: '🪐',
   },
   {
     id: 6,
-    text: 'BATTLE YOUR FRIENDS IN DATA WAR',
+    text: 'Send Your Billionaire to (Actual) Space',
     emoji: '💰',
   },
 ];
