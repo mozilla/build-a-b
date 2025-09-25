@@ -11,9 +11,9 @@ export const avatarBentoData: AvatarBentoProps = {
     triggerClassNames:
       'absolute left-[5rem] landscape:left-[8.125rem] top-[17rem] landscape:top-[18.5rem] px-[3rem] landscape:px-[2.125rem] py-[0.75rem] bg-charcoal/30 rotate-[9deg] landscape:rotate-0 transition-[bg-color, color] transition-transform duration-600 group-hover:rotate-[-12deg] group-hover:bg-accent group-hover:text-charcoal',
     ctaText: 'Get Started',
-    title: 'Make Space a Better Place. Add a Billionaire.',
+    title: 'Make Earth a Better Place. Launch a Billionaire.',
     description:
-      'Why should billionaires be the only ones sending billionaires to space? WE want to send billionaires to space! Build your own and reclaim your data independence!',
+      'When Billionaires harvest your data for ego trips to space, it makes the internet and everything connected to it worse. Build your own Billionaire and send them safely off-planet (one-way).',
     createAvatarCtaText: 'Start Building Your Billionaire',
     randomAvatarCtaText: 'Create a Random Billionaire',
   },
