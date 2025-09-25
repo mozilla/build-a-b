@@ -105,12 +105,12 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
                 <Image src="/assets/images/rocket-countdown.webp" sizes="25vw" alt="Rocket" fill />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2 text-lg-custom text-title-3 mt-2">
+            <div className="flex justify-end items-center gap-2 text-lg-custom mt-2">
               Powered by
               <div className="relative h-[2rem] w-[2rem]">
                 <Image src="/assets/images/firefox.svg" fill alt="Firefox logo" />
               </div>
-              Firefox
+              <strong>Firefox</strong>
             </div>
           </div>
           <div className="landscape:hidden w-full">{cta}</div>

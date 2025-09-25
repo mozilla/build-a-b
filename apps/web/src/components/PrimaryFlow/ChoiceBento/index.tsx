@@ -35,12 +35,12 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Centered text content */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center mt-[-1rem]">
           <div className="text-center space-y-2">
             <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash">
               {groupContent.title}
             </h1>
-            <p className="text-lg-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] mx-auto">
+            <p className="text-lg-custom font-sharp font-bold text-common-ash max-w-[20rem] mx-auto mb-[1.5rem]">
               {groupContent.description}
             </p>
           </div>
@@ -55,7 +55,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                 setUserChoices((current) => ({ ...current, [activeGroup]: choiceConfig }));
                 setShowConfirmation(activeGroup);
               }}
-              aria-label={`Select ${choiceKey.replace('.', ' ')}`}
+              aria-label={`Select ${choiceKey.replaceAll('.', ' ')}`}
               aria-pressed={selectedChoice === choiceConfig.value}
               className={`bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] p-3 rounded-2xl flex flex-col items-center justify-center gap-1 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 index === choices.length - 1 && choices.length % 2 === 1
@@ -86,7 +86,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                     selectedChoice === choiceConfig.value ? '-rotate-12' : 'group-hover:-rotate-12'
                   } ${selectedChoice === choiceConfig.value ? 'text-common-ash' : 'text-charcoal'}`}
                 >
-                  {choiceKey.replace('.', ' ')}
+                  {choiceKey.replaceAll('.', ' ')}
                 </div>
               </div>
             </button>
@@ -122,7 +122,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                 setUserChoices((current) => ({ ...current, [activeGroup]: choiceConfig }));
                 setShowConfirmation(activeGroup);
               }}
-              aria-label={`Select ${choiceKey.replace('.', ' ')}`}
+              aria-label={`Select ${choiceKey.replaceAll('.', ' ')}`}
               aria-pressed={selectedChoice === choiceConfig.value}
               className={`cursor-pointer bg-common-ash group w-full max-w-[10.6875rem] h-[8.75rem] landscape:w-[12rem] landscape:h-[10.5rem] p-3 landscape:p-4 rounded-2xl flex flex-col items-center justify-center gap-1 landscape:gap-2 overflow-hidden relative transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 index === choices.length - 1 && choices.length % 2 === 1
@@ -153,7 +153,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
                     selectedChoice === choiceConfig.value ? '-rotate-12' : 'group-hover:-rotate-12'
                   }`}
                 >
-                  {choiceKey.replace('.', ' ')}
+                  {choiceKey.replaceAll('.', ' ')}
                 </div>
               </div>
             </button>

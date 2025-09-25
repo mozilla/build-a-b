@@ -21,7 +21,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
   const currentIndex = groupKeys.indexOf(activeGroup);
   const nextGroup = currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null;
-  const choiceName = selectedConfig.id.replace('.', ' ');
+  const choiceName = selectedConfig.id.replaceAll('.', ' ');
 
   const handleContinue = async () => {
     setShowConfirmation(null);
