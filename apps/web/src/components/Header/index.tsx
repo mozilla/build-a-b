@@ -51,16 +51,16 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       >
         {/* Fliers - shooting star effect */}
         <Image
-          src="/assets/images/animations/flier1.svg"
+          src="/assets/images/animations/flier1-header.webp"
           alt=""
-          width={149}
+          width={185}
           height={222}
           className="absolute animate-flier-1"
           style={{
             bottom: '10.3125rem',
             left: '12.875rem',
-            width: '9.3125rem',
-            height: '13.875rem',
+            width: '9.885rem',
+            height: '11.875rem',
           }}
         />
         <Image
