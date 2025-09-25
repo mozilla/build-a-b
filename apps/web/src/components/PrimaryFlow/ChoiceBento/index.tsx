@@ -24,7 +24,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         alt="Billionaire Logo"
         width={162}
         height={79}
-        className="hidden landscape:block landscape:self-center landscape:w-[10rem] landscape:h-[5rem] landscape:-rotate-[-8deg]"
+        className="hidden landscape:block landscape:self-center landscape:w-[10rem] landscape:h-[5rem] landscape:-rotate-[-8deg] z-10"
       />
 
       {/* Mobile layout */}
@@ -35,8 +35,15 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Centered text content */}
-        <div className="flex-1 flex items-center justify-center mt-[-1rem]">
-          <div className="text-center space-y-2">
+        <div className="flex-1 flex items-center justify-center mt-[-1rem] relative">
+          <Image
+            src="/assets/images/scrim.png"
+            alt=""
+            width={443}
+            height={332}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+          />
+          <div className="text-center space-y-2 relative z-10">
             <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash">
               {groupContent.title}
             </h1>
@@ -102,12 +109,19 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         </div>
 
         {/* Centered text content */}
-        <div className="flex items-center justify-center mt-8 mb-8 relative z-10">
-          <div className="text-center space-y-4">
+        <div className="flex items-center justify-center mt-8 mb-8 relative">
+          <Image
+            src="/assets/images/scrim.png"
+            alt=""
+            width={443}
+            height={332}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+          />
+          <div className="text-center space-y-4 relative z-10">
             <h1 className="text-5xl-custom font-sharp font-bold text-common-ash">
               {groupContent.title}
             </h1>
-            <p className="text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[35rem] mx-auto">
+            <p className="text-regular-custom font-sharp font-bold text-common-ash max-w-[35rem] mx-auto">
               {groupContent.description}
             </p>
           </div>
