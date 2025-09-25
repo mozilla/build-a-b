@@ -47,8 +47,8 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
           >
             <span className="text-charcoal text-sm-custom font-semibold p-6">
               Unlike Big Tech Billionaires watching your every click, Firefox lets you play (and
-              browse) with privacy as the default. So let&apos;s build our own spoiled little
-              Billionaires and send them off-planet for good.
+              browse) with privacy as the default. So let&apos;s build our own little Billionaires
+              and send them off-planet for good.
             </span>
           </BrowserBento>
         </div>
