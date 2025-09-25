@@ -65,7 +65,7 @@ export default async function Home({ avatarData }: PageProps) {
               <Window flip>
                 <div className="p-4 landscape:p-8">
                   <h4 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4 landscape:pb-8">
-                    Don&apos;t let your Billionaire get left behind.{' '}
+                    We&apos;re sending your Billionaires off-world, offline.
                   </h4>
                   <ul className="flex flex-col text-sm-custom landscape:text-regular-custom pr-[1.275rem] landscape:pr-6">
                     <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
@@ -78,8 +78,8 @@ export default async function Home({ avatarData }: PageProps) {
                     <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
                       <span className="rounded-bullet">2</span>
                       <span className="flex-1">
-                        Keep an eye on your comments and DMs to see if your little Billionaire was
-                        chosen for launch.
+                        Keep an eye on your comments and DMs to see if your Billionaire secured a
+                        spot on our real rocket.
                       </span>
                     </li>
                     <li className="flex flex-row items-center gap-6">
@@ -119,15 +119,15 @@ export default async function Home({ avatarData }: PageProps) {
             effect="flip"
             back={
               <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
-                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-3 flex flex-col justify-start mb-2">
+                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
                   <h4 className="text-title-1 mb-2 text-[2rem]">
                     #Billionaire
                     <br className="landscape:hidden" />
                     BlastOff
                   </h4>
-                  <p className="text-body-small">
-                    Let’s help them. With all the Billionaires in space, you can be free to Open
-                    What You Want.
+                  <p className="text-regular-custom">
+                    With Billionaires permanently off-planet, we can finally browse in peace,
+                    indulge our curiosities, and open what we want.
                   </p>
                 </div>
                 <a href="https://www.mozilla.org/firefox/new/" target="_blank">
@@ -168,6 +168,9 @@ export default async function Home({ avatarData }: PageProps) {
                     Data War is a game of Billionaire brinksmanship where space is the place, data
                     is the currency, and chaos reigns. Get your copy at TwitchCon!
                   </p>
+                  <p className="mt-3">
+                    <strong>COMING SOON</strong>
+                  </p>
                 </div>
               </Window>
             }
@@ -195,9 +198,9 @@ export default async function Home({ avatarData }: PageProps) {
                 <div className="p-4 landscape:p-8">
                   <h4 className="text-title-1 pb-4">Two Launches in One</h4>
                   <p>
-                    We&apos;re launching a new card game, Data War, and launching Billionaires to
-                    space, one-way. Join us IRL at TwitchCon or right here on this site to follow
-                    along.
+                    We&apos;re launching a new card game, <em>Data War</em>, and launching
+                    Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this
+                    site to follow along.
                   </p>
                   <Link
                     href="/twitchcon"
