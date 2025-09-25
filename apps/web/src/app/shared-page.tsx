@@ -64,9 +64,9 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4 landscape:pb-8">
+                  <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4 landscape:pb-8">
                     We&apos;re sending your Billionaires off-world, offline.
-                  </h4>
+                  </h3>
                   <ul className="flex flex-col text-sm-custom landscape:text-regular-custom pr-[1.275rem] landscape:pr-6">
                     <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
                       <span className="rounded-bullet">1</span>
@@ -102,9 +102,9 @@ export default async function Home({ avatarData }: PageProps) {
             imageSrcPortrait="/assets/images/rocket-portrait.jpg"
             priority
           >
-            <h3 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
+            <h2 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
               Rocket your Billionaire into a permanent time-out
-            </h3>
+            </h2>
             <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
               Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
               <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
@@ -120,11 +120,11 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
-                  <h4 className="text-title-1 mb-2 text-[2rem]">
+                  <h2 className="text-title-1 mb-2 text-[2rem]">
                     #Billionaire
                     <br className="landscape:hidden" />
                     BlastOff
-                  </h4>
+                  </h2>
                   <p className="text-regular-custom">
                     With Billionaires permanently off-planet, we can finally browse in peace,
                     indulge our curiosities, and open what we want.
@@ -163,7 +163,7 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h4>
+                  <h3 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h3>
                   <p>
                     Data War is a game of Billionaire brinksmanship where space is the place, data
                     is the currency, and chaos reigns. Get your copy at TwitchCon!
@@ -196,7 +196,7 @@ export default async function Home({ avatarData }: PageProps) {
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h4 className="text-title-1 pb-4">Two Launches in One</h4>
+                  <h3 className="text-title-1 pb-4">Two Launches in One</h3>
                   <p>
                     We&apos;re launching a new card game, <em>Data War</em>, and launching
                     Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this
