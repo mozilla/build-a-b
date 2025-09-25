@@ -39,21 +39,27 @@ export default async function Page() {
   return (
     <ClientPageWrapper avatarData={avatarData}>
       <Hero image="/assets/images/launch.webp" ariaLabel="Hero section - TwitchCon 2025">
-        <div className="relative flex flex-col p-4 landscape:p-12 h-full justify-center bg-gradient-to-r from-black to-transparent gap-4 max-w-4xl">
-          <h6 className="text-nav-item">October 17-19, 2025</h6>
-          <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
-          <p className="text-body-regular">
-            Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
-            floor or follow along online.
-          </p>
-          <Link
-            href="https://www.twitchcon.com/san-diego-2025/tickets/"
-            className="secondary-button w-fit"
-            title="Get your event tickets"
-            target="_blank"
-          >
-            Get Tickets
-          </Link>
+        <div
+          className="relative aspect-[179/310] landscape:aspect-[164/67] p-4 landscape:p-12
+                        bg-gradient-to-t from-black from-[20%] to-transparent
+                        landscape:bg-gradient-to-r"
+        >
+          <div className="h-full flex flex-col gap-6 justify-end landscape:justify-center landscape:max-w-1/2">
+            <h6 className="text-nav-item">October 17-19, 2025</h6>
+            <h1 className="text-title-1">Billionaire Blast Off lands at TwitchCon</h1>
+            <p className="text-body-small">
+              Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
+              floor or follow along online.
+            </p>
+            <Link
+              href="https://www.twitchcon.com/san-diego-2025/tickets/"
+              className="secondary-button landscape:w-fit"
+              title="Get your event tickets"
+              target="_blank"
+            >
+              Get Tickets
+            </Link>
+          </div>
         </div>
       </Hero>
 
