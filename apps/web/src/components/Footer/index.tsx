@@ -4,7 +4,7 @@ import { avatarBentoData } from '@/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FC } from 'react';
+import { FC, Suspense } from 'react';
 import GetStarted from '../PrimaryFlow/GetStarted';
 
 export interface FooterProps {
@@ -110,11 +110,13 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             ))}
           </p>
           {avatarBentoData?.primaryFlowData && (
-            <GetStarted
-              {...avatarBentoData.primaryFlowData}
-              ctaText={ctaLabel}
-              triggerClassNames="secondary-button"
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <GetStarted
+                {...avatarBentoData.primaryFlowData}
+                ctaText={ctaLabel}
+                triggerClassNames="secondary-button"
+              />
+            </Suspense>
           )}
         </div>
         <p className="landscape:self-end">
