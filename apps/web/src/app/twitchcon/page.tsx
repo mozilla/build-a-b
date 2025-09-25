@@ -203,7 +203,7 @@ export default async function Page() {
       <ImageGallery images={imagesForGallery} />
 
       <CardsSection
-        image="/assets/images/mixed-blue-grid.webp"
+        image="/assets/images/grid-dots-blue.webp"
         cards={[
           <IconCard
             key="1"
