@@ -3,8 +3,8 @@
 import { choiceGroupMap } from '@/constants/choice-map';
 import { useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, type FC } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState, type FC } from 'react';
 import Modal from '../../Modal';
 import ChoiceBento from '../ChoiceBento';
 import CompletionScreen from '../CompletionScreen';
@@ -27,6 +27,7 @@ export interface GetStartedProps extends IntroProps {
 const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlowData }) => {
   const pathParams = useParams<{ id?: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { activeGroup, showConfirmation, userChoices, avatarData } = usePrimaryFlowContext();
   const [displayFlow, setDisplayFlow] = useState(true);
@@ -101,17 +102,30 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
 
     isAvatarSaved()
       .then((isSaved) => {
-        setDisplayFlow(!isSaved);
+        if (isSaved && !isOpen) {
+          setDisplayFlow(false);
+        }
       })
       .catch(() => {
         // Do nothing
       });
-  }, [pathParams]);
+  }, [pathParams, isOpen]);
+
+  const onStartFlow = useCallback(() => {
+    const currentParams = new URLSearchParams(searchParams);
+    currentParams.set('s', '1');
+    router.replace(`?${currentParams.toString()}`);
+    onOpen();
+  }, [onOpen, router, searchParams]);
 
   return (
     displayFlow && (
       <>
-        <button onClick={onOpen} type="button" className={`secondary-button ${triggerClassNames}`}>
+        <button
+          onClick={onStartFlow}
+          type="button"
+          className={`secondary-button ${triggerClassNames}`}
+        >
           {ctaText}
         </button>
         <Modal isOpen={isOpen} onOpenChange={handleModalClose}>

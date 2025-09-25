@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { FC, Suspense, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import HeaderMenu from '@/components/HeaderMenu';
@@ -54,11 +54,13 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           </div>
           <div className="flex flex-col justify-center items-center">
             {avatarBentoData?.primaryFlowData && (
-              <GetStarted
-                {...avatarBentoData.primaryFlowData}
-                ctaText={ctaLabel}
-                triggerClassNames="secondary-button w-full"
-              />
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText={ctaLabel}
+                  triggerClassNames="secondary-button w-full"
+                />
+              </Suspense>
             )}
             <p className="mt-4 mb-10 text-sm-custom text-center">
               {ctaCopy.map((line, inx) => (
