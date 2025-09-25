@@ -161,7 +161,7 @@ export default async function Page() {
             icon="/assets/images/icons/deck.webp"
             image="/assets/images/hall.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[10%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Complete your deck</h3>
@@ -175,7 +175,7 @@ export default async function Page() {
             icon="/assets/images/icons/hand.webp"
             image="/assets/images/pile.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[10%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Stay and Play</h3>
@@ -204,11 +204,11 @@ export default async function Page() {
             image="/assets/images/space-rocket.webp"
             icon="/assets/images/icons/launch.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[15%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Blast off, Billionaires!</h3>
-            <p className="text-body-small max-w-[26.25rem]">
+            <p className="text-body-small max-w-[27rem]">
               Countdown to launch. Bring your Block Party ticket and your party pants.
             </p>
           </IconCard>,
@@ -217,11 +217,11 @@ export default async function Page() {
             image="/assets/images/pub.webp"
             icon="/assets/images/icons/beer.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-r from-black to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[15%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Party at the Rockin&apos; Baja Lobster!!</h3>
-            <p className="text-body-small max-w-[26.25rem]">
+            <p className="text-body-small max-w-[27rem]">
               We&apos;re taking over Gaslamp&apos;s seafood mainstay with cocktails, swag and stacks
               of Data War.
             </p>
