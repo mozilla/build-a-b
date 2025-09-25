@@ -34,7 +34,7 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
         <div className="relative w-full h-full">
           <BrowserBento gradient className="absolute h-full">
             <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
-              Make space a better place. Add a Billionaire.
+              Unlimited power. Zero accountability. What could go wrong?
             </span>
           </BrowserBento>
           <BrowserBento
