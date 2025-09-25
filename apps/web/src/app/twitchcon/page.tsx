@@ -11,9 +11,6 @@ import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import { Suspense } from 'react';
-import GetStarted from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -267,17 +264,9 @@ export default async function Page() {
       <CountDown
         targetDate="2025-10-17T10:00:00-07:00"
         cta={
-          <div>
-            {avatarBentoData?.primaryFlowData && (
-              <Suspense fallback={<div>Loading...</div>}>
-                <GetStarted
-                  {...avatarBentoData.primaryFlowData}
-                  ctaText="Build a Billionaire"
-                  triggerClassNames="secondary-button"
-                />
-              </Suspense>
-            )}
-          </div>
+          <Link href="/" title="Generate your billionaire" className="secondary-button flex">
+            Build a Millionaire
+          </Link>
         }
       />
     </ClientPageWrapper>
