@@ -5,6 +5,7 @@ import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
 import Image from 'next/image';
 import type { FC } from 'react';
+import { Suspense } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import AvatarView from './AvatarView';
@@ -83,7 +84,11 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
             <AvatarView {...avatarData} />
           ) : (
             <>
-              {primaryFlowData && <GetStarted {...primaryFlowData} />}
+              {primaryFlowData && (
+                <Suspense fallback={<div>Loading...</div>}>
+                  <GetStarted {...primaryFlowData} />
+                </Suspense>
+              )}
 
               <div
                 className="absolute z-20 bottom-0 w-full h-[14.3125rem] px-4 pb-4
@@ -93,7 +98,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
                 <div className="relative w-full h-full">
                   <BrowserBento gradient className="absolute h-full">
                     <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
-                      Make space a better place. Add a Billionaire.
+                      Unlimited power. Zero accountability. What could go wrong?
                     </span>
                   </BrowserBento>
                   <BrowserBento
