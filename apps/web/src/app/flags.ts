@@ -1,5 +1,5 @@
-import { flag } from 'flags/next';
 import { FlagType } from '@/types';
+import { flag } from 'flags/next';
 
 const flags = {
   demoAvatarBento: flag({
@@ -24,6 +24,14 @@ const flags = {
     defaultValue: false,
     decide() {
       return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';
+    },
+  }),
+  showAvatarBentoV2: flag({
+    key: 'avatar-bento-v2',
+    description: 'Shows the restructured AvatarBento component',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_AVATAR_BENTO_V2 === 'true';
     },
   }),
 } as const;

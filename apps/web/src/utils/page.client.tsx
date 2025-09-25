@@ -12,6 +12,7 @@ const ClientPageWrapper: FC<ClientPageWrapperProps> = ({ avatarData, children })
   const { setAvatarData } = usePrimaryFlowContext();
 
   useEffect(() => {
+    console.log('avatarData', avatarData);
     if (avatarData) {
       setAvatarData(avatarData);
     }
