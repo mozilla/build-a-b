@@ -119,6 +119,13 @@ export default async function Home({ avatarData }: PageProps) {
             effect="flip"
             back={
               <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+                <Image
+                  src="/assets/images/icons/flip.svg"
+                  alt="Flip card"
+                  width={24}
+                  height={24}
+                  className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
+                />
                 <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
                   <h2 className="text-title-1 mb-2 text-[2rem]">
                     #Billionaire
@@ -143,6 +150,13 @@ export default async function Home({ avatarData }: PageProps) {
             }
           >
             <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
+              <Image
+                src="/assets/images/icons/flip.svg"
+                alt="Flip card"
+                width={24}
+                height={24}
+                className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.2rem] right-[0.2rem]"
+              />
               <h4 className="text-title-1 mb-3">
                 #Billionaire
                 <br className="landscape:hidden" />
