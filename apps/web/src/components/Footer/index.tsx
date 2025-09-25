@@ -182,7 +182,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       >
         {/* Floaters - peek in from edges */}
         <Image
-          src="/assets/images/header-animations/floater-footer.webp"
+          src="/assets/images/animations/floater-footer.webp"
           alt=""
           width={127}
           height={134}
