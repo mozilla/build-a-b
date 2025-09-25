@@ -102,9 +102,9 @@ export default async function Home({ avatarData }: PageProps) {
             imageSrcPortrait="/assets/images/rocket-portrait.jpg"
             priority
           >
-            <h2 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
+            <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
               Rocket your Billionaire into a permanent time-out
-            </h2>
+            </h1>
             <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
               Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
               <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
