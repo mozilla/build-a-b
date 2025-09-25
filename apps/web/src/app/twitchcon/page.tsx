@@ -14,6 +14,30 @@ import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { Suspense } from 'react';
 import GetStarted from '@/components/PrimaryFlow/GetStarted';
 import { avatarBentoData } from '@/utils/constants';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Firefox Billionaire Blast Off lands at TwitchCon',
+  description:
+    'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+  openGraph: {
+    siteName: 'Billionaire Blast Off Powered by Firefox',
+    title: 'Firefox Billionaire Blast Off lands at TwitchCon',
+    description:
+      'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+    images: [
+      {
+        url: '/assets/images/opengraph/twitchcon.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/assets/images/opengraph/twitchcon.jpg'],
+  },
+};
 
 export default async function Page() {
   const imagesForGallery = [

@@ -7,10 +7,28 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Billionaire Blast-Off',
-  description: '',
+  title: "Firefox Billionaire Blast Off - It's a Space Race!",
+  description:
+    'Build a Billionaire, check out our new game, Data War, and join us at TwitchCon to send our Billionaires into space.',
   icons: {
     icon: '/favicon.svg',
+  },
+  openGraph: {
+    siteName: 'Billionaire Blast Off Powered by Firefox',
+    title: 'Make Earth a better place. Launch a Billionaire.',
+    description:
+      'Build a Billionaire, check out our new game, Data War, and join us at TwitchCon to send our Billionaires into space.',
+    images: [
+      {
+        url: '/assets/images/opengraph/home.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/assets/images/opengraph/home.jpg'],
   },
 };
 
