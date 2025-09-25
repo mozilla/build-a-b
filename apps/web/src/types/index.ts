@@ -30,9 +30,9 @@ export type Choice =
   | 'policy.hack'
   | 'mars'
   | 'sea.lord'
-  | 'ai.god'
-  | 'blood.bank'
-  | 'forever.pill';
+  | 'ai.diety'
+  | 'clone.library'
+  | 'fountain.of.youth';
 
 export type ChoiceGroup =
   | 'origin-story'
