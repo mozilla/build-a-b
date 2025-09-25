@@ -161,7 +161,7 @@ export default async function Page() {
             icon="/assets/images/icons/deck.webp"
             image="/assets/images/hall.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-t from-black from-[10%] to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Complete your deck</h3>
@@ -175,7 +175,7 @@ export default async function Page() {
             icon="/assets/images/icons/hand.webp"
             image="/assets/images/pile.webp"
             className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-t from-black from-[10%] to-transparent"
+            wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
             iconEffect
           >
             <h3 className="text-title-3">Stay and Play</h3>
