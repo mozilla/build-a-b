@@ -45,7 +45,7 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="absolute inset-0 z-10 object-cover mix-blend-overlay pointer-events-none"
         />
-        <div className="relative portrait:w-full portrait:mb-4">
+        <div className="relative portrait:w-full portrait:mb-4 z-10">
           <Bento
             className={clsx(
               'w-full max-w-[29.25rem] mx-auto portrait:h-[33rem] landscape:aspect-square flex justify-center items-end p-3',
