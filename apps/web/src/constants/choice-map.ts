@@ -11,53 +11,53 @@ export const choiceGroupMap: Record<ChoiceGroup, Choice[]> = {
 export const groupDescriptionMap: Record<ChoiceGroup, { title: string; description: string }> = {
   'origin-story': {
     title: 'Pick an Origin Story',
-    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+    description: 'Checkered past? I’m more of a chess person.',
   },
   'core-drive': {
     title: 'Pick a Core Drive',
-    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+    description: 'Being a Billionaire comes with some very motivating benefits. Or symptoms, as the rest of us call them.',
   },
   'legacy-plan': {
     title: 'Pick a Legacy Plan',
-    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+    description: 'How will you be remembered when your only heir records over your uploaded consciousness with their AI “companion?”',
   },
   'power-play': {
     title: 'Pick a Power Play',
-    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+    description: 'Go big or go to one of your dozens of homes.',
   },
   'public-mask': {
     title: 'Pick a Public Mask',
-    description: 'Every billionaire has a dark past at the root of their silly ambitions.',
+    description: 'Coming right out with your transparent plans and motives never plays well with the board.',
   },
 };
 
 export const phrasesMap: Record<Choice, string> = {
   inherited: 'Nothing fuels the myth of rugged individualism like an absence of hardship.',
   manipulator: 'They’re not exploiting your data. They’re maximizing your experience.',
-  'data.thief': 'Pickpocketing scales indefinitely.',
-  'crypto.king': 'Stop saying “fiat.” Stop it.',
-  'med.mogul': 'Let’s play doctor. Let’s play God. I’m so bored.',
+  'data.thief': 'Honey, have you seen my personally identifying information?',
+  'crypto.king': 'What even is “real” money anyway?',
+  'med.mogul': 'Ask your doctor if raising a drug price by 100x is right for your portfolio',
   power: 'The feeling of lightning striking right after you say something cool.',
-  chaos: 'Some people just want to watch the world burn from space.',
-  immortality: 'Chasing youth never gets old.',
-  control: 'Unquestioning obedience is the real wealth.',
-  fame: 'Some people just need the attention they never got from their parents from EVERYONE, ALL THE TIME.',
+  chaos: '“Move fast and break things” sure broke things fast.',
+  immortality: 'Living forever is set for clinical trials next year.',
+  control: 'Expand your sphere of influence.',
+  fame: 'A choice motive for only the most discerning attention hog.',
   'eco.fake':
-    'When clearcutting a rainforest saves you more money than you’re fined for doing it, what’s the issue?',
-  visionary: 'Being psychic’s easy when you brute-force the future you predicted.',
+    'With some carbon credit cunning, you can earn your pollution fines back and then some!',
+  visionary: 'If the people understand, you’re not doing it right.',
   rebel:
-    'Wearing a t-shirt and flip flops to the board meeting lets them know who’s the biggest boy.',
-  savior: 'Your house guru resigned saying, “I have nothing left to teach you.”',
-  genius: 'Anyone who says you’re actually an idiot is the idiot, idiot.',
+    'Wearing a t-shirt and flip flops to the board meeting lets them know who’s in charge.',
+  savior: 'Nothing says “philanthropist” like your name on a building.',
+  genius: 'Beyond a certain level of wealth, seeming dumber makes you seem smarter.',
   raiders: 'Finance films meant to be cautionary tales are your pre-workout.',
   shadows: 'This meeting never happened.',
   'data.mine': 'To get to space, sometimes you have to dig.',
   'media.spin': 'Talking heads don’t get their talking points from nowhere.',
-  'policy.hack': 'A couple whithertos and wherebys aaaand we are clear to test on otters. ',
+  'policy.hack': 'A couple whithertos and wherebys aaaand we are clear to test on unicorns. ',
   mars: 'One day, I’m going to have my own planet, and you won’t be invited, and you’ll all be sorry.',
   'forever.pill':
     'Everyone’s trying to live longer. Some are just trying to live longer than those people.',
-  'blood.bank': 'No, you’re creepy.',
+  'blood.bank': 'What would the future do without your exact gene sequence?',
   'ai.god': 'It’ll be the prompt to end all prompts to end all prompts to end all prompts.',
   'sea.lord': 'Please attend my four-part lecture series on how Poseidon is real.',
 };

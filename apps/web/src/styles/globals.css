@@ -72,10 +72,20 @@ body {
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-1.25rem);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0) rotate(25.48deg);
+  }
+  50% {
+    transform: translateY(-8rem) rotate(25.48deg);
   }
 }
 
@@ -240,4 +250,24 @@ body {
 
 @utility animate-float-tilt {
   animation: float-tilt 6s ease-in-out infinite;
+}
+
+@keyframes float-tilt-2 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotate(22.618deg);
+  }
+  50% {
+    transform: translateX(-1rem) translateY(-3.625rem) rotate(-12.849deg);
+  }
+}
+
+@keyframes float-slide-1 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(20rem) translateY(1.5rem);
+  }
 }
