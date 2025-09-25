@@ -51,7 +51,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       >
         {/* Fliers - shooting star effect */}
         <Image
-          src="/assets/images/header-animations/flier1.svg"
+          src="/assets/images/animations/flier1.svg"
           alt=""
           width={149}
           height={222}
@@ -64,7 +64,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           }}
         />
         <Image
-          src="/assets/images/header-animations/flier2.svg"
+          src="/assets/images/animations/flier2.svg"
           alt=""
           width={75}
           height={112}
@@ -77,7 +77,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           }}
         />
         <Image
-          src="/assets/images/header-animations/flier3.svg"
+          src="/assets/images/animations/flier3.svg"
           alt=""
           width={64}
           height={96}
@@ -92,7 +92,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
 
         {/* Floaters - peek in from edges */}
         <Image
-          src="/assets/images/header-animations/floater1.svg"
+          src="/assets/images/animations/floater1.svg"
           alt=""
           width={88.3}
           height={134}
@@ -106,7 +106,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           }}
         />
         <Image
-          src="/assets/images/header-animations/floater2.svg"
+          src="/assets/images/animations/floater2.svg"
           alt=""
           width={88.3}
           height={134}
