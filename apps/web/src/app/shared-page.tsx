@@ -251,7 +251,19 @@ export default async function Home({ avatarData }: PageProps) {
           <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
         </div>
         <div className="portrait:order-13 landscape:col-span-12">
-          <CountDown targetDate="2025-10-17T10:00:00-07:00" className="landscape:mb-0!" />
+          <CountDown
+            targetDate="2025-10-17T10:00:00-07:00"
+            className="landscape:mb-0!"
+            cta={
+              <Link
+                href="/twitchcon"
+                title="Learn more about the launch"
+                className="secondary-button flex"
+              >
+                Space Launch Details
+              </Link>
+            }
+          ></CountDown>
         </div>
       </main>
     </>
