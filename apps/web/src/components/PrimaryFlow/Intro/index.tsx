@@ -45,7 +45,7 @@ const Intro: FC<IntroProps> = ({
   }, [setUserChoices, setAvatarData, reset]);
 
   return (
-    <div className="relative p-4 flex flex-col items-center justify-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:px-16 landscape:pt-[6rem] landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
+    <div className="relative p-4 flex flex-col items-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:pl-30 landscape:pr-8 landscape:pt-24 landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
       {/* Floating Images */}
       {floatingImages.map(({ id, className, style }, index) => (
         <div key={index} className={className} style={style}>
@@ -59,20 +59,20 @@ const Intro: FC<IntroProps> = ({
         </div>
       ))}
 
-      <div className="mb-4 mt-[-4rem] landscape:relative landscape:top-[6rem] mb-2 flex-shrink-0 landscape:mb-0 landscape:flex-1">
+      <div className="mb-8 mt-20 landscape:relative landscape:top-[6rem] flex-shrink-0 landscape:mb-0 landscape:flex-1 landscape:mt-[-3rem]">
         <Image
-          src="/assets/images/billionaire-logo.svg"
+          src="/assets/images/bbo-logo.svg"
           alt="Billionaire Logo"
-          width={213}
-          height={104}
-          className="w-[17.187rem] h-[8.5rem] -rotate-[8deg] landscape:block landscape:w-[22.375rem] landscape:h-[11rem] landscape:-rotate-[15deg]"
+          width={341}
+          height={166}
+          className="w-[17.25rem] h-[8.5rem] -rotate-[8deg] landscape:block landscape:w-[22.375rem] landscape:h-[11rem] landscape:-rotate-[14.168deg]"
         />
       </div>
       <div className="flex flex-col items-center text-center landscape:flex-1 landscape:items-start landscape:text-left z-1">
-        <h1 className="text-2xl font-extrabold mb-3 landscape:text-4xl-custom landscape:mb-6">
+        <h1 className="text-2xl font-extrabold mb-4 landscape:text-4xl-custom landscape:mb-6">
           {title}
         </h1>
-        <p className="mb-4 font-sharp font-semibold text-sm leading-[140%] text-[#F8F6F4] landscape:mb-8 landscape:text-lg landscape:w-[24.3125rem]">
+        <p className="mb-8 font-sharp font-semibold text-regular-custom text-common-ash landscape:mb-8 landscape:text-regular-custom landscape:w-[30.5rem]">
           {description}
         </p>
 
@@ -81,14 +81,14 @@ const Intro: FC<IntroProps> = ({
             autoFocus
             onPress={() => setActiveGroup('origin-story')}
             type="button"
-            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] landscape:w-[24rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[2.259deg] landscape:text-base landscape:h-12 landscape:w-[24.3125rem]"
+            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
           >
             {createAvatarCtaText}
           </Button>
           <Button
             onPress={generateRandomAvatar}
             type="button"
-            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] landscape:w-[24rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 -rotate-[1.772deg] landscape:mt-6 landscape:text-base landscape:h-12 landscape:w-[24.3125rem] landscape:ml-8"
+            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
           >
             {randomAvatarCtaText}
           </Button>
