@@ -4,7 +4,7 @@ import { avatarBentoData } from '@/utils/constants';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FC, useEffect, useState } from 'react';
+import { FC, Suspense, useEffect, useState } from 'react';
 import Bento from '../Bento';
 import GetStarted from '../PrimaryFlow/GetStarted';
 
@@ -62,11 +62,13 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className }) => {
               refused to play by Big Tech&apos;s rules.
             </p>
             {avatarBentoData?.primaryFlowData && (
-              <GetStarted
-                {...avatarBentoData.primaryFlowData}
-                ctaText="Build a Billionaire"
-                triggerClassNames="secondary-button hidden landscape:flex"
-              />
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText="Build a Billionaire"
+                  triggerClassNames="secondary-button hidden landscape:flex"
+                />
+              </Suspense>
             )}
           </div>
           <div className="w-full flex flex-col items-end">
