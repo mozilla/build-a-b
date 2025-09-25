@@ -1,31 +1,30 @@
 import Bento from '@/components/Bento';
 import BrowserBento from '@/components/BrowserBento';
-import {
-  AvatarViewAction,
-  AvatarViewActionTypeOrNull,
-} from '@/components/PrimaryFlow/AvatarBento/AvatarView';
+import { AvatarViewAction } from '@/components/PrimaryFlow/AvatarBento/AvatarView';
 import ShareAvatar from '@/components/ShareAvatar';
 import { AvatarData } from '@/types';
 import Image from 'next/image';
-import { Dispatch, FC, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 const microcopy = {
   bioPrefix: 'Meet ',
 } as const;
 
-interface PlaypenShareProps {
+interface PlaypenShareProps<T = string> {
   action: AvatarViewAction;
   avatar: AvatarData;
   navigatorShareAvailable: boolean;
-  setActionType: Dispatch<SetStateAction<AvatarViewActionTypeOrNull>>;
+  setActionType: Dispatch<SetStateAction<T | null>>;
+  saveActionValue: T;
 }
 
-const PlaypenShare: FC<PlaypenShareProps> = ({
+function PlaypenShare<T = string>({
   action,
   avatar,
   navigatorShareAvailable,
   setActionType,
-}) => {
+  saveActionValue,
+}: PlaypenShareProps<T>) {
   return (
     <div className="mx-auto max-w-[61.4375rem] flex flex-col items-center">
       <div className="text-center max-w-[39.0625rem] mx-auto pb-[1.25rem] flex flex-col gap-y-[0.5rem]">
@@ -65,11 +64,11 @@ const PlaypenShare: FC<PlaypenShareProps> = ({
         <ShareAvatar
           avatar={avatar}
           navigatorShareAvailable={navigatorShareAvailable}
-          onBookmarkClick={() => setActionType('save')}
+          onBookmarkClick={() => setActionType(saveActionValue)}
         />
       </div>
     </div>
   );
-};
+}
 
 export default PlaypenShare;
