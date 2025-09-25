@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Billionaire Blast-Off',
   description: '',
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.svg',
   },
 };
 
