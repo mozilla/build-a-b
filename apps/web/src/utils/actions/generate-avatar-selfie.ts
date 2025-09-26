@@ -1,15 +1,14 @@
 'use server';
 import type {
   DatabaseStandingAvatarResponse,
-  SelfieInitResponse,
   Selfie,
+  SelfieInitResponse,
   SelfieStatusResponse,
 } from '@/types';
 import { cookies } from 'next/headers';
 import { COOKIE_NAME } from '../constants';
 import { createClient } from '../supabase/server';
 import { pollStatus } from './poll';
-import type { Database } from '@/types/database.types';
 
 export async function generateAvatarSelfie(): Promise<Selfie | null> {
   try {
