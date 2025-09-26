@@ -69,7 +69,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
             alt=""
             width={443}
             height={332}
-            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] pointer-events-none z-0"
           />
           <div className="text-center space-y-2 mb-4 relative z-10">
             <h1 className="text-mobile-title-2 font-sharp font-bold text-common-ash capitalize">
@@ -112,7 +112,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
             alt=""
             width={443}
             height={332}
-            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] blur-[5.625rem] brightness-25 pointer-events-none z-0"
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[27.6875rem] h-[20.75rem] rounded-[27.6875rem] pointer-events-none z-0"
           />
           <div className="relative z-10">
             <h1 className="text-5xl-custom font-sharp font-bold text-common-ash capitalize">
