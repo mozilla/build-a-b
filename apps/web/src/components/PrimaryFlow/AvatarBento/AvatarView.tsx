@@ -35,6 +35,7 @@ const AvatarView: FC<AvatarData> = ({
   uuid,
   instragramAsset,
   originalRidingAsset,
+  selfies,
 }) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
   const [actionType, setActionType] = useState<AvatarViewActionTypeOrNull>(null);
@@ -137,7 +138,15 @@ const AvatarView: FC<AvatarData> = ({
                     <PlaypenShare<AvatarViewActionType>
                       action={action}
                       navigatorShareAvailable={navigatorShareAvailable}
-                      avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
+                      avatar={{
+                        url,
+                        name,
+                        bio,
+                        uuid,
+                        instragramAsset,
+                        originalRidingAsset,
+                        selfies,
+                      }}
                       setActionType={setActionType}
                       saveActionValue="save"
                     />
@@ -146,7 +155,15 @@ const AvatarView: FC<AvatarData> = ({
                   {actionName === 'restart' && (
                     <PlaypenRestart
                       action={action}
-                      avatar={{ url, name, bio, uuid, instragramAsset, originalRidingAsset }}
+                      avatar={{
+                        url,
+                        name,
+                        bio,
+                        uuid,
+                        instragramAsset,
+                        originalRidingAsset,
+                        selfies,
+                      }}
                       onCancel={() => setActionType(null)}
                     />
                   )}
