@@ -212,9 +212,9 @@ export default async function Home({ avatarData }: PageProps) {
                 <div className="p-4 landscape:p-8">
                   <h3 className="text-title-1 pb-4">Two Launches in One</h3>
                   <p>
-                    We&apos;re launching a new card game, <em>Data War</em>, and launching
-                    Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this
-                    site to follow along.
+                    We&apos;re launching a new card game, Data War, and launching Billionaires to
+                    space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                    along.
                   </p>
                   <Link
                     href="/twitchcon"
