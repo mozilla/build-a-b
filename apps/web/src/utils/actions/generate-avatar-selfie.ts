@@ -1,44 +1,86 @@
 'use server';
-import type { AvatarData, Choice, DatabaseAvatarResponse, DatabaseUserResponse } from '@/types';
-import { buildImageUrl } from '../helpers/images';
+import type {
+  DatabaseStandingAvatarResponse,
+  SelfieInitResponse,
+  Selfie,
+  SelfieStatusResponse,
+} from '@/types';
+import { cookies } from 'next/headers';
+import { COOKIE_NAME } from '../constants';
 import { createClient } from '../supabase/server';
+import { pollStatus } from './poll';
+import type { Database } from '@/types/database.types';
 
-export async function generateAvatarSelfie(options: Choice[]): Promise<AvatarData | null> {
+export async function generateAvatarSelfie(): Promise<Selfie | null> {
   try {
-    const supabase = await createClient();
-    const searchPattern = options.join('-');
+    const [supabase, cookieStore] = await Promise.all([createClient(), cookies()]);
+    const uuid = cookieStore.get(COOKIE_NAME)?.value;
 
-    // Keep this log for server debugging
-    console.log('Starting search with parameters: ', searchPattern);
+    if (!uuid) {
+      throw new Error('No UUID stored when trying to create a selfie.');
+    }
 
-    const { data: selectedAvatar, error } = await supabase
-      .rpc('get_random_avatar', {
-        search_pattern: searchPattern,
+    const userWithAvatarResponse = await supabase
+      .rpc('get_avatar_standing_asset_by_user_uuid', { user_uuid: uuid })
+      .single<DatabaseStandingAvatarResponse>();
+
+    if (!userWithAvatarResponse.data) {
+      throw new Error("No avatar associated to the user, can't create a selfie.");
+    }
+
+    const userData = userWithAvatarResponse.data;
+
+    const seed = userData?.asset_standing?.endsWith('?')
+      ? userData.asset_standing.slice(0, -1)
+      : userData?.asset_standing;
+
+    if (!seed) {
+      throw new Error('Could not retrieve avatar data when trying to create a selfie.');
+    }
+
+    const selfieProcessStartedResponse = await fetch(
+      'https://mozilla-billionaires.mndo.to/api/selfie/generate',
+      {
+        method: 'POST',
+        body: JSON.stringify({ input_path: seed }),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      },
+    );
+
+    console.log('Starting job...');
+
+    const selfieProcessStarted: SelfieInitResponse = await selfieProcessStartedResponse.json();
+
+    if (!selfieProcessStarted?.job_id) {
+      throw new Error('Job could not be started when trying to generate a selfie.');
+    }
+
+    console.log('Checking status...');
+    // Poll for job completion
+    const generatedSelfie = await pollStatus<SelfieStatusResponse>(
+      selfieProcessStarted.job_id,
+      'selfie',
+    );
+
+    if (!generatedSelfie?.selfie_image_url) {
+      throw new Error('Selfie generation failed or timed out.');
+    }
+
+    console.log('Selfie was successfully generated.', generatedSelfie.selfie_image_url);
+
+    const { data: selfieResponse, error } = await supabase
+      .from('selfies')
+      .insert({
+        user_id: userData.user_id,
+        avatar_id: userData.avatar_id,
+        asset: generatedSelfie.selfie_image_url,
       })
-      .single<DatabaseAvatarResponse>();
+      .select('id,asset,created_at')
+      .single<Selfie>();
 
-    if (error || !selectedAvatar) {
-      throw new Error(error?.message || 'Could not retrieve an avatar.');
-    }
+    if (error) throw error;
 
-    const { data: newUser, error: userError } = await supabase
-      .from('users')
-      .insert({ avatar_id: selectedAvatar.id })
-      .select()
-      .single<DatabaseUserResponse>();
-
-    if (userError) {
-      throw userError;
-    }
-
-    return {
-      originalRidingAsset: selectedAvatar.asset_riding || '',
-      instragramAsset: selectedAvatar.asset_instagram || '',
-      url: buildImageUrl(selectedAvatar.asset_riding),
-      bio: selectedAvatar.character_story || '',
-      name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,
-      uuid: newUser?.uuid || '',
-    };
+    return selfieResponse;
   } catch (e) {
     // Log the error to have it in server logs and re-throw to reset state.
     console.error(e);
