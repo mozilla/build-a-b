@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     'Build a Billionaire, check out our new game, Data War, and join us at TwitchCon to send our Billionaires into space.',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/icon.png',
   },
   openGraph: {
     siteName: 'Billionaire Blast Off Powered by Firefox',
