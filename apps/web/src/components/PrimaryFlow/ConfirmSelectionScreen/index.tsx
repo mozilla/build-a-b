@@ -65,7 +65,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         {/* Text content - appears before icon on mobile */}
         <div className="flex-1 flex flex-col items-center justify-center mt-4 relative">
           <Image
-            src="/assets/images/scrim.png"
+            src="/assets/images/scrim.webp"
             alt=""
             width={443}
             height={332}
@@ -108,7 +108,7 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
         {/* Text content */}
         <div className="text-center space-y-4 mt-4 relative">
           <Image
-            src="/assets/images/scrim.png"
+            src="/assets/images/scrim.webp"
             alt=""
             width={443}
             height={332}
