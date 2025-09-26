@@ -33,10 +33,15 @@ describe('generateAvatar', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers({ advanceTimers: true });
     mockCreateClient.mockResolvedValue(mockSupabase);
     mockCookies.mockResolvedValue(mockCookieStore);
     mockCookieStore.get.mockReturnValue({ value: 'test-uuid' });
     mockBuildImageUrl.mockReturnValue('https://test.com/image.jpg');
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   afterAll(() => {
@@ -77,7 +82,12 @@ describe('generateAvatar', () => {
       }),
     });
 
-    const result = await generateAvatar(options);
+    const resultPromise = generateAvatar(options);
+
+    // Fast-forward the 4-second delay
+    await jest.advanceTimersByTimeAsync(4000);
+
+    const result = await resultPromise;
 
     expect(mockSupabase.rpc).toHaveBeenCalledWith('get_random_avatar', {
       search_pattern: 'mogul-fame-savior',
@@ -188,7 +198,9 @@ describe('generateAvatar', () => {
       }),
     });
 
-    const result = await generateAvatar(options);
+    const resultPromise = generateAvatar(options);
+    await jest.advanceTimersByTimeAsync(4000);
+    const result = await resultPromise;
 
     expect(result?.bio).toBe('');
     expect(result?.selfies).toEqual([]);
