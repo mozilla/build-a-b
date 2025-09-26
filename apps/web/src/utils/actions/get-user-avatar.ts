@@ -1,11 +1,10 @@
 'use server';
 
-import type { AvatarData } from '@/types';
-import { Database } from '@/types/database.types';
-import { buildImageUrl } from '../helpers/images';
-import { createClient } from '../supabase/server';
+import type { AvatarData, DatabaseAvatarResponse } from '@/types';
 import { cookies } from 'next/headers';
 import { COOKIE_NAME } from '../constants';
+import { buildImageUrl } from '../helpers/images';
+import { createClient } from '../supabase/server';
 
 export async function getUserAvatar(userUuid?: string): Promise<AvatarData | null> {
   try {
@@ -17,26 +16,13 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       throw new Error("Can't retrieve avatar information.");
     }
 
-    // Get user by UUID to retrieve avatar_id
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('avatar_id')
-      .eq('uuid', userAssociationId)
-      .single<{ avatar_id: string }>();
-
-    if (userError || !user?.avatar_id) {
-      throw new Error(userError?.message || 'User not found.');
-    }
-
-    // Get avatar data using the avatar_id
+    // Get user avatar data in a single query
     const { data: avatar, error: avatarError } = await supabase
-      .from('avatars')
-      .select('*')
-      .eq('id', user.avatar_id)
-      .single<Database['public']['Tables']['avatars']['Row']>();
+      .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
+      .single<DatabaseAvatarResponse>();
 
     if (avatarError || !avatar) {
-      throw new Error(avatarError?.message || 'Could no retrieve user avatar.');
+      throw new Error(avatarError?.message || 'Could not retrieve user avatar.');
     }
 
     return {
@@ -46,6 +32,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userAssociationId,
+      selfies: avatar.selfies,
     };
   } catch (e) {
     // This will be available via server logs.
