@@ -71,7 +71,7 @@ describe('generateAvatarSelfie', () => {
     // Mock fetch for selfie generation
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockSelfieResponse),
-    } as any);
+    });
 
     // Mock polling
     mockPollStatus.mockResolvedValue(mockGeneratedSelfie);
@@ -94,7 +94,7 @@ describe('generateAvatarSelfie', () => {
         method: 'POST',
         body: JSON.stringify({ input_path: 'https://example.com/standing.png' }),
         headers: new Headers({ 'Content-Type': 'application/json' }),
-      }
+      },
     );
     expect(mockPollStatus).toHaveBeenCalledWith('job-123', 'selfie');
     expect(mockSupabase.from).toHaveBeenCalledWith('selfies');
@@ -126,7 +126,7 @@ describe('generateAvatarSelfie', () => {
 
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockSelfieResponse),
-    } as any);
+    });
 
     mockPollStatus.mockResolvedValue(mockGeneratedSelfie);
 
@@ -144,7 +144,7 @@ describe('generateAvatarSelfie', () => {
         method: 'POST',
         body: JSON.stringify({ input_path: 'https://example.com/standing.png' }),
         headers: new Headers({ 'Content-Type': 'application/json' }),
-      }
+      },
     );
     expect(result).toBe('https://example.com/selfie.jpg');
   });
@@ -152,7 +152,9 @@ describe('generateAvatarSelfie', () => {
   it('should throw error when no UUID in cookies', async () => {
     mockCookieStore.get.mockReturnValue(undefined);
 
-    await expect(generateAvatarSelfie()).rejects.toThrow('No UUID stored when trying to create a selfie.');
+    await expect(generateAvatarSelfie()).rejects.toThrow(
+      'No UUID stored when trying to create a selfie.',
+    );
     expect(consoleSpy).toHaveBeenCalled();
   });
 
@@ -164,7 +166,9 @@ describe('generateAvatarSelfie', () => {
       }),
     });
 
-    await expect(generateAvatarSelfie()).rejects.toThrow("No avatar associated to the user, can't create a selfie.");
+    await expect(generateAvatarSelfie()).rejects.toThrow(
+      "No avatar associated to the user, can't create a selfie.",
+    );
     expect(consoleSpy).toHaveBeenCalled();
   });
 
@@ -182,7 +186,9 @@ describe('generateAvatarSelfie', () => {
       }),
     });
 
-    await expect(generateAvatarSelfie()).rejects.toThrow('Could not retrieve avatar data when trying to create a selfie.');
+    await expect(generateAvatarSelfie()).rejects.toThrow(
+      'Could not retrieve avatar data when trying to create a selfie.',
+    );
     expect(consoleSpy).toHaveBeenCalled();
   });
 
@@ -202,9 +208,11 @@ describe('generateAvatarSelfie', () => {
 
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({}), // No job_id
-    } as any);
+    });
 
-    await expect(generateAvatarSelfie()).rejects.toThrow('Job could not be started when trying to generate a selfie.');
+    await expect(generateAvatarSelfie()).rejects.toThrow(
+      'Job could not be started when trying to generate a selfie.',
+    );
     expect(consoleSpy).toHaveBeenCalled();
   });
 
@@ -228,7 +236,7 @@ describe('generateAvatarSelfie', () => {
 
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockSelfieResponse),
-    } as any);
+    });
 
     mockPollStatus.mockResolvedValue(null); // Polling failed
 
@@ -261,7 +269,7 @@ describe('generateAvatarSelfie', () => {
 
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockSelfieResponse),
-    } as any);
+    });
 
     mockPollStatus.mockResolvedValue(mockGeneratedSelfie);
 
@@ -294,7 +302,7 @@ describe('generateAvatarSelfie', () => {
 
     mockFetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockSelfieResponse),
-    } as any);
+    });
 
     mockPollStatus.mockResolvedValue(mockGeneratedSelfie);
 
@@ -318,7 +326,9 @@ describe('generateAvatarSelfie', () => {
       }),
     });
 
-    await expect(generateAvatarSelfie()).rejects.toThrow("No avatar associated to the user, can't create a selfie.");
+    await expect(generateAvatarSelfie()).rejects.toThrow(
+      "No avatar associated to the user, can't create a selfie.",
+    );
     expect(consoleSpy).toHaveBeenCalled();
   });
 });
