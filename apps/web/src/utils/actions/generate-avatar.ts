@@ -35,6 +35,9 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
 
     cookieStore.set(COOKIE_NAME, newUser?.uuid || '');
 
+    // Add 4 second delay before returning data
+    await new Promise(resolve => setTimeout(resolve, 4000));
+
     return {
       originalRidingAsset: selectedAvatar.asset_riding || '',
       instragramAsset: selectedAvatar.asset_instagram || '',
