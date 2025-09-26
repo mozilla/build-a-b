@@ -38,6 +38,7 @@ const IconCard: FC<IconCardProps> = ({
             fill
             sizes="10vw"
             className={iconEffect ? 'animate-float-tilt' : ''}
+            style={{ animationDuration: `${6 + Math.random() * 4}s` }}
           />
         </div>
         {children}
