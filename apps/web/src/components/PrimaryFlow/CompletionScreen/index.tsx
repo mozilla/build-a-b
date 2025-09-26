@@ -9,6 +9,7 @@ import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import { useRouter } from 'next/navigation';
 import { Button } from '@heroui/react';
+import Scrim from '@/components/Scrim';
 
 const CompletionScreen: FC = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const CompletionScreen: FC = () => {
     .map((group) => userChoices[group]!);
 
   return (
-    <div className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative">
+    <Scrim className="flex flex-col h-full min-h-screen landscape:min-h-0 justify-center items-center p-2 pb-8 pt-[2rem] landscape:py-4 landscape:px-0 relative bg-contain!">
       {/* Logo - only show on landscape */}
       {!avatarData && (
         <Image
@@ -246,7 +247,7 @@ const CompletionScreen: FC = () => {
       )}
 
       {/* Avatar container - centered */}
-      <div className="flex flex-col items-center gap-4 z-10 mt-[9rem] landscape:mt-0 ">
+      <div className="flex flex-col items-center gap-4 z-10 mt-[9rem] landscape:mt-0">
         <div
           className="flex flex-col justify-end relative overflow-hidden 
                         rounded-[0.532rem] w-[22.4375rem] h-[28.5rem] p-4 
@@ -331,7 +332,7 @@ const CompletionScreen: FC = () => {
           <span className={isRedirecting ? 'hidden' : 'block'}>Continue</span>
         </Button>
       )}
-    </div>
+    </Scrim>
   );
 };
 
