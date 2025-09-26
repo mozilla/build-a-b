@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { useCallback, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import { floatingImages } from './constants';
+import Scrim from '@/components/Scrim';
 
 export interface IntroProps {
   title: string;
@@ -69,30 +70,32 @@ const Intro: FC<IntroProps> = ({
         />
       </div>
       <div className="flex flex-col items-center text-center landscape:flex-1 landscape:items-start landscape:text-left z-1">
-        <h1 className="text-2xl font-extrabold mb-4 landscape:text-4xl-custom landscape:mb-6">
-          {title}
-        </h1>
-        <p className="mb-8 font-sharp font-semibold text-regular-custom text-common-ash landscape:mb-8 landscape:text-regular-custom landscape:w-[30.5rem]">
-          {description}
-        </p>
+        <Scrim>
+          <h1 className="text-2xl font-extrabold mb-4 landscape:text-4xl-custom landscape:mb-6">
+            {title}
+          </h1>
+          <p className="mb-8 font-sharp font-semibold text-regular-custom text-common-ash landscape:mb-8 landscape:text-regular-custom landscape:w-[30.5rem]">
+            {description}
+          </p>
 
-        <div className="flex flex-col items-center w-full gap-6 landscape:items-start landscape:gap-0">
-          <Button
-            autoFocus
-            onPress={() => setActiveGroup('origin-story')}
-            type="button"
-            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
-          >
-            {createAvatarCtaText}
-          </Button>
-          <Button
-            onPress={generateRandomAvatar}
-            type="button"
-            className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
-          >
-            {randomAvatarCtaText}
-          </Button>
-        </div>
+          <div className="flex flex-col items-center w-full gap-6 landscape:items-start landscape:gap-0">
+            <Button
+              autoFocus
+              onPress={() => setActiveGroup('origin-story')}
+              type="button"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
+            >
+              {createAvatarCtaText}
+            </Button>
+            <Button
+              onPress={generateRandomAvatar}
+              type="button"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
+            >
+              {randomAvatarCtaText}
+            </Button>
+          </div>
+        </Scrim>
       </div>
     </div>
   );
