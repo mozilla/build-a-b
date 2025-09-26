@@ -1,19 +1,24 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 import { Button } from '@heroui/react';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
+import ProgressBar from '../ProgressBar';
 
 const BentoPlaypenSelfie: FC = () => {
   const { setAvatarData } = usePrimaryFlowContext();
+  const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
   return (
     <Bento
-      className="h-full py-8 flex flex-col justify-center items-center gap-2 bg-common-ash! border-accent!
-                 relative group hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple
-                 hover:cursor-pointer"
+      className={`h-full py-8 flex flex-col justify-center items-center gap-2 border-accent!
+                 relative group hover:cursor-pointer
+                 ${isGeneratingSelfie
+                   ? 'bg-gradient-to-br from-common-ash to-accent'
+                   : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
+                 }`}
     >
       <Image
         src="/assets/images/icons/camera.webp"
@@ -23,26 +28,32 @@ const BentoPlaypenSelfie: FC = () => {
         alt=""
         priority
       />
-      <Button
-        onPress={async () => {
-          try {
-            const selfie = await generateAvatarSelfie();
-            if (!selfie) return;
+      {!isGeneratingSelfie ? (
+        <Button
+          onPress={async () => {
+            try {
+              setIsGeneratingSelfie(true);
+              const selfie = await generateAvatarSelfie();
+              if (!selfie) return;
 
-            console.log(selfie);
-            setAvatarData((data) => {
-              if (!data) return data;
+              setAvatarData((data) => {
+                if (!data) return data;
 
-              return { ...data, selfies: [...data.selfies, selfie] };
-            });
-          } catch (e) {
-            // Do nothing.
-          }
-        }}
-        className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300"
-      >
-        Take a space selfie
-      </Button>
+                return { ...data, selfies: [...data.selfies, selfie] };
+              });
+            } catch (e) {
+              // Do nothing.
+            } finally {
+              setIsGeneratingSelfie(false);
+            }
+          }}
+          className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300"
+        >
+          Take a space selfie
+        </Button>
+      ) : (
+        <ProgressBar duration={12000}  />
+      )}
     </Bento>
   );
 };
