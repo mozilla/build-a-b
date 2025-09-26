@@ -4,8 +4,11 @@ import { FC } from 'react';
 import Bento from '../Bento';
 import Image from 'next/image';
 import { Button } from '@heroui/react';
+import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
+import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 
 const BentoPlaypenSelfie: FC = () => {
+  const { setAvatarData } = usePrimaryFlowContext();
   return (
     <Bento
       className="h-full py-8 flex flex-col justify-center items-center gap-2 bg-common-ash! border-accent!
@@ -20,7 +23,24 @@ const BentoPlaypenSelfie: FC = () => {
         alt=""
         priority
       />
-      <Button className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300">
+      <Button
+        onPress={async () => {
+          try {
+            const selfie = await generateAvatarSelfie();
+            if (!selfie) return;
+
+            console.log(selfie);
+            setAvatarData((data) => {
+              if (!data) return data;
+
+              return { ...data, selfies: [...data.selfies, selfie] };
+            });
+          } catch (e) {
+            // Do nothing.
+          }
+        }}
+        className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300"
+      >
         Take a space selfie
       </Button>
     </Bento>
