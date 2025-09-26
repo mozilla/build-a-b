@@ -78,8 +78,13 @@ describe('generateAvatarSelfie', () => {
 
     // Mock selfies insert
     mockSupabase.from.mockReturnValue({
-      insert: jest.fn().mockResolvedValue({
-        error: null,
+      insert: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          single: jest.fn().mockResolvedValue({
+            data: { id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' },
+            error: null,
+          }),
+        }),
       }),
     });
 
@@ -98,7 +103,7 @@ describe('generateAvatarSelfie', () => {
     );
     expect(mockPollStatus).toHaveBeenCalledWith('job-123', 'selfie');
     expect(mockSupabase.from).toHaveBeenCalledWith('selfies');
-    expect(result).toBe('https://example.com/selfie.jpg');
+    expect(result).toEqual({ id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' });
   });
 
   it('should handle asset_standing with trailing question mark', async () => {
@@ -131,8 +136,13 @@ describe('generateAvatarSelfie', () => {
     mockPollStatus.mockResolvedValue(mockGeneratedSelfie);
 
     mockSupabase.from.mockReturnValue({
-      insert: jest.fn().mockResolvedValue({
-        error: null,
+      insert: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          single: jest.fn().mockResolvedValue({
+            data: { id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' },
+            error: null,
+          }),
+        }),
       }),
     });
 
@@ -146,7 +156,7 @@ describe('generateAvatarSelfie', () => {
         headers: new Headers({ 'Content-Type': 'application/json' }),
       },
     );
-    expect(result).toBe('https://example.com/selfie.jpg');
+    expect(result).toEqual({ id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' });
   });
 
   it('should throw error when no UUID in cookies', async () => {
@@ -309,8 +319,13 @@ describe('generateAvatarSelfie', () => {
     // Mock database error
     const dbError = new Error('Database insertion failed');
     mockSupabase.from.mockReturnValue({
-      insert: jest.fn().mockResolvedValue({
-        error: dbError,
+      insert: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          single: jest.fn().mockResolvedValue({
+            data: null,
+            error: dbError,
+          }),
+        }),
       }),
     });
 
