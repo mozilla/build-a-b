@@ -107,10 +107,9 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
             </div>
             <div className="flex justify-end items-center gap-2 text-lg-custom mt-2">
               Powered by
-              <div className="relative h-[2rem] w-[2rem]">
-                <Image src="/assets/images/logo-firefox.webp" fill alt="Firefox logo" />
+              <div className="relative h-[2rem] w-[6rem]">
+                <Image src="/assets/images/firefox-logo-word.png" alt="Firefox logo" fill />
               </div>
-              <strong>Firefox</strong>
             </div>
           </div>
           <div className="landscape:hidden w-full">{cta}</div>
