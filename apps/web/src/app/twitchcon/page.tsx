@@ -149,7 +149,7 @@ export default async function Page() {
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">Make your Billionaire dance</h2>
+              <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
               <p className="text-body-regular text-charcoal">
                 Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
                 move.

@@ -37,7 +37,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         {/* Centered text content */}
         <div className="flex-1 flex items-center justify-center mt-[-1rem] relative">
           <Image
-            src="/assets/images/scrim.png"
+            src="/assets/images/scrim.webp"
             alt=""
             width={443}
             height={332}
@@ -111,7 +111,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         {/* Centered text content */}
         <div className="flex items-center justify-center mt-8 mb-8 relative">
           <Image
-            src="/assets/images/scrim.png"
+            src="/assets/images/scrim.webp"
             alt=""
             width={443}
             height={332}
