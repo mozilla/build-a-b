@@ -112,7 +112,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           height={134}
           className="absolute animate-floater-2"
           style={{
-            bottom: '10.6rem',
+            bottom: '10.8rem',
             left: '26.88375rem',
             transform: 'rotate(11.444deg)',
             width: '6rem',
