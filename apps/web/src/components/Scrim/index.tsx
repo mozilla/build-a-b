@@ -7,7 +7,12 @@ interface ScrimProps extends PropsWithChildren {
 
 const Scrim: FC<ScrimProps> = ({ className, children }) => {
   return (
-    <div className={clsx("bg-[url('/assets/images/scrim.webp')] bg-cover bg-center", className)}>
+    <div
+      className={clsx(
+        "bg-[url('/assets/images/scrim.webp')] bg-cover bg-no-repeat bg-center",
+        className,
+      )}
+    >
       {children}
     </div>
   );
