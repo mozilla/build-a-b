@@ -15,9 +15,10 @@ const BentoPlaypenSelfie: FC = () => {
     <Bento
       className={`h-full py-8 flex flex-col justify-center items-center gap-2 border-accent!
                  relative group hover:cursor-pointer
-                 ${isGeneratingSelfie
-                   ? 'bg-gradient-to-br from-common-ash to-accent'
-                   : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
+                 ${
+                   isGeneratingSelfie
+                     ? 'bg-gradient-to-br from-common-ash to-accent'
+                     : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
                  }`}
     >
       <Image
@@ -52,7 +53,7 @@ const BentoPlaypenSelfie: FC = () => {
           Take a space selfie
         </Button>
       ) : (
-        <ProgressBar duration={12000}  />
+        <ProgressBar duration={12000} />
       )}
     </Bento>
   );

@@ -9,13 +9,13 @@ export const floatingImages = [
   {
     id: 2,
     className:
-      'landscape:block absolute bottom-12 right-40 landscape:bottom-[5rem] landscape:right-[-4rem] w-[8rem] h-[8rem] landscape:w-[10.6875rem] landscape:h-[12.6625rem] scale-x-[-1] landscape:rotate-[12deg]',
+      'landscape:block absolute top-160 right-40 landscape:top-60 landscape:-right-16 w-[8rem] h-[8rem] landscape:w-[10.6875rem] landscape:h-[12.6625rem] scale-x-[-1] landscape:rotate-[12deg]',
     style: { animation: 'float 4s ease-in-out infinite 0.5s' },
   },
   {
     id: 3,
     className:
-      'landscape:block absolute left-[18rem] top-[14rem] w-[6.5625rem] landscape:top-[17rem] landscape:left-[25rem] h-[6.375rem] rotate-[-25deg] landscape:w-[7.9375rem] landscape:h-[7.71875rem] landscape:rotate-0 z-1',
+      'landscape:block absolute left-[18rem] top-[12rem] w-[6.5625rem] landscape:top-[17rem] landscape:left-[25rem] h-[6.375rem] rotate-[-25deg] landscape:w-[7.9375rem] landscape:h-[7.71875rem] landscape:rotate-0 z-1',
     style: { animation: 'float 3.5s ease-in-out infinite 1s' },
   },
   // {
@@ -63,7 +63,7 @@ export const floatingImages = [
   {
     id: 11,
     className:
-      'landscape:block absolute top-[5rem] landscape:top-0 left-[18rem] w-[6.4375rem] h-[6.875rem] z-1 landscape:left-[27rem] landscape:w-[10.6875rem] landscape:h-[12.625rem]',
+      'landscape:block absolute top-[3rem] landscape:top-0 left-[18rem] w-[6.4375rem] h-[6.875rem] z-1 landscape:left-[27rem] landscape:w-[10.6875rem] landscape:h-[12.625rem]',
     style: { animation: 'float-2 10s ease-in-out infinite' },
   },
 ];
