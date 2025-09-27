@@ -45,11 +45,11 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
           wrapper:
             'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:103%] [--slide-enter:0px] [--slide-exit:0px]',
           base: 'w-full h-full z-[1000] overflow-hidden landscape:w-[61.4375rem] landscape:h-auto landscape:rounded-[0.75rem]',
-          backdrop: 'bg-black/50 z-[998] w-screen h-screen fixed inset-0',
+          backdrop: 'bg-black/80 z-[998] w-screen h-screen fixed inset-0',
         }}
         {...modalProps}
       >
-        <ModalContent className="relative w-full h-full relative overflow-hidden">
+        <ModalContent className="relative w-full h-full relative overflow-hidden shadow-2xl">
           {(onClose) => (
             <>
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-secondary-blue to-secondary-purple">

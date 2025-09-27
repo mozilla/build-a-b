@@ -35,6 +35,9 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
 
     cookieStore.set(COOKIE_NAME, newUser?.uuid || '');
 
+    // Add 4 second delay before returning data
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+
     return {
       originalRidingAsset: selectedAvatar.asset_riding || '',
       instragramAsset: selectedAvatar.asset_instagram || '',
@@ -42,6 +45,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       bio: selectedAvatar.character_story || '',
       name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,
       uuid: newUser?.uuid || '',
+      selfies: [],
     };
   } catch (e) {
     // Log the error to have it in server logs and re-throw to reset state.

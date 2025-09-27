@@ -5,6 +5,7 @@ import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
 import AvatarBento from '@/components/PrimaryFlow/AvatarBento';
 import AvatarBentoV2 from '@/components/PrimaryFlow/AvatarBentoV2';
+import Scrim from '@/components/Scrim';
 import Ticker from '@/components/Ticker';
 import Window from '@/components/Window';
 import type { AvatarData } from '@/types';
@@ -58,7 +59,7 @@ export default async function Home({ avatarData }: PageProps) {
             <AvatarBento {...avatarBentoData} avatarData={avatarData} />
           )}
         </div>
-        <div className="portrait:mb-4 portrait:w-full h-[27.3125rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
+        <div className="portrait:mb-4 portrait:w-full h-[32rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           <BentoDual
             className="flex w-full h-full"
             back={
@@ -99,17 +100,18 @@ export default async function Home({ avatarData }: PageProps) {
             }
             effect="flip"
             image="/assets/images/rocket.webp"
-            imageSrcPortrait="/assets/images/rocket-portrait.jpg"
             priority
           >
-            <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
-              Rocket your Billionaire into a permanent time-out
-            </h1>
-            <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
-              Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
-              <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
-              for-real-real space.
-            </p>
+            <Scrim className="h-65 bg-contain!">
+              <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
+                Rocket your Billionaire into a permanent time-out
+              </h1>
+              <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
+                Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
+                <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
+                for-real-real space.
+              </p>
+            </Scrim>
           </BentoDual>
         </div>
         <div className="h-[15.625rem] portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 landscape:row-start-4">
@@ -189,7 +191,7 @@ export default async function Home({ avatarData }: PageProps) {
               </Window>
             }
           >
-            <div className="bg-gradient-to-t from-charcoal to-transparent h-full w-full">
+            <div className="bg-gradient-to-t from-black to-transparent h-full w-full">
               <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
                 <p className="text-nav-item pb-2">DROPPING SOON</p>
                 <h2 className="text-title-1">
@@ -212,9 +214,9 @@ export default async function Home({ avatarData }: PageProps) {
                 <div className="p-4 landscape:p-8">
                   <h3 className="text-title-1 pb-4">Two Launches in One</h3>
                   <p>
-                    We&apos;re launching a new card game, <em>Data War</em>, and launching
-                    Billionaires to space, one-way. Join us IRL at TwitchCon or right here on this
-                    site to follow along.
+                    We&apos;re launching a new card game, Data War, and launching Billionaires to
+                    space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                    along.
                   </p>
                   <Link
                     href="/twitchcon"
@@ -227,7 +229,7 @@ export default async function Home({ avatarData }: PageProps) {
               </Window>
             }
           >
-            <div className="bg-gradient-to-t from-charcoal to-transparent h-full w-full">
+            <div className="bg-gradient-to-t from-black to-transparent h-full w-full">
               <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
                 <p className="text-nav-item pb-2">JOIN US IRL</p>
                 <h2 className="text-title-1">
