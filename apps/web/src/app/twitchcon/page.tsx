@@ -12,7 +12,6 @@ import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { Metadata } from 'next';
-import Scrim from '@/components/Scrim';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
