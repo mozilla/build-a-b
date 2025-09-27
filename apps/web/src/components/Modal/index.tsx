@@ -39,11 +39,11 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
           wrapper:
             'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:103%] [--slide-enter:0px] [--slide-exit:0px]',
           base: 'landscape:w-[71.8125rem] landscape:h-auto landscape:min-h-[36.5625rem] landscape:rounded-[0.75rem] z-[1000] overflow-hidden',
-          backdrop: 'bg-black/50 z-[998] w-screen h-screen fixed inset-0',
+          backdrop: 'bg-black/80 z-[998] w-screen h-screen fixed inset-0',
         }}
         {...modalProps}
       >
-        <ModalContent className="w-full h-full landscape:w-[71.8125rem] landscape:h-[36.5625rem] bg-white rounded-none landscape:rounded-[0.75rem] relative overflow-hidden border-0 landscape:border-2 landscape:border-common-ash">
+        <ModalContent className="w-full h-full landscape:w-[71.8125rem] landscape:h-[36.5625rem] bg-white rounded-none landscape:rounded-[0.75rem] relative overflow-hidden border-0 landscape:border-2 landscape:border-common-ash shadow-2xl">
           {(onClose) => (
             <>
               <Image

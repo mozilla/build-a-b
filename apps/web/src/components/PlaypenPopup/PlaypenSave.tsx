@@ -1,7 +1,5 @@
 'use client';
 
-import Bento from '@/components/Bento';
-import { FirefoxTransparent } from '@/components/PlaypenPopup/FirefoxTransparent.svg';
 import { Link } from '@/components/PlaypenPopup/Link.svg';
 import { AvatarViewAction } from '@/components/PrimaryFlow/AvatarBento/AvatarView';
 import { Button } from '@heroui/react';
@@ -20,10 +18,6 @@ interface PlaypenSaveProps {
 const microcopy = {
   copyLabel: 'Copy Link',
   copySuccessLabel: 'Link Copied',
-  footer: {
-    heading: 'Firefox is the only major browser not run by a Billionaire',
-    body: 'Which means no Billionaire funny business. It also means that if you lose this link, we can’t help you find it. Freedom, responsibility, you get it.',
-  },
 } as const;
 
 const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
@@ -65,17 +59,6 @@ const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
           />
         </div>
       </div>
-      <Bento className="bg-transparent p-4 flex gap-x-2 max-w-[43.75rem] mb-6 portrait:relative overflow-visible">
-        <span className="portrait:absolute portrait:top-0 portrait:right-0 inline-block w-20 h-20 shrink-0 portrait:translate-x-1/3 portrait:-translate-y-1/3">
-          <FirefoxTransparent width="100%" height="100%" role="presentation" />
-        </span>
-        <div className="flex flex-col gap-y-2 justify-between">
-          <p className="font-bold text-lg-custom portrait:text-pretty">
-            {microcopy.footer.heading}
-          </p>
-          <p className="text-regular-custom">{microcopy.footer.body}</p>
-        </div>
-      </Bento>
       <div className="flex flex-col landscape:flex-row gap-4 portrait:w-full">
         <Button
           fullWidth

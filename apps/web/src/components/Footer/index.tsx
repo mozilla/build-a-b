@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FC, Suspense } from 'react';
 import GetStarted from '../PrimaryFlow/GetStarted';
+import { floatingImages } from './constants';
 
 export interface FooterProps {
   links: {
@@ -180,21 +181,32 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         id="footer-animations"
         className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden"
       >
+        {floatingImages.map(({ id, className, style }, index) => (
+          <div key={index} className={className} style={style}>
+            <Image
+              src={`/assets/images/intro-modal/${id}.webp`}
+              alt={`Floating character ${index + 1}`}
+              fill
+              sizes="(max-width: 768px) 30vw, 20vw"
+              className="object-contain"
+            />
+          </div>
+        ))}
         {/* Floaters - peek in from edges */}
-        <Image
-          src="/assets/images/header-animations/floater3.svg"
+        {/* <Image
+          src="/assets/images/animations/floater-footer.webp"
           alt=""
-          width={88.3}
+          width={127}
           height={134}
           className="absolute animate-floater-3"
           style={{
-            top: '-7.5rem',
+            top: '-6.5rem',
             left: '67.88375rem',
             transform: 'rotate(11.444deg)',
-            width: '5.51875rem',
-            height: '8.375rem',
+            width: '5.938rem',
+            height: '6.375rem',
           }}
-        />
+        /> */}
       </div>
     </footer>
   );

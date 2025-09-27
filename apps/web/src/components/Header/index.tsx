@@ -7,6 +7,7 @@ import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
 import MobileMenu from '@/components/MobileMenu';
 import { FC } from 'react';
+import { floatingImages } from './constants';
 
 export interface HeaderProps {
   links: {
@@ -49,76 +50,17 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         id="header-animations"
         className="portrait:hidden absolute inset-0 pointer-events-none overflow-hidden"
       >
-        {/* Fliers - shooting star effect */}
-        <Image
-          src="/assets/images/header-animations/flier1.svg"
-          alt=""
-          width={149}
-          height={222}
-          className="absolute animate-flier-1"
-          style={{
-            bottom: '10.3125rem',
-            left: '12.875rem',
-            width: '9.3125rem',
-            height: '13.875rem',
-          }}
-        />
-        <Image
-          src="/assets/images/header-animations/flier2.svg"
-          alt=""
-          width={75}
-          height={112}
-          className="absolute animate-flier-2"
-          style={{
-            top: '-7rem',
-            left: '72.8125rem',
-            width: '4.6875rem',
-            height: '7rem',
-          }}
-        />
-        <Image
-          src="/assets/images/header-animations/flier3.svg"
-          alt=""
-          width={64}
-          height={96}
-          className="absolute animate-flier-3"
-          style={{
-            top: '5.25rem',
-            left: '-4.5rem',
-            width: '4rem',
-            height: '6rem',
-          }}
-        />
-
-        {/* Floaters - peek in from edges */}
-        <Image
-          src="/assets/images/header-animations/floater1.svg"
-          alt=""
-          width={88.3}
-          height={134}
-          className="absolute animate-floater-1"
-          style={{
-            bottom: '-15.75rem',
-            left: '44.82125rem',
-            transform: 'rotate(11.444deg)',
-            width: '5.51875rem',
-            height: '8.375rem',
-          }}
-        />
-        <Image
-          src="/assets/images/header-animations/floater2.svg"
-          alt=""
-          width={88.3}
-          height={134}
-          className="absolute animate-floater-2"
-          style={{
-            bottom: '9.369375rem',
-            left: '26.88375rem',
-            transform: 'rotate(11.444deg)',
-            width: '5.51875rem',
-            height: '8.375rem',
-          }}
-        />
+        {floatingImages.map(({ id, className, style }, index) => (
+          <div key={index} className={className} style={style}>
+            <Image
+              src={`/assets/images/intro-modal/${id}.webp`}
+              alt={`Floating character ${index + 1}`}
+              fill
+              sizes="(max-width: 768px) 30vw, 20vw"
+              className="object-contain"
+            />
+          </div>
+        ))}
       </div>
     </Bento>
   );

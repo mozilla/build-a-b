@@ -12,6 +12,7 @@ import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { Metadata } from 'next';
+import Scrim from '@/components/Scrim';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -103,6 +104,7 @@ export default async function Page() {
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/world.webp"
             iconEffect
+            addScrim
           >
             <p className="text-body-regular">Where we&apos;ll be</p>
             <h3 className="text-title-3">
@@ -114,6 +116,7 @@ export default async function Page() {
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/tshirt.webp"
             iconEffect
+            addScrim
           >
             <p className="text-body-regular">What&apos;s on deck</p>
             <h3 className="text-title-3">
@@ -125,6 +128,7 @@ export default async function Page() {
             image="/assets/images/night-sky.webp"
             icon="/assets/images/icons/launch.webp"
             iconEffect
+            addScrim
           >
             <p className="text-body-regular">Join us at the</p>
             <h3 className="text-title-3">TwitchCon Block Party for the Space Launch screening!</h3>
@@ -149,7 +153,7 @@ export default async function Page() {
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">Make your Billionaire dance</h2>
+              <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
               <p className="text-body-regular text-charcoal">
                 Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
                 move.
