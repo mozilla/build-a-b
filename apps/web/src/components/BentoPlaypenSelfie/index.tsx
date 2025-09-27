@@ -42,7 +42,7 @@ const BentoPlaypenSelfie: FC = () => {
 
                 return { ...data, selfies: [...data.selfies, selfie] };
               });
-            } catch (e) {
+            } catch {
               // Do nothing.
             } finally {
               setIsGeneratingSelfie(false);

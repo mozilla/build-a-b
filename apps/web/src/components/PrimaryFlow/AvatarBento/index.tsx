@@ -6,10 +6,10 @@ import type { AvatarData } from '@/types';
 import Image from 'next/image';
 import type { FC } from 'react';
 import { Suspense } from 'react';
-import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
+import { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 import AvatarView from './AvatarView';
-import SectionContainer from '@/components/PrimaryFlow/SectionContainer';
+import BrowserBentoDual from '@/components/PrimaryFlow/BrowserBentoDual';
 
 export interface AvatarBentoProps extends BentoProps, BrowserBentoProps {
   /**
@@ -91,8 +91,7 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
                 </Suspense>
               )}
 
-              <SectionContainer>
-              </SectionContainer>
+              <BrowserBentoDual />
             </>
           )}
         </Bento>
