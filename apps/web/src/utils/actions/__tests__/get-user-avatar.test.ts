@@ -51,7 +51,7 @@ describe('getUserAvatar', () => {
       last_name: 'Smith',
       selfies: [
         { id: 1, asset: 'selfie1.jpg', created_at: '2023-01-01' },
-        { id: 2, asset: 'selfie2.jpg', created_at: '2023-01-02' }
+        { id: 2, asset: 'selfie2.jpg', created_at: '2023-01-02' },
       ],
     };
 
@@ -77,7 +77,7 @@ describe('getUserAvatar', () => {
       uuid: userUuid,
       selfies: [
         { id: 1, asset: 'selfie1.jpg', created_at: '2023-01-01' },
-        { id: 2, asset: 'selfie2.jpg', created_at: '2023-01-02' }
+        { id: 2, asset: 'selfie2.jpg', created_at: '2023-01-02' },
       ],
     });
   });
