@@ -154,10 +154,14 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             className="flex items-center pr-1 gap-1"
           >
             Powered by
-            <span className="inline-block relative w-[1.2rem] h-[1.2rem] landscape:w-[1.6rem] landscape:h-[1.6rem]">
-              <Image src="/assets/images/logo-firefox.webp" alt="Firefox logo" sizes="10vw" fill />
+            <span className="inline-block relative w-[4.491rem] h-[1.5rem] landscape:w-[5.389rem] landscape:h-[1.8rem]">
+              <Image
+                src="/assets/images/firefox-logo.png"
+                alt="Firefox logo"
+                sizes="10vw"
+                fill
+              />
             </span>
-            <strong>Firefox</strong>
           </Link>
           <span className="font-bold">&bull;</span>{' '}
           <span className="ml-1 whitespace-nowrap">Built by</span>
