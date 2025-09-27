@@ -156,7 +156,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             Powered by
             <span className="inline-block relative w-[4.491rem] h-[1.5rem] landscape:w-[5.389rem] landscape:h-[1.8rem]">
               <Image
-                src="/assets/images/firefox-logo-word.png"
+                src="/assets/images/firefox-logo.png"
                 alt="Firefox logo"
                 sizes="10vw"
                 fill
