@@ -81,7 +81,11 @@ describe('generateAvatarSelfie', () => {
       insert: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
-            data: { id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' },
+            data: {
+              id: 'selfie-123',
+              asset: 'https://example.com/selfie.jpg',
+              created_at: '2024-01-01',
+            },
             error: null,
           }),
         }),
@@ -103,7 +107,11 @@ describe('generateAvatarSelfie', () => {
     );
     expect(mockPollStatus).toHaveBeenCalledWith('job-123', 'selfie');
     expect(mockSupabase.from).toHaveBeenCalledWith('selfies');
-    expect(result).toEqual({ id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' });
+    expect(result).toEqual({
+      id: 'selfie-123',
+      asset: 'https://example.com/selfie.jpg',
+      created_at: '2024-01-01',
+    });
   });
 
   it('should handle asset_standing with trailing question mark', async () => {
@@ -139,7 +147,11 @@ describe('generateAvatarSelfie', () => {
       insert: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
-            data: { id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' },
+            data: {
+              id: 'selfie-123',
+              asset: 'https://example.com/selfie.jpg',
+              created_at: '2024-01-01',
+            },
             error: null,
           }),
         }),
@@ -156,7 +168,11 @@ describe('generateAvatarSelfie', () => {
         headers: new Headers({ 'Content-Type': 'application/json' }),
       },
     );
-    expect(result).toEqual({ id: 'selfie-123', asset: 'https://example.com/selfie.jpg', created_at: '2024-01-01' });
+    expect(result).toEqual({
+      id: 'selfie-123',
+      asset: 'https://example.com/selfie.jpg',
+      created_at: '2024-01-01',
+    });
   });
 
   it('should throw error when no UUID in cookies', async () => {

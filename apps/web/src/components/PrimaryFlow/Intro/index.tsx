@@ -60,7 +60,7 @@ const Intro: FC<IntroProps> = ({
         </div>
       ))}
 
-      <div className="mb-8 mt-20 landscape:relative landscape:top-[6rem] flex-shrink-0 landscape:mb-0 landscape:flex-1 landscape:mt-[-3rem]">
+      <div className="mb-8 mt-20 z-10 landscape:relative landscape:top-[6rem] flex-shrink-0 landscape:mb-0 landscape:flex-1 landscape:mt-[-3rem]">
         <Image
           src="/assets/images/bbo-logo.svg"
           alt="Billionaire Logo"

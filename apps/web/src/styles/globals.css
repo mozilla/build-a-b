@@ -214,37 +214,6 @@ body {
   }
 }
 
-/* Header Animation Classes */
-.animate-flier-1 {
-  animation: flier-1 36s linear infinite;
-  animation-delay: 0s;
-}
-
-.animate-flier-2 {
-  animation: flier-2 36s linear infinite;
-  animation-delay: 6s;
-}
-
-.animate-flier-3 {
-  animation: flier-3 36s linear infinite;
-  animation-delay: 18s;
-}
-
-.animate-floater-1 {
-  animation: floater-1 36s ease-in-out infinite;
-  animation-delay: 12s;
-}
-
-.animate-floater-2 {
-  animation: floater-2 36s ease-in-out infinite;
-  animation-delay: 28s;
-}
-
-.animate-floater-3 {
-  animation: floater-3 6s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
 @keyframes float-tilt {
   0%,
   100% {
