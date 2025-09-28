@@ -1,5 +1,7 @@
+'use client';
+
 import Bento, { type BentoProps } from '@/components/Bento';
-import { FC, Suspense } from 'react';
+import { FC, Suspense, useState } from 'react';
 import BrowserBento, { type BrowserBentoProps } from '../../BrowserBento';
 import GetStarted, { type GetStartedProps } from '../GetStarted';
 
@@ -13,6 +15,21 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
   imageSrcPortrait,
   ...bentoProps
 }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const handleClick = () => {
+    setIsFlipped(!isFlipped);
+  };
+
+  const handleMouseEnter = () => {
+    setIsFlipped(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsFlipped(false);
+  };
+  const styleForCard = !isFlipped ? 'opacity-0' : 'opacity-100';
+
   return (
     <Bento
       className="bg-gray-100 group hover:[&_img]:scale-110 hover:[&_img]:rotate-[3deg] [&_img]:transition-transform [&_img]:duration-700 [&_img]:ease-in-out h-full landscape:block [&_img]:object-[20%_center] landscape:[&_img]:object-cover"
@@ -35,7 +52,12 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
                           landscape:bottom-[12.9375rem] landscape:right-[3rem] landscape:px-0 landscape:pb-0
                           landscape:w-[20.5625rem] landscape:h-[12.625rem]"
       >
-        <div className="relative w-full h-full">
+        <div
+          className="relative w-full h-full"
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <BrowserBento gradient className="absolute h-full">
             <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
               Unlimited power. Zero accountability. What could go wrong?
@@ -43,7 +65,7 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
           </BrowserBento>
           <BrowserBento
             inverse
-            className="absolute h-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-500"
+            className={`absolute h-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-500 ${styleForCard}`}
           >
             <span className="text-charcoal text-sm-custom font-semibold p-6">
               Unlike Big Tech Billionaires watching your every click, Firefox lets you play (and
