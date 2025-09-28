@@ -1,7 +1,7 @@
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import SharedPage from '../../shared-page';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import ClientPageWrapper from '../../../utils/page.client';
+import SharedPage from '../../shared-page';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -12,7 +12,7 @@ export default async function DynamicPage({ params }: PageProps) {
 
   const avatarData = await getUserAvatar(id);
 
-  if (!avatarData?.url) return redirect('/');
+  if (!avatarData?.url) return notFound();
 
   return (
     <ClientPageWrapper avatarData={avatarData}>

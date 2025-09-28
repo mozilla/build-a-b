@@ -3,8 +3,7 @@
 import Bento from '@/components/Bento';
 import { Close } from '@/components/PlaypenPopup/Close.svg';
 import { Delete } from '@/components/PlaypenPopup/Delete.svg';
-import { AvatarViewAction } from '@/components/PrimaryFlow/AvatarBento/AvatarView';
-import { AvatarData } from '@/types';
+import { AvatarData, type Action } from '@/types';
 import { COOKIE_NAME, ID_HISTORY_COOKIE } from '@/utils/constants';
 import { deleteCookie, getCookie, parseJsonCookie, setCookie } from '@/utils/helpers/cookies';
 import { Button } from '@heroui/react';
@@ -12,7 +11,7 @@ import Image from 'next/image';
 import { FC, useMemo } from 'react';
 
 interface PlaypenRestartProps {
-  action: AvatarViewAction;
+  action: Action;
   avatar: AvatarData;
   onCancel: () => void;
   asset?: 'riding' | 'instagram';

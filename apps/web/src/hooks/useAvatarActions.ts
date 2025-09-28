@@ -8,7 +8,7 @@ import { useSafeClick } from './useSafeClick';
 import { useShareUrls } from './useShareUrls';
 
 export interface UseAvatarActionsOptions {
-  avatar: AvatarData;
+  avatar: AvatarData | null;
 }
 
 export interface UseAvatarActionsReturn {

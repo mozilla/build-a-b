@@ -13,12 +13,14 @@ export interface ShareAvatarProps {
   avatar: AvatarData;
   onBookmarkClick: () => void;
   navigatorShareAvailable?: boolean;
+  centered?: boolean;
 }
 
 const ShareAvatar: FC<ShareAvatarProps> = ({
   avatar,
   onBookmarkClick,
   navigatorShareAvailable: externalNavigatorShareAvailable,
+  centered,
 }) => {
   const {
     isNavigatorShareAvailable,
@@ -35,7 +37,7 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
 
   return (
     <nav aria-label="Share billionaire">
-      <ul className="flex items-start gap-x-4">
+      <ul className={`flex items-start gap-x-4 ${centered && 'justify-center'}`}>
         <li>
           {navigatorShareAvailable ? (
             <button type="button" className="block cursor-pointer" onClick={handleNavigatorShare}>
