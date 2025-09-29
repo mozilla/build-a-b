@@ -7,6 +7,8 @@ import SelectedIconsRow from '../SelectedIconsRow';
 import { getOriginStories } from '@/utils/actions/get-origin_stories';
 import { getCoreDrives } from '@/utils/actions/get-core-drives';
 import { getPublicMasks } from '@/utils/actions/get-public-masks';
+import { getPowerPlays } from '@/utils/actions/get-power-plays';
+import { getLegacyPlans } from '@/utils/actions/get-legacy-plans';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -46,6 +48,27 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
         .then(setAvailableOptions)
         .catch((e) => {
           console.error('Error querying public masks.', e);
+        });
+    } else if (activeGroup == 'power-play') {
+      getPowerPlays(
+        userChoices['origin-story']?.id ?? '',
+        userChoices['core-drive']?.id ?? '',
+        userChoices['public-mask']?.id ?? '',
+      )
+        .then(setAvailableOptions)
+        .catch((e) => {
+          console.error('Error querying power plays.', e);
+        });
+    } else if (activeGroup == 'legacy-plan') {
+      getLegacyPlans(
+        userChoices['origin-story']?.id ?? '',
+        userChoices['core-drive']?.id ?? '',
+        userChoices['public-mask']?.id ?? '',
+        userChoices['power-play']?.id ?? '',
+      )
+        .then(setAvailableOptions)
+        .catch((e) => {
+          console.error('Error querying legacy plans.', e);
         });
     }
   }, []);
