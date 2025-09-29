@@ -58,11 +58,23 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       }
       setChoices(filteredChoices);
     },
-    [choiceData, nextGroup, setActiveGroup, setChoices],
+    [
+      choiceData,
+      nextGroup,
+      setActiveGroup,
+      setChoices,
+      activeGroup,
+      groupKeys,
+      reset,
+      setAvatarData,
+      setShowConfirmation,
+      setUserChoices,
+      userChoices,
+    ],
   );
 
   useEffect(() => {
-    const actions: Record<string, () => Promise<any>> = {
+    const actions: Record<string, () => Promise<string[]>> = {
       'origin-story': () => getOriginStories(),
       'core-drive': () => getCoreDrives(userChoices['origin-story']?.id ?? ''),
       'public-mask': () =>
