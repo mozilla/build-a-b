@@ -6,7 +6,9 @@ export async function getCoreDrives(originStory: string): Promise<string[]> {
   try {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc('get_core_drives', { selected_origin_story: originStory });
+    const { data, error } = await supabase.rpc('get_core_drives', {
+      selected_origin_story: originStory,
+    });
 
     if (error || !data) {
       throw new Error(error?.message || 'Could not retrieve core drives.');

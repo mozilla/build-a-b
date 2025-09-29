@@ -1,4 +1,4 @@
-import { choiceMap, groupDescriptionMap } from '@/constants/choice-map';
+import { choiceMap, choiceGroupMap, groupDescriptionMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
 import Image from 'next/image';
 import { useEffect, useState, type FC } from 'react';
@@ -17,8 +17,14 @@ interface ChoiceBentoProps {
 const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const choiceData = choiceMap[activeGroup];
   const groupContent = groupDescriptionMap[activeGroup];
-  const { userChoices, setUserChoices, setShowConfirmation } = usePrimaryFlowContext();
+  const { userChoices, setUserChoices, setShowConfirmation, setActiveGroup } =
+    usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
+
+  // Get the next group in the sequence
+  const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
+  const currentIndex = groupKeys.indexOf(activeGroup);
+  const nextGroup = currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null;
 
   const [choices, setChoices] = useState(Object.entries(choiceData));
 
@@ -26,7 +32,13 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
     const filteredChoices = Object.entries(choiceData).filter((item) =>
       availableChoices.includes(item[0]),
     );
-    // TODO: skip to next step when no matches
+
+    // Skip to next step when no matches
+    if (filteredChoices.length <= 0 && nextGroup) {
+      setActiveGroup(nextGroup);
+      return;
+    }
+
     setChoices(filteredChoices);
   };
 
