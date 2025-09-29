@@ -14,8 +14,12 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
     console.log('Starting search with parameters: ', searchPattern);
 
     const { data: selectedAvatar, error } = await supabase
-      .rpc('get_random_avatar', {
-        search_pattern: searchPattern,
+      .rpc('get_random_avatar_v2', {
+        selected_origin_story: options[0],
+        selected_core_drive: options[1],
+        selected_public_mask: options[2],
+        selected_power_play: options[3],
+        selected_legacy_plan: options[4],
       })
       .single<DatabaseAvatarResponse>();
 
