@@ -6,6 +6,7 @@ import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import SelectedIconsRow from '../SelectedIconsRow';
 import { getOriginStories } from '@/utils/actions/get-origin_stories';
 import { getCoreDrives } from '@/utils/actions/get-core-drives';
+import { getPublicMasks } from '@/utils/actions/get-public-masks';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -20,10 +21,10 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const [choices, setChoices] = useState(Object.entries(choiceData));
 
   const setAvailableOptions = (availableChoices: string[]) => {
-    console.log(activeGroup, availableChoices, '------');
     const filteredChoices = Object.entries(choiceData).filter((item) =>
       availableChoices.includes(item[0]),
     );
+    // TODO: skip to next step when no matches
     setChoices(filteredChoices);
   };
 
@@ -32,15 +33,19 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       getOriginStories()
         .then(setAvailableOptions)
         .catch((e) => {
-          // Handle error here
           console.error('Error querying origin stories.', e);
         });
     } else if (activeGroup == 'core-drive') {
       getCoreDrives(userChoices['origin-story']?.id ?? '')
         .then(setAvailableOptions)
         .catch((e) => {
-          // Handle error here
           console.error('Error querying core drives.', e);
+        });
+    } else if (activeGroup == 'public-mask') {
+      getPublicMasks(userChoices['origin-story']?.id ?? '', userChoices['core-drive']?.id ?? '')
+        .then(setAvailableOptions)
+        .catch((e) => {
+          console.error('Error querying public masks.', e);
         });
     }
   }, []);
