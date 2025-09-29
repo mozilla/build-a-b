@@ -5,6 +5,7 @@ import { useEffect, useState, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import SelectedIconsRow from '../SelectedIconsRow';
 import { getOriginStories } from '@/utils/actions/get-origin_stories';
+import { getCoreDrives } from '@/utils/actions/get-core-drives';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -18,18 +19,28 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
   const [choices, setChoices] = useState(Object.entries(choiceData));
 
+  const setAvailableOptions = (availableChoices: string[]) => {
+    console.log(activeGroup, availableChoices, '------');
+    const filteredChoices = Object.entries(choiceData).filter((item) =>
+      availableChoices.includes(item[0]),
+    );
+    setChoices(filteredChoices);
+  };
+
   useEffect(() => {
     if (activeGroup == 'origin-story') {
       getOriginStories()
-        .then((availableChoices) => {
-          const filteredChoices = Object.entries(choiceData).filter((item) =>
-            availableChoices.includes(item[0]),
-          );
-          setChoices(filteredChoices);
-        })
+        .then(setAvailableOptions)
         .catch((e) => {
           // Handle error here
-          console.error('Error querying available choices', e);
+          console.error('Error querying origin stories.', e);
+        });
+    } else if (activeGroup == 'core-drive') {
+      getCoreDrives(userChoices['origin-story']?.id ?? '')
+        .then(setAvailableOptions)
+        .catch((e) => {
+          // Handle error here
+          console.error('Error querying core drives.', e);
         });
     }
   }, []);
