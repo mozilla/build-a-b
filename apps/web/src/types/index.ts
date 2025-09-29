@@ -33,7 +33,8 @@ export type Choice =
   | 'sea.lord'
   | 'ai.diety'
   | 'clone.library'
-  | 'fountain.of.youth';
+  | 'fountain.of.youth'
+  | '';
 
 export type ChoiceGroup =
   | 'origin-story'
