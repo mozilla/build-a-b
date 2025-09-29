@@ -43,47 +43,35 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   };
 
   useEffect(() => {
-    if (activeGroup == 'origin-story') {
-      getOriginStories()
-        .then(setAvailableOptions)
-        .catch((e) => {
-          console.error('Error querying origin stories.', e);
-        });
-    } else if (activeGroup == 'core-drive') {
-      getCoreDrives(userChoices['origin-story']?.id ?? '')
-        .then(setAvailableOptions)
-        .catch((e) => {
-          console.error('Error querying core drives.', e);
-        });
-    } else if (activeGroup == 'public-mask') {
-      getPublicMasks(userChoices['origin-story']?.id ?? '', userChoices['core-drive']?.id ?? '')
-        .then(setAvailableOptions)
-        .catch((e) => {
-          console.error('Error querying public masks.', e);
-        });
-    } else if (activeGroup == 'power-play') {
-      getPowerPlays(
-        userChoices['origin-story']?.id ?? '',
-        userChoices['core-drive']?.id ?? '',
-        userChoices['public-mask']?.id ?? '',
-      )
-        .then(setAvailableOptions)
-        .catch((e) => {
-          console.error('Error querying power plays.', e);
-        });
-    } else if (activeGroup == 'legacy-plan') {
-      getLegacyPlans(
-        userChoices['origin-story']?.id ?? '',
-        userChoices['core-drive']?.id ?? '',
-        userChoices['public-mask']?.id ?? '',
-        userChoices['power-play']?.id ?? '',
-      )
-        .then(setAvailableOptions)
-        .catch((e) => {
-          console.error('Error querying legacy plans.', e);
-        });
-    }
-  }, []);
+    const actions: Record<string, () => Promise<any>> = {
+      'origin-story': () => getOriginStories(),
+      'core-drive': () => getCoreDrives(userChoices['origin-story']?.id ?? ''),
+      'public-mask': () =>
+        getPublicMasks(userChoices['origin-story']?.id ?? '', userChoices['core-drive']?.id ?? ''),
+      'power-play': () =>
+        getPowerPlays(
+          userChoices['origin-story']?.id ?? '',
+          userChoices['core-drive']?.id ?? '',
+          userChoices['public-mask']?.id ?? '',
+        ),
+      'legacy-plan': () =>
+        getLegacyPlans(
+          userChoices['origin-story']?.id ?? '',
+          userChoices['core-drive']?.id ?? '',
+          userChoices['public-mask']?.id ?? '',
+          userChoices['power-play']?.id ?? '',
+        ),
+    };
+
+    const action = actions[activeGroup];
+    if (!action) return;
+
+    action()
+      .then(setAvailableOptions)
+      .catch((e) => {
+        console.error(`Error querying ${activeGroup}.`, e);
+      });
+  }, [activeGroup, userChoices]);
 
   return (
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
