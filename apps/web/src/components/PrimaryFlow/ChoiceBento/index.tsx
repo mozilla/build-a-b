@@ -1,9 +1,10 @@
 import { choiceMap, groupDescriptionMap } from '@/constants/choice-map';
 import type { ChoiceGroup } from '@/types';
 import Image from 'next/image';
-import type { FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import SelectedIconsRow from '../SelectedIconsRow';
+import { getOriginStories } from '@/utils/actions/get-origin_stories';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -12,9 +13,26 @@ interface ChoiceBentoProps {
 const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const choiceData = choiceMap[activeGroup];
   const groupContent = groupDescriptionMap[activeGroup];
-  const choices = Object.entries(choiceData);
   const { userChoices, setUserChoices, setShowConfirmation } = usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
+
+  const [choices, setChoices] = useState(Object.entries(choiceData));
+
+  useEffect(() => {
+    if (activeGroup == 'origin-story') {
+      getOriginStories()
+        .then((availableChoices) => {
+          const filteredChoices = Object.entries(choiceData).filter((item) =>
+            availableChoices.includes(item[0]),
+          );
+          setChoices(filteredChoices);
+        })
+        .catch((e) => {
+          // Handle error here
+          console.error('Error querying available choices', e);
+        });
+    }
+  }, []);
 
   return (
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
