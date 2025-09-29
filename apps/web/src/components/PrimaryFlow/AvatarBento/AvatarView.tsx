@@ -4,23 +4,12 @@ import PlaypenPopup from '@/components/PlaypenPopup';
 import PlaypenRestart from '@/components/PlaypenPopup/PlaypenRestart';
 import PlaypenSave from '@/components/PlaypenPopup/PlaypenSave';
 import PlaypenShare from '@/components/PlaypenPopup/PlaypenShare';
-import type { AvatarData } from '@/types';
+import { type Action, type ActionType, type ActionTypeOrNull, type AvatarData } from '@/types';
 import { Button } from '@heroui/react';
 import Image from 'next/image';
 import { Fragment, useEffect, useMemo, useState, type FC } from 'react';
 import BrowserBento from '../../BrowserBento';
-
-const actionTypes = ['share', 'save', 'restart'] as const;
-export type AvatarViewActionType = (typeof actionTypes)[number];
-export type AvatarViewActionTypeOrNull = AvatarViewActionType | null;
-
-export type AvatarViewAction = {
-  onPress: () => void;
-  content: {
-    title: string;
-    description: string;
-  };
-};
+import { actionTypes } from '@/utils/constants';
 
 const actionButtonStyles =
   'min-w-[6.0625rem] px-[0.625rem] border border-accent font-bold text-[0.875rem] leading-[1.25rem] text-accent rounded-full h-[2rem] cursor-pointer hover:text-charcoal hover:bg-accent transition-colors duration-300 gap-[0.375rem] flex items-center justify-center [&:hover_img]:brightness-50';
@@ -38,7 +27,7 @@ const AvatarView: FC<AvatarData> = ({
   selfies,
 }) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
-  const [actionType, setActionType] = useState<AvatarViewActionTypeOrNull>(null);
+  const [actionType, setActionType] = useState<ActionTypeOrNull>(null);
 
   useEffect(() => {
     /**
@@ -54,7 +43,7 @@ const AvatarView: FC<AvatarData> = ({
     if (!open) setActionType(null);
   };
 
-  const actions: Record<AvatarViewActionType, AvatarViewAction> = useMemo(
+  const actions: Record<ActionType, Action> = useMemo(
     () => ({
       share: {
         onPress: () => setActionType('share'),
@@ -135,7 +124,7 @@ const AvatarView: FC<AvatarData> = ({
                   onOpenChange={handleModalClose}
                 >
                   {actionName === 'share' && (
-                    <PlaypenShare<AvatarViewActionType>
+                    <PlaypenShare<ActionType>
                       action={action}
                       navigatorShareAvailable={navigatorShareAvailable}
                       avatar={{

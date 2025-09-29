@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 const AVATAR_FILE_TYPE = 'png';
 
 export interface UseAvatarDownloadOptions {
-  avatar: AvatarData;
+  avatar: AvatarData | null;
 }
 
 export interface UseAvatarDownloadReturn {
@@ -29,7 +29,7 @@ export const useAvatarDownload = ({
 }: UseAvatarDownloadOptions): UseAvatarDownloadReturn => {
   const [downloadFile, setDownloadFile] = useState<{ href: string; fileName: string }>({
     href: '#',
-    fileName: `${avatar.name.replaceAll(' ', '-')}.${AVATAR_FILE_TYPE}`,
+    fileName: `${avatar?.name.replaceAll(' ', '-')}.${AVATAR_FILE_TYPE}`,
   });
 
   const isDownloadReady = downloadFile.href !== '#';
@@ -39,6 +39,8 @@ export const useAvatarDownload = ({
 
     const prepDownloadFile = async (): Promise<void> => {
       try {
+        if (!avatar?.instragramAsset || avatar?.name) return;
+
         const response = await fetch(avatar.instragramAsset);
         const blob = await response.blob();
         fileHref = URL.createObjectURL(blob);
@@ -57,7 +59,7 @@ export const useAvatarDownload = ({
     return () => {
       if (fileHref) URL.revokeObjectURL(fileHref);
     };
-  }, [avatar.instragramAsset, avatar.name]);
+  }, [avatar?.instragramAsset, avatar?.name]);
 
   return {
     downloadFile,

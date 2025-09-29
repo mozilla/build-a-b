@@ -12,7 +12,7 @@ const microcopy = {
 } as const;
 
 export interface UseNavigatorShareActionOptions {
-  avatar: AvatarData;
+  avatar: AvatarData | null;
 }
 
 export interface UseNavigatorShareActionReturn {
@@ -31,6 +31,8 @@ export const useNavigatorShareAction = ({
 }: UseNavigatorShareActionOptions): UseNavigatorShareActionReturn => {
   const handleNavigatorShare = useCallback(async (): Promise<void> => {
     try {
+      if (!avatar?.instragramAsset || !avatar?.name) return;
+
       const response = await fetch(avatar.instragramAsset);
       const blob = await response.blob();
 
@@ -54,7 +56,7 @@ export const useNavigatorShareAction = ({
       if ('name' in error && error.name === 'AbortError') return;
       console.error('Navigator share error:', e);
     }
-  }, [avatar.name, avatar.instragramAsset]);
+  }, [avatar?.name, avatar?.instragramAsset]);
 
   return {
     handleNavigatorShare,

@@ -28,6 +28,8 @@ interface PrimaryFlowContextValue {
   setShowConfirmation: Dispatch<SetStateAction<ChoiceGroup | null>>;
   avatarData: AvatarData | null;
   setAvatarData: Dispatch<SetStateAction<AvatarData | null>>;
+  showVault: boolean;
+  setShowVault: Dispatch<SetStateAction<boolean>>;
   reset: () => void;
 }
 
@@ -39,6 +41,7 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
 }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
+  const [showVault, setShowVault] = useState(false);
   const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
   const [userChoices, setUserChoices] =
     useState<Record<ChoiceGroup, ChoiceConfig | null>>(initialChoices);
@@ -61,6 +64,8 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
         setShowConfirmation,
         avatarData,
         setAvatarData,
+        showVault,
+        setShowVault,
         reset,
       }}
     >
