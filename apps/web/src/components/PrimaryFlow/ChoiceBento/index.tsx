@@ -70,7 +70,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       .catch((e) => {
         console.error(`Error querying ${activeGroup}.`, e);
       });
-  }, [activeGroup, userChoices]);
+  }, [activeGroup, userChoices, setAvailableOptions]);
 
   return (
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
