@@ -21,3 +21,5 @@ export const avatarBentoData: AvatarBentoProps = {
   imageSrcPortrait: '/assets/images/avatar-portrait.png',
   imageAlt: '', // Decorative image
 };
+
+export const actionTypes = ['share', 'save', 'restart'] as const;

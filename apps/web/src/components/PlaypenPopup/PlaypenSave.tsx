@@ -1,14 +1,14 @@
 'use client';
 
 import { Link } from '@/components/PlaypenPopup/Link.svg';
-import { AvatarViewAction } from '@/components/PrimaryFlow/AvatarBento/AvatarView';
+import type { Action } from '@/types';
 import { Button } from '@heroui/react';
 import clsx from 'clsx';
 import { FC, useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 interface PlaypenSaveProps {
-  action: AvatarViewAction;
+  action: Action;
   /**
    * Applies alternate styling to align with AvatarBentoV2 screens.
    */
