@@ -58,13 +58,14 @@ const PreAvatarView: FC<PreAvatarViewProps> = ({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <BrowserBento gradient className="absolute h-full">
+          <BrowserBento gradient flips className="absolute h-full">
             <span className="block text-common-ash text-2xl-custom font-extrabold px-[1.375rem]">
               Unlimited power. Zero accountability. What could go wrong?
             </span>
           </BrowserBento>
           <BrowserBento
             inverse
+            flips
             className={`absolute h-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-500 ${styleForCard}`}
           >
             <span className="text-charcoal text-sm-custom font-semibold p-6">
