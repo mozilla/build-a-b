@@ -1,3 +1,4 @@
+import type { actionTypes } from '@/utils/constants';
 import type { Database } from './database.types';
 
 export interface FlagType<T = boolean> {
@@ -137,4 +138,15 @@ export type SelfieStatusResponse = {
 
 export type StatusEndpointBaseResponse = {
   status: string;
+};
+
+export type ActionType = (typeof actionTypes)[number];
+export type ActionTypeOrNull = ActionType | null;
+
+export type Action = {
+  onPress: () => void;
+  content: {
+    title: string;
+    description: string;
+  };
 };
