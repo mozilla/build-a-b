@@ -12,6 +12,9 @@ import ImageGallery from '@/components/ImageGallery';
 import ClientPageWrapper from '@/utils/page.client';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
+import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
+import { avatarBentoData } from '@/utils/constants';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -273,9 +276,13 @@ export default async function Page() {
       <CountDown
         targetDate="2025-10-17T10:00:00-07:00"
         cta={
-          <Link href="/" title="Generate your billionaire" className="secondary-button flex">
-            Build a Billionaire
-          </Link>
+          <Suspense fallback={<div>Loading...</div>}>
+            <GetStarted
+              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+              ctaText="Build a Billionaire"
+              triggerClassNames="secondary-button"
+            />
+          </Suspense>
         }
       />
     </ClientPageWrapper>
