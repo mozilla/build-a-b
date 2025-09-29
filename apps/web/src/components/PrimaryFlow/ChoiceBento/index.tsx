@@ -1,7 +1,7 @@
 import { choiceMap, choiceGroupMap, groupDescriptionMap } from '@/constants/choice-map';
 import type { ChoiceConfig, ChoiceGroup } from '@/types';
 import Image from 'next/image';
-import { useEffect, useState, type FC } from 'react';
+import { useCallback, useEffect, useState, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import SelectedIconsRow from '../SelectedIconsRow';
 import { getOriginStories } from '@/utils/actions/get-origin_stories';
@@ -29,17 +29,20 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
   const [choices, setChoices] = useState<[string, ChoiceConfig][]>([]);
 
-  const setAvailableOptions = (availableChoices: string[]) => {
-    const filteredChoices = Object.entries(choiceData).filter((item) =>
-      availableChoices.includes(item[0]),
-    );
-    // Skip to next step when no matches
-    if (filteredChoices.length <= 0 && nextGroup) {
-      setActiveGroup(nextGroup);
-      return;
-    }
-    setChoices(filteredChoices);
-  };
+  const setAvailableOptions = useCallback(
+    (availableChoices: string[]) => {
+      const filteredChoices = Object.entries(choiceData).filter((item) =>
+        availableChoices.includes(item[0]),
+      );
+      // Skip to next step when no matches
+      if (filteredChoices.length <= 0 && nextGroup) {
+        setActiveGroup(nextGroup);
+        return;
+      }
+      setChoices(filteredChoices);
+    },
+    [choiceData, nextGroup, setActiveGroup, setChoices],
+  );
 
   useEffect(() => {
     const actions: Record<string, () => Promise<any>> = {
@@ -70,7 +73,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       .catch((e) => {
         console.error(`Error querying ${activeGroup}.`, e);
       });
-  }, [activeGroup, userChoices]);
+  }, [activeGroup, userChoices, setAvailableOptions]);
 
   return (
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
