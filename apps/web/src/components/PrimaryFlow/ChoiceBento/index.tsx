@@ -1,9 +1,15 @@
-import { choiceMap, groupDescriptionMap } from '@/constants/choice-map';
-import type { ChoiceGroup } from '@/types';
+import { choiceMap, choiceGroupMap, groupDescriptionMap } from '@/constants/choice-map';
+import type { ChoiceConfig, ChoiceGroup } from '@/types';
 import Image from 'next/image';
-import type { FC } from 'react';
+import { useCallback, useEffect, useState, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import SelectedIconsRow from '../SelectedIconsRow';
+import { getOriginStories } from '@/utils/actions/get-origin_stories';
+import { getCoreDrives } from '@/utils/actions/get-core-drives';
+import { getPublicMasks } from '@/utils/actions/get-public-masks';
+import { getPowerPlays } from '@/utils/actions/get-power-plays';
+import { getLegacyPlans } from '@/utils/actions/get-legacy-plans';
+import ProgressBar from '@/components/ProgressBar';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -12,9 +18,62 @@ interface ChoiceBentoProps {
 const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const choiceData = choiceMap[activeGroup];
   const groupContent = groupDescriptionMap[activeGroup];
-  const choices = Object.entries(choiceData);
-  const { userChoices, setUserChoices, setShowConfirmation } = usePrimaryFlowContext();
+  const { userChoices, setUserChoices, setShowConfirmation, setActiveGroup } =
+    usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
+
+  // Get the next group in the sequence
+  const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
+  const currentIndex = groupKeys.indexOf(activeGroup);
+  const nextGroup = currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null;
+
+  const [choices, setChoices] = useState<[string, ChoiceConfig][]>([]);
+
+  const setAvailableOptions = useCallback(
+    (availableChoices: string[]) => {
+      const filteredChoices = Object.entries(choiceData).filter((item) =>
+        availableChoices.includes(item[0]),
+      );
+      // Skip to next step when no matches
+      if (filteredChoices.length <= 0 && nextGroup) {
+        setActiveGroup(nextGroup);
+        return;
+      }
+      setChoices(filteredChoices);
+    },
+    [choiceData, nextGroup, setActiveGroup, setChoices],
+  );
+
+  useEffect(() => {
+    const actions: Record<string, () => Promise<any>> = {
+      'origin-story': () => getOriginStories(),
+      'core-drive': () => getCoreDrives(userChoices['origin-story']?.id ?? ''),
+      'public-mask': () =>
+        getPublicMasks(userChoices['origin-story']?.id ?? '', userChoices['core-drive']?.id ?? ''),
+      'power-play': () =>
+        getPowerPlays(
+          userChoices['origin-story']?.id ?? '',
+          userChoices['core-drive']?.id ?? '',
+          userChoices['public-mask']?.id ?? '',
+        ),
+      'legacy-plan': () =>
+        getLegacyPlans(
+          userChoices['origin-story']?.id ?? '',
+          userChoices['core-drive']?.id ?? '',
+          userChoices['public-mask']?.id ?? '',
+          userChoices['power-play']?.id ?? '',
+        ),
+    };
+
+    const action = actions[activeGroup];
+    if (!action) return;
+
+    action()
+      .then(setAvailableOptions)
+      .catch((e) => {
+        console.error(`Error querying ${activeGroup}.`, e);
+      });
+  }, [activeGroup, userChoices, setAvailableOptions]);
 
   return (
     <div className="flex flex-col h-full p-2 pb-8 landscape:py-4 landscape:px-0 landscape:items-center">
@@ -53,8 +112,14 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
           </div>
         </div>
 
+        {choices.length <= 0 && (
+          <div className="px-10">
+            <ProgressBar />
+          </div>
+        )}
+
         {/* Cards */}
-        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto">
+        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] pb-8 justify-items-center mx-auto">
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
@@ -129,6 +194,11 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
         {/* Cards */}
         <div className="flex flex-row gap-4 justify-center flex-wrap max-w-none justify-items-center mx-auto relative z-10">
+          {choices.length <= 0 && (
+            <div className="w-100 mt-10">
+              <ProgressBar />
+            </div>
+          )}
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
