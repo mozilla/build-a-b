@@ -3,7 +3,7 @@
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
 import { Button, useDisclosure } from '@heroui/react';
 import Image from 'next/image';
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import Bento from '../Bento';
 import PlaypenPopup from '../PlaypenPopup';
 import Carousel from '../PrimaryFlow/Carousel';
@@ -74,7 +74,7 @@ const BentoPlaypenSelfie: FC = () => {
                 );
 
                 setShowVault(true);
-              } catch (e) {
+              } catch {
                 // Do nothing.
               } finally {
                 setIsGeneratingSelfie(false);
