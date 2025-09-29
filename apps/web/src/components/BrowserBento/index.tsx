@@ -1,5 +1,6 @@
 import type { FC, ReactNode } from 'react';
 import ThreeDots from '../ThreeDots';
+import Image from 'next/image';
 
 export interface BrowserBentoProps {
   /**
@@ -26,6 +27,10 @@ export interface BrowserBentoProps {
    * Child elements to render.
    */
   children?: ReactNode;
+  /**
+   * Whether the component should display a flip icon.
+   */
+  flips?: boolean;
 }
 
 const BrowserBento: FC<BrowserBentoProps> = ({
@@ -33,6 +38,7 @@ const BrowserBento: FC<BrowserBentoProps> = ({
   inverseElement,
   white = false,
   gradient = false,
+  flips = false,
   className,
   children,
 }) => {
@@ -54,6 +60,15 @@ const BrowserBento: FC<BrowserBentoProps> = ({
         <ThreeDots
           dotClassName={`${inverse || inverseElement === 'dots' ? 'border-common-ash' : 'border-charcoal'}`}
         />
+        {flips && (
+          <Image
+            src="/assets/images/icons/flip.svg"
+            alt="Flip card"
+            width={24}
+            height={24}
+            className="absolute landscape:hidden w-[2.25rem] h-[2.25rem] -top-1 right-0"
+          />
+        )}
       </div>
       <div
         id="browser-bento-body"
