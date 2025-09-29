@@ -33,13 +33,11 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
     const filteredChoices = Object.entries(choiceData).filter((item) =>
       availableChoices.includes(item[0]),
     );
-
     // Skip to next step when no matches
     if (filteredChoices.length <= 0 && nextGroup) {
       setActiveGroup(nextGroup);
       return;
     }
-
     setChoices(filteredChoices);
   };
 
