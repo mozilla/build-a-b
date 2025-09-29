@@ -8,10 +8,9 @@ import { COOKIE_NAME } from '../constants';
 export async function generateAvatar(options: Choice[]): Promise<AvatarData | null> {
   try {
     const [supabase, cookieStore] = await Promise.all([createClient(), cookies()]);
-    const searchPattern = options.join('-');
 
     // Keep this log for server debugging
-    console.log('Starting search with parameters: ', searchPattern);
+    console.log('Starting search with options: ', options);
 
     const { data: selectedAvatar, error } = await supabase
       .rpc('get_random_avatar_v2', {

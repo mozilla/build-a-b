@@ -30,10 +30,9 @@ const ConfirmSelectionScreen: FC<ConfirmSelectionScreenProps> = ({ activeGroup }
       setActiveGroup(nextGroup);
     } else {
       // This is the last choice, generate avatar before showing completion screen
-      const allChoices = groupKeys
-        .filter((group) => userChoices[group])
-        .map((group) => userChoices[group]!.id);
-
+      const allChoices = groupKeys.map((group) =>
+        userChoices[group] ? userChoices[group].id : '',
+      );
       generateAvatar(allChoices)
         .then((data) => setAvatarData(data))
         .catch(() => {
