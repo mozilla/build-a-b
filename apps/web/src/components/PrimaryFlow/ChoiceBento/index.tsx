@@ -1,5 +1,5 @@
 import { choiceMap, choiceGroupMap, groupDescriptionMap } from '@/constants/choice-map';
-import type { ChoiceGroup } from '@/types';
+import type { ChoiceConfig, ChoiceGroup } from '@/types';
 import Image from 'next/image';
 import { useEffect, useState, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
@@ -26,7 +26,7 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const currentIndex = groupKeys.indexOf(activeGroup);
   const nextGroup = currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null;
 
-  const [choices, setChoices] = useState(Object.entries(choiceData));
+  const [choices, setChoices] = useState<[string, ChoiceConfig][]>([]);
 
   const setAvailableOptions = (availableChoices: string[]) => {
     const filteredChoices = Object.entries(choiceData).filter((item) =>
