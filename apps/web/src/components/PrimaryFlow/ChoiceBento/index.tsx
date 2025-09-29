@@ -9,6 +9,7 @@ import { getCoreDrives } from '@/utils/actions/get-core-drives';
 import { getPublicMasks } from '@/utils/actions/get-public-masks';
 import { getPowerPlays } from '@/utils/actions/get-power-plays';
 import { getLegacyPlans } from '@/utils/actions/get-legacy-plans';
+import ProgressBar from '@/components/ProgressBar';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -110,8 +111,14 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
           </div>
         </div>
 
+        {choices.length <= 0 && (
+          <div className="px-10">
+            <ProgressBar />
+          </div>
+        )}
+
         {/* Cards */}
-        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] justify-items-center mx-auto">
+        <div className="grid grid-cols-2 gap-4 w-full max-w-[calc(100vw-2rem)] pb-8 justify-items-center mx-auto">
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
@@ -186,6 +193,11 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
 
         {/* Cards */}
         <div className="flex flex-row gap-4 justify-center flex-wrap max-w-none justify-items-center mx-auto relative z-10">
+          {choices.length <= 0 && (
+            <div className="w-100 mt-10">
+              <ProgressBar />
+            </div>
+          )}
           {choices.map(([choiceKey, choiceConfig], index) => (
             <button
               key={choiceKey}
