@@ -65,7 +65,7 @@
 }
 
 body {
-  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-[url(/assets/images/bg.webp)] font-sharp-sans text-common-ash font-semibold;
+  @apply antialiased bg-fixed bg-no-repeat bg-cover bg-center bg-[url(/assets/images/bg.webp)] font-sharp-sans text-common-ash font-semibold;
 }
 
 @keyframes ticker-horizontal-infinite-scroll {
