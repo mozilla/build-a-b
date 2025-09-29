@@ -25,6 +25,147 @@ html {
   }
 }
 
+/* Local font declarations */
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Light.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Light Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Light Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Medium.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Medium Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Medium Italic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Semibold.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Semibold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Semibold Italic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/SharpSansBold.woff') format('woff'),
+    url('/assets/fonts/SharpSansBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Bold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Bold Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Extrabold.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans ExtraBold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans ExtraBold Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Thin.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src:
+    url('/assets/fonts/Sharp Sans Thin Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Thin Italic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* ============================= */
 /* Custom Typography Utilities   */
 /* ============================= */
