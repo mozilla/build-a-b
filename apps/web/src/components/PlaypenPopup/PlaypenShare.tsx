@@ -1,8 +1,7 @@
 import Bento from '@/components/Bento';
 import BrowserBento from '@/components/BrowserBento';
-import { AvatarViewAction } from '@/components/PrimaryFlow/AvatarBento/AvatarView';
 import ShareAvatar from '@/components/ShareAvatar';
-import { AvatarData } from '@/types';
+import { AvatarData, type Action } from '@/types';
 import Image from 'next/image';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -11,7 +10,7 @@ const microcopy = {
 } as const;
 
 interface PlaypenShareProps<T = string> {
-  action: AvatarViewAction;
+  action: Action;
   avatar: AvatarData;
   navigatorShareAvailable: boolean;
   setActionType: Dispatch<SetStateAction<T | null>>;

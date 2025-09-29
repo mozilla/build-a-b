@@ -27,7 +27,7 @@ const ProgressBar: FC<ProgressBarProps> = ({ className = '', duration = 4000 }) 
     };
 
     requestAnimationFrame(animate);
-  }, []);
+  }, [duration]);
 
   return (
     <div className={`w-full px-4 ${className}`}>
