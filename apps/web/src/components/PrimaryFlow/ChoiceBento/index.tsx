@@ -10,6 +10,7 @@ import { getPublicMasks } from '@/utils/actions/get-public-masks';
 import { getPowerPlays } from '@/utils/actions/get-power-plays';
 import { getLegacyPlans } from '@/utils/actions/get-legacy-plans';
 import ProgressBar from '@/components/ProgressBar';
+import { generateAvatar } from '@/utils/actions/generate-avatar';
 
 interface ChoiceBentoProps {
   activeGroup: ChoiceGroup;
@@ -18,7 +19,7 @@ interface ChoiceBentoProps {
 const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
   const choiceData = choiceMap[activeGroup];
   const groupContent = groupDescriptionMap[activeGroup];
-  const { userChoices, setUserChoices, setShowConfirmation, setActiveGroup } =
+  const { userChoices, setUserChoices, setShowConfirmation, setActiveGroup, setAvatarData, reset } =
     usePrimaryFlowContext();
   const selectedChoice = userChoices[activeGroup]?.value;
 
@@ -34,9 +35,25 @@ const ChoiceBento: FC<ChoiceBentoProps> = ({ activeGroup }) => {
       const filteredChoices = Object.entries(choiceData).filter((item) =>
         availableChoices.includes(item[0]),
       );
+
       // Skip to next step when no matches
-      if (filteredChoices.length <= 0 && nextGroup) {
-        setActiveGroup(nextGroup);
+      if (filteredChoices.length <= 0) {
+        setShowConfirmation(null);
+        setUserChoices((current) => ({ ...current, [activeGroup]: '' }));
+
+        if (nextGroup) {
+          setActiveGroup(nextGroup);
+        } else {
+          const allChoices = groupKeys.map((group) =>
+            userChoices[group] ? userChoices[group].id : '',
+          );
+
+          generateAvatar(allChoices)
+            .then((data) => setAvatarData(data))
+            .catch(() => {
+              reset();
+            });
+        }
         return;
       }
       setChoices(filteredChoices);
