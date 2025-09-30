@@ -2,9 +2,9 @@
 
 [build]
   # Run install at the workspace root, then build the web app
-  base    = "apps/web"
-  command = "pnpm -w install --frozen-lockfile && pnpm --filter apps/web... build"
-  publish = ".next"
+  base    = "."
+  command = "pnpm install --frozen-lockfile && pnpm --filter apps/web build"
+  publish = "apps/web/.next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
