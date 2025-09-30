@@ -1,5 +1,7 @@
 # Mozilla Billionaire Blast-Off
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/783c3055-df4e-41ee-a9fe-1772db6f3e95/deploy-status)](https://app.netlify.com/projects/build-a-b/deploys)
+
 This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off" microsite. It features a HeroUI component library, Tailwind CSS v4 with a customized plugin, Sanity CMS Studio for content management, and the Flags SDK for feature flags.
 
 ## Table ofContents
