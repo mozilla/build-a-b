@@ -41,10 +41,11 @@ export const useNavigatorShareAction = ({
       });
 
       const sharePayload: ShareData = {
-        title: microcopy.shareTitle,
         text: microcopy.shareText,
         files: [file],
-        url: 'https://billionaireblastoff.firefox.com/',
+        // Removed due to duplicated copy when sharing in Whatsapp and iMessage.
+        // title: microcopy.shareTitle,
+        // url: 'https://billionaireblastoff.firefox.com/',
       };
 
       await navigator.share(sharePayload);

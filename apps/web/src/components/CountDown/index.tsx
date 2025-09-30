@@ -55,7 +55,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
           <div className="flex flex-col gap-4 items-start">
             <h2 className="text-title-1 text-balance">The Countdown is On</h2>
             <p className="text-body-regular">
-              All the avatars, all the gameplay, all the satire — it all leads to this. A real
+              All the billionaires, all the gameplay, all the satire — it all leads to this. A real
               rocket, built with Sent Into Space, carrying the absurd creations of a community that
               refused to play by Big Tech&apos;s rules.
             </p>
