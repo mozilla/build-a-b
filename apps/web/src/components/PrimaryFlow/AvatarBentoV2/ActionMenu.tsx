@@ -50,7 +50,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         content: {
           title: 'Ready for a do-over?',
           description:
-            'If so, this old billionaire’s empire stays in your gallery, but it’s retired from the launchpad. All new creations blast off with your new billionaire, whoever they may be.',
+            'If so, this old Billionaire’s empire stays in your gallery, but it’s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
         },
       },
       save: {
@@ -70,7 +70,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         content: {
           title: 'Your Billionaire Vault',
           description:
-            'This is your gallery of billionaire antics. Every cringe, every flex, every pixel of excess—saved for your scrolling pleasure.',
+            'This is your gallery of Billionaire antics. Every cringe, every flex, every pixel of excess—saved for your scrolling pleasure.',
         },
       },
     }),
@@ -100,7 +100,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
               avatar={avatar}
               action={actions.restart}
               onCancel={() => setActionType(null)}
-              asset="instagram"
+              asset="riding"
             />
           </PlaypenPopup>
         </li>
