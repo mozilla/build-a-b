@@ -62,6 +62,7 @@ export const phrasesMap: Record<Choice, string> = {
   'clone.library': 'What would the future do without your exact gene sequence?',
   'ai.diety': "It'll be the prompt to end all prompts to end all prompts to end all prompts.",
   'sea.lord': 'Please attend my four-part lecture series on how Poseidon is real.',
+  '': 'N/A',
 };
 
 export const choiceMap: GameChoices = Object.entries(choiceGroupMap).reduce(

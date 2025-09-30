@@ -102,7 +102,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
 
       <div className="landscape:flex landscape:justify-between">
         <div className="ml-auto text-right mb-8 landscape:ml-0 landscape:mb-0 landscape:text-left">
-          <p className="mb-4">
+          <p className="mb-4 ml-auto landscape:ml-0w-71 landscape:w-96 text-sm-custom">
             {ctaCopy.map((line, inx) => (
               <span key={inx}>
                 {inx > 0 ? <br /> : null}
@@ -120,7 +120,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             </Suspense>
           )}
         </div>
-        <p className="landscape:self-end">
+        <p className="self-end">
           <Link
             href="https://www.mozilla.org/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
             aria-label="Go to Privacy Policy page"
