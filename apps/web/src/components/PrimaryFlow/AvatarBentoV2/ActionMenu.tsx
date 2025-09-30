@@ -17,8 +17,7 @@ interface ActionMenuProps {
   navigatorShareAvailable: boolean;
 }
 
-const actionTypes = ['restart', 'save', 'download', 'share'] as const;
-export type ActionMenuActionType = (typeof actionTypes)[number];
+export type ActionMenuActionType = 'restart' | 'save' | 'download' | 'share';
 export type ActionMenuActionTypeOrNull = ActionMenuActionType | null;
 
 export type AvatarViewAction = {
