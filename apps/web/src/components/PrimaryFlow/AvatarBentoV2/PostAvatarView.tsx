@@ -72,7 +72,8 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
             >
               <p className="bg-white p-[1.5rem] text-black">
                 {microcopy.bioPrefix}
-                <span className="text-secondary-purple font-bold">{avatar.name}</span>, {avatar.bio}
+                <span className="text-secondary-purple font-bold">{avatar.name}</span>, your{' '}
+                {avatar.bio}
               </p>
             </BrowserBento>
           </Bento>
