@@ -141,7 +141,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         <span className="flex gap-x-2 items-center">
           <span className="whitespace-nowrap"></span>
           <Link
-            href="https://www.firefox.com/"
+            href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
             target="_blank"
             title="Go to Firefox website"
             className="flex items-center pr-1 gap-1"
@@ -161,7 +161,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           >
             <Image
               alt="Mondorobot logo"
-              src="/assets/images/mondo-robot-logo.webp"
+              src="/assets/images/mondo-robot-logo.svg"
               sizes="10vw"
               fill
             />
