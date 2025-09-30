@@ -9,6 +9,7 @@ import { deleteCookie, getCookie, parseJsonCookie, setCookie } from '@/utils/hel
 import { Button } from '@heroui/react';
 import Image from 'next/image';
 import { FC, useMemo } from 'react';
+import BrowserBento from '../BrowserBento';
 
 interface PlaypenRestartProps {
   action: Action;
@@ -56,7 +57,7 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
         <p className="text-lg-custom">{action.content.description}</p>
       </div>
       <div className="relative mx-auto w-full pb-[1.75rem]">
-        <Bento className="w-full max-w-[29.25rem] mx-auto aspect-square flex justify-center items-end">
+        <Bento className="w-full max-w-[29.25rem] mx-auto aspect-square flex justify-center items-end p-3">
           <Image
             className="object-cover object-center"
             src={selectedAsset}
@@ -64,6 +65,12 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
             fill
             sizes="(orientation: portrait) 100vw, 32.45vw"
           />
+          <BrowserBento className="relative w-full" gradient inverseElement="dots">
+            <p className="bg-white p-3 text-black">
+              Meet <span className="text-secondary-purple font-bold">{avatar.name}</span>, your{' '}
+              {avatar.bio}
+            </p>
+          </BrowserBento>
         </Bento>
       </div>
       <div className="flex portrait:w-full gap-4">
