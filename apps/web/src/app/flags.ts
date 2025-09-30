@@ -2,25 +2,9 @@ import { FlagType } from '@/types';
 import { flag } from 'flags/next';
 
 const flags = {
-  demoAvatarBento: flag({
-    key: 'demo-avatar-bento',
-    description: 'Shows the demo avatar bento on the homepage',
-    defaultValue: false,
-    decide() {
-      return process.env.FLAG_DEMO_AVATAR_BENTO === 'true';
-    },
-  }),
-  demoLargeTeaserBento: flag({
-    key: 'demo-large-teaser-bento',
-    description: 'Shows the demo large teaser bento on the homepage',
-    defaultValue: false,
-    decide() {
-      return process.env.FLAG_DEMO_LARGE_TEASER_BENTO === 'true';
-    },
-  }),
   showAvatarPlaypenButtons: flag({
     key: 'show-avatar-playpen-buttons',
-    description: 'Shows the avatar playpen buttons when avatar is generated',
+    description: 'Shows the billionaire playpen buttons when billionaire is generated',
     defaultValue: false,
     decide() {
       return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';

@@ -22,7 +22,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       .single<DatabaseAvatarResponse>();
 
     if (avatarError || !avatar) {
-      throw new Error(avatarError?.message || 'Could not retrieve user avatar.');
+      throw new Error(avatarError?.message || 'Could not retrieve user billionaire.');
     }
 
     return {
