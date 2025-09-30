@@ -65,12 +65,8 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
               <div className="h-[2rem] bg-gradient-to-t from-common-ash to-transparent"></div>
               <div className="h-[13rem] bg-common-ash"></div>
             </div>
-            <BrowserBento
-              className="relative w-full landscape:max-w-[85.47%] landscape:mb-6"
-              gradient
-              inverseElement="dots"
-            >
-              <p className="bg-white p-[1.5rem] text-black">
+            <BrowserBento className="relative w-full" gradient inverseElement="dots">
+              <p className="bg-white p-3 text-black">
                 {microcopy.bioPrefix}
                 <span className="text-secondary-purple font-bold">{avatar.name}</span>, your{' '}
                 {avatar.bio}

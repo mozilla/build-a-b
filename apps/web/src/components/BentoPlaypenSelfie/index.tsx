@@ -87,7 +87,7 @@ const BentoPlaypenSelfie: FC = () => {
         ) : (
           <ProgressBar duration={12000} />
         )}
-        <PlaypenPopup title="Your billionaire vault" isOpen={showVault} onOpenChange={handleClose}>
+        <PlaypenPopup title="Your Billionaire vault" isOpen={showVault} onOpenChange={handleClose}>
           <div className="w-full h-[70vh] flex flex-col items-center justify-center my-6">
             <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
             <p className="text-center max-w-[625px]">
