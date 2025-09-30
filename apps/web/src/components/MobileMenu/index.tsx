@@ -9,7 +9,7 @@ import GetStarted from '../PrimaryFlow/GetStarted';
 import { HeaderProps } from '@/components/Header';
 import { avatarBentoData } from '@/utils/constants';
 
-const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
+const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel }) => {
   const [open, setOpen] = useState(false);
   const closeIcon = '/assets/images/close-icon.svg';
   const srcIcon = open ? closeIcon : '/assets/images/icons/menu.svg';
@@ -63,12 +63,9 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
               </Suspense>
             )}
             <p className="mt-4 mb-10 text-sm-custom text-center">
-              {ctaCopy.map((line, inx) => (
-                <span key={inx}>
-                  {inx > 0 ? <br /> : null}
-                  {line}
-                </span>
-              ))}
+              Big Tech wants to own your orbit.
+              <br />
+              We say—go launch yourself!
             </p>
             <SocialNetwork socials={socials} isInModal={true} />
           </div>

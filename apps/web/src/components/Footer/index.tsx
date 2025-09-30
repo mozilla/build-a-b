@@ -20,7 +20,7 @@ export interface FooterProps {
     alt: string;
     src: string;
   }[];
-  ctaCopy: string[];
+  ctaCopy: string;
   ctaLabel: string;
 }
 
@@ -102,14 +102,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
 
       <div className="landscape:flex landscape:justify-between">
         <div className="ml-auto text-right mb-8 landscape:ml-0 landscape:mb-0 landscape:text-left">
-          <p className="mb-4">
-            {ctaCopy.map((line, inx) => (
-              <span key={inx}>
-                {inx > 0 ? <br /> : null}
-                {line}
-              </span>
-            ))}
-          </p>
+          <p className="mb-4 mr-0 ml-auto max-w-[20rem] landscape:max-w-[28rem]">{ctaCopy}</p>
           {avatarBentoData?.primaryFlowData && (
             <Suspense fallback={<div>Loading...</div>}>
               <GetStarted
