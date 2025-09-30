@@ -39,7 +39,7 @@ export const useAvatarDownload = ({
 
     const prepDownloadFile = async (): Promise<void> => {
       try {
-        if (!avatar?.instragramAsset || avatar?.name) return;
+        if (!avatar?.instragramAsset || !avatar?.name) return;
 
         const response = await fetch(avatar.instragramAsset);
         const blob = await response.blob();
