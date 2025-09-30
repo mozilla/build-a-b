@@ -50,7 +50,7 @@ const AvatarView: FC<AvatarData> = ({
         content: {
           title: 'Your Billionaire Vault',
           description:
-            'This is your gallery of billionaire antics. Every cringe, every flex, every pixel of excess—saved for your scrolling pleasure.',
+            'This is your gallery of Billionaire antics. Every cringe, every flex, every pixel of excess—saved for your scrolling pleasure.',
         },
       },
       save: {
@@ -66,7 +66,7 @@ const AvatarView: FC<AvatarData> = ({
         content: {
           title: 'Ready for a do-over?',
           description:
-            'If so, this old billionaire’s empire stays in your gallery, but it’s retired from the launchpad. All new creations blast off with your new billionaire, whoever they may be.',
+            'If so, this old Billionaire’s empire stays in your gallery, but it’s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
         },
       },
     }),
