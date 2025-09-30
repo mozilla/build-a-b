@@ -1,7 +1,30 @@
+# Root-level Netlify config for monorepo
+
 [build]
-  base = "apps/web/"
-  command = "corepack enable && pnpm install && pnpm run build"
+  # Run install at the workspace root, then build the web app
+  base    = "apps/web"
+  command = "pnpm -w install --frozen-lockfile && pnpm --filter apps/web... build"
   publish = ".next"
 
-[[plugins]]
+[plugins]
   package = "@netlify/plugin-nextjs"
+
+# Make sure Node & pnpm are consistent with your local setup
+[build.environment]
+  NODE_VERSION = "20.18.0"
+  PNPM_VERSION = "10.11.1"    # Netlify uses Corepack; this pins pnpm’s version
+  # If you rely on OpenSSL 3-compatible binaries (sharp, etc.), Node 20 is a safe bet.
+
+# Local dev via netlify dev (fixes the failing default command)
+[dev]
+  # Explicitly start your app from the workspace
+  command    = "pnpm --filter apps/web... dev"
+  framework  = "next"
+  port       = 8888          # proxy shown at http://localhost:8888
+  targetPort = 3000          # Next.js dev server
+  publish    = "public"      # static assets folder inside apps/web
+  autoLaunch = false
+
+# (Optional) If you have custom serverless/edge functions you want Netlify to pick up from source:
+#[functions]
+#  directory = "netlify/functions"
