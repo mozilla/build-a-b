@@ -21,7 +21,7 @@ export interface HeaderProps {
     alt: string;
     src: string;
   }[];
-  ctaCopy: string[];
+  ctaCopy: string;
   ctaLabel: string;
 }
 
