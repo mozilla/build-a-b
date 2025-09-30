@@ -9,7 +9,7 @@ import GetStarted from '../PrimaryFlow/GetStarted';
 import { HeaderProps } from '@/components/Header';
 import { avatarBentoData } from '@/utils/constants';
 
-const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
+const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel }) => {
   const [open, setOpen] = useState(false);
   const closeIcon = '/assets/images/close-icon.svg';
   const srcIcon = open ? closeIcon : '/assets/images/icons/menu.svg';
