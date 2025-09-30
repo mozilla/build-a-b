@@ -7,7 +7,7 @@ import { Download } from '@/components/ShareAvatar/Download.svg';
 import { Share } from '@/components/ShareAvatar/Share.svg';
 import { Instagram } from '@/components/ShareAvatar/Instagram.svg';
 import { Threads } from '@/components/ShareAvatar/Threads.svg';
-import { useAvatarDownload, useNavigatorShareAction, useSafeClick, useShareUrls } from '@/hooks';
+import { useAvatarActions, useNavigatorShareAction } from '@/hooks';
 import { AvatarData } from '@/types';
 import clsx from 'clsx';
 import { FC, useMemo, useState } from 'react';
@@ -30,11 +30,14 @@ export type AvatarViewAction = {
 
 const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) => {
   const [actionType, setActionType] = useState<ActionMenuActionTypeOrNull>(null);
-  const { handleNavigatorShare } = useNavigatorShareAction({ avatar });
-  const { downloadFile, isDownloadReady } = useAvatarDownload({ avatar });
-  const { safeHref } = useShareUrls();
-  const { threadsShareUrl } = useShareUrls();
-  const { preventInvalidClick } = useSafeClick();
+  const {
+    handleNavigatorShare,
+    downloadFile,
+    isDownloadReady,
+    threadsShareUrl,
+    safeHref,
+    preventInvalidClick,
+  } = useAvatarActions({ avatar });
 
   const handleModalClose = (open: boolean) => {
     if (!open) setActionType(null);
