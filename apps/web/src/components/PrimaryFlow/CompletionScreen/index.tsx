@@ -264,7 +264,7 @@ const CompletionScreen: FC = () => {
               )}
               <Image
                 src={avatarData.url}
-                alt="Generated Billionaire Avatar"
+                alt="Generated Billionaire"
                 fill
                 className={`object-cover object-top transition-opacity duration-500 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'

@@ -30,14 +30,14 @@ Editor (Sanity Studio) → Sanity Content Lake (API)
 Notes:
 - Sanity is the content source of truth. Web app fetches via server components (GROQ / next-sanity / @sanity/client).
 - The frontend is hosted on Netlify, which handles CI/CD and preview builds.
-- Supabase is used for the Postgres database (avatar and user data) and for storing generated images.
+- Supabase is used for the Postgres database (billionaire and user data) and for storing generated images.
 - Preview environments use Sanity webhooks + Next draft mode or preview handlers.
 
 ## Data flow
 1. Content editors author content in Sanity Studio (apps/studio).
 2. Sanity Content Lake exposes content via GROQ/API.
 3. The web app (apps/web) queries content from server components; pages generate static HTML (SSG) with ISR or full SSR where needed.
-4. User interactions (like creating an avatar) trigger API calls to a backend that interacts with Supabase.
+4. User interactions (like creating an billionaire) trigger API calls to a backend that interacts with Supabase.
 5. CI runs builds and deploys previews to Netlify; production deploys to Netlify.
 
 ## Deployment & environments
