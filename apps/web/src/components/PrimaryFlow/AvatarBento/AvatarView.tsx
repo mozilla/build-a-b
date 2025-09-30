@@ -90,8 +90,8 @@ const AvatarView: FC<AvatarData> = ({
           <BrowserBento white>
             <div className="flex flex-col gap-1 p-[1.5rem]">
               <span className="text-charcoal text-base font-semibold leading-6">
-                Meet <span className="text-secondary-purple font-extrabold capitalize">{name}</span>{' '}
-                - {bio}
+                Meet <span className="text-secondary-purple font-extrabold capitalize">{name}</span>
+                , your {bio}
               </span>
             </div>
           </BrowserBento>
