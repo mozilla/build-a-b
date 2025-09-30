@@ -85,7 +85,9 @@ const sharpSans = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://billionaireblastoff.firefox.com'),
+  metadataBase: new URL(
+    'https://billionaireblastoff.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo',
+  ),
   title: "Firefox Billionaire Blast Off - It's a Space Race!",
   description:
     'Build a Billionaire, check out our new game, Data War, and join us at TwitchCon to send our Billionaires into space.',
