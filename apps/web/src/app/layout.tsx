@@ -143,7 +143,9 @@ const navigationData = {
       src: '/assets/images/social/youtube.svg',
     },
   ],
-  ctaCopy: ['Big Tech wants to own your orbit.', 'We say—go launch yourself!'],
+  ctaCopy: [
+    'This experience uses AI and prioritizes open-source models, guided by stimulus from paid artists and prompt engineers. Billionaires feed your data into AI, we use it to hand the power back to you.',
+  ],
   ctaLabel: 'Build a Billionaire',
 };
 
