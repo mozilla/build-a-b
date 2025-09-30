@@ -28,5 +28,14 @@
     "*.{js,jsx,ts,tsx}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "@tailwindcss/oxide",
+      "supabase",
+      "unrs-resolver",
+      "@heroui/shared-utils"
+    ]
   }
 }
