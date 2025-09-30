@@ -149,7 +149,7 @@ export default async function Page() {
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
         <Bento
           image="/assets/images/doll.webp"
-          imageAlt="Avatar in a box"
+          imageAlt="Billionaire in a box"
           className="landscape:w-[30%] aspect-[377/275] border-none"
         />
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">

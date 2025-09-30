@@ -3,7 +3,6 @@ import BentoDual from '@/components/BentoDual';
 import CountDown from '@/components/CountDown';
 import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
-import AvatarBento from '@/components/PrimaryFlow/AvatarBento';
 import AvatarBentoV2 from '@/components/PrimaryFlow/AvatarBentoV2';
 import Scrim from '@/components/Scrim';
 import Ticker from '@/components/Ticker';
@@ -45,7 +44,6 @@ interface PageProps {
 
 export default async function Home({ avatarData }: PageProps) {
   const showPlaypenButtons = await evaluateFlag('showAvatarPlaypenButtons');
-  const showAvatarBentoV2 = await evaluateFlag('showAvatarBentoV2');
 
   return (
     <>
@@ -53,11 +51,7 @@ export default async function Home({ avatarData }: PageProps) {
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">
-          {showAvatarBentoV2 ? (
-            <AvatarBentoV2 {...avatarBentoData} avatar={avatarData} />
-          ) : (
-            <AvatarBento {...avatarBentoData} avatarData={avatarData} />
-          )}
+          <AvatarBentoV2 {...avatarBentoData} avatar={avatarData} />
         </div>
         <div className="portrait:mb-4 portrait:w-full h-[32rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           <BentoDual
@@ -72,7 +66,7 @@ export default async function Home({ avatarData }: PageProps) {
                     <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
                       <span className="rounded-bullet">1</span>
                       <span className="flex-1 ">
-                        Share your Billionaire avatar by <strong>Friday, October 10th </strong>
+                        Share your Billionaire by <strong>Friday, October 10th </strong>
                         with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
                       </span>
                     </li>
