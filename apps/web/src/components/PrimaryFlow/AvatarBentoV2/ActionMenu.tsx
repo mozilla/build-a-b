@@ -87,8 +87,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             onClick={() => setActionType('restart')}
           >
             <span className="sr-only">Delete and Restart</span>
-            <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+            <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
               <Trash width="100%" height="100%" role="presentation" />
+              <span
+                className="absolute inset-0 rounded-full
+                           bg-gradient-to-br from-transparent to-secondary-blue
+                           opacity-0 group-hover/icon:opacity-70
+                           transition-opacity duration-300"
+              />
             </span>
           </button>
           <PlaypenPopup
@@ -107,8 +113,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         <li>
           <button className="cursor-pointer" onClick={actions.save.onPress}>
             <span className="sr-only">Bookmark</span>
-            <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+            <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
               <Bookmark width="100%" height="100%" role="presentation" />
+              <span
+                className="absolute inset-0 rounded-full
+                           bg-gradient-to-br from-transparent to-secondary-blue
+                           opacity-0 group-hover/icon:opacity-70
+                           transition-opacity duration-300"
+              />
             </span>
           </button>
           <PlaypenPopup
@@ -127,8 +139,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             download={downloadFile.fileName}
           >
             <span className="sr-only">Download</span>
-            <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+            <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
               <Download width="100%" height="100%" role="presentation" />
+              <span
+                className="absolute inset-0 rounded-full
+                           bg-gradient-to-br from-transparent to-secondary-blue
+                           opacity-0 group-hover/icon:opacity-70
+                           transition-opacity duration-300"
+              />
             </span>
           </a>
         </li>
@@ -140,8 +158,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
               disabled={!navigatorShareAvailable}
             >
               <span className="sr-only">Share</span>
-              <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square">
+              <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
                 <Share width="100%" height="100%" role="presentation" />
+                <span
+                  className="absolute inset-0 rounded-full
+                             bg-gradient-to-br from-transparent to-secondary-blue
+                             opacity-0 group-hover/icon:opacity-70
+                             transition-opacity duration-300"
+                />
               </span>
             </button>
           </li>
@@ -150,8 +174,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             <li>
               <a href="https://www.instagram.com" rel="noopener noreferrer" target="_blank">
                 <span className="sr-only">Instagram</span>
-                <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+                <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
                   <Instagram width="100%" height="100%" role="presentation" />
+                  <span
+                    className="absolute inset-0 rounded-full
+                               bg-gradient-to-br from-transparent to-secondary-blue
+                               opacity-0 group-hover/icon:opacity-70
+                               transition-opacity duration-300"
+                  />
                 </span>
               </a>
             </li>
@@ -164,8 +194,14 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
                 rel="noopener noreferrer"
               >
                 <span className="sr-only">Share to Threads</span>
-                <span className="inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent">
+                <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon [&_svg]:transition-colors [&_svg]:duration-300 group-hover/icon:[&_svg]:fill-secondary-blue">
                   <Threads width="100%" height="100%" role="presentation" />
+                  <span
+                    className="absolute inset-0 rounded-full
+                               bg-gradient-to-br from-transparent to-secondary-blue
+                               opacity-0 group-hover/icon:opacity-70
+                               transition-opacity duration-300"
+                  />
                 </span>
               </a>
             </li>
