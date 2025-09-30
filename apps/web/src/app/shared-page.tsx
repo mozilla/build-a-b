@@ -133,7 +133,10 @@ export default async function Home({ avatarData }: PageProps) {
                     indulge our curiosities, and open what we want.
                   </p>
                 </div>
-                <a href="https://www.mozilla.org/firefox/new/" target="_blank">
+                <a
+                  href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
+                  target="_blank"
+                >
                   <Image
                     src="/assets/images/firefox-open.webp"
                     width={120}

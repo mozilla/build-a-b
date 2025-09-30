@@ -286,12 +286,10 @@ const CompletionScreen: FC = () => {
           {/* BrowserBento overlay - for both mobile and landscape */}
           {avatarData && (
             <BrowserBento inverse className="absolute w-[20.4375rem] landscape:w-[26.6875rem]">
-              <div className="p-4">
-                <div className="text-lg font-bold mb-1 text-charcoal">
-                  Meet <span className="text-purple-600 capitalize">{avatarData.name}</span>
-                </div>
-                <div className="text-sm text-charcoal">{avatarData.bio}</div>
-              </div>
+              <p className="p-[1.5rem] text-black">
+                Meet <span className="text-secondary-purple font-bold">{avatarData.name}</span>,
+                your {avatarData.bio}
+              </p>
             </BrowserBento>
           )}
         </div>
