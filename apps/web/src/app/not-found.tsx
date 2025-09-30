@@ -13,6 +13,7 @@ export default function NotFound() {
         <Window className="bg-common-ash p-4">
           <div className="p-2 landscape:p-12 flex justify-center items-center flex-col-reverse landscape:flex-row gap-8">
             <div className="flex flex-col gap-4 items-start">
+              <h1 className="text-nav-item text-charcoal">404 - PAGE NOT FOUND</h1>
               <h2 className="text-title-1 text-charcoal">You&apos;ve entered the void.</h2>
               <p className="text-body-regular text-charcoal">
                 This place is crowded with Billionaires, sorry not sorry. Let&apos;s get you back
