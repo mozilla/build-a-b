@@ -17,6 +17,15 @@ const CompletionScreen: FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
+  // Random loading messages
+  const loadingMessages = [
+    'Assembling unchecked wealth...',
+    'Inflating ego and sense of purpose...',
+    'Organizing sycophantic glad hands...',
+    'Questioning morals...',
+  ];
+  const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+
   // Get all selected choices in the correct order
   const groupKeys = Object.keys(choiceGroupMap) as ChoiceGroup[];
   const selectedChoices = groupKeys
@@ -264,7 +273,7 @@ const CompletionScreen: FC = () => {
               )}
               <Image
                 src={avatarData.url}
-                alt="Generated Billionaire Avatar"
+                alt="Generated Billionaire"
                 fill
                 className={`object-cover object-top transition-opacity duration-500 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -295,7 +304,7 @@ const CompletionScreen: FC = () => {
             We&apos;re Minting Your Billionaire
           </h1>
           <p className="text-lg-custom landscape:text-regular-custom font-sharp font-bold text-common-ash/80 max-w-[20rem] landscape:max-w-[35rem] mx-auto mb-[2rem]">
-            Assembling unchecked wealth...
+            {randomMessage}
           </p>
           <ProgressBar />
         </div>
