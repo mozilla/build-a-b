@@ -23,7 +23,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       .single<DatabaseAvatarResponse>();
 
     if (error || !selectedAvatar) {
-      throw new Error(error?.message || 'Could not retrieve an avatar.');
+      throw new Error(error?.message || 'Could not retrieve billionaire.');
     }
 
     const { data: newUser, error: userError } = await supabase
