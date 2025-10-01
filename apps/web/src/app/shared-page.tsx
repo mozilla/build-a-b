@@ -265,7 +265,7 @@ export default async function Home({ avatarData }: PageProps) {
         </div>
         <div className="portrait:order-13 landscape:col-span-12">
           <CountDown
-            targetDate="2025-10-17T10:00:00-07:00"
+            targetDate="2025-10-18T10:20:30-07:00"
             className="landscape:mb-0!"
             cta={
               <Link
