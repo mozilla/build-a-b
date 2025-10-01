@@ -157,7 +157,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             href="https://www.mondorobot.com/"
             target="_blank"
             title="Visit MondoRobot website"
-            className="inline-block relative w-[5.5rem] h-[0.7rem] landscape:w-[8.2rem] landscape:h-[1rem]"
+            className="inline-block relative w-[5.5rem] h-[0.7rem] landscape:w-[8.2rem] landscape:h-[1rem] mb-1"
           >
             <Image
               alt="Mondorobot logo"
