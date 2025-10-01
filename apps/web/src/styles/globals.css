@@ -65,7 +65,7 @@
 }
 
 body {
-  @apply antialiased bg-no-repeat bg-contain bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp-sans text-common-ash font-semibold;
+  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp-sans text-common-ash font-semibold;
 }
 
 @keyframes ticker-horizontal-infinite-scroll {
@@ -227,6 +227,46 @@ body {
 
 @utility animate-float-tilt {
   animation: float-tilt 6s ease-in-out infinite;
+}
+
+@keyframes float-tilt-left {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2rem, -1.5rem) rotate(-18deg);
+  }
+  50% {
+    transform: translate(0, 0.5rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(-1.5rem, -2rem) rotate(-12deg);
+  }
+}
+
+@utility animate-float-tilt-left {
+  animation: float-tilt-left 7s ease-in-out infinite;
+}
+
+@keyframes float-tilt-right {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(2rem, -1.5rem) rotate(22deg);
+  }
+  50% {
+    transform: translate(0.5rem, 1rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(1.5rem, -2rem) rotate(15deg);
+  }
+}
+
+@utility animate-float-tilt-right {
+  animation: float-tilt-right 7s ease-in-out infinite;
 }
 
 @keyframes float-tilt-2 {
