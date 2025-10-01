@@ -274,7 +274,7 @@ export default async function Page() {
       </CardsSection>
 
       <CountDown
-        targetDate="2025-10-17T10:00:00-07:00"
+        targetDate="2025-10-18T10:20:30-07:00"
         cta={
           <Suspense fallback={<div>Loading...</div>}>
             <GetStarted
