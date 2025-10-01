@@ -3,6 +3,49 @@ import Window from '@/components/Window';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const floatingImages = [
+  {
+    asset: 'animations/floater-footer.webp',
+    className: 'absolute top-0 left-[14rem] z-100 h-25 w-25 rotate-[25deg]',
+    style: {},
+  },
+  {
+    asset: 'choice-cards/crypto.king.svg',
+    className: 'absolute top-[3rem] left-[38rem] z-100 h-15 w-15 rotate-[25deg]',
+    style: {},
+  },
+  {
+    asset: 'astronaut.webp',
+    className: 'absolute top-[2rem] right-[10rem] z-100 h-30 w-30',
+    style: {},
+  },
+  {
+    asset: 'choice-cards/sea.lord.svg',
+    className: 'absolute top-[12rem] right-[2rem] z-100 h-25 w-25 -rotate-[25deg]',
+    style: {},
+  },
+  {
+    asset: 'animations/flier2-header.webp',
+    className: 'absolute bottom-[2rem] right-[10rem] z-100 h-25 w-25 -rotate-[10deg]',
+    style: {},
+  },
+  {
+    asset: 'choice-cards/data.mine.svg',
+    className: 'absolute bottom-[3rem] left-[30rem] z-100 h-15 w-15 -rotate-[10deg]',
+    style: {},
+  },
+  {
+    asset: 'upside-down.webp',
+    className: 'absolute bottom-[3rem] left-[7rem] z-100 h-40 w-40 -rotate-[10deg]',
+    style: {},
+  },
+  {
+    asset: 'choice-cards/chaos.svg',
+    className: 'absolute top-[13rem] left-[5rem] z-100 h-15 w-15 -rotate-[10deg]',
+    style: {},
+  },
+];
+
 export default function NotFound() {
   return (
     <Bento
@@ -40,6 +83,19 @@ export default function NotFound() {
           </div>
         </Window>
       </Bento>
+      <div id="404-animations" className="portrait:hidden absolute inset-0 pointer-events-none">
+        {floatingImages.map(({ asset, className, style }, index) => (
+          <div key={index} className={className} style={style}>
+            <Image
+              src={`/assets/images/${asset}`}
+              alt={`Floating character ${index + 1}`}
+              fill
+              sizes="(max-width: 768px) 30vw, 20vw"
+              className="object-contain"
+            />
+          </div>
+        ))}
+      </div>
     </Bento>
   );
 }
