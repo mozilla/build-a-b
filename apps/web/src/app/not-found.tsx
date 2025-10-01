@@ -7,41 +7,37 @@ import Link from 'next/link';
 const floatingImages = [
   {
     asset: 'animations/floater-footer.webp',
-    className: 'absolute top-0 left-[14rem] z-100 h-25 w-25 rotate-[25deg] animate-float-tilt',
+    className: 'absolute top-0 left-[14rem] h-25 w-25 rotate-[25deg] animate-float-tilt',
   },
   {
     asset: 'choice-cards/crypto.king.svg',
-    className:
-      'absolute top-[3rem] left-[38rem] z-100 h-15 w-15 rotate-[25deg] animate-float-tilt-left',
+    className: 'absolute top-[3rem] left-[38rem] h-15 w-15 rotate-[25deg] animate-float-tilt-left',
   },
   {
     asset: 'astronaut.webp',
-    className: 'absolute top-[2rem] right-[10rem] z-100 h-30 w-30 animate-float-tilt',
+    className: 'absolute top-[2rem] right-[10rem] h-30 w-30 animate-float-tilt',
   },
   {
     asset: 'choice-cards/sea.lord.svg',
-    className:
-      'absolute top-[12rem] right-[2rem] z-100 h-25 w-25 -rotate-[25deg] animate-float-tilt',
+    className: 'absolute top-[12rem] right-[2rem] h-25 w-25 -rotate-[25deg] animate-float-tilt',
   },
   {
     asset: 'animations/flier2-header.webp',
     className:
-      'absolute bottom-[2rem] right-[10rem] z-100 h-25 w-25 -rotate-[10deg] animate-float-tilt-left',
+      'absolute bottom-[2rem] right-[10rem] h-25 w-25 -rotate-[10deg] animate-float-tilt-left',
   },
   {
     asset: 'choice-cards/data.mine.svg',
     className:
-      'absolute bottom-[3rem] left-[30rem] z-100 h-15 w-15 -rotate-[10deg] animate-float-tilt-right',
+      'absolute bottom-[3rem] left-[30rem] h-15 w-15 -rotate-[10deg] animate-float-tilt-right',
   },
   {
     asset: 'upside-down.webp',
-    className:
-      'absolute bottom-[3rem] left-[7rem] z-100 h-40 w-40 -rotate-[10deg] animate-float-tilt',
+    className: 'absolute bottom-[3rem] left-[7rem] h-40 w-40 -rotate-[10deg] animate-float-tilt',
   },
   {
     asset: 'choice-cards/chaos.svg',
-    className:
-      'absolute top-[13rem] left-[5rem] z-100 h-15 w-15 -rotate-[10deg] animate-float-tilt-left',
+    className: 'absolute top-[13rem] left-[5rem] h-15 w-15 -rotate-[10deg] animate-float-tilt-left',
   },
 ];
 
