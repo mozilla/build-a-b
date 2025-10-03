@@ -377,47 +377,42 @@ Table selfies {
   n_index      int
   asset        text
   status       text         [default: 'published'] // 'queued' | 'generating' | 'moderating' | 'failed' | 'published'
-  generated_at timestamptz
-  moderated_at timestamptz
-  uploaded_at  timestamptz
-  published_at timestamptz
-  meta         jsonb        [default: `{}`]
   created_at   timestamptz  [default: `now()`]
+  moderated_at timestamptz
+  meta         jsonb        [default: `{}`]
+  user_id      bigint       [note: 'Deprecated']
 }
 
 //////////////////////////////////////////////////////
-// TikToks: N-indexed slots with pipeline state
+// Videos: N-indexed slots with pipeline state
 //////////////////////////////////////////////////////
 
-Table tiktoks {
+Table videos {
   id           bigint       [pk]
   avatar_id    bigint       [ref: > avatars.id]
   n_index      int
   asset        text
   status       text         [default: 'published'] // 'queued' | 'generating' | 'moderating' | 'failed' | 'published'
-  generated_at timestamptz
-  moderated_at timestamptz
-  uploaded_at  timestamptz
-  published_at timestamptz
-  meta         jsonb        [default: `{}`]
   created_at   timestamptz  [default: `now()`]
+  moderated_at timestamptz
+  meta         jsonb        [default: `{}`]
 }
 
 //////////////////////////////////////////////////////
 // User ↔ Media (many-to-many consumption log)
 //////////////////////////////////////////////////////
 
-Table users_selfies {
+Table user_selfies {
   id          bigint       [pk]
   user_id     bigint       [ref: > users.id]
   selfie_id   bigint       [ref: > selfies.id]
   created_at  timestamptz  [default: `now()`]
 }
 
-Table users_tiktoks {
+Table user_videos {
   id          bigint       [pk]
   user_id     bigint       [ref: > users.id]
-  tiktok_id   bigint       [ref: > tiktoks.id]
+  video_id   bigint       [ref: > videos.id]
   created_at  timestamptz  [default: `now()`]
 }
 
@@ -428,10 +423,11 @@ Table users_tiktoks {
 Table user_cooldowns {
   id         bigint       [pk]
   user_id    bigint       [ref: > users.id]
-  action     text         // 'selfie' | 'tiktok'
+  action     text         // 'selfie' | 'video'
   next_at    timestamptz
   updated_at timestamptz  [default: `now()`]
   created_at timestamptz  [default: `now()`]
 }
+
 ```
 
