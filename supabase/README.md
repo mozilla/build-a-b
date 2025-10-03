@@ -1,310 +1,315 @@
 # Core API + Queries (Supabase RPC or server routes)
 
+This README is aligned with the latest database schema you provided (users, avatars, user_avatars, selfies/tiktoks with `n_index` and pipeline `status`, junction tables with `id` PKs, and `user_cooldowns` with `id` PK).  
+It documents **traits & random avatar assignment**, **24h Selfies** / **72h TikToks** cooldowns, **N-indexed slots**, and the **pipeline**.
+
+> ℹ️ First-selfie launch time is assumed to be handled by application config (e.g., `SELFIE_FIRST_RELEASE_AT`) rather than a DB `releases` table.
+
+---
+
 ## A. Generate Avatar (initial visit or “Create NEW avatar”)
 
-**Input:** selected traits `{origin_story, core_drive, public_persona, power_play, legacy_plan}`  
+**Input (two modes):**
+- **Traits mode:** `{origin_story, core_drive, public_persona, power_play, legacy_plan}`
+- **Random mode:** `{}` (or `mode: "random"`) → pick any avatar
+
 **Steps:**
 
-1.  Create user (if no cookie):
-    
+1. Create user (if no cookie):
     ```sql
-    INSERT INTO users DEFAULT VALUES RETURNING id, uuid;
+    INSERT INTO users DEFAULT VALUES
+    RETURNING id, uuid;
     ```
 
-2.  Pick a random matching avatar:
-    
+2. Pick a matching or random avatar:
     ```sql
+    -- TRAITS MODE
     WITH pool AS (
-        SELECT id
-        FROM avatars
-        WHERE origin_story = $1
-            AND core_drive = $2
-            AND public_persona = $3
-            AND power_play = $4
-            AND legacy_plan = $5
+      SELECT id
+      FROM avatars
+      WHERE origin_story = $1
+        AND core_drive   = $2
+        AND public_persona = $3
+        AND power_play   = $4
+        AND legacy_plan  = $5
     )
     SELECT id FROM pool ORDER BY random() LIMIT 1;
+
+    -- RANDOM MODE
+    SELECT id FROM avatars ORDER BY random() LIMIT 1;
     ```
 
-3.  Upsert the "current" link + history:
-    
+3. Upsert the "current" link + history:
     ```sql
     -- Clear previous current row (if any)
-    UPDATE user_avatars 
-    SET is_current = false, removed_at = now() 
+    UPDATE user_avatars
+    SET is_current = false, removed_at = now()
     WHERE user_id = $user_id AND is_current = true;
 
     -- Insert new history row
-    INSERT INTO user_avatars (user_id, avatar_id, is_current) 
-    VALUES ($user_id, $avatar_id, true) 
-    ON CONFLICT (user_id, avatar_id) 
-    DO UPDATE SET is_current = true, removed_at = NULL;
+    INSERT INTO user_avatars (user_id, avatar_id, is_current)
+    VALUES ($user_id, $avatar_id, true);
 
     -- Mirror onto users table for fast lookup
-    UPDATE users 
-    SET current_avatar_id = $avatar_id 
+    UPDATE users
+    SET current_avatar_id = $avatar_id
     WHERE id = $user_id;
     ```
 
 **Output:** `{ uuid, current_avatar_id }` → set `uuid` cookie → redirect `/a/{uuid}`.
 
-## B. Delete Avatar (Action 1a)
+---
+
+## B. Delete Avatar
 
 ```sql
 -- Mark history row as not current
-UPDATE user_avatars 
-SET is_current = false, removed_at = now() 
+UPDATE user_avatars
+SET is_current = false, removed_at = now()
 WHERE user_id = $user_id AND is_current = true;
 
 -- Remove current pointer
-UPDATE users 
-SET current_avatar_id = NULL 
+UPDATE users
+SET current_avatar_id = NULL
 WHERE id = $user_id;
 ```
 
-## C. Create NEW Avatar (Action 1b)
+---
 
-Same as **A** but the user already exists (cookie → load `users.id`). Re-run the random selection with given traits, then the upsert sequence.
+## C. Create NEW Avatar (repeat generate)
 
-* * *
+Same as **A** but the user already exists (cookie → load `users.id`). Run **traits** or **random** selection, then upsert current + history.
 
-# Playpen: Selfies
+---
+
+# Playpen: Selfies — 24h Cooldown + N-Indexed Slots
+
+### Overview
+- First selfie (index **0**) unlock is controlled by app config `SELFIE_FIRST_RELEASE_AT` (UTC).
+- Each user has a **24-hour cooldown** between selfie generations, stored in `user_cooldowns` with `action='selfie'`.
+- Selfies per avatar are **slots**: `(avatar_id, n_index)` where `n_index = 0,1,2,...`. The slot must be `status='published'` to grant.
+- After granting slot **N**, **enqueue** slot **N+1** if it does not exist yet (create with `status='queued'` for the worker pipeline).
 
 ## Eligibility (“show the button?”)
-
--   Show **only if** there exists at least one selfie for the user's current avatar **and** it is released.
-    
-    ```sql
-    SELECT EXISTS (
-        SELECT 1
-        FROM selfies s
-        JOIN users u ON u.id = $user_id
-        LEFT JOIN releases r ON r.id = s.release_id
-        WHERE s.avatar_id = u.current_avatar_id
-            AND (r.id IS NULL OR (r.is_active AND r.starts_at <= now()))
-    ) AS can_take;
-    ```
-
-## Action 2a – Take a Selfie (first time)
-
-1.  Fetch released selfies for current avatar, oldest first:
-    
-    ```sql
-    WITH released AS (
-        SELECT s.id
-        FROM selfies s
-        JOIN users u ON u.id = $user_id
-        LEFT JOIN releases r ON r.id = s.release_id
-        WHERE s.avatar_id = u.current_avatar_id
-            AND (r.id IS NULL OR (r.is_active AND r.starts_at <= now()))
-        ORDER BY s.created_at ASC, s.id ASC
-    )
-    SELECT id FROM released;
-    ```
-
-2.  Compute **Nth** index where `N = count(*) already taken by this user for this avatar`.
-    
-    ```sql
-    SELECT COUNT(*) AS taken_count
-    FROM users_selfies us
-    JOIN selfies s ON s.id = us.selfie_id
-    JOIN users u ON u.id = us.user_id
-    WHERE us.user_id = $user_id
-        AND s.avatar_id = u.current_avatar_id;
-    ```
-
-3.  Insert the new selfie (if N < released\_count):
-    
-    ```sql
-    -- Pick Nth item (0-based) from the released list; in SQL:
-    WITH released AS (
-        ... same as above ...
-    ),
-    picked AS (
-        SELECT id FROM released OFFSET $N LIMIT 1
-    )
-    INSERT INTO users_selfies (user_id, selfie_id)
-    SELECT $user_id, id FROM picked;
-    ```
-
-Return the asset URL for UI gallery.
-
-## Action 2b – Take ANOTHER selfie (guard against repeat)
-
--   Repeat the same query but **only insert** when `taken_count < released_count`. Otherwise, no-op and show a “next selfie not released yet” hint.
-    
-
-**Optional stricter guard**:
-
 ```sql
--- Unique (user_id, selfie_id) composite PK already protects duplicates.
--- Add this to ensure avatar consistency:
-ALTER TABLE users_selfies 
-ADD CONSTRAINT users_selfies_same_avatar CHECK (
-    EXISTS (
-        SELECT 1
-        FROM selfies s
-        JOIN users u ON u.id = user_id
-        WHERE s.id = selfie_id
-            AND (u.current_avatar_id IS NULL OR s.avatar_id = u.current_avatar_id)
-    )
+-- 1) Require current avatar
+SELECT current_avatar_id IS NOT NULL
+FROM users WHERE id = $user_id;
+
+-- 2) Compute the user's next index N for their current avatar
+WITH u AS (
+  SELECT id AS user_id, current_avatar_id AS avatar_id
+  FROM users WHERE id = $user_id
+)
+SELECT COALESCE(
+  (SELECT COUNT(*) FROM users_selfies us
+     JOIN selfies s ON s.id = us.selfie_id
+   WHERE us.user_id = (SELECT user_id FROM u)
+     AND s.avatar_id = (SELECT avatar_id FROM u)), 0
+) AS next_n;
+
+-- 3) First selfie time gate (in app code, not SQL):
+-- now() >= to_timestamp(:SELFIE_FIRST_RELEASE_AT)
+
+-- 4) Cooldown gate for N>0
+SELECT COALESCE(
+  (SELECT next_at FROM user_cooldowns
+   WHERE user_id=$user_id AND action='selfie'
+   ORDER BY created_at DESC LIMIT 1),
+  to_timestamp(0)
+) <= now() AS cooldown_ok;
+
+-- 5) Next slot must be published
+WITH u AS (
+  SELECT current_avatar_id AS avatar_id FROM users WHERE id = $user_id
+),
+n AS ( /* compute next_n as above */ SELECT $N AS next_n )
+SELECT EXISTS (
+  SELECT 1 FROM selfies s
+  WHERE s.avatar_id = (SELECT avatar_id FROM u)
+    AND s.n_index   = (SELECT next_n FROM n)
+    AND s.status    = 'published'
+) AS slot_ready;
+```
+
+## Generate Selfie (server RPC/transaction)
+```sql
+-- inside a transaction
+WITH u AS (
+  SELECT id AS user_id, current_avatar_id AS avatar_id
+  FROM users WHERE id = $user_id
+),
+n AS (
+  SELECT /* compute */ $N::int AS next_n
+),
+slot AS (
+  SELECT id FROM selfies
+  WHERE avatar_id = (SELECT avatar_id FROM u)
+    AND n_index   = (SELECT next_n FROM n)
+    AND status    = 'published'
+  FOR UPDATE
+)
+-- Prevent duplicates in users_selfies (schema uses id PK)
+INSERT INTO users_selfies (user_id, selfie_id)
+SELECT (SELECT user_id FROM u), id FROM slot
+WHERE NOT EXISTS (
+  SELECT 1 FROM users_selfies us
+  WHERE us.user_id = (SELECT user_id FROM u)
+    AND us.selfie_id = (SELECT id FROM slot)
+);
+
+-- Upsert cooldown to now + 24h
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM user_cooldowns WHERE user_id=$user_id AND action='selfie') THEN
+    UPDATE user_cooldowns
+    SET next_at = now() + interval '24 hours', updated_at = now()
+    WHERE user_id=$user_id AND action='selfie';
+  ELSE
+    INSERT INTO user_cooldowns (user_id, action, next_at)
+    VALUES ($user_id, 'selfie', now() + interval '24 hours');
+  END IF;
+END $$;
+
+-- Enqueue N+1 if missing
+INSERT INTO selfies (avatar_id, n_index, status)
+SELECT (SELECT avatar_id FROM u), (SELECT next_n FROM n) + 1, 'queued'
+WHERE NOT EXISTS (
+  SELECT 1 FROM selfies
+  WHERE avatar_id = (SELECT avatar_id FROM u)
+    AND n_index   = (SELECT next_n FROM n) + 1
 );
 ```
 
-(You may skip the CHECK if you allow users to keep old selfies after switching avatars—which your flow does.)
+**Response:** `{ assetUrl, n_indexGranted, next_available_at }`
 
-* * *
+---
 
-# Playpen: TikTok (mirrors Selfies)
+# Playpen: TikTok — 72h Cooldown + N-Indexed Slots
 
--   Replace `selfies` → `tiktoks`, `users_selfies` → `users_tiktoks`.
-    
--   Same released gating and Nth-index selection logic.
-    
+TikTok mirrors the Selfie flow but uses a **72-hour** per-user cooldown (`action='tiktok'`). If you have a first-release time, handle it in app config (e.g., `TIKTOK_FIRST_RELEASE_AT`).
 
-* * *
+## Generate TikTok (server RPC/transaction)
+```sql
+-- inside a transaction (identical shape to selfies)
+WITH u AS (
+  SELECT id AS user_id, current_avatar_id AS avatar_id
+  FROM users WHERE id = $user_id
+),
+n AS (
+  SELECT /* compute */ $N::int AS next_n
+),
+slot AS (
+  SELECT id FROM tiktoks
+  WHERE avatar_id = (SELECT avatar_id FROM u)
+    AND n_index   = (SELECT next_n FROM n)
+    AND status    = 'published'
+  FOR UPDATE
+)
+INSERT INTO users_tiktoks (user_id, tiktok_id)
+SELECT (SELECT user_id FROM u), id FROM slot
+WHERE NOT EXISTS (
+  SELECT 1 FROM users_tiktoks ut
+  WHERE ut.user_id = (SELECT user_id FROM u)
+    AND ut.tiktok_id = (SELECT id FROM slot)
+);
 
-# Redirect + Cookie Logic (frontend/server)
+-- Cooldown to now + 72h
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM user_cooldowns WHERE user_id=$user_id AND action='tiktok') THEN
+    UPDATE user_cooldowns
+    SET next_at = now() + interval '72 hours', updated_at = now()
+    WHERE user_id=$user_id AND action='tiktok';
+  ELSE
+    INSERT INTO user_cooldowns (user_id, action, next_at)
+    VALUES ($user_id, 'tiktok', now() + interval '72 hours');
+  END IF;
+END $$;
 
-## Cookie
-
--   Name: `bb_uuid`
-    
--   Value: `users.uuid`
-    
--   Attributes: `Path=/; Max-Age=31536000; SameSite=Lax; Secure`.
-    
-
-## Middleware (pseudo-code)
-
-```ts
-// Pseudo Next.js/Astro middleware
-const uuid = getCookie('bb_uuid');
-
-if (pathname === '/' || pathname === '/index') {
-    if (uuid) return redirect(`/a/${uuid}`);
-    return next(); // show default homepage
-}
-
-if (pathname.startsWith('/a/')) {
-    const urlUuid = pathname.split('/')[2];
-    
-    // If no cookie but URL has a valid UUID and user clicks "Save",
-    // set cookie client-side after the action; otherwise we still render.
-    return next();
-}
+-- Enqueue N+1 if missing
+INSERT INTO tiktoks (avatar_id, n_index, status)
+SELECT (SELECT avatar_id FROM u), (SELECT next_n FROM n) + 1, 'queued'
+WHERE NOT EXISTS (
+  SELECT 1 FROM tiktoks
+  WHERE avatar_id = (SELECT avatar_id FROM u)
+    AND n_index   = (SELECT next_n FROM n) + 1
+);
 ```
 
-## /a/{uuid} page loader
+**Response:** `{ assetUrl, n_indexGranted, next_available_at }`
 
-```ts
-// fetch user by uuid
-const user = await db.users.findByUUID(uuid);
-
-// Decide which bento to render
-if (user?.current_avatar_id) {
-    const avatar = await db.avatars.getById(user.current_avatar_id);
-    return renderAvatarBento({ user, avatar });
-} else {
-    return renderGenerateBento({ user }); // still on /a/{uuid}
-}
-```
-
-## “Save” action
-
--   When clicked (QR / copy link modal), set `bb_uuid` cookie if absent:
-    
-    ```ts
-    if (!getCookie('bb_uuid')) setCookie('bb_uuid', uuid, cookieOptions);
-    ```
-
-* * *
+---
 
 # Endpoints (suggested)
 
--   `POST /api/users` → create user, returns `{uuid}` (used when no cookie).
-    
--   `POST /api/avatars/assign` → body: `{ uuid, traits }` → selects random avatar, updates `users.current_avatar_id` and `user_avatars`.
-    
--   `DELETE /api/avatars/current` → body: `{ uuid }` → clears current avatar.
-    
--   `POST /api/selfies/take` → body: `{ uuid }` → performs Nth logic, returns `{assetUrl}` or `{status: "no_more_released"}`.
-    
--   `POST /api/tiktoks/take` → body: `{ uuid }` → mirrors selfies.
-    
+- `POST /api/users` → create user, returns `{uuid}` (used when no cookie).  
+- `POST /api/avatars/assign` → `{ uuid, traits? }` → traits or random; updates `users.current_avatar_id` + history.  
+- `DELETE /api/avatars/current` → `{ uuid }` → clears current avatar.  
+- `GET /api/selfies/eligibility` → `{ uuid }` → `{ canGenerate, reason, nextIndex, slotReady, nextAvailableAt }`.  
+- `POST /api/selfies/generate` → `{ uuid }` → grants N, sets +24h, enqueues N+1.  
+- `GET /api/tiktoks/eligibility` / `POST /api/tiktoks/generate` → mirror selfies with 72h cooldown.
 
-(If you prefer Supabase SQL/RPC, wrap each as a `SECURITY DEFINER` function and call via `supabase.rpc`.)
+(Or implement as Supabase RPCs with `SECURITY DEFINER`.)
 
-* * *
+---
 
-# Indexes you’ll want
+# Indexes & Constraints (recommended)
+
+> Your current schema uses surrogate `id` PKs for junctions and cooldowns. To guarantee idempotency and fast lookups, add the following:
 
 ```sql
--- Fast trait filters for avatar selection
-CREATE INDEX avatars_traits_idx ON avatars (origin_story, core_drive, public_persona, power_play, legacy_plan);
+-- Deduplicate log rows (optional but recommended)
+CREATE UNIQUE INDEX IF NOT EXISTS users_selfies_unique
+  ON users_selfies (user_id, selfie_id);
 
--- Fast lookups
-CREATE INDEX users_uuid_idx ON users (uuid);
-CREATE INDEX selfies_avatar_created_idx ON selfies (avatar_id, created_at);
-CREATE INDEX tiktoks_avatar_created_idx ON tiktoks (avatar_id, created_at);
+CREATE UNIQUE INDEX IF NOT EXISTS users_tiktoks_unique
+  ON users_tiktoks (user_id, tiktok_id);
 
--- Release gating
-CREATE INDEX releases_active_time_idx ON releases (kind, is_active, starts_at);
+-- One cooldown row per (user, action)
+CREATE UNIQUE INDEX IF NOT EXISTS user_cooldowns_unique
+  ON user_cooldowns (user_id, action);
+
+-- Fast reads
+CREATE INDEX IF NOT EXISTS users_uuid_idx ON users (uuid);
+CREATE INDEX IF NOT EXISTS selfies_avatar_n_idx ON selfies (avatar_id, n_index);
+CREATE INDEX IF NOT EXISTS selfies_status_idx   ON selfies (status);
+CREATE INDEX IF NOT EXISTS tiktoks_avatar_n_idx ON tiktoks (avatar_id, n_index);
+CREATE INDEX IF NOT EXISTS tiktoks_status_idx   ON tiktoks (status);
+CREATE INDEX IF NOT EXISTS users_selfies_user_idx ON users_selfies (user_id);
+CREATE INDEX IF NOT EXISTS users_tiktoks_user_idx ON users_tiktoks (user_id);
 ```
 
-* * *
+---
 
 # Supabase Security (RLS sketch)
 
--   **users**: readable by UUID cookie only; writes via RPC.
-    
+- **users**: readable by UUID cookie only; writes via RPC.
+  ```sql
+  ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "read own by uuid" ON users
+  FOR SELECT USING (uuid::text = current_setting('app.bb_uuid', true));
+  ```
+- **RPCs**: implement avatar assignment/deletion and media generation as `SECURITY DEFINER` functions; validate `uuid` → `user_id` inside the function; set `app.bb_uuid` if needed.
 
-```sql
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "read own by uuid" ON users 
-FOR SELECT USING (uuid::text = current_setting('app.bb_uuid', true));
-
--- You can set `app.bb_uuid` in a PostgREST pre-request or pass via RPC.
-```
-
--   Prefer **RPC functions** (`SECURITY DEFINER`) to execute the write sequences for avatar assignment, deletion, and selfie/tiktok taking. They bypass RLS internally while verifying inputs.
-    
-
-* * *
+---
 
 # Edge cases handled
 
--   User with cookie but **no current avatar** → Generate bento on `/a/{uuid}`.
-    
--   No released selfie yet for that avatar → button hidden (eligibility check).
-    
--   Switching avatars **does not** break prior selfies: `users_selfies` stays historical.
-    
--   Random selection among multiple avatars with identical traits.
-    
--   Idempotency: composite PKs for users\_selfies/users\_tiktoks prevent duplicates; “Nth” logic ensures correct progression with release cadence.
-    
+- Cookie but **no current avatar** → Generate bento on `/a/{uuid}`.  
+- **Prelaunch** (selfie/tiktok 0): gated by app config datetime.  
+- **Cooldown**: button shows countdown to `user_cooldowns.next_at`.  
+- **Preparing**: next slot exists but not `published` → disabled with “Preparing…”.  
+- Switching avatars does not remove past media.  
+- Idempotency via unique indices + `WHERE NOT EXISTS` inserts.  
+- Random selection when traits omitted.
+
 
 * * *
 
-If you want, I can package the above into:
-
-1.  SQL migrations for Supabase (`supabase/migrations/*.sql`)
-    
-2.  A set of Postgres RPC functions for each action (assign, delete, take\_selfie, take\_tiktok)
-    
-3.  Minimal TypeScript client calls (Supabase JS) for each endpoint
-    
-
-Just say the word and I’ll drop those in.
-
-
-
-
-
-
 # DBML (complete, normalized)
+
+https://dbdiagram.io/d/MozBBO-DB-Schema-68cb6eab5779bb7265fe1f7a
 
 ```dbml
 //////////////////////////////////////////////////////
@@ -343,9 +348,9 @@ Table avatars {
 
 Table users {
   id                 bigint      [pk]
-  created_at         timestamptz [default: `now()`]
   uuid               uuid        [default: `gen_random_uuid()`]
   current_avatar_id  bigint      [ref: > avatars.id] // nullable
+  created_at         timestamptz [default: `now()`]
 }
 
 //////////////////////////////////////////////////////
@@ -359,30 +364,43 @@ Table user_avatars {
   assigned_at timestamptz  [default: `now()`]
   removed_at  timestamptz
   is_current  bool         [default: false]
-
-  Indexes {
-    (user_id, avatar_id) [unique]  // prevent duplicates
-  }
+  created_at  timestamptz  [default: `now()`]
 }
 
 //////////////////////////////////////////////////////
-// Media (pre-generated, belongs to Avatars)
+// Selfies: N-indexed slots with pipeline state
 //////////////////////////////////////////////////////
 
 Table selfies {
-  id          bigint       [pk]
-  avatar_id   bigint       [ref: > avatars.id]
-  asset       text                     // URL/path in storage
-  created_at  timestamptz  [default: `now()`]
-  release_id  bigint                   // optional: link to staged releases
+  id           bigint       [pk]
+  avatar_id    bigint       [ref: > avatars.id]
+  n_index      int
+  asset        text
+  status       text         [default: 'published'] // 'queued' | 'generating' | 'moderating' | 'failed' | 'published'
+  generated_at timestamptz
+  moderated_at timestamptz
+  uploaded_at  timestamptz
+  published_at timestamptz
+  meta         jsonb        [default: `{}`]
+  created_at   timestamptz  [default: `now()`]
 }
 
+//////////////////////////////////////////////////////
+// TikToks: N-indexed slots with pipeline state
+//////////////////////////////////////////////////////
+
 Table tiktoks {
-  id          bigint       [pk]
-  avatar_id   bigint       [ref: > avatars.id]
-  asset       text
-  created_at  timestamptz  [default: `now()`]
-  release_id  bigint
+  id           bigint       [pk]
+  avatar_id    bigint       [ref: > avatars.id]
+  n_index      int
+  asset        text
+  status       text         [default: 'published'] // 'queued' | 'generating' | 'moderating' | 'failed' | 'published'
+  generated_at timestamptz
+  moderated_at timestamptz
+  uploaded_at  timestamptz
+  published_at timestamptz
+  meta         jsonb        [default: `{}`]
+  created_at   timestamptz  [default: `now()`]
 }
 
 //////////////////////////////////////////////////////
@@ -390,37 +408,30 @@ Table tiktoks {
 //////////////////////////////////////////////////////
 
 Table users_selfies {
+  id          bigint       [pk]
   user_id     bigint       [ref: > users.id]
   selfie_id   bigint       [ref: > selfies.id]
-  taken_at    timestamptz  [default: `now()`]
-
-  Indexes {
-    (user_id, selfie_id) [pk]  // composite PK
-    (user_id)
-  }
+  created_at  timestamptz  [default: `now()`]
 }
 
 Table users_tiktoks {
+  id          bigint       [pk]
   user_id     bigint       [ref: > users.id]
   tiktok_id   bigint       [ref: > tiktoks.id]
-  taken_at    timestamptz  [default: `now()`]
-
-  Indexes {
-    (user_id, tiktok_id) [pk]
-    (user_id)
-  }
+  created_at  timestamptz  [default: `now()`]
 }
 
 //////////////////////////////////////////////////////
-// Cadence / feature gating (optional but useful)
+// Cooldowns (per user / per action)
 //////////////////////////////////////////////////////
 
-Table releases {
-  id          bigint       [pk]
-  kind        text                      // 'selfie' | 'tiktok'
-  name        text
-  starts_at   timestamptz               // when this content is “released”
-  is_active   bool         [default: true]
+Table user_cooldowns {
+  id         bigint       [pk]
+  user_id    bigint       [ref: > users.id]
+  action     text         // 'selfie' | 'tiktok'
+  next_at    timestamptz
+  updated_at timestamptz  [default: `now()`]
+  created_at timestamptz  [default: `now()`]
 }
 ```
 
