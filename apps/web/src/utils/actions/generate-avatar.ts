@@ -28,7 +28,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
 
     const { data: newUser, error: userError } = await supabase
       .from('users')
-      .insert({ avatar_id: selectedAvatar.id })
+      .insert({ current_avatar_id: selectedAvatar.id })
       .select()
       .single<DatabaseUserResponse>();
 
