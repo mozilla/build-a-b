@@ -41,8 +41,9 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
 
     removeAvatarByUser(currentUserId)
       .then(() => {
-        // Successfully removed avatar for user ${currentUserId}
-        router.push('/'); // Redirect to home
+        // Successfully removed avatar for user ${currentUserId}.
+        // Refresh the current page (re-run server components)
+        router.refresh();
       })
       .catch((e) => {
         console.error(`Error removing billionaire`, e);
