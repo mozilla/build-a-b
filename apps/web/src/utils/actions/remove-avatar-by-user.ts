@@ -6,11 +6,11 @@ export async function removeAvatarByUser(userUuid: string): Promise<void> {
   try {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc('remove_avatar_by_user', {
+    const { error } = await supabase.rpc('remove_avatar_by_user', {
       p_uuid: userUuid,
     });
 
-    if (error || !data) {
+    if (error) {
       throw new Error(error?.message || 'Could not remove avatar by user.');
     }
   } catch (e) {
