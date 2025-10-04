@@ -118,7 +118,7 @@ const navigationData = {
     { href: '/', label: 'Home', title: 'Go to home' },
     { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
     // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
-    { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
+    { href: '/datawar', label: 'Data War', title: 'Play our game Data War' },
   ],
   socials: [
     {
