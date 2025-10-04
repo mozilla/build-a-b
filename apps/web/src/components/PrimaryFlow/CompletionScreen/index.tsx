@@ -11,9 +11,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@heroui/react';
 import Scrim from '@/components/Scrim';
 
-const CompletionScreen: FC = () => {
+interface CompletionScreenProps {
+  onContinue: () => void;
+}
+
+const CompletionScreen: FC<CompletionScreenProps> = ({ onContinue }) => {
   const router = useRouter();
-  const { userChoices, avatarData } = usePrimaryFlowContext();
+  const { userChoices, avatarData, reset } = usePrimaryFlowContext();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -333,7 +337,9 @@ const CompletionScreen: FC = () => {
           onPress={() => {
             setIsRedirecting(true);
             router.push(`/a/${avatarData.uuid}`);
+            onContinue();
             setIsRedirecting(false);
+            reset();
           }}
         >
           <span className={isRedirecting ? 'hidden' : 'block'}>Continue</span>

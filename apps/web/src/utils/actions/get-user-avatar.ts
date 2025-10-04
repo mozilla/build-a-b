@@ -19,11 +19,13 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
     // Get user avatar data in a single query
     const { data: avatar, error: avatarError } = await supabase
       .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
-      .single<DatabaseAvatarResponse>();
+      .maybeSingle<DatabaseAvatarResponse>();
 
-    if (avatarError || !avatar) {
+    if (avatarError) {
       throw new Error(avatarError?.message || 'Could not retrieve user billionaire.');
     }
+
+    if (!avatar) return null;
 
     return {
       originalRidingAsset: avatar.asset_riding || '',
@@ -32,7 +34,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userAssociationId,
-      selfies: avatar.selfies,
+      selfies: [], // TODO: Query avatar.selfies with the new DB structure
     };
   } catch (e) {
     // This will be available via server logs.

@@ -13,6 +13,8 @@ export default async function Home({
 
   const cookieStore = await cookies();
   const { value } = cookieStore.get(COOKIE_NAME) || {};
+
+  // If a cookie value exists redirect to the user's avatar page
   if (value && !searchTerm) {
     return redirect(`/a/${value}`);
   }
