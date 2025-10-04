@@ -27,7 +27,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { activeGroup, showConfirmation, userChoices, avatarData, reset } = usePrimaryFlowContext();
+  const { activeGroup, showConfirmation, userChoices, reset } = usePrimaryFlowContext();
 
   // Check if all choices are completed
   const totalGroups = Object.keys(choiceGroupMap).length;
@@ -61,14 +61,9 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
   // Reset everything when modal closes
   const handleModalClose = (open: boolean) => {
     if (!open) {
-      if (avatarData) {
-        router.push(`/a/${avatarData.uuid}`);
-        onOpenChange();
-      } else {
-        reset();
-        router.replace('/');
-        onOpenChange();
-      }
+      reset();
+      router.push('/');
+      onOpenChange();
     }
   };
 
