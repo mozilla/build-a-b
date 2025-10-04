@@ -1,6 +1,5 @@
 import Bento from '@/components/Bento';
 import Window from '@/components/Window';
-import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 
