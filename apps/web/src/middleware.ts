@@ -13,3 +13,8 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
+// Paths where this middleware is applied
+export const config = {
+  matcher: ['/', '/a/:path*'],
+};
