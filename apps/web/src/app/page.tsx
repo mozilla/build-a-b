@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
-import SharedPage from './shared-page';
 import { COOKIE_NAME } from '@/utils/constants';
-import { redirect } from 'next/navigation';
+import SharedPage from './shared-page';
+import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 
 export default async function Home({
   searchParams,
@@ -12,12 +12,9 @@ export default async function Home({
   const searchTerm = queryParams.s;
 
   const cookieStore = await cookies();
-  const { value } = cookieStore.get(COOKIE_NAME) || {};
+  const userCookie = cookieStore.get(COOKIE_NAME);
+  const userId = userCookie?.value;
 
-  // If a cookie value exists redirect to the user's avatar page
-  if (value && !searchTerm) {
-    return redirect(`/a/${value}`);
-  }
-
-  return <SharedPage />;
+  const avatarData = userId && !searchTerm ? await getUserAvatar(userId) : null;
+  return <SharedPage avatarData={avatarData} />;
 }
