@@ -132,7 +132,7 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
                 transition={pageTransition}
                 className="relative inset-0"
               >
-                <CompletionScreen />
+                <CompletionScreen onContinue={onOpenChange} />
               </motion.div>
             )}
             {shouldShowIntroScreen && (
