@@ -33,8 +33,11 @@ const BentoPlaypenSelfie: FC = () => {
   const vaultImages = useMemo(() => {
     if (!avatarData) return [];
 
-    const parsedSelfies = avatarData.selfies.map((s) => s.asset);
-    return [...parsedSelfies, avatarData.url].filter(Boolean) as string[];
+    // TODO: Revisit selfies logic here with the new DB structure.
+    // const parsedSelfies = avatarData.selfies.map((s) => s.asset);
+    // return [...parsedSelfies, avatarData.url].filter(Boolean) as string[];
+
+    return [];
   }, [avatarData]);
 
   const handleClose = () => {
