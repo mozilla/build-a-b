@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { FC, useMemo } from 'react';
 import BrowserBento from '../BrowserBento';
 import { removeAvatarByUser } from '@/utils/actions/remove-avatar-by-user';
+import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 
 interface PlaypenRestartProps {
   action: Action;
@@ -27,6 +28,7 @@ const microcopy = {
 } as const;
 
 const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCancel }) => {
+  const { reset } = usePrimaryFlowContext();
   const router = useRouter();
 
   const selectedAsset = useMemo(() => {
@@ -43,6 +45,7 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
       .then(() => {
         // Successfully removed avatar for user ${currentUserId}.
         // Refresh the current page (re-run server components)
+        reset();
         router.refresh();
       })
       .catch((e) => {
