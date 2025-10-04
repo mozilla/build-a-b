@@ -26,17 +26,18 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       throw new Error(error?.message || 'Could not retrieve billionaire.');
     }
 
-    const { data: newUser, error: userError } = await supabase
-      .from('users')
-      .insert({ current_avatar_id: selectedAvatar.id })
-      .select()
+    const { data: newOrUpdatedUser, error: upsertError } = await supabase
+      .rpc('upsert_user_with_avatar', {
+        p_uuid: cookieStore.get(COOKIE_NAME)?.value || '',
+        p_avatar_id: selectedAvatar.id,
+      })
       .single<DatabaseUserResponse>();
 
-    if (userError) {
-      throw userError;
+    if (upsertError || !newOrUpdatedUser) {
+      throw new Error(upsertError?.message || 'Could not create/update user.');
     }
 
-    cookieStore.set(COOKIE_NAME, newUser?.uuid || '');
+    cookieStore.set(COOKIE_NAME, newOrUpdatedUser?.uuid || '');
 
     // Add 4 second delay before returning data
     await new Promise((resolve) => setTimeout(resolve, 4000));
@@ -47,7 +48,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       url: buildImageUrl(selectedAvatar.asset_riding),
       bio: selectedAvatar.character_story || '',
       name: `${selectedAvatar.first_name} ${selectedAvatar.last_name}`,
-      uuid: newUser?.uuid || '',
+      uuid: newOrUpdatedUser?.uuid || '',
       selfies: [],
     };
   } catch (e) {
