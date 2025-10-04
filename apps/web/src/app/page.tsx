@@ -8,8 +8,6 @@ export default async function Home({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const queryParams = await searchParams;
-
   const cookieStore = await cookies();
   const { value } = cookieStore.get(COOKIE_NAME) || {};
 
