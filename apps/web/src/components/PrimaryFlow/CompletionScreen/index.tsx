@@ -7,7 +7,7 @@ import { type FC, useState } from 'react';
 import BrowserBento from '../../BrowserBento';
 import ProgressBar from '../../ProgressBar';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@heroui/react';
 import Scrim from '@/components/Scrim';
 
