@@ -26,9 +26,11 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       throw new Error(error?.message || 'Could not retrieve billionaire.');
     }
 
+    const cookieValue = cookieStore.get(COOKIE_NAME)?.value || '';
+
     const { data: newOrUpdatedUser, error: upsertError } = await supabase
       .rpc('upsert_user_with_avatar', {
-        p_uuid: cookieStore.get(COOKIE_NAME)?.value || '',
+        p_uuid: cookieValue,
         p_avatar_id: selectedAvatar.id,
       })
       .single<DatabaseUserResponse>();
@@ -37,7 +39,9 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       throw new Error(upsertError?.message || 'Could not create/update user.');
     }
 
-    cookieStore.set(COOKIE_NAME, newOrUpdatedUser?.uuid || '');
+    if (cookieValue !== newOrUpdatedUser?.uuid) {
+      cookieStore.set(COOKIE_NAME, newOrUpdatedUser?.uuid || '');
+    }
 
     // Add 4 second delay before returning data
     await new Promise((resolve) => setTimeout(resolve, 4000));
