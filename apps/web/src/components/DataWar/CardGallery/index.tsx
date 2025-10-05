@@ -89,7 +89,7 @@ const CardGallery:FC<CardGalleryProps> = ({cards , visibleCount =5}) => {
         [maxIndex]
     );
 
-    const articleStyle = `shrink-0 p-4 w-full landscape:w-1/${visibleCount}`;
+    const articleStyle = `shrink-0 p-4 portrait:w-full landscape:w-1/5`;
 
     return (
         <section className="w-full relative mt-4" aria-roledescription='carousel' aria-label='Card Gallery'>
