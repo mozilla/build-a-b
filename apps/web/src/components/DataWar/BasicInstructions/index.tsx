@@ -11,21 +11,21 @@ const BasicInstructions =() => {
                         landscape:pt-12 landscape:pb-12 overflow-visible'
         >
             <div className='relative flex flex-col landscape:flex-row landscape:justify-between'>
-                <div className='portrait:mt-30 landscape:order-1 order-2'>
+                <div className='portrait:mt-40 landscape:order-1 order-2'>
                     <h6 className='text-nav-item'>Data War Instructions</h6>
                     <h1 className='text-title-1 landscape:text-5xl-custom landscape:text-6xl-custom'>This is Data War!</h1>
                     <div className='flex flex-row justify-start flex-wrap content-end items-end gap-5 mt-2'>
-                        <div className='border-common-ash border-1 rounded p-2 text-sm-custom'>
+                        <div className='border-common-ash border-1 rounded-xl p-2 text-sm-custom'>
                             <span >Ages</span>
                             <br/>
                             <span className='font-bold text-lg-custom'>7+</span>
                         </div>
-                        <div className='border-common-ash border-1 rounded p-2 text-sm-custom'>
+                        <div className='border-common-ash border-1 rounded-xl p-2 text-sm-custom'>
                             <span>Payers</span>
                             <br/>
                             <span className='font-bold text-lg-custom'>2-4</span>
                         </div>
-                        <div className='border-common-ash border-1 rounded p-2 text-sm-custom'>
+                        <div className='border-common-ash border-1 rounded-xl p-2 text-sm-custom'>
                             <span>Time</span>
                             <br/>
                             <span className='font-bold text-lg-custom'>5-15 </span>min
