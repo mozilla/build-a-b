@@ -1,6 +1,6 @@
 import Bento from '@/components/Bento';
 import Image from 'next/image';
-import SimpleCard from '@/components/DataWar/SimpleCard';
+import ListItemCard from '@/components/DataWar/ListItemCard';
 
 const BasicInstructions =() => {
 
@@ -64,19 +64,19 @@ const BasicInstructions =() => {
                     
                 </div>
                 <div className='flex flex-col gap-4 justify-between'>
-                    <SimpleCard 
+                    <ListItemCard 
                         imageAlt='Infinite icon'
                         imageSrc='/assets/images/data-war/infinite-icon.webp'
                         text='Like Classic War with infinite twists and drama.'
                         className='text-charcoal'
                     />
-                    <SimpleCard 
+                    <ListItemCard 
                         imageAlt='Fire Dice icon'
                         imageSrc='/assets/images/data-war/fire-dice-icon.webp'
                         text='Casual and chaotic with chained effects sudden shifts in power.'
                         className='text-charcoal'
                     />
-                    <SimpleCard 
+                    <ListItemCard 
                         imageAlt='Rocket icon'
                         imageSrc='/assets/images/data-war/rocket-icon.webp'
                         text='Collect all win conditions and blast your Billionaire off into space!'
