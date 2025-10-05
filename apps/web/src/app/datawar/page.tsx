@@ -1,5 +1,6 @@
 import BasicInstructions from "@/components/DataWar/BasicInstructions";
 import CountDown from "@/components/CountDown";
+import LineUp from "@/components/DataWar/LineUp";
 import Bento from "@/components/Bento";
 import Window from '@/components/Window';
 import { Suspense } from 'react';
@@ -11,6 +12,8 @@ export default async function Page() {
     return (
         <>
         <BasicInstructions/>
+
+        <LineUp/>
 
         <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
           <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
