@@ -52,7 +52,7 @@ const LineUp = () => {
                         landscape:pt-12 landscape:pb-12"
         >
             <div>
-                <h1 className="text-title-1 landscape:text-5xl-custom landscape:text-6xl-custom">The Lineup</h1>
+                <h1 className="text-title-1 landscape:text-5xl-custom">The Lineup</h1>
                 <p className="text-sm-custom">Meet the cards of Data War.</p>
             </div>
             

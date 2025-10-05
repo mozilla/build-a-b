@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { FC } from 'react';
 import Image from 'next/image';
 
-export interface SimpleCardProps {
+export interface ListItemCardProps {
     imageSrc: string;
     imageAlt: string;
     text: string;
@@ -11,7 +11,7 @@ export interface SimpleCardProps {
 }
 const defaultStyles = 'flex gap-4 p-6 landscape:flex-row landscape:content-center items-center rounded-xl landscape:gap-4 landscape:p-10 bg-gradient-to-r from-[#FFEA80] to-[#FF8A50]';
 
-const SimpleCard:FC<SimpleCardProps> = ({imageAlt, imageSrc, text, className}) => {
+const ListItemCard:FC<ListItemCardProps> = ({imageAlt, imageSrc, text, className}) => {
     const classData = clsx(defaultStyles, className);
     return (
         <div className={classData}>
@@ -32,4 +32,4 @@ const SimpleCard:FC<SimpleCardProps> = ({imageAlt, imageSrc, text, className}) =
     );
 };
 
-export default SimpleCard;
+export default ListItemCard;
