@@ -1,7 +1,7 @@
 'use client';
 
 import { choiceGroupMap } from '@/constants/choice-map';
-import { useDisclosure } from '@heroui/react';
+import { Button, useDisclosure } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, type FC } from 'react';
@@ -98,13 +98,9 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
 
   return (
     <>
-      <button
-        onClick={onStartFlow}
-        type="button"
-        className={`secondary-button ${triggerClassNames}`}
-      >
+      <Button onPress={onStartFlow} className={`secondary-button ${triggerClassNames}`}>
         {ctaText}
-      </button>
+      </Button>
       <Modal isOpen={isOpen} onOpenChange={handleModalClose}>
         {/* Screen reader announcements for step changes */}
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
