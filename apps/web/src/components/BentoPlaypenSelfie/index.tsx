@@ -1,23 +1,24 @@
 'use client';
 
+import { FC, useMemo, useState, startTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
 import { Button, useDisclosure } from '@heroui/react';
-import Image from 'next/image';
-import { FC, useMemo, useState } from 'react';
 import Bento from '../Bento';
 import PlaypenPopup from '../PlaypenPopup';
 import Carousel from '../PrimaryFlow/Carousel';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
-import { useAvatarActions } from '@/hooks';
 import ShareAvatar from '../ShareAvatar';
 import { useWindowSize } from '@/hooks/useWindowSize';
+import { AvatarData } from '@/types';
 
-const BentoPlaypenSelfie: FC = () => {
+const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData }) => {
+  const router = useRouter();
   const { onOpenChange } = useDisclosure();
-  const { setAvatarData, setShowVault, showVault, avatarData } = usePrimaryFlowContext();
+  const { setShowVault, showVault } = usePrimaryFlowContext();
   const resolution = useWindowSize();
-  const { isNavigatorShareAvailable } = useAvatarActions({ avatar: avatarData });
   const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
   const swiperOptions = useMemo(
     () => ({
@@ -29,16 +30,6 @@ const BentoPlaypenSelfie: FC = () => {
     }),
     [resolution],
   );
-
-  const vaultImages = useMemo(() => {
-    if (!avatarData) return [];
-
-    // TODO: Revisit selfies logic here with the new DB structure.
-    // const parsedSelfies = avatarData.selfies.map((s) => s.asset);
-    // return [...parsedSelfies, avatarData.url].filter(Boolean) as string[];
-
-    return [];
-  }, [avatarData]);
 
   const handleClose = () => {
     setShowVault(false);
@@ -73,9 +64,11 @@ const BentoPlaypenSelfie: FC = () => {
                 const selfie = await generateAvatarSelfie();
                 if (!selfie) return;
 
-                setAvatarData((data) =>
-                  !data ? data : { ...data, selfies: [...data.selfies, selfie] },
-                );
+                // Wait 4 second delay before showing vault
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+
+                // Background refresh of the server component tree
+                startTransition(() => router.refresh());
 
                 setShowVault(true);
               } catch {
@@ -104,35 +97,32 @@ const BentoPlaypenSelfie: FC = () => {
                 containerClassName="w-full max-w-[44rem]"
                 swiperOptions={swiperOptions}
                 withArrowNavigation={resolution === 'landscape'}
-                slides={vaultImages.map((img, i) => (
-                  <div key={i} className="flex justify-center items-center">
-                    <Image
-                      src={img}
-                      width={300}
-                      height={300}
-                      className="rounded-xl max-w-[300px] landscape:hidden"
-                      alt=""
-                      priority
-                    />
-                    <Image
-                      src={img}
-                      width={466}
-                      height={466}
-                      className="rounded-xl hidden w-auto max-w-[466px] landscape:block"
-                      alt=""
-                      priority
-                    />
-                  </div>
-                ))}
+                slides={
+                  avatarData?.selfies.map(({ asset }, i) => (
+                    <div key={i} className="flex justify-center items-center">
+                      <Image
+                        src={asset ?? ''}
+                        width={300}
+                        height={300}
+                        className="rounded-xl max-w-[300px] landscape:hidden"
+                        alt=""
+                        priority
+                      />
+                      <Image
+                        src={asset ?? ''}
+                        width={466}
+                        height={466}
+                        className="rounded-xl hidden w-auto max-w-[466px] landscape:block"
+                        alt=""
+                        priority
+                      />
+                    </div>
+                  )) || []
+                }
               />
             </div>
-            {avatarData && (
-              <ShareAvatar
-                avatar={avatarData}
-                navigatorShareAvailable={isNavigatorShareAvailable}
-                onBookmarkClick={() => {}}
-                centered
-              />
+            {avatarData?.selfies && (
+              <ShareAvatar avatar={avatarData} onBookmarkClick={() => {}} centered />
             )}
           </div>
         </PlaypenPopup>
