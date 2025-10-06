@@ -1,5 +1,9 @@
 import Image from 'next/image';
 import SimpleItemCard from '@/components/DataWar/SimpleItemCard';
+import SocialNetwork from '@/components/SocialNetwork';
+import { socials } from '@/app/layout';
+
+
 
 const FullInstructions = () => {
     return (
@@ -26,7 +30,7 @@ const FullInstructions = () => {
                     />
                 </div>
             </div>
-            <div className='mt-5'>
+            <div className='mt-5 mb-8 w-full'>
                 <SimpleItemCard
                     title='Setup'
                     prefixTitle='1'
@@ -130,6 +134,45 @@ const FullInstructions = () => {
                     <p>If a player is eliminated by running out of cards while in possession of<strong> Launch Stack </strong>and/or<strong> Billionaire cards, </strong>the eliminated player plays one of them into the play area per turn, like a forced liquidation! Winners add them to their collection, and might be on a fast path to blast off (winning)!</p>
                 </SimpleItemCard>
 
+            </div>
+
+            <div className='border-charcoal rounded-xl border-2 mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center bg-gradient-to-r from-[#FFEA80] to-[#FF8A50]'>
+                <div className='flex flex-col p-4 w-full landscape:p-0 landscape:flex-row justify-start landscape:justify-betwwen gap-6 landscape:content-center landscape:items-center'>
+                    <div className='w-20 h-20'>
+                        <Image
+                            src='/assets/images/icons/deck.webp'
+                            alt='Icon for deck'
+                            width={80}
+                            height={80}
+                            className='w-full h-auto'
+                        />
+                    </div>
+                    <div>
+                        <h3 className='text-title-3 font-bold'>Rapid Play Mod</h3>
+                        <p className='text-sm-custom'>Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but there are other ways to play and new versions dropping soon!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div className='border-charcoal rounded-xl border-2 mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center bg-gradient-to-r from-secondary-blue to-secondary-purple'>
+                <div className='flex flex-col text-common-ash p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-5/6'>
+                    <div className='w-20 h-20'>
+                        <Image
+                            src='/assets/images/data-war/icon-card-light.webp'
+                            alt='Icon for Card Light'
+                            width={80}
+                            height={80}
+                            className='w-full h-auto'
+                        />
+                    </div>
+                    <div>
+                        <h3 className='font-bold text-title-3'>Tag @Firefox with your best ideas!</h3>
+                        <p className='text-sm-custom'>We've included blank cards in the deck because hey, Billionaires make up rules all the time. Share your best blank card ideas, and make Data War your own brand of extra.! </p>
+                    </div>
+                </div>
+                <div className='landscape:w-1/6 portrait:mb-8 portrait:flex portrait:justify-center'>
+                    <SocialNetwork isInModal={true} socials={socials} />
+                </div>
             </div>
 
             

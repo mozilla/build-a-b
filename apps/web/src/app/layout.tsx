@@ -6,6 +6,7 @@ import { Providers } from './providers';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SocialNetworkItem } from '@/components/SocialNetwork';
 
 const sharpSans = localFont({
   src: [
@@ -150,6 +151,9 @@ const navigationData = {
     'This experience uses AI and prioritizes open-source models, guided by stimulus from paid artists and prompt engineers. Billionaires feed your data into AI, we use it to hand the power back to you.',
   ctaLabel: 'Build a Billionaire',
 };
+
+export const socials: SocialNetworkItem[] = navigationData.socials;
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
