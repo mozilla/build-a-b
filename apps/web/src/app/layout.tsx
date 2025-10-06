@@ -7,6 +7,7 @@ import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SocialNetworkItem } from '@/components/SocialNetwork';
+import { evaluateFlag } from './flags';
 
 const sharpSans = localFont({
   src: [
@@ -114,47 +115,54 @@ export const metadata: Metadata = {
   },
 };
 
-const navigationData = {
-  links: [
+export const socials: SocialNetworkItem[] = [
+  {
+    href: 'https://www.tiktok.com/@firefox',
+    title: 'Visit our TikTok',
+    alt: 'TikTok',
+    src: '/assets/images/social/tiktok.svg',
+  },
+  {
+    href: 'https://www.instagram.com/firefox/',
+    title: 'Check our Instagram',
+    alt: 'Instagram',
+    src: '/assets/images/social/instagram.svg',
+  },
+  {
+    href: 'https://www.threads.com/@firefox',
+    title: 'Check our Threads',
+    alt: 'Threads',
+    src: '/assets/images/social/threads.svg',
+  },
+  {
+    href: 'https://www.youtube.com/firefoxchannel',
+    title: 'Watch our YouTube channel',
+    alt: 'YouTube',
+    src: '/assets/images/social/youtube.svg',
+  },
+];
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Check if DataWar feature is enabled
+  const isDataWarEnabled = await evaluateFlag('showDataWar');
+  
+  // Create navigation links conditionally
+  const baseLinks = [
     { href: '/', label: 'Home', title: 'Go to home' },
     { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
     // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
-    { href: '/datawar', label: 'Data War', title: 'Play our game Data War' },
-  ],
-  socials: [
-    {
-      href: 'https://www.tiktok.com/@firefox',
-      title: 'Visit our TikTok',
-      alt: 'TikTok',
-      src: '/assets/images/social/tiktok.svg',
-    },
-    {
-      href: 'https://www.instagram.com/firefox/',
-      title: 'Check our Instagram',
-      alt: 'Instagram',
-      src: '/assets/images/social/instagram.svg',
-    },
-    {
-      href: 'https://www.threads.com/@firefox',
-      title: 'Check our Threads',
-      alt: 'Threads',
-      src: '/assets/images/social/threads.svg',
-    },
-    {
-      href: 'https://www.youtube.com/firefoxchannel',
-      title: 'Watch our YouTube channel',
-      alt: 'YouTube',
-      src: '/assets/images/social/youtube.svg',
-    },
-  ],
-  ctaCopy:
-    'This experience uses AI and prioritizes open-source models, guided by stimulus from paid artists and prompt engineers. Billionaires feed your data into AI, we use it to hand the power back to you.',
-  ctaLabel: 'Build a Billionaire',
-};
-
-export const socials: SocialNetworkItem[] = navigationData.socials;
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+  ];
+  
+  const dataWarLink = { href: '/datawar', label: 'Data War', title: 'Play our game Data War' };
+  const links = isDataWarEnabled ? [...baseLinks, dataWarLink] : baseLinks;
+  
+  const navigationData = {
+    links,
+    socials,
+    ctaCopy:
+      'This experience uses AI and prioritizes open-source models, guided by stimulus from paid artists and prompt engineers. Billionaires feed your data into AI, we use it to hand the power back to you.',
+    ctaLabel: 'Build a Billionaire',
+  };
   return (
     <html lang="en" className={`scroll-smooth ${sharpSans.variable}`} data-scroll-behavior="smooth">
       <head>
