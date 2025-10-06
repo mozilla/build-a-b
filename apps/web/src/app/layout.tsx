@@ -154,7 +154,6 @@ const navigationData = {
 
 export const socials: SocialNetworkItem[] = navigationData.socials;
 
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`scroll-smooth ${sharpSans.variable}`} data-scroll-behavior="smooth">
