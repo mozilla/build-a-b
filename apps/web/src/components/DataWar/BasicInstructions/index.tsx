@@ -45,7 +45,7 @@ const BasicInstructions =() => {
                         alt='billionaire icon'
                         width={308}
                         height={266}
-                        className='block absolute -right-27 -top-15 landscape:-right-16 landscape:-top-18' 
+                        className='block absolute -right-27 -top-15 landscape:-right-16 landscape:-top-18 w-[19.25rem] h-[auto]' 
                     />
                 </div>
             </div>
