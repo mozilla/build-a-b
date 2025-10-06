@@ -34,7 +34,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userAssociationId,
-      selfies: [], // TODO: Query avatar.selfies with the new DB structure
+      selfies: avatar.selfies,
     };
   } catch (e) {
     // This will be available via server logs.
