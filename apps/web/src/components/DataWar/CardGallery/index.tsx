@@ -62,7 +62,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [cards.length, visibleCount]);
 
   const clampedSetIndex = useCallback(
     (next: number) => {
@@ -77,7 +77,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
       setNext(next < maxIndex);
       setPrev(next > 0);
     },
-    [maxIndex],
+    [maxIndex, cards.length, visibleCount],
   );
 
   const articleStyle = `shrink-0 p-4 portrait:w-full landscape:w-1/5`;
