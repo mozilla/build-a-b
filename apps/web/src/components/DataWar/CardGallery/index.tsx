@@ -20,7 +20,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
   const [canNext, setNext] = useState(true);
   const [maxIndex, setMaxIndex] = useState(Math.max(0, cards.length - visibleCount));
   const [valueToMove, setPercent] = useState(visibleCount);
-  const divRef = useRef(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   const step = 1;
   const startX = useRef<number | null>(null);
