@@ -254,27 +254,39 @@ export default async function Home({
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5'`}
         >
-          <GalleryBentoLarge className="h-full" disabled />
+          <GalleryBentoLarge
+            className="h-full"
+            disabled={!avatarData || avatarData.selfies?.length > 0}
+            image={avatarData?.selfies?.[0]?.asset ?? undefined}
+          />
         </div>
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-5 landscape:row-start-6`}
         >
-          <GalleryBentoSmall image="/assets/images/placeholders/diamond.jpg" />
+          <GalleryBentoSmall
+            image={avatarData?.selfies?.[1]?.asset ?? '/assets/images/placeholders/diamond.jpg'}
+          />
         </div>
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-7 landscape:row-start-6`}
         >
-          <GalleryBentoSmall image="/assets/images/placeholders/rocket.jpg" />
+          <GalleryBentoSmall
+            image={avatarData?.selfies?.[2]?.asset ?? '/assets/images/placeholders/rocket.jpg'}
+          />
         </div>
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-9 landscape:row-start-6`}
         >
-          <GalleryBentoSmall image="/assets/images/placeholders/crown.jpg" />
+          <GalleryBentoSmall
+            image={avatarData?.selfies?.[3]?.asset ?? '/assets/images/placeholders/crown.jpg'}
+          />
         </div>
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-[48%] landscape:col-span-2 landscape:col-start-11 landscape:row-start-6`}
         >
-          <GalleryBentoSmall image="/assets/images/placeholders/meteor.jpg" />
+          <GalleryBentoSmall
+            image={avatarData?.selfies?.[4]?.asset ?? '/assets/images/placeholders/meteor.jpg'}
+          />
         </div>
         <div className="portrait:order-13 landscape:col-span-12">
           <CountDown
