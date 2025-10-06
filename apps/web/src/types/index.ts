@@ -92,7 +92,7 @@ export type DatabaseAvatarResponse = Pick<
 
 export type Selfie = Pick<
   Database['public']['Tables']['selfies']['Row'],
-  'asset' | 'id' | 'created_at'
+  'asset' | 'id' | 'created_at' | 'n_index'
 >;
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
