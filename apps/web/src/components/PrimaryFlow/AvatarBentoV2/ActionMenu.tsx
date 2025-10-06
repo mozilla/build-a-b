@@ -7,7 +7,7 @@ import { Download } from '@/components/ShareAvatar/Download.svg';
 import { Share } from '@/components/ShareAvatar/Share.svg';
 import { Instagram } from '@/components/ShareAvatar/Instagram.svg';
 import { Threads } from '@/components/ShareAvatar/Threads.svg';
-import { useAvatarActions, useNavigatorShareAction } from '@/hooks';
+import { useAvatarActions } from '@/hooks';
 import { AvatarData } from '@/types';
 import clsx from 'clsx';
 import { FC, useMemo, useState } from 'react';
