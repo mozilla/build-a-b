@@ -46,9 +46,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log('Resizing');
       if (window.matchMedia('(orientation: portrait)').matches) {
-        console.log('Is Mobile');
         setMaxIndex(Math.max(0, cards.length - 1));
         setPercent(1);
       } else {
@@ -68,9 +66,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
 
   const clampedSetIndex = useCallback(
     (next: number) => {
-      console.log('Here!!!!');
       if (window.matchMedia('(orientation: portrait)').matches) {
-        console.log('Is Mobile');
         setMaxIndex(Math.max(0, cards.length - 1));
         setPercent(1);
       } else {
