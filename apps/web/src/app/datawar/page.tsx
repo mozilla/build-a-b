@@ -1,74 +1,18 @@
-import BasicInstructions from "@/components/DataWar/BasicInstructions";
-import CountDown from "@/components/CountDown";
-import FullInstructions from "@/components/DataWar/FullInstructions";
-import LineUp from "@/components/DataWar/LineUp";
-import Bento from "@/components/Bento";
-import Window from '@/components/Window';
+import CountDown from '@/components/CountDown';
 import { Suspense } from 'react';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import { avatarBentoData } from '@/utils/constants';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Firefox Billionaire Blast Off lands at TwitchCon',
-  description:
-    'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
-  openGraph: {
-    siteName: 'Billionaire Blast Off Powered by Firefox',
-    title: 'Firefox Billionaire Blast Off lands at TwitchCon',
-    description:
-      'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
-    images: [
-      {
-        url: '/assets/images/opengraph/twitchcon.jpg',
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    images: ['/assets/images/opengraph/twitchcon.jpg'],
-  },
-};
-
+import Link from 'next/link';
 
 export default async function Page() {
-    return (
-        <>
-        <BasicInstructions/>
-
-        <LineUp/>
-
-        <FullInstructions />
-
-        <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-          <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
-            <Window className="bg-common-ash">
-              <div className="p-4 landscape:p-12 flex flex-col gap-4">
-                <h2 className="text-title-1 text-charcoal">DIY your own deck</h2>
-                <p className="text-body-regular text-charcoal text-sm-custom">
-                  Scissors + printer = game night unlocked. Download your own copy of Data War to cut up and blast off with right here.
-                </p>
-                <div>
-                  <a href='#' title='Download the Deck!' className='text-sm-custom secondary-button 
-                        border-charcoal text-charcoal hover:border-charcoal 
-                        hover:bg-charcoal hover:text-common-ash
-                        before:content-[""] before:inline-block before:bg-[url(/assets/images/icons/download-icon.webp)]
-                        before:w-4 before:h-4 before:mr-2 before:bg-no-repeat before:bg-center before:bg-cover
-                        hover:before:bg-[url(/assets/images/icons/download-icon-hover.webp)]
-                  '>Download the Deck!</a>
-                </div>
-              </div>
-            </Window>
-          </Bento>
-          <Bento
-            image="/assets/images/data-war/bag.webp"
-            imageAlt="Billionaire in a box"
-            className="landscape:w-[30%] aspect-[377/275] border-none"
-          />
-        </section>
-        <CountDown
+  return (
+    <>
+      <section className="h-20 flex items-center justify-center pb-8">
+        <Link href="/datawar/instructions" className="primary-button">
+          Go to DataWar Instructions!
+        </Link>
+      </section>
+      <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
         cta={
           <Suspense fallback={<div>Loading...</div>}>
@@ -80,6 +24,6 @@ export default async function Page() {
           </Suspense>
         }
       />
-        </>
-    );
+    </>
+  );
 }
