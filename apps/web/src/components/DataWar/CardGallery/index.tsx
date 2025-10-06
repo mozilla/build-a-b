@@ -1,8 +1,15 @@
 'use client';
 
-import { useRef, FC, useState, useCallback, useEffect } from 'react';
+import { FC, useRef, useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
 import Bento from '@/components/Bento';
 import Image from 'next/image';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 export interface CardGalleryProps {
   cards: {
@@ -15,72 +22,39 @@ export interface CardGalleryProps {
 }
 
 const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
-  const [currentIndex, setIndex] = useState(0);
-  const [canPrev, setPrev] = useState(false);
-  const [canNext, setNext] = useState(true);
-  const [maxIndex, setMaxIndex] = useState(Math.max(0, cards.length - visibleCount));
-  const [valueToMove, setPercent] = useState(visibleCount);
-  const divRef = useRef<HTMLDivElement>(null);
-
-  const step = 1;
-  const startX = useRef<number | null>(null);
-  const deltaX = useRef(0);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    startX.current = e.touches[0].clientX;
-    deltaX.current = 0;
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (startX.current == null) return;
-    deltaX.current = e.touches[0].clientX - startX.current;
-  };
-
-  const onTouchEnd = () => {
-    const threshold = 48; // px
-    if (deltaX.current > threshold && canPrev) clampedSetIndex(currentIndex - step);
-    if (deltaX.current < -threshold && canNext) clampedSetIndex(currentIndex + step);
-    startX.current = null;
-    deltaX.current = 0;
-  };
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const [slidesPerView, setSlidesPerView] = useState(5.2); // Show 5 full + 0.2 of 6th card
+  const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.matchMedia('(orientation: portrait)').matches) {
-        setMaxIndex(Math.max(0, cards.length - 1));
-        setPercent(1);
+        setSlidesPerView(1);
       } else {
-        setMaxIndex(Math.max(0, cards.length - visibleCount));
-        setPercent(visibleCount);
+        setSlidesPerView(5.2); // Show 5 full cards + 0.2 of the 6th card
       }
-      if (divRef.current) {
-        divRef.current.style.transform = 'translate(0%)';
-      }
-      setIndex(0);
-      setNext(true);
-      setPrev(false);
     };
+
+    handleResize(); // Set initial value
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [cards.length, visibleCount]);
+  }, [visibleCount]);
 
-  const clampedSetIndex = useCallback(
-    (next: number) => {
-      if (window.matchMedia('(orientation: portrait)').matches) {
-        setMaxIndex(Math.max(0, cards.length - 1));
-        setPercent(1);
-      } else {
-        setMaxIndex(Math.max(0, cards.length - visibleCount));
-        setPercent(visibleCount);
-      }
-      setIndex(Math.max(0, Math.min(maxIndex, next)));
-      setNext(next < maxIndex);
-      setPrev(next > 0);
-    },
-    [maxIndex, cards.length, visibleCount],
-  );
+  const handleSlideChange = (swiper: SwiperType) => {
+    setCanPrev(!swiper.isBeginning);
+    setCanNext(!swiper.isEnd);
+  };
 
-  const articleStyle = `shrink-0 p-4 portrait:w-full landscape:w-1/5`;
+  const handlePrev = () => {
+    swiperRef.current?.slidePrev();
+  };
+
+  const handleNext = () => {
+    swiperRef.current?.slideNext();
+  };
+
+  const articleStyle = `shrink-0 p-4 w-full`;
 
   return (
     <section
@@ -89,16 +63,12 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
       aria-label="Card Gallery"
     >
       <div className="control-section relative">
-        <div className="opacity-70 hidden">
-          {currentIndex + 1} - {Math.min(currentIndex + visibleCount, cards.length)} /{' '}
-          {cards.length}
-        </div>
         <div className="absolute z-99 top-50 -left-2 landscape:top-40 landscape:-left-10">
           <button
             className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition"
             aria-label="Previous"
             disabled={!canPrev}
-            onClick={() => clampedSetIndex(currentIndex - step)}
+            onClick={handlePrev}
           >
             <Image
               src="/assets/images/icons/left-button.webp"
@@ -114,48 +84,53 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
             className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition"
             aria-label="Next"
             disabled={!canNext}
-            onClick={() => clampedSetIndex(currentIndex + step)}
+            onClick={handleNext}
           >
             <Image
               src="/assets/images/icons/right-button.webp"
               width={44}
               height={44}
               className="object-cover w-11 h-11"
-              alt="Previous"
+              alt="Next"
             />
           </button>
         </div>
       </div>
-      <div
-        className="relative overflow-hidden container-section"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <div
-          ref={divRef}
-          className="section-to-move flex gap-0 transition-transform duration-300 ease-out"
-          role="list"
-          style={{ transform: `translateX(-${currentIndex * (100 / valueToMove)}%)` }}
+      <div className="relative container-section">
+        <Swiper
+          modules={[Navigation]}
+          slidesPerView={slidesPerView}
+          spaceBetween={0}
+          slidesPerGroup={1}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            handleSlideChange(swiper);
+          }}
+          onSlideChange={handleSlideChange}
+          className="section-to-move"
+          style={{ 
+            '--swiper-navigation-size': '0px', // Hide default navigation
+            'overflow': 'visible',
+          } as React.CSSProperties}
         >
-          {cards.map(({ cardTitle, cardImgSrc, cardImgAlt, cardDesc }, index) => {
-            return (
-              <article role="listitem" key={index} className={articleStyle}>
+          {cards.map(({ cardTitle, cardImgSrc, cardImgAlt, cardDesc }, index) => (
+            <SwiperSlide key={index}>
+              <article role="listitem" className={articleStyle}>
                 <div className="relative w-full shadow">
                   <Bento
                     image={cardImgSrc}
                     imageAlt={cardImgAlt}
                     className="w-full object-cover aspect-[182/248]"
-                  ></Bento>
+                  />
                   <div className="mt-4">
                     <h4 className="text-lg-custom font-bold">{cardTitle}</h4>
                     <p className="text-sm-custom">{cardDesc}</p>
                   </div>
                 </div>
               </article>
-            );
-          })}
-        </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   );
