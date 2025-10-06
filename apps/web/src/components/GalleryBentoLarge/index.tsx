@@ -6,10 +6,10 @@ import Image from 'next/image';
 export interface GalleryBentoLargeProps {
   className?: string;
   disabled?: boolean;
-  selfieImage?: string;
+  image?: string;
 }
 
-const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, selfieImage }) => {
+const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, image }) => {
   const back = (
     <div className="relative rounded-[0.75rem] w-full h-full">
       <Image
@@ -36,7 +36,7 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, se
   return (
     <BentoDual
       className={clsx('aspect-square', className)}
-      image={selfieImage || '/assets/images/placeholders/planet.jpg'}
+      image={image || '/assets/images/placeholders/planet.jpg'}
       effect="flip"
       bgEffect={disabled}
       back={back}

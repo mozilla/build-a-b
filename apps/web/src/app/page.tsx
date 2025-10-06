@@ -257,7 +257,7 @@ export default async function Home({
           <GalleryBentoLarge
             className="h-full"
             disabled={!avatarData || avatarData.selfies?.length > 0}
-            selfieImage={avatarData?.selfies?.[0]?.asset ?? undefined}
+            image={avatarData?.selfies?.[0]?.asset ?? undefined}
           />
         </div>
         <div
