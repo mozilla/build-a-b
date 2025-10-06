@@ -64,8 +64,8 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData
                 const selfie = await generateAvatarSelfie();
                 if (!selfie) return;
 
-                // Wait 4 second delay before showing vault
-                await new Promise((resolve) => setTimeout(resolve, 3000));
+                // Wait 2 second delay before showing vault
+                await new Promise((resolve) => setTimeout(resolve, 2000));
 
                 // Background refresh of the server component tree
                 startTransition(() => router.refresh());
