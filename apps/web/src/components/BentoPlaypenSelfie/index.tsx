@@ -58,7 +58,6 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData
         {!isGeneratingSelfie ? (
           <Button
             onPress={async () => {
-              // TODO: Change this to invoke get_selfie_for_user_avatar(uuid) RPC
               try {
                 setIsGeneratingSelfie(true);
                 const selfie = await generateAvatarSelfie();
