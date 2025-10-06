@@ -9,8 +9,6 @@ import CardsSection from '@/components/CardsSection';
 import Window from '@/components/Window';
 import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
-import ClientPageWrapper from '@/utils/page.client';
-import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
@@ -63,10 +61,8 @@ export default async function Page() {
     },
   ];
 
-  const avatarData = await getUserAvatar();
-
   return (
-    <ClientPageWrapper avatarData={avatarData}>
+    <>
       <Hero
         image="/assets/images/launch.webp"
         imageSrcPortrait="/assets/images/launch-mobile.webp"
@@ -285,6 +281,6 @@ export default async function Page() {
           </Suspense>
         }
       />
-    </ClientPageWrapper>
+    </>
   );
 }
