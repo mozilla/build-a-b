@@ -52,11 +52,11 @@ It documents **traits & random avatar assignment**, **24h Selfies** / **72h TikT
 
     -- Mirror onto users table for fast lookup
     UPDATE users
-    SET current_avatar_id = $avatar_id
+    SET avatar_id = $avatar_id
     WHERE id = $user_id;
     ```
 
-**Output:** `{ uuid, current_avatar_id }` → set `uuid` cookie → redirect `/a/{uuid}`.
+**Output:** `{ uuid, avatar_id }` → set `uuid` cookie → redirect `/a/{uuid}`.
 
 ---
 
@@ -70,7 +70,7 @@ WHERE user_id = $user_id AND is_current = true;
 
 -- Remove current pointer
 UPDATE users
-SET current_avatar_id = NULL
+SET avatar_id = NULL
 WHERE id = $user_id;
 ```
 
@@ -93,12 +93,12 @@ Same as **A** but the user already exists (cookie → load `users.id`). Run **tr
 ## Eligibility (“show the button?”)
 ```sql
 -- 1) Require current avatar
-SELECT current_avatar_id IS NOT NULL
+SELECT avatar_id IS NOT NULL
 FROM users WHERE id = $user_id;
 
 -- 2) Compute the user's next index N for their current avatar
 WITH u AS (
-  SELECT id AS user_id, current_avatar_id AS avatar_id
+  SELECT id AS user_id, avatar_id
   FROM users WHERE id = $user_id
 )
 SELECT COALESCE(
@@ -121,7 +121,7 @@ SELECT COALESCE(
 
 -- 5) Next slot must be published
 WITH u AS (
-  SELECT current_avatar_id AS avatar_id FROM users WHERE id = $user_id
+  SELECT avatar_id FROM users WHERE id = $user_id
 ),
 n AS ( /* compute next_n as above */ SELECT $N AS next_n )
 SELECT EXISTS (
@@ -136,7 +136,7 @@ SELECT EXISTS (
 ```sql
 -- inside a transaction
 WITH u AS (
-  SELECT id AS user_id, current_avatar_id AS avatar_id
+  SELECT id AS user_id, avatar_id
   FROM users WHERE id = $user_id
 ),
 n AS (
@@ -193,7 +193,7 @@ TikTok mirrors the Selfie flow but uses a **72-hour** per-user cooldown (`action
 ```sql
 -- inside a transaction (identical shape to selfies)
 WITH u AS (
-  SELECT id AS user_id, current_avatar_id AS avatar_id
+  SELECT id AS user_id, avatar_id
   FROM users WHERE id = $user_id
 ),
 n AS (
@@ -244,7 +244,7 @@ WHERE NOT EXISTS (
 # Endpoints (suggested)
 
 - `POST /api/users` → create user, returns `{uuid}` (used when no cookie).  
-- `POST /api/avatars/assign` → `{ uuid, traits? }` → traits or random; updates `users.current_avatar_id` + history.  
+- `POST /api/avatars/assign` → `{ uuid, traits? }` → traits or random; updates `users.avatar_id` + history.  
 - `DELETE /api/avatars/current` → `{ uuid }` → clears current avatar.  
 - `GET /api/selfies/eligibility` → `{ uuid }` → `{ canGenerate, reason, nextIndex, slotReady, nextAvailableAt }`.  
 - `POST /api/selfies/generate` → `{ uuid }` → grants N, sets +24h, enqueues N+1.  
@@ -349,7 +349,7 @@ Table avatars {
 Table users {
   id                 bigint      [pk]
   uuid               uuid        [default: `gen_random_uuid()`]
-  current_avatar_id  bigint      [ref: > avatars.id] // nullable
+  avatar_id  bigint      [ref: > avatars.id] // nullable
   created_at         timestamptz [default: `now()`]
 }
 
