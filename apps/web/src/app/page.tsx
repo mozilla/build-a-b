@@ -37,7 +37,7 @@ const tickerData: TickerItem[] = [
   },
   {
     id: 6,
-    text: 'Send Your Billionaire to (Actual) Space',
+    text: 'Watch the Billionaire space launch',
     emoji: '💰',
   },
 ];
@@ -77,36 +77,18 @@ export default async function Home({
             back={
               <Window flip>
                 <div className="p-4 landscape:p-8">
-                  <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4 landscape:pb-8">
-                    We&apos;re sending your Billionaires off-world, offline.
+                  <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4">
+                    We&apos;re sending these Billionaires off-world, offline.
                   </h3>
-                  <ul className="flex flex-col text-sm-custom landscape:text-regular-custom pr-[1.275rem] landscape:pr-6">
-                    <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
-                      <span className="rounded-bullet">1</span>
-                      <span className="flex-1 ">
-                        Share your Billionaire by <strong>Friday, October 10th </strong>
-                        with <strong>@firefox</strong> and <strong>#billionaireblastoff</strong>.
-                      </span>
-                    </li>
-                    <li className="flex flex-row items-center mb-4 landscape:mb-4 gap-6">
-                      <span className="rounded-bullet">2</span>
-                      <span className="flex-1">
-                        Keep an eye on your comments and DMs to see if your Billionaire secured a
-                        spot on our real rocket.
-                      </span>
-                    </li>
-                    <li className="flex flex-row items-center gap-6">
-                      <span className="rounded-bullet">3</span>
-                      <span className="flex-1">
-                        Tune-in for the launch on <strong>Saturday, October 18th</strong>, streamed
-                        at the{' '}
-                        <Link href="/twitchcon">
-                          <strong className="underline">TwitchCon Block Party</strong>
-                        </Link>{' '}
-                        and right here on this site.
-                      </span>
-                    </li>
-                  </ul>
+                  <p>
+                    On October 18th, a rocket of our own design will carry these little Billionaire
+                    creations to the stratosphere, while we celebrate an internet free from their
+                    Billionaire antics at the TwitchCon Block Party!
+                  </p>
+                  <p className="mt-4">
+                    Build your own Billionaire to get in on the joke and follow{' '}
+                    <strong>@firefox</strong> for updates leading up to the launch!
+                  </p>
                 </div>
               </Window>
             }
@@ -116,12 +98,11 @@ export default async function Home({
           >
             <Scrim className="h-65 bg-contain!">
               <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
-                Rocket your Billionaire into a permanent time-out
+                Let&apos;s send these Billionaires to actual, for real-real space.
               </h1>
               <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
-                Post content of your Billionaire with <strong>@Firefox</strong> and{' '}
-                <strong>#BillionaireBlastOff</strong> for a shot at sending them to actual,
-                for-real-real space.
+                Join us during TwitchCon to watch us blast our little Billionaire creations into
+                space on a rocket of our own design.
               </p>
             </Scrim>
           </BentoDual>
