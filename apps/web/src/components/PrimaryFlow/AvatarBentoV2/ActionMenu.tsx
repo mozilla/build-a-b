@@ -11,6 +11,7 @@ import { useAvatarActions } from '@/hooks';
 import { AvatarData } from '@/types';
 import clsx from 'clsx';
 import { FC, useMemo, useState } from 'react';
+import { COOKIE_NAME } from '@/utils/constants';
 
 interface ActionMenuProps {
   avatar: AvatarData;
@@ -43,6 +44,11 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
     if (!open) setActionType(null);
   };
 
+  const setClientCookie = (name: string, value: string, days = 365) => {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  };
+
   const actions: Record<ActionMenuActionType, AvatarViewAction> = useMemo(
     () => ({
       restart: {
@@ -50,15 +56,19 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         content: {
           title: 'Ready for a do-over?',
           description:
-            'If so, this old Billionaire’s empire stays in your gallery, but it’s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
+            'If so, this old Billionaire&apos;s empire stays in your gallery, but it&apos;s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
         },
       },
       save: {
-        onPress: () => setActionType('save'),
+        onPress: () => {
+          // Save the user's UUID in the cookie when they save/bookmark
+          setClientCookie(COOKIE_NAME, avatar.uuid);
+          setActionType('save');
+        },
         content: {
           title: 'Your All Access Pass',
           description:
-            'Here’s your portal to everything you’ve created. Use the link or scan this QR code to return to your collection anytime.',
+            'Here&apos;s your portal to everything you&apos;ve created. Use the link or scan this QR code to return to your collection anytime.',
         },
       },
       download: {
