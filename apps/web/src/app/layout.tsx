@@ -6,6 +6,8 @@ import { Providers } from './providers';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AnalyticsListener from '@/components/AnalyticsListener';
+import { Suspense } from 'react';
 
 const sharpSans = localFont({
   src: [
@@ -157,7 +159,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Google Analytics */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-GBTX3GFPFP"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || 'G-GBTX3GFPFP'}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -165,11 +167,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-GBTX3GFPFP');
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || 'G-GBTX3GFPFP'}', { send_page_view: false });
           `}
         </Script>
       </head>
       <body className="bg-background text-foreground">
+        <Suspense>
+          <AnalyticsListener />
+        </Suspense>
         <Providers>
           <Container>
             <Header
