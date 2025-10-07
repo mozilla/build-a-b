@@ -84,7 +84,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         },
       },
     }),
-    [handleNavigatorShare],
+    [handleNavigatorShare, avatar.uuid],
   );
 
   return (
