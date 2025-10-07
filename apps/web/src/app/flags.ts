@@ -18,6 +18,14 @@ const flags = {
       return process.env.FLAG_AVATAR_BENTO_V2 === 'true';
     },
   }),
+  showDataWar: flag({
+    key: 'show-data-war',
+    description: 'Shows the DataWar page and related functionality',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_DATA_WAR === 'true';
+    },
+  }),
 } as const;
 
 /**
