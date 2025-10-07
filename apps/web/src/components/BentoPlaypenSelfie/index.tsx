@@ -152,7 +152,7 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
                   aria-atomic="true"
                   className="flex items-center justify-center text-charcoal "
                 >
-                  <span className="title-4 font-extrabold">{timeRemaining}</span>
+                  <span className="title-4 font-extrabold tabular-nums">{timeRemaining}</span>
                 </div>
               </div>
             )}
