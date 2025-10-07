@@ -298,19 +298,19 @@ export type Database = {
       users: {
         Row: {
           created_at: string
-          current_avatar_id: number | null
+          avatar_id: number | null
           id: number
           uuid: string | null
         }
         Insert: {
           created_at?: string
-          current_avatar_id?: number | null
+          avatar_id?: number | null
           id?: number
           uuid?: string | null
         }
         Update: {
           created_at?: string
-          current_avatar_id?: number | null
+          avatar_id?: number | null
           id?: number
           uuid?: string | null
         }
