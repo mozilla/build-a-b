@@ -1,25 +1,33 @@
 'use client';
 
-import { FC, useMemo, useState, startTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useWindowSize } from '@/hooks/useWindowSize';
+import { AvatarData } from '@/types';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
 import { Button, useDisclosure } from '@heroui/react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { FC, startTransition, useMemo, useState, useEffect } from 'react';
 import Bento from '../Bento';
 import PlaypenPopup from '../PlaypenPopup';
 import Carousel from '../PrimaryFlow/Carousel';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
 import ShareAvatar from '../ShareAvatar';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import { AvatarData } from '@/types';
 
-const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData }) => {
+const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => {
   const router = useRouter();
   const { onOpenChange } = useDisclosure();
-  const { setShowVault, showVault } = usePrimaryFlowContext();
+  const {
+    setShowVault,
+    showVault,
+    selfieAvailabilityState,
+    setAvatarData,
+    setSelfieAvailabilityState,
+  } = usePrimaryFlowContext();
   const resolution = useWindowSize();
   const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
+  const [timerRole, setTimerRole] = useState<'timer' | 'alert'>('timer');
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
   const swiperOptions = useMemo(
     () => ({
       spaceBetween: resolution === 'landscape' ? -400 : -10,
@@ -36,10 +44,57 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData
     onOpenChange();
   };
 
+  useEffect(() => {
+    if (
+      selfieAvailabilityState !== 'COOL_DOWN_PERIOD' ||
+      !avatarData?.selfieAvailability?.next_at
+    ) {
+      return;
+    }
+
+    const updateTimer = () => {
+      if (!avatarData.selfieAvailability.next_at) return;
+
+      const now = new Date().getTime();
+      const nextAt = new Date(avatarData.selfieAvailability.next_at).getTime();
+      const distance = nextAt - now;
+
+      if (distance <= 0) {
+        setTimeRemaining('00:00:00');
+        setTimerRole('alert');
+        setSelfieAvailabilityState('AVAILABLE');
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setTimeRemaining(
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+      );
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [
+    selfieAvailabilityState,
+    avatarData?.selfieAvailability?.next_at,
+    setSelfieAvailabilityState,
+  ]);
+
+  useEffect(() => {
+    if (avatarData) {
+      setAvatarData(avatarData);
+    }
+  }, [avatarData, setAvatarData]);
+
   return (
     <>
       <Bento
-        className={`h-full py-8 flex flex-col justify-center items-center gap-2 border-accent!
+        className={`h-full py-8 flex flex-col justify-center items-center gap-2 border-accent! overflow-visible!
                  relative group hover:cursor-pointer
                  ${
                    isGeneratingSelfie
@@ -47,6 +102,13 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData
                      : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
                  }`}
       >
+        <Image
+          className="absolute top-[-1.5rem] left-[-1.5rem]"
+          alt=""
+          src="/assets/images/ribbon.webp"
+          width={117}
+          height={40}
+        />
         <Image
           src="/assets/images/icons/camera.webp"
           width={60}
@@ -56,30 +118,50 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData | null }> = ({ avatarData
           priority
         />
         {!isGeneratingSelfie ? (
-          <Button
-            onPress={async () => {
-              try {
-                setIsGeneratingSelfie(true);
-                const selfie = await generateAvatarSelfie();
-                if (!selfie) return;
+          <>
+            {selfieAvailabilityState === 'AVAILABLE' && (
+              <Button
+                onPress={async () => {
+                  try {
+                    setIsGeneratingSelfie(true);
+                    const selfie = await generateAvatarSelfie();
+                    if (!selfie) return;
 
-                // Wait 2 second delay before showing vault
-                await new Promise((resolve) => setTimeout(resolve, 2000));
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-                // Background refresh of the server component tree
-                startTransition(() => router.refresh());
+                    // Background refresh of the server component tree
+                    startTransition(() => router.refresh());
 
-                setShowVault(true);
-              } catch {
-                // Do nothing.
-              } finally {
-                setIsGeneratingSelfie(false);
-              }
-            }}
-            className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300"
-          >
-            Take a space selfie
-          </Button>
+                    setShowVault(true);
+                  } catch {
+                    // Do nothing.
+                  } finally {
+                    setIsGeneratingSelfie(false);
+                  }
+                }}
+                className="secondary-button border-charcoal text-charcoal group-hover:bg-accent group-hover:border-accent group-hover:-rotate-5 group-hover:scale-105 transition-transform duration-300 relative"
+              >
+                Take a space selfie
+              </Button>
+            )}
+            {selfieAvailabilityState === 'COOL_DOWN_PERIOD' && (
+              <div className="flex flex-col items-center justify-center relative">
+                <span className="text-sm-custom text-charcoal">Next Selfie Available in</span>
+                <div
+                  role={timerRole}
+                  aria-atomic="true"
+                  className="flex items-center justify-center text-charcoal "
+                >
+                  <span className="title-4 font-extrabold tabular-nums">{timeRemaining}</span>
+                </div>
+              </div>
+            )}
+            {selfieAvailabilityState === 'REACHED_MAX_LIMIT' && (
+              <div className="flex flex-col items-center justify-center relative">
+                <span className="text-charcoal mt-2 font-extrabold">Coming soon</span>
+              </div>
+            )}
+          </>
         ) : (
           <ProgressBar duration={12000} />
         )}
