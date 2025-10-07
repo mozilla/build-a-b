@@ -79,7 +79,11 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [selfieAvailabilityState, avatarData?.selfieAvailability?.next_at, setSelfieAvailabilityState]);
+  }, [
+    selfieAvailabilityState,
+    avatarData?.selfieAvailability?.next_at,
+    setSelfieAvailabilityState,
+  ]);
 
   useEffect(() => {
     if (avatarData) {
@@ -154,7 +158,7 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
             )}
             {selfieAvailabilityState === 'REACHED_MAX_LIMIT' && (
               <div className="flex flex-col items-center justify-center relative">
-                <span className="text-sm-custom text-charcoal">Coming soon</span>
+                <span className="text-charcoal mt-2 font-extrabold">Coming soon</span>
               </div>
             )}
           </>
