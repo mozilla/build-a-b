@@ -33,7 +33,7 @@ const tickerData: TickerItem[] = [
   },
   {
     id: 6,
-    text: 'Send Your Billionaire to (Actual) Space',
+    text: 'Watch the Billionaire space launch',
     emoji: '💰',
   },
 ];
