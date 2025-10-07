@@ -105,7 +105,7 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
         <Image
           className="absolute top-[-1.5rem] left-[-1.5rem]"
           alt=""
-          src="/assets/images/ribbon.svg"
+          src="/assets/images/ribbon.webp"
           width={117}
           height={40}
         />
