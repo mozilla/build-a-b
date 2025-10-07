@@ -43,11 +43,15 @@ const tickerData: TickerItem[] = [
 ];
 
 export default async function Home({
+  params,
   searchParams,
 }: {
+  params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const showPlaypenButtons = await evaluateFlag('showAvatarPlaypenButtons');
+
+  const { id: idFromUrl } = await params;
 
   const queryParams = await searchParams;
   const searchTerm = queryParams.s;
@@ -56,7 +60,8 @@ export default async function Home({
   const userCookie = cookieStore.get(COOKIE_NAME);
   const userId = userCookie?.value;
 
-  const avatarData = userId && !searchTerm ? await getUserAvatar(userId) : null;
+  const effectiveUserId = idFromUrl || userId;
+  const avatarData = effectiveUserId && !searchTerm ? await getUserAvatar(effectiveUserId) : null;
 
   return (
     <>
