@@ -77,6 +77,7 @@ export type AvatarData = {
   bio: string;
   uuid: string;
   selfies: Selfie[];
+  selfieAvailability: SelfieAvailabilityData;
 };
 
 export type DatabaseAvatarResponse = Pick<
@@ -103,6 +104,18 @@ export type DatabaseSelfieResponse = {
   n_index: number;
   created_at: string;
 };
+
+export type DatabaseAvailableSelfiesResponse = {
+  next_n: number;
+  next_at: string;
+};
+
+export type SelfieAvailabilityData = {
+  next_n: number;
+  next_at: Date | null;
+};
+
+export type SelfieAvailabilityState = 'REACHED_MAX_LIMIT' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
 
 export type StatusEndpointBaseResponse = {
   status: string;

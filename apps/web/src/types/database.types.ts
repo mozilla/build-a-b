@@ -25,7 +25,7 @@ export type Database = {
           character_story: string | null
           combination_key: string | null
           core_drive: string | null
-          created_at: string | null
+          created_at: string
           first_name: string | null
           hair_color: string | null
           hair_style: string | null
@@ -54,11 +54,11 @@ export type Database = {
           character_story?: string | null
           combination_key?: string | null
           core_drive?: string | null
-          created_at?: string | null
+          created_at?: string
           first_name?: string | null
           hair_color?: string | null
           hair_style?: string | null
-          id: number
+          id?: number
           last_name?: string | null
           legacy_plan?: string | null
           meta_data?: Json | null
@@ -83,7 +83,7 @@ export type Database = {
           character_story?: string | null
           combination_key?: string | null
           core_drive?: string | null
-          created_at?: string | null
+          created_at?: string
           first_name?: string | null
           hair_color?: string | null
           hair_style?: string | null
@@ -108,147 +108,64 @@ export type Database = {
         Row: {
           asset: string | null
           avatar_id: number | null
-          created_at: string | null
-          generated_at: string | null
+          created_at: string
           id: number
           meta: Json | null
           moderated_at: string | null
           n_index: number | null
-          published_at: string | null
+          scene: string | null
           status: string | null
-          uploaded_at: string | null
-        }
-        Insert: {
-          asset?: string | null
-          avatar_id?: number | null
-          created_at?: string | null
-          generated_at?: string | null
-          id: number
-          meta?: Json | null
-          moderated_at?: string | null
-          n_index?: number | null
-          published_at?: string | null
-          status?: string | null
-          uploaded_at?: string | null
-        }
-        Update: {
-          asset?: string | null
-          avatar_id?: number | null
-          created_at?: string | null
-          generated_at?: string | null
-          id?: number
-          meta?: Json | null
-          moderated_at?: string | null
-          n_index?: number | null
-          published_at?: string | null
-          status?: string | null
-          uploaded_at?: string | null
-        }
-        Relationships: []
-      }
-      tiktoks: {
-        Row: {
-          asset: string | null
-          avatar_id: number | null
-          created_at: string | null
-          generated_at: string | null
-          id: number
-          meta: Json | null
-          moderated_at: string | null
-          n_index: number | null
-          published_at: string | null
-          status: string | null
-          uploaded_at: string | null
-        }
-        Insert: {
-          asset?: string | null
-          avatar_id?: number | null
-          created_at?: string | null
-          generated_at?: string | null
-          id: number
-          meta?: Json | null
-          moderated_at?: string | null
-          n_index?: number | null
-          published_at?: string | null
-          status?: string | null
-          uploaded_at?: string | null
-        }
-        Update: {
-          asset?: string | null
-          avatar_id?: number | null
-          created_at?: string | null
-          generated_at?: string | null
-          id?: number
-          meta?: Json | null
-          moderated_at?: string | null
-          n_index?: number | null
-          published_at?: string | null
-          status?: string | null
-          uploaded_at?: string | null
-        }
-        Relationships: []
-      }
-      user_avatars: {
-        Row: {
-          assigned_at: string | null
-          avatar_id: number | null
-          created_at: string
-          id: number
-          is_current: boolean | null
-          removed_at: string | null
-          user_id: number | null
-        }
-        Insert: {
-          assigned_at?: string | null
-          avatar_id?: number | null
-          created_at?: string
-          id?: number
-          is_current?: boolean | null
-          removed_at?: string | null
-          user_id?: number | null
-        }
-        Update: {
-          assigned_at?: string | null
-          avatar_id?: number | null
-          created_at?: string
-          id?: number
-          is_current?: boolean | null
-          removed_at?: string | null
-          user_id?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_avatars_avatar_id_fkey"
-            columns: ["avatar_id"]
-            isOneToOne: false
-            referencedRelation: "avatars"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_cooldowns: {
-        Row: {
-          action: string | null
-          created_at: string
-          id: number
-          next_at: string | null
           updated_at: string | null
           user_id: number | null
         }
         Insert: {
-          action?: string | null
+          asset?: string | null
+          avatar_id?: number | null
           created_at?: string
           id?: number
-          next_at?: string | null
+          meta?: Json | null
+          moderated_at?: string | null
+          n_index?: number | null
+          scene?: string | null
+          status?: string | null
           updated_at?: string | null
           user_id?: number | null
         }
         Update: {
-          action?: string | null
+          asset?: string | null
+          avatar_id?: number | null
           created_at?: string
           id?: number
-          next_at?: string | null
+          meta?: Json | null
+          moderated_at?: string | null
+          n_index?: number | null
+          scene?: string | null
+          status?: string | null
           updated_at?: string | null
+          user_id?: number | null
+        }
+        Relationships: []
+      }
+      tiktok: {
+        Row: {
+          asset: string | null
+          avatar_id: number | null
+          created_at: string
+          id: number
+          user_id: number | null
+        }
+        Insert: {
+          asset?: string | null
+          avatar_id?: number | null
+          created_at?: string
+          id?: number
+          user_id?: number | null
+        }
+        Update: {
+          asset?: string | null
+          avatar_id?: number | null
+          created_at?: string
+          id?: number
           user_id?: number | null
         }
         Relationships: []
@@ -274,45 +191,57 @@ export type Database = {
         }
         Relationships: []
       }
-      user_videos: {
+      users: {
         Row: {
+          avatar_id: number
           created_at: string
           id: number
-          tiktok_id: number | null
-          user_id: number | null
+          uuid: string
         }
         Insert: {
+          avatar_id: number
           created_at?: string
           id?: number
-          tiktok_id?: number | null
-          user_id?: number | null
+          uuid?: string
         }
         Update: {
+          avatar_id?: number
           created_at?: string
           id?: number
-          tiktok_id?: number | null
-          user_id?: number | null
+          uuid?: string
         }
         Relationships: []
       }
-      users: {
+      videos: {
         Row: {
-          created_at: string
+          asset: string | null
           avatar_id: number | null
+          created_at: string
           id: number
-          uuid: string | null
+          meta: Json | null
+          moderated_at: string | null
+          n_index: number | null
+          status: string | null
         }
         Insert: {
-          created_at?: string
+          asset?: string | null
           avatar_id?: number | null
+          created_at?: string
           id?: number
-          uuid?: string | null
+          meta?: Json | null
+          moderated_at?: string | null
+          n_index?: number | null
+          status?: string | null
         }
         Update: {
-          created_at?: string
+          asset?: string | null
           avatar_id?: number | null
+          created_at?: string
           id?: number
-          uuid?: string | null
+          meta?: Json | null
+          moderated_at?: string | null
+          n_index?: number | null
+          status?: string | null
         }
         Relationships: []
       }
@@ -321,6 +250,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_available_choices: {
+        Args: { choice: string }
+        Returns: {
+          origin_story: string
+        }[]
+      }
+      get_avatar_standing_asset_by_user_uuid: {
+        Args: { user_uuid: string }
+        Returns: {
+          asset_standing: string
+          avatar_id: number
+          user_id: number
+        }[]
+      }
       get_core_drives: {
         Args: { selected_origin_story: string }
         Returns: {
@@ -360,14 +303,28 @@ export type Database = {
           public_mask: string
         }[]
       }
+      get_random_avatar: {
+        Args: { search_pattern: string }
+        Returns: {
+          asset_instagram: string
+          asset_riding: string
+          character_story: string
+          combination_key: string
+          first_name: string
+          id: number
+          last_name: string
+        }[]
+      }
       get_random_avatar_v2: {
-        Args: {
-          selected_core_drive: string
-          selected_legacy_plan: string
-          selected_origin_story: string
-          selected_power_play: string
-          selected_public_mask: string
-        }
+        Args:
+          | { search_pattern: string }
+          | {
+              selected_core_drive: string
+              selected_legacy_plan: string
+              selected_origin_story: string
+              selected_power_play: string
+              selected_public_mask: string
+            }
         Returns: {
           asset_instagram: string
           asset_riding: string
@@ -387,15 +344,7 @@ export type Database = {
           character_story: string
           first_name: string
           last_name: string
-        }[]
-      }
-      upsert_user_with_avatar: {
-        Args: { p_avatar_id: number; p_uuid: string }
-        Returns: {
-          avatar_id: number
-          created_at: string
-          id: number
-          uuid: string
+          selfies: Json
         }[]
       }
     }
