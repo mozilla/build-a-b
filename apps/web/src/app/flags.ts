@@ -10,14 +10,6 @@ const flags = {
       return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';
     },
   }),
-  showAvatarBentoV2: flag({
-    key: 'avatar-bento-v2',
-    description: 'Shows the restructured AvatarBento component',
-    defaultValue: false,
-    decide() {
-      return process.env.FLAG_AVATAR_BENTO_V2 === 'true';
-    },
-  }),
   showDataWar: flag({
     key: 'show-data-war',
     description: 'Shows the DataWar page and related functionality',
