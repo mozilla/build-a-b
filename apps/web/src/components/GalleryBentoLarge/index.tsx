@@ -1,7 +1,13 @@
-import { FC } from 'react';
+'use client';
+
+import { FC, startTransition, useState } from 'react';
 import BentoDual from '../BentoDual';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
+import { useRouter } from 'next/navigation';
+import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
+import ProgressBar from '../ProgressBar';
 
 export interface GalleryBentoLargeProps {
   className?: string;
@@ -10,8 +16,36 @@ export interface GalleryBentoLargeProps {
 }
 
 const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, image }) => {
+  const router = useRouter();
+  const { setShowVault, selfieAvailabilityState, avatarData } = usePrimaryFlowContext();
+  const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
+  const canGenerateSelfie =
+    avatarData && selfieAvailabilityState === 'AVAILABLE' && avatarData.selfies.length === 0;
+
   const back = (
-    <div className="relative rounded-[0.75rem] w-full h-full">
+    <div
+      className="relative rounded-[0.75rem] w-full h-full"
+      onClick={async () => {
+        try {
+          if (!canGenerateSelfie) return;
+
+          setIsGeneratingSelfie(true);
+          const selfie = await generateAvatarSelfie();
+          if (!selfie) return;
+
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          // Background refresh of the server component tree
+          startTransition(() => router.refresh());
+
+          setShowVault(true);
+        } catch {
+          // Do nothing.
+        } finally {
+          setIsGeneratingSelfie(false);
+        }
+      }}
+    >
       <Image
         src="/assets/images/placeholders/planet.jpg"
         alt={''}
@@ -28,7 +62,10 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
           className="h-auto"
           alt=""
         />
-        <h2 className="text-charcoal text-xl font-extrabold">Take a Space Selfie</h2>
+        <h2 className="text-charcoal text-xl font-extrabold">
+          {isGeneratingSelfie ? 'Generating Space Selfie' : 'Take a Space Selfie'}
+        </h2>
+        {isGeneratingSelfie && <ProgressBar />}
       </div>
     </div>
   );
@@ -40,7 +77,7 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
       effect="flip"
       bgEffect={disabled}
       back={back}
-      disabled={disabled}
+      disabled={!canGenerateSelfie}
     />
   );
 };
