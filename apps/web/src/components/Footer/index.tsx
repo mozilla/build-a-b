@@ -143,17 +143,18 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
         <span className="flex gap-x-2 items-center">
           <span className="whitespace-nowrap"></span>
-          <Link
+          <LinkButton
             href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
             target="_blank"
             title="Go to Firefox website"
             className="flex items-center pr-1 gap-1"
+            trackableEvent="click_firefox_footer_logo"
           >
             Powered by
             <span className="inline-block relative w-[4.491rem] h-[1.5rem] landscape:w-[5.389rem] landscape:h-[1.8rem]">
               <Image src="/assets/images/firefox-logo.png" alt="Firefox logo" sizes="10vw" fill />
             </span>
-          </Link>
+          </LinkButton>
           <span className="font-bold">&bull;</span>{' '}
           <span className="ml-1 whitespace-nowrap">Built by</span>
           <Link
