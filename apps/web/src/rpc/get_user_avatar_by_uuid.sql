@@ -24,8 +24,7 @@ BEGIN
                 json_build_object(
                     'id', s.id,
                     'asset', s.asset,
-                    'created_at', s.created_at,
-                    'n_index', s.n_index
+                    'created_at', s.created_at
                 )
                 ORDER BY s.created_at DESC
             ) FILTER (WHERE s.id IS NOT NULL),
