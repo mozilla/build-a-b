@@ -1,7 +1,7 @@
 -- Replace existing function (schema-qualified, exact signature)
-DROP FUNCTION IF EXISTS public.get_available_selfies_v2(uuid);
+DROP FUNCTION IF EXISTS public.get_available_selfies(uuid);
 
-CREATE OR REPLACE FUNCTION public.get_available_selfies_v2(
+CREATE OR REPLACE FUNCTION public.get_available_selfies(
   p_uuid UUID
 )
 RETURNS TABLE (

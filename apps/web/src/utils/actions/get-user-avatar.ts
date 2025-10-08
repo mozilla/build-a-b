@@ -26,7 +26,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
         .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
         .maybeSingle<DatabaseAvatarResponse>(),
       supabase
-        .rpc('get_available_selfies_v2', { p_uuid: userAssociationId })
+        .rpc('get_available_selfies', { p_uuid: userAssociationId })
         .maybeSingle<DatabaseAvailableSelfiesResponse>(),
     ]);
 
