@@ -1,6 +1,5 @@
 import { evaluateFlag } from '@/app/flags';
 import type { BentoProps } from '@/components/Bento';
-import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
 import clsx from 'clsx';
