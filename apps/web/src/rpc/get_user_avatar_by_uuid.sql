@@ -45,7 +45,7 @@ BEGIN
     ) AS selfies
   FROM public.users AS u
   INNER JOIN public.avatars AS a
-    ON u.current_avatar_id = a.id
+    ON u.avatar_id = a.id
   WHERE u.uuid = user_uuid
   GROUP BY
     u.id,

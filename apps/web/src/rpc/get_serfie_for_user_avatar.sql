@@ -18,7 +18,7 @@ BEGIN
   -------------------------------------------------------------------
   -- Step 1: Find user id and current avatar id from users table
   -------------------------------------------------------------------
-  SELECT u.id, u.current_avatar_id
+  SELECT u.id, u.avatar_id
   INTO v_user_id, v_avatar_id
   FROM public.users u
   WHERE u.uuid = p_uuid;
