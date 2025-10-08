@@ -15,7 +15,6 @@ const avatarEvents = [
 export type AvatarEvent = (typeof avatarEvents)[number];
 
 const homeEvents = [
-  'click_twitchcon_page',
   'click_twitchcon_details_cta',
   'click_space_launch_details_cta',
   'click_firefox_owyw_logo',
