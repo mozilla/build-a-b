@@ -27,15 +27,21 @@ BEGIN
                     'created_at', s.created_at
                 )
                 ORDER BY s.created_at DESC
-            ) FILTER (WHERE s.id IS NOT NULL),
+            ) FILTER (
+                WHERE s.id IS NOT NULL
+                  AND s.status = 'published'
+                  AND s.avatar_id = u.avatar_id
+            ),
             '[]'::json
         ) AS selfies
     FROM public.users AS u
-    INNER JOIN public.avatars AS a ON u.avatar_id = a.id
-    LEFT JOIN public.user_selfies AS us ON us.user_id = u.id
-    LEFT JOIN public.selfies AS s ON s.id = us.selfie_id
+    INNER JOIN public.avatars AS a
+        ON u.avatar_id = a.id
+    LEFT JOIN public.user_selfies AS us
+        ON us.user_id = u.id
+    LEFT JOIN public.selfies AS s
+        ON s.id = us.selfie_id
     WHERE u.uuid = user_uuid
-      AND (s.status = 'published' OR s.id IS NULL)
     GROUP BY
         u.id,
         a.id,
