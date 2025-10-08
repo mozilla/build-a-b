@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import LinkButton from '../LinkButton';
+import { TrackableEvent } from '@/utils/helpers/track-event';
 
 export interface SocialNetworkProps {
   socials: {
@@ -10,9 +11,10 @@ export interface SocialNetworkProps {
     src: string;
   }[];
   isInModal: boolean;
+  trackableEvent?: TrackableEvent;
 }
 
-const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
+const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal, trackableEvent }) => {
   const navClass = isInModal
     ? 'social-network flex content-center'
     : 'social-network hidden landscape:flex content-center';
@@ -22,7 +24,7 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
       <ul className="flex flex-row content-center justify-center items-center gap-x-4">
         {socials.map(({ href, title, alt, src }) => (
           <li key={href}>
-            <Link
+            <LinkButton
               href={href}
               target="_blank"
               title={title}
@@ -32,6 +34,8 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
                          rounded-full overflow-hidden 
                          transition-transform duration-300
                          hover:-rotate-30 group"
+              trackableEvent={trackableEvent}
+              trackablePlatform={alt.toLowerCase()}
             >
               <Image
                 src={src}
@@ -46,7 +50,7 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
                            opacity-0 group-hover:opacity-70
                            transition-opacity duration-300"
               />
-            </Link>
+            </LinkButton>
           </li>
         ))}
       </ul>

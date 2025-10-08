@@ -70,7 +70,11 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
                 </Suspense>
               )}
               <p className="mt-4 mb-10 text-sm-custom text-center">{ctaCopy}</p>
-              <SocialNetwork socials={socials} isInModal={true} />
+              <SocialNetwork
+                socials={socials}
+                isInModal={true}
+                trackableEvent="click_social_icon_header"
+              />
             </div>
           </div>
         </div>
