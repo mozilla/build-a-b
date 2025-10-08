@@ -55,7 +55,7 @@ export async function generateAvatar(options: Choice[]): Promise<AvatarData | nu
       uuid: newOrUpdatedUser?.uuid || '',
       selfies: [],
       selfieAvailability: {
-        next_n: 0,
+        selfies_available: 0,
         next_at: null,
       },
     };

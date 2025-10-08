@@ -6,7 +6,6 @@ import {
   type ChoiceConfig,
   type SelfieAvailabilityState,
 } from '@/types';
-import { SELFIES_LIMIT } from '@/utils/constants';
 import {
   createContext,
   useCallback,
