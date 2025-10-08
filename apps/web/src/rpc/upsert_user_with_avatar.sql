@@ -29,13 +29,13 @@ BEGIN
   
   IF v_uid IS NULL THEN
     -- If no user found, insert a new user
-    INSERT INTO users (current_avatar_id, created_at)
+    INSERT INTO users (avatar_id, created_at)
     VALUES (p_avatar_id, NOW())
     RETURNING users.id, users.uuid INTO v_uid, v_uuid;
   ELSE
     -- If user exists, update current avatar
     UPDATE users
-    SET current_avatar_id = p_avatar_id
+    SET avatar_id = p_avatar_id
     WHERE users.uuid = v_uuid
     RETURNING users.id, users.uuid INTO v_uid, v_uuid;
   END IF;
@@ -51,7 +51,7 @@ BEGIN
   
   -- Return data from users table
   RETURN QUERY
-  SELECT u.current_avatar_id AS avatar_id,
+  SELECT u.avatar_id,
          u.created_at,
          u.id,
          u.uuid 

@@ -18,12 +18,12 @@ BEGIN
     RETURN;
   END IF;
 
-  -- 1️⃣ Update user: clear current_avatar_id
+  -- Update user: clear avatar_id
   UPDATE users
-  SET current_avatar_id = NULL
+  SET avatar_id = NULL
   WHERE uuid = p_uuid;
 
-  -- 2️⃣ Update related avatars: set all is_current to false
+  -- Update related avatars: set all is_current to false
   UPDATE user_avatars
   SET is_current = FALSE
   WHERE user_id = v_user_id;
