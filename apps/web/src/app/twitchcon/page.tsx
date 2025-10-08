@@ -277,6 +277,7 @@ export default async function Page() {
               {...(avatarBentoData.primaryFlowData as GetStartedProps)}
               ctaText="Build a Billionaire"
               triggerClassNames="secondary-button"
+              trackableEvent="click_build_billionaire_countdown"
             />
           </Suspense>
         }
