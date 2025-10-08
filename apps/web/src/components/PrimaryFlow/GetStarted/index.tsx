@@ -11,6 +11,7 @@ import CompletionScreen from '../CompletionScreen';
 import ConfirmSelectionScreen, { ConfirmSelectionHeaderLogo } from '../ConfirmSelectionScreen';
 import Intro, { type IntroProps } from '../Intro';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
+import { AvatarEvent, trackEvent } from '@/utils/helpers/track-event';
 
 export interface GetStartedProps extends IntroProps {
   /**
@@ -21,9 +22,18 @@ export interface GetStartedProps extends IntroProps {
    * Classes to apply to the trigger button.
    */
   triggerClassNames?: string;
+  /**
+   * Label for tracking purposes (e.g., "header_cta", "footer_cta").
+   */
+  trackableEvent: AvatarEvent;
 }
 
-const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlowData }) => {
+const GetStarted: FC<GetStartedProps> = ({
+  ctaText,
+  triggerClassNames,
+  trackableEvent,
+  ...babFlowData
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -94,7 +104,8 @@ const GetStarted: FC<GetStartedProps> = ({ ctaText, triggerClassNames, ...babFlo
     currentParams.set('s', '1');
     router.replace(`?${currentParams.toString()}`);
     onOpen();
-  }, [onOpen, router, searchParams]);
+    trackEvent({ action: trackableEvent });
+  }, [onOpen, router, searchParams, trackableEvent]);
 
   return (
     <>
