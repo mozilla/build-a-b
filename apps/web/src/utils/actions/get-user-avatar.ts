@@ -26,7 +26,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
         .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
         .maybeSingle<DatabaseAvatarResponse>(),
       supabase
-        .rpc('get_available_selfies', { p_uuid: userAssociationId })
+        .rpc('get_available_selfies_v2', { p_uuid: userAssociationId })
         .maybeSingle<DatabaseAvailableSelfiesResponse>(),
     ]);
 
@@ -51,7 +51,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       uuid: userAssociationId,
       selfies: avatar.selfies.sort(sortSelfies()),
       selfieAvailability: {
-        next_n: availableSelfies?.next_n || 0,
+        selfies_available: availableSelfies?.selfies_available || 0,
         next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
       },
     };

@@ -55,7 +55,7 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
   const [showVault, setShowVault] = useState(false);
   const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
   const [selfieAvailabilityState, setSelfieAvailabilityState] =
-    useState<SelfieAvailabilityState>('AVAILABLE');
+    useState<SelfieAvailabilityState>('COMING_SOON');
   const [userChoices, setUserChoices] =
     useState<Record<ChoiceGroup, ChoiceConfig | null>>(initialChoices);
 
@@ -67,20 +67,17 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
       return;
     }
 
-    const { next_n, next_at } = avatarData.selfieAvailability;
+    console.log(avatarData.selfieAvailability);
 
-    if (next_n + 1 >= SELFIES_LIMIT) {
-      setSelfieAvailabilityState('REACHED_MAX_LIMIT');
-      return;
-    }
+    const { selfies_available, next_at } = avatarData.selfieAvailability;
 
-    if (!next_at) {
-      setSelfieAvailabilityState('AVAILABLE');
-      return;
-    }
-
-    if (next_at.getTime() >= now) {
+    if (next_at && next_at.getTime() >= now) {
       setSelfieAvailabilityState('COOL_DOWN_PERIOD');
+      return;
+    }
+
+    if (selfies_available < 1) {
+      setSelfieAvailabilityState('COMING_SOON');
       return;
     }
 
