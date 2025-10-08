@@ -13,6 +13,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import { avatarBentoData } from '@/utils/constants';
+import LinkButton from '@/components/LinkButton';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -82,14 +83,15 @@ export default async function Page() {
               Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
               floor or follow along online.
             </p>
-            <Link
+            <LinkButton
               href="https://www.twitchcon.com/san-diego-2025/tickets/"
               className="secondary-button landscape:w-fit"
               title="Get your event tickets"
               target="_blank"
+              trackableEvent="click_get_twitchcon_tickets"
             >
               Get Tickets
-            </Link>
+            </LinkButton>
           </div>
         </div>
       </Hero>
@@ -250,14 +252,15 @@ export default async function Page() {
               </p>
             </div>
             <div>
-              <Link
+              <LinkButton
                 href="https://www.twitchcon.com/san-diego-2025/tickets/"
                 title="Buy your ticket"
                 className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
                 target="_blank"
+                trackableEvent="click_get_twitchcon_tickets"
               >
                 Get Tickets
-              </Link>
+              </LinkButton>
             </div>
           </div>
         }
