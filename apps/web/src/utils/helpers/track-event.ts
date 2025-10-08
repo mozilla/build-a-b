@@ -25,6 +25,8 @@ const twitchconEvents = ['click_get_twitchcon_tickets'] as const;
 export type TwitchConEvent = (typeof twitchconEvents)[number];
 
 const navigationEvents = [
+  'click_bbo_logo_header',
+  'click_bbo_logo_footer',
   'click_home_header',
   'click_home_footer',
   'click_twitchcon_header',

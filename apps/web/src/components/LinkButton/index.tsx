@@ -9,6 +9,7 @@ interface LinkButtonProps extends PropsWithChildren {
   title?: string;
   target?: '_self' | '_blank';
   className?: string;
+  tabIndex?: number;
   trackableEvent?: TrackableEvent;
 }
 
@@ -17,6 +18,7 @@ const LinkButton: FC<LinkButtonProps> = ({
   title,
   target,
   className,
+  tabIndex,
   trackableEvent,
   children,
 }) => {
@@ -26,6 +28,7 @@ const LinkButton: FC<LinkButtonProps> = ({
       title={title}
       target={target}
       className={className}
+      tabIndex={tabIndex}
       onClick={() => {
         if (trackableEvent) {
           trackEvent({ action: trackableEvent });
