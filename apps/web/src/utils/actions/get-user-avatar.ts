@@ -1,10 +1,11 @@
 'use server';
 
-import type { AvatarData, DatabaseAvatarResponse } from '@/types';
+import type { AvatarData, DatabaseAvailableSelfiesResponse, DatabaseAvatarResponse } from '@/types';
 import { cookies } from 'next/headers';
 import { COOKIE_NAME } from '../constants';
 import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
+import { sortSelfies } from '../helpers/order-by-date';
 
 export async function getUserAvatar(userUuid?: string): Promise<AvatarData | null> {
   try {
@@ -17,13 +18,29 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
     }
 
     // Get user avatar data in a single query
-    const { data: avatar, error: avatarError } = await supabase
-      .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
-      .single<DatabaseAvatarResponse>();
+    const [
+      { data: avatar, error: avatarError },
+      { data: availableSelfies, error: selfieAvailablityError },
+    ] = await Promise.all([
+      supabase
+        .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
+        .maybeSingle<DatabaseAvatarResponse>(),
+      supabase
+        .rpc('get_available_selfies', { p_uuid: userAssociationId })
+        .maybeSingle<DatabaseAvailableSelfiesResponse>(),
+    ]);
 
-    if (avatarError || !avatar) {
+    if (avatarError) {
       throw new Error(avatarError?.message || 'Could not retrieve user billionaire.');
     }
+
+    if (selfieAvailablityError) {
+      throw new Error(
+        selfieAvailablityError?.message || 'Could not retrieve selfie availability data.',
+      );
+    }
+
+    if (!avatar) return null;
 
     return {
       originalRidingAsset: avatar.asset_riding || '',
@@ -32,7 +49,11 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userAssociationId,
-      selfies: avatar.selfies,
+      selfies: avatar.selfies.sort(sortSelfies()),
+      selfieAvailability: {
+        next_n: availableSelfies?.next_n || 0,
+        next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
+      },
     };
   } catch (e) {
     // This will be available via server logs.

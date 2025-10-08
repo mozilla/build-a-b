@@ -5,6 +5,7 @@ export const COOKIE_NAME = 'user_id';
 export const ID_HISTORY_COOKIE = 'id_history';
 export const DEFAULT_AVATAR_WIDTH = 500;
 export const DEFAULT_AVATAR_HEIGHT = 1200;
+export const SELFIES_LIMIT = 5;
 
 export const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
@@ -16,6 +17,7 @@ export const avatarBentoData: AvatarBentoProps = {
       'When Billionaires harvest your data for ego trips to space, it makes the internet and everything connected to it worse. Build your own Billionaire and send them safely off-planet (one-way).',
     createAvatarCtaText: 'Start Building Your Billionaire',
     randomAvatarCtaText: 'Create a Random Billionaire',
+    trackableEvent: 'click_get_started_cta',
   },
   imageSrcLandscape: '/assets/images/avatar-square.webp',
   imageSrcPortrait: '/assets/images/avatar-portrait.png',

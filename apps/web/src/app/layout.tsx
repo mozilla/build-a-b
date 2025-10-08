@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SocialNetworkItem } from '@/components/SocialNetwork';
 import { evaluateFlag } from './flags';
+import AnalyticsListener from '@/components/AnalyticsListener';
+import { Suspense } from 'react';
 
 const sharpSans = localFont({
   src: [
@@ -145,17 +147,27 @@ export const socials: SocialNetworkItem[] = [
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Check if DataWar feature is enabled
   const isDataWarEnabled = await evaluateFlag('showDataWar');
-  
+
   // Create navigation links conditionally
   const baseLinks = [
-    { href: '/', label: 'Home', title: 'Go to home' },
-    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
-    // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
+    { href: '/', label: 'Home', title: 'Go home', trackableEvent: 'click_home' },
+    {
+      href: '/twitchcon',
+      label: 'Twitchcon',
+      title: 'Learn about Twitchcon',
+      trackableEvent: 'click_twitchcon',
+    },
+    // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch', trackableEvent: 'click_space_launch' },
   ];
-  
-  const dataWarLink = { href: '/datawar', label: 'Data War', title: 'Play our game Data War' };
+
+  const dataWarLink = {
+    href: '/datawar',
+    label: 'Data War',
+    title: 'Play our game Data War',
+    trackableEvent: 'click_datawar',
+  };
   const links = isDataWarEnabled ? [...baseLinks, dataWarLink] : baseLinks;
-  
+
   const navigationData = {
     links,
     socials,
@@ -168,7 +180,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         {/* Google Analytics */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-GBTX3GFPFP"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || 'G-GBTX3GFPFP'}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -176,11 +188,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-GBTX3GFPFP');
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || 'G-GBTX3GFPFP'}', { send_page_view: false });
           `}
         </Script>
       </head>
       <body className="bg-background text-foreground">
+        <Suspense>
+          <AnalyticsListener />
+        </Suspense>
         <Providers>
           <Container>
             <Header
