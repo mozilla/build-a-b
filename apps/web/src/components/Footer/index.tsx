@@ -72,7 +72,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-4">
             {socials.map(({ href, title, alt, src }) => (
               <li key={href}>
-                <Link
+                <LinkButton
                   href={href}
                   target="_blank"
                   title={title}
@@ -81,6 +81,8 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                              transition-transform duration-300
                              hover:-rotate-30
                              group"
+                  trackableEvent="click_social_icon_footer"
+                  trackablePlatform={alt.toLowerCase()}
                 >
                   <Image
                     src={src}
@@ -95,7 +97,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                                opacity-0 group-hover:opacity-70
                                transition-opacity duration-300"
                   />
-                </Link>
+                </LinkButton>
               </li>
             ))}
           </ul>

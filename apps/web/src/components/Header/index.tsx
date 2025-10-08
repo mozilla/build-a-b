@@ -48,7 +48,11 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         </div>
         <div className="right-side flex flex-row gap-x-3">
           <HeaderMenu links={links} isHorizontal={true} isInModal={false} />
-          <SocialNetwork socials={socials} isInModal={false} />
+          <SocialNetwork
+            socials={socials}
+            isInModal={false}
+            trackableEvent="click_social_icon_header"
+          />
           <MobileMenu links={links} socials={socials} ctaCopy={ctaCopy} ctaLabel={ctaLabel} />
         </div>
       </div>

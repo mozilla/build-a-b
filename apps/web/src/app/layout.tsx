@@ -117,7 +117,7 @@ export const metadata: Metadata = {
 
 const navigationData = {
   links: [
-    { href: '/', label: 'Home', title: 'Go to home' },
+    { href: '/', label: 'Home', title: 'Go home' },
     { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
     // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
     // { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
