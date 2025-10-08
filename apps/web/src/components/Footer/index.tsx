@@ -7,12 +7,15 @@ import { usePathname } from 'next/navigation';
 import { FC, Suspense } from 'react';
 import GetStarted from '../PrimaryFlow/GetStarted';
 import { floatingImages } from './constants';
+import LinkButton from '../LinkButton';
+import { TrackableEvent } from '@/utils/helpers/track-event';
 
 export interface FooterProps {
   links: {
     href: string;
     label: string;
     title: string;
+    trackableEvent: string;
   }[];
   socials: {
     href: string;
@@ -30,10 +33,11 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
 
   return (
     <footer className="site-footer" aria-label="Site footer">
-      <Link
+      <LinkButton
         href="/"
         title="Back to home"
         className="block w-fit landscape:absolute landscape:top-14 landscape:left-1/2 landscape:-translate-x-1/2"
+        trackableEvent="click_bbo_logo_footer"
       >
         <Image
           src="/assets/images/billionaire-logo.svg"
@@ -42,14 +46,14 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           alt="Billionaire Logo"
           className="-ml-2 w-[13.375rem] landscape:w-[21.75rem]"
         />
-      </Link>
+      </LinkButton>
 
       <div className="landscape:flex landscape:justify-between landscape:mt-10 landscape:mb-4">
         <nav className="text-accent text-nav-item" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
-            {links.map(({ href, label, title }) => (
+            {links.map(({ href, label, title, trackableEvent }) => (
               <li key={href}>
-                <Link
+                <LinkButton
                   href={href}
                   title={title}
                   className="inline-block py-2
@@ -59,9 +63,10 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                              hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
                              hover:bg-clip-text hover:text-transparent"
                   aria-current={pathname === href ? 'page' : undefined}
+                  trackableEvent={`${trackableEvent}_footer` as TrackableEvent}
                 >
                   {label}
-                </Link>
+                </LinkButton>
               </li>
             ))}
           </ul>
@@ -70,7 +75,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           <ul className="flex gap-x-4 justify-end landscape:flex-col landscape:gap-y-4">
             {socials.map(({ href, title, alt, src }) => (
               <li key={href}>
-                <Link
+                <LinkButton
                   href={href}
                   target="_blank"
                   title={title}
@@ -79,6 +84,8 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                              transition-transform duration-300
                              hover:-rotate-30
                              group"
+                  trackableEvent="click_social_icon_footer"
+                  trackablePlatform={alt.toLowerCase()}
                 >
                   <Image
                     src={src}
@@ -93,7 +100,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                                opacity-0 group-hover:opacity-70
                                transition-opacity duration-300"
                   />
-                </Link>
+                </LinkButton>
               </li>
             ))}
           </ul>
@@ -109,6 +116,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                 {...avatarBentoData.primaryFlowData}
                 ctaText={ctaLabel}
                 triggerClassNames="secondary-button"
+                trackableEvent="click_build_billionaire_footer"
               />
             </Suspense>
           )}
@@ -140,17 +148,18 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
         <span>@{currentYear.getFullYear()} Mozilla. All rights reserved.</span>
         <span className="flex gap-x-2 items-center">
           <span className="whitespace-nowrap"></span>
-          <Link
+          <LinkButton
             href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
             target="_blank"
             title="Go to Firefox website"
             className="flex items-center pr-1 gap-1"
+            trackableEvent="click_firefox_footer_logo"
           >
             Powered by
             <span className="inline-block relative w-[4.491rem] h-[1.5rem] landscape:w-[5.389rem] landscape:h-[1.8rem]">
               <Image src="/assets/images/firefox-logo.png" alt="Firefox logo" sizes="10vw" fill />
             </span>
-          </Link>
+          </LinkButton>
           <span className="font-bold">&bull;</span>{' '}
           <span className="ml-1 whitespace-nowrap">Built by</span>
           <Link

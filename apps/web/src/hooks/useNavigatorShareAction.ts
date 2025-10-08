@@ -1,6 +1,7 @@
 'use client';
 
 import type { AvatarData } from '@/types';
+import { trackEvent } from '@/utils/helpers/track-event';
 import { useCallback } from 'react';
 
 const AVATAR_FILE_TYPE = 'png';
@@ -30,6 +31,8 @@ export const useNavigatorShareAction = ({
   avatar,
 }: UseNavigatorShareActionOptions): UseNavigatorShareActionReturn => {
   const handleNavigatorShare = useCallback(async (): Promise<void> => {
+    trackEvent({ action: 'click_share_avatar' });
+
     try {
       if (!avatar?.instragramAsset || !avatar?.name) return;
 
