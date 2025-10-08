@@ -37,6 +37,14 @@ BEGIN
   WHERE user_id = v_user_id
     AND is_current = TRUE;
 
+  -------------------------------------------------------------------
+  -- Step 4: Reset user_cooldowns — clear next_at for this user
+  -------------------------------------------------------------------
+  UPDATE user_cooldowns
+  SET next_at = NULL
+  WHERE user_id = v_user_id
+    AND action = 'selfie';
+
 END;
 $func$;
 
