@@ -42,10 +42,10 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
     const currentUserId = getCookie(COOKIE_NAME);
     if (!currentUserId) return;
 
-    trackEvent({ action: 'click_restart_avatar' });
     removeAvatarByUser(currentUserId)
       .then(() => {
         // Successfully removed avatar for user ${currentUserId}.
+        trackEvent({ action: 'click_restart_avatar' });
         // Refresh the current page (re-run server components)
         reset();
         router.refresh();
