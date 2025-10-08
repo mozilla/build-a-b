@@ -4,7 +4,6 @@ import { COOKIE_NAME } from '@/utils/constants';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 import { avatarBentoData } from '@/utils/constants';
 
-import Link from 'next/link';
 import Image from 'next/image';
 
 import Ticker from '@/components/Ticker';
@@ -15,6 +14,7 @@ import Scrim from '@/components/Scrim';
 import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
 import CountDown from '@/components/CountDown';
+import LinkButton from '@/components/LinkButton';
 
 interface TickerItem {
   id?: number;
@@ -132,9 +132,10 @@ export default async function Home({
                     indulge our curiosities, and open what we want.
                   </p>
                 </div>
-                <a
+                <LinkButton
                   href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
                   target="_blank"
+                  trackableEvent="click_firefox_owyw_logo"
                 >
                   <Image
                     src="/assets/images/firefox-open.webp"
@@ -143,7 +144,7 @@ export default async function Home({
                     alt=""
                     className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
                   />
-                </a>
+                </LinkButton>
               </div>
             }
           >
@@ -214,13 +215,14 @@ export default async function Home({
                     space, one-way. Join us IRL at TwitchCon or right here on this site to follow
                     along.
                   </p>
-                  <Link
+                  <LinkButton
                     href="/twitchcon"
                     title="Visit TwitchCon page"
                     className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                    trackableEvent="click_twitchcon_details_cta"
                   >
                     TwitchCon Details
-                  </Link>
+                  </LinkButton>
                 </div>
               </Window>
             }
@@ -279,13 +281,14 @@ export default async function Home({
             targetDate="2025-10-18T10:20:30-07:00"
             className="landscape:mb-0!"
             cta={
-              <Link
+              <LinkButton
                 href="/twitchcon"
                 title="Learn more about the launch"
                 className="secondary-button flex"
+                trackableEvent="click_space_launch_details_cta"
               >
                 Space Launch Details
-              </Link>
+              </LinkButton>
             }
           ></CountDown>
         </div>
