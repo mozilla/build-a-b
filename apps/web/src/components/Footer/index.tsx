@@ -8,12 +8,14 @@ import { FC, Suspense } from 'react';
 import GetStarted from '../PrimaryFlow/GetStarted';
 import { floatingImages } from './constants';
 import LinkButton from '../LinkButton';
+import { TrackableEvent } from '@/utils/helpers/track-event';
 
 export interface FooterProps {
   links: {
     href: string;
     label: string;
     title: string;
+    trackableEvent: string;
   }[];
   socials: {
     href: string;
@@ -49,9 +51,9 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       <div className="landscape:flex landscape:justify-between landscape:mt-10 landscape:mb-4">
         <nav className="text-accent text-nav-item" aria-label="Footer navigation">
           <ul className="flex flex-col items-end landscape:items-start">
-            {links.map(({ href, label, title }) => (
+            {links.map(({ href, label, title, trackableEvent }) => (
               <li key={href}>
-                <Link
+                <LinkButton
                   href={href}
                   title={title}
                   className="inline-block py-2
@@ -61,9 +63,10 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                              hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
                              hover:bg-clip-text hover:text-transparent"
                   aria-current={pathname === href ? 'page' : undefined}
+                  trackableEvent={`${trackableEvent}_footer` as TrackableEvent}
                 >
                   {label}
-                </Link>
+                </LinkButton>
               </li>
             ))}
           </ul>

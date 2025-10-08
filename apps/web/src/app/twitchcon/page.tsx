@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import Image from 'next/image';
-import Link from 'next/link';
 import IconCard from '@/components/IconCard';
 import CardsSection from '@/components/CardsSection';
 import Window from '@/components/Window';
