@@ -8,6 +8,7 @@ import SocialNetwork from '@/components/SocialNetwork';
 import MobileMenu from '@/components/MobileMenu';
 import { FC } from 'react';
 import { floatingImages } from './constants';
+import LinkButton from '../LinkButton';
 
 export interface HeaderProps {
   links: {
@@ -30,7 +31,12 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
     <Bento className="h-[5.875rem] landscape:h-[10.9375rem] mb-4 landscape:mb-8 bg-no-repeat bg-cover bg-[url(/assets/images/night-sky.webp)]">
       <div className="relative header-container flex justify-between h-full pl-3 pr-4 landscape:pl-8 landscape:pr-8">
         <div className="left-side flex flex-row h-full">
-          <Link href="/" tabIndex={0} className="flex flex-row items-center">
+          <LinkButton
+            href="/"
+            tabIndex={0}
+            className="flex flex-row items-center"
+            trackableEvent="click_bbo_logo_header"
+          >
             <Image
               src="/assets/images/billionaire-logo.svg"
               alt="Billionaire Logo"
@@ -38,7 +44,7 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
               height={220}
               className="w-[7.0625rem] landscape:w-[13.125rem] rotate-[-8deg] landscape:rotate-[-3deg]"
             />
-          </Link>
+          </LinkButton>
         </div>
         <div className="right-side flex flex-row gap-x-3">
           <HeaderMenu links={links} isHorizontal={true} isInModal={false} />

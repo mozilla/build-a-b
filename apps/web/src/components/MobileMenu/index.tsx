@@ -8,6 +8,7 @@ import SocialNetwork from '@/components/SocialNetwork';
 import GetStarted from '../PrimaryFlow/GetStarted';
 import { HeaderProps } from '@/components/Header';
 import { avatarBentoData } from '@/utils/constants';
+import LinkButton from '../LinkButton';
 
 const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
   const [open, setOpen] = useState(false);
@@ -42,9 +43,14 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
               <Image src={closeIcon} fill alt={altText} className="w-6 h-6" />
             </button>
             <div>
-              <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6 -ml-4">
+              <LinkButton
+                href="/"
+                tabIndex={0}
+                className="inline-block relative w-45 h-25 mb-6 -ml-4"
+                trackableEvent="click_bbo_logo_header"
+              >
                 <Image src="/assets/images/billionaire-logo.svg" alt="Billionaire Logo" fill />
-              </Link>
+              </LinkButton>
               <HeaderMenu
                 links={links}
                 isHorizontal={false}
