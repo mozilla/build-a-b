@@ -55,7 +55,6 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
       restart: {
         onPress: () => {
           setActionType('restart');
-          trackEvent({ action: 'click_restart_avatar' });
         },
         content: {
           title: 'Ready for a do-over?',

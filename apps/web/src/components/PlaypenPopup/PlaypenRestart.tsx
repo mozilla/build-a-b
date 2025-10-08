@@ -13,6 +13,7 @@ import { FC, useMemo } from 'react';
 import BrowserBento from '../BrowserBento';
 import { removeAvatarByUser } from '@/utils/actions/remove-avatar-by-user';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 interface PlaypenRestartProps {
   action: Action;
@@ -41,6 +42,7 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
     const currentUserId = getCookie(COOKIE_NAME);
     if (!currentUserId) return;
 
+    trackEvent({ action: 'click_restart_avatar' });
     removeAvatarByUser(currentUserId)
       .then(() => {
         // Successfully removed avatar for user ${currentUserId}.
