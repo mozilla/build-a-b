@@ -106,16 +106,16 @@ export type DatabaseSelfieResponse = {
 };
 
 export type DatabaseAvailableSelfiesResponse = {
-  next_n: number;
+  selfies_available: number;
   next_at: string;
 };
 
 export type SelfieAvailabilityData = {
-  next_n: number;
+  selfies_available: number;
   next_at: Date | null;
 };
 
-export type SelfieAvailabilityState = 'REACHED_MAX_LIMIT' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
+export type SelfieAvailabilityState = 'COMING_SOON' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
 
 export type StatusEndpointBaseResponse = {
   status: string;
