@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { FC, Suspense } from 'react';
 import GetStarted from '../PrimaryFlow/GetStarted';
 import { floatingImages } from './constants';
+import LinkButton from '../LinkButton';
 
 export interface FooterProps {
   links: {
@@ -30,10 +31,11 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
 
   return (
     <footer className="site-footer" aria-label="Site footer">
-      <Link
+      <LinkButton
         href="/"
         title="Back to home"
         className="block w-fit landscape:absolute landscape:top-14 landscape:left-1/2 landscape:-translate-x-1/2"
+        trackableEvent="click_bbo_logo_footer"
       >
         <Image
           src="/assets/images/billionaire-logo.svg"
@@ -42,7 +44,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
           alt="Billionaire Logo"
           className="-ml-2 w-[13.375rem] landscape:w-[21.75rem]"
         />
-      </Link>
+      </LinkButton>
 
       <div className="landscape:flex landscape:justify-between landscape:mt-10 landscape:mb-4">
         <nav className="text-accent text-nav-item" aria-label="Footer navigation">
