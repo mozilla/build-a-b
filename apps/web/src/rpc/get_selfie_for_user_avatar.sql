@@ -13,7 +13,7 @@ DECLARE
   v_user_id BIGINT;
   v_avatar_id BIGINT;
   v_selfie_id BIGINT;
-  v_nindex INT;
+  v_last_selfie_created_at TIMESTAMPTZ;
 BEGIN
   -------------------------------------------------------------------
   -- Step 1: Find user id and current avatar id from users table
@@ -30,30 +30,34 @@ BEGIN
   END IF;
 
   -------------------------------------------------------------------
-  -- Step 2: Determine the selfie index (n_index) to fetch next
-  -- Count how many selfies the user already has linked
+  -- Step 2: Determine the next selfie to assign
+  -- Find the latest selfie (by created_at) already linked to this user
   -------------------------------------------------------------------
-  SELECT COUNT(*) + 1
-  INTO v_nindex
+  SELECT MAX(s.created_at)
+  INTO v_last_selfie_created_at
   FROM public.user_selfies us
-  WHERE us.user_id = v_user_id;
-
-  RAISE NOTICE 'Next selfie index for user % is %', v_user_id, v_nindex;
+  INNER JOIN public.selfies s ON s.id = us.selfie_id
+  WHERE us.user_id = v_user_id
+    AND s.avatar_id = v_avatar_id;
 
   -------------------------------------------------------------------
-  -- Step 3: Find the published selfie with that n_index for this avatar
+  -- Step 3: Select the next selfie published after the latest one linked
   -------------------------------------------------------------------
   SELECT s.id
   INTO v_selfie_id
   FROM public.selfies s
   WHERE s.avatar_id = v_avatar_id
-    AND s.n_index = v_nindex
     AND s.status = 'published'
+    AND (
+      v_last_selfie_created_at IS NULL
+      OR s.created_at > v_last_selfie_created_at
+    )
+  ORDER BY s.created_at ASC
   LIMIT 1;
 
   -- If no selfie found, return nothing
   IF v_selfie_id IS NULL THEN
-    RAISE NOTICE 'No selfie found for avatar id % and index %', v_avatar_id, v_nindex;
+    RAISE NOTICE 'No new selfie found for avatar id % (last linked at %)', v_avatar_id, v_last_selfie_created_at;
     RETURN;
   END IF;
 
