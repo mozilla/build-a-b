@@ -2,12 +2,12 @@
 
 import { FC, Suspense, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
 import GetStarted from '../PrimaryFlow/GetStarted';
 import { HeaderProps } from '@/components/Header';
 import { avatarBentoData } from '@/utils/constants';
+import LinkButton from '../LinkButton';
 
 const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
   const [open, setOpen] = useState(false);
@@ -42,9 +42,14 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
               <Image src={closeIcon} fill alt={altText} className="w-6 h-6" />
             </button>
             <div>
-              <Link href="/" tabIndex={0} className="inline-block relative w-45 h-25 mb-6 -ml-4">
+              <LinkButton
+                href="/"
+                tabIndex={0}
+                className="inline-block relative w-45 h-25 mb-6 -ml-4"
+                trackableEvent="click_bbo_logo_header"
+              >
                 <Image src="/assets/images/billionaire-logo.svg" alt="Billionaire Logo" fill />
-              </Link>
+              </LinkButton>
               <HeaderMenu
                 links={links}
                 isHorizontal={false}
@@ -59,11 +64,16 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
                     {...avatarBentoData.primaryFlowData}
                     ctaText={ctaLabel}
                     triggerClassNames="secondary-button w-full"
+                    trackableEvent="click_build_billionaire_mobile_nav"
                   />
                 </Suspense>
               )}
               <p className="mt-4 mb-10 text-sm-custom text-center">{ctaCopy}</p>
-              <SocialNetwork socials={socials} isInModal={true} />
+              <SocialNetwork
+                socials={socials}
+                isInModal={true}
+                trackableEvent="click_social_icon_header"
+              />
             </div>
           </div>
         </div>
