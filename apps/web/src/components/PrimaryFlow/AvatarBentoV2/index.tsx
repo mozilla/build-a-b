@@ -69,11 +69,8 @@ const AvatarBentoV2: FC<AvatarBentoV2Props> = async ({
       </div>
       {showPlaypenButtons && (
         <>
-          <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
+          <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-2 landscape:row-span-1 w-full landscape:h-full">
             <BentoPlaypenSelfie avatarData={avatar} />
-          </div>
-          <div className="portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
-            <BentoPlaypenComingSoon />
           </div>
         </>
       )}
