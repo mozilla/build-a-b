@@ -7,7 +7,9 @@ AS $func$
 DECLARE
   v_user_id BIGINT;
 BEGIN
-  -- Find user id from uuid
+  -------------------------------------------------------------------
+  -- Step 1: Find user id from uuid
+  -------------------------------------------------------------------
   SELECT u.id INTO v_user_id
   FROM users u
   WHERE u.uuid = p_uuid;
@@ -18,15 +20,25 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Update user: clear avatar_id
+  -------------------------------------------------------------------
+  -- Step 2: Clear current avatar from users table
+  -------------------------------------------------------------------
   UPDATE users
   SET avatar_id = NULL
   WHERE uuid = p_uuid;
 
-  -- Update related avatars: set all is_current to false
+  -------------------------------------------------------------------
+  -- Step 3: Update user_avatars — mark previous current avatar as removed
+  -------------------------------------------------------------------
   UPDATE user_avatars
-  SET is_current = FALSE
-  WHERE user_id = v_user_id;
+  SET
+    is_current = FALSE,
+    removed_at = NOW()
+  WHERE user_id = v_user_id
+    AND is_current = TRUE;
 
 END;
 $func$;
+
+-- Grant execute to authenticated users
+GRANT EXECUTE ON FUNCTION public.remove_avatar_by_user(uuid) TO authenticated;
