@@ -59,6 +59,7 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
                     {...avatarBentoData.primaryFlowData}
                     ctaText={ctaLabel}
                     triggerClassNames="secondary-button w-full"
+                    trackableEvent="click_build_billionaire_mobile_nav"
                   />
                 </Suspense>
               )}

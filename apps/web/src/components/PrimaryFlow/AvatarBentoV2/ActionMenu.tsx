@@ -12,6 +12,7 @@ import { AvatarData } from '@/types';
 import clsx from 'clsx';
 import { FC, useMemo, useState } from 'react';
 import { COOKIE_NAME } from '@/utils/constants';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 interface ActionMenuProps {
   avatar: AvatarData;
@@ -52,7 +53,10 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
   const actions: Record<ActionMenuActionType, AvatarViewAction> = useMemo(
     () => ({
       restart: {
-        onPress: () => setActionType('restart'),
+        onPress: () => {
+          setActionType('restart');
+          trackEvent({ action: 'click_restart_avatar' });
+        },
         content: {
           title: 'Ready for a do-over?',
           description:
@@ -64,6 +68,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
           // Save the user's UUID in the cookie when they save/bookmark
           setClientCookie(COOKIE_NAME, avatar.uuid);
           setActionType('save');
+          trackEvent({ action: 'click_save_avatar' });
         },
         content: {
           title: 'Your All Access Pass',
@@ -94,7 +99,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
           <button
             type="button"
             className="block cursor-pointer"
-            onClick={() => setActionType('restart')}
+            onClick={() => actions.restart.onPress()}
           >
             <span className="sr-only">Delete and Restart</span>
             <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
@@ -145,7 +150,10 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
           <a
             className="block cursor-pointer"
             href={safeHref(downloadFile.href)}
-            onClick={(e) => preventInvalidClick(e, isDownloadReady)}
+            onClick={(e) => {
+              preventInvalidClick(e, isDownloadReady);
+              trackEvent({ action: 'click_download_avatar' });
+            }}
             download={downloadFile.fileName}
           >
             <span className="sr-only">Download</span>
@@ -182,7 +190,12 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         ) : (
           <>
             <li>
-              <a href="https://www.instagram.com" rel="noopener noreferrer" target="_blank">
+              <a
+                href="https://www.instagram.com"
+                rel="noopener noreferrer"
+                target="_blank"
+                onClick={() => trackEvent({ action: 'click_share_avatar' })}
+              >
                 <span className="sr-only">Instagram</span>
                 <span className="relative inline-block w-[3.125rem] landscape:w-[4.375rem] aspect-square text-accent transition-transform duration-300 hover:-rotate-30 group/icon">
                   <Instagram width="100%" height="100%" role="presentation" />
@@ -199,7 +212,10 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
               <a
                 className="block cursor-pointer"
                 href={safeHref(threadsShareUrl)}
-                onClick={(e) => preventInvalidClick(e, threadsShareUrl !== '#')}
+                onClick={(e) => {
+                  preventInvalidClick(e, threadsShareUrl !== '#');
+                  trackEvent({ action: 'click_share_avatar' });
+                }}
                 target="_blank"
                 rel="noopener noreferrer"
               >

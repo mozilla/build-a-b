@@ -109,6 +109,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                 {...avatarBentoData.primaryFlowData}
                 ctaText={ctaLabel}
                 triggerClassNames="secondary-button"
+                trackableEvent="click_build_billionaire_footer"
               />
             </Suspense>
           )}
