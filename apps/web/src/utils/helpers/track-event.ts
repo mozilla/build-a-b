@@ -55,22 +55,12 @@ export function trackEvent({ action, platform }: TrackEventOptions) {
       category: 'avatar_generator',
       label: action.replace('click_', ''),
     });
-    console.log({
-      action,
-      category: 'avatar_generator',
-      label: action.replace('click_', ''),
-    });
     return;
   }
 
   // Homepage events
   if (homeEvents.includes(action as HomeEvent)) {
     event({
-      action,
-      category: 'homepage',
-      label: action.replace('click_', ''),
-    });
-    console.log({
       action,
       category: 'homepage',
       label: action.replace('click_', ''),
@@ -85,11 +75,6 @@ export function trackEvent({ action, platform }: TrackEventOptions) {
       category: 'twitchcon',
       label: action.replace('click_', ''),
     });
-    console.log({
-      action,
-      category: 'twitchcon',
-      label: action.replace('click_', ''),
-    });
     return;
   }
 
@@ -97,11 +82,6 @@ export function trackEvent({ action, platform }: TrackEventOptions) {
   if (navigationEvents.includes(action as NavigationEvent)) {
     const label = action.replace('click_', '') + (platform ? `_${platform}` : '');
     event({
-      action,
-      category: 'navigation',
-      label,
-    });
-    console.log({
       action,
       category: 'navigation',
       label,
