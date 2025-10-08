@@ -10,6 +10,14 @@ const flags = {
       return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';
     },
   }),
+  showDataWar: flag({
+    key: 'show-data-war',
+    description: 'Shows the DataWar page and related functionality',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_DATA_WAR === 'true';
+    },
+  }),
 } as const;
 
 /**
