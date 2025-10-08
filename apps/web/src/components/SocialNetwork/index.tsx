@@ -3,14 +3,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export interface SocialNetworkProps {
-  socials: {
+  socials: SocialNetworkItem[];
+  isInModal: boolean;
+}
+
+export type SocialNetworkItem = {
     href: string;
     title: string;
     alt: string;
     src: string;
-  }[];
-  isInModal: boolean;
-}
+};
 
 const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
   const navClass = isInModal
