@@ -117,10 +117,15 @@ export const metadata: Metadata = {
 
 const navigationData = {
   links: [
-    { href: '/', label: 'Home', title: 'Go home' },
-    { href: '/twitchcon', label: 'Twitchcon', title: 'Learn about Twitchcon' },
-    // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch' },
-    // { href: '/datawar', label: 'Game', title: 'Play our game Data War' },
+    { href: '/', label: 'Home', title: 'Go home', trackableEvent: 'click_home' },
+    {
+      href: '/twitchcon',
+      label: 'Twitchcon',
+      title: 'Learn about Twitchcon',
+      trackableEvent: 'click_twitchcon',
+    },
+    // { href: '/space-launch', label: 'Space Launch', title: 'More about Space Launch', trackableEvent: 'click_space_launch' },
+    // { href: '/datawar', label: 'Game', title: 'Play our game Data War', trackableEvent: 'click_datawar' },
   ],
   socials: [
     {

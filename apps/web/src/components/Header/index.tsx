@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import Bento from '@/components/Bento';
 import HeaderMenu from '@/components/HeaderMenu';
 import SocialNetwork from '@/components/SocialNetwork';
@@ -15,6 +14,7 @@ export interface HeaderProps {
     href: string;
     label: string;
     title: string;
+    trackableEvent: string;
   }[];
   socials: {
     href: string;
