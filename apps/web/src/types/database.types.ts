@@ -112,7 +112,6 @@ export type Database = {
           id: number
           meta: Json | null
           moderated_at: string | null
-          n_index: number | null
           scene: string | null
           status: string | null
           updated_at: string | null
@@ -125,7 +124,6 @@ export type Database = {
           id?: number
           meta?: Json | null
           moderated_at?: string | null
-          n_index?: number | null
           scene?: string | null
           status?: string | null
           updated_at?: string | null
@@ -138,7 +136,6 @@ export type Database = {
           id?: number
           meta?: Json | null
           moderated_at?: string | null
-          n_index?: number | null
           scene?: string | null
           status?: string | null
           updated_at?: string | null
@@ -220,7 +217,6 @@ export type Database = {
           id: number
           meta: Json | null
           moderated_at: string | null
-          n_index: number | null
           status: string | null
         }
         Insert: {
@@ -230,7 +226,6 @@ export type Database = {
           id?: number
           meta?: Json | null
           moderated_at?: string | null
-          n_index?: number | null
           status?: string | null
         }
         Update: {
@@ -240,7 +235,6 @@ export type Database = {
           id?: number
           meta?: Json | null
           moderated_at?: string | null
-          n_index?: number | null
           status?: string | null
         }
         Relationships: []
