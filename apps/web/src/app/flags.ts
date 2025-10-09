@@ -18,6 +18,14 @@ const flags = {
       return process.env.FLAG_SHOW_DATA_WAR === 'true';
     },
   }),
+  showPhase2Features: flag({
+    key: 'show-phase-2-features',
+    description: 'Display phase 2 changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE_2 === 'true';
+    },
+  }),
 } as const;
 
 /**
