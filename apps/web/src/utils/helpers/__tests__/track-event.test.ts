@@ -135,7 +135,7 @@ describe('trackEvent', () => {
 
   describe('Unhandled events', () => {
     it('Should log warning for unhandled event.', () => {
-      trackEvent({ action: 'invalid_event' as any });
+      trackEvent({ action: 'invalid_event' });
 
       expect(eventSpy).not.toHaveBeenCalled();
       expect(warnSpy).toHaveBeenCalledTimes(1);
