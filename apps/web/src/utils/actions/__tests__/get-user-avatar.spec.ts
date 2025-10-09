@@ -25,7 +25,7 @@ jest.mock('../../helpers/images', () => ({
 }));
 
 jest.mock('../../helpers/order-by-date', () => ({
-  sortSelfies: jest.fn(() => (a: any, b: any) => 0),
+  sortSelfies: jest.fn(() => (_a: Record<string, unknown>, _b: Record<string, unknown>) => 0),
 }));
 
 let errorSpy: jest.SpyInstance;
