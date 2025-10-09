@@ -64,7 +64,7 @@ export default async function Home({
   const effectiveUserId = idFromUrl || userId;
   const avatarData = effectiveUserId && !searchTerm ? await getUserAvatar(effectiveUserId) : null;
 
-  if (idFromUrl && !avatarData) {
+  if (idFromUrl && !userId && !avatarData) {
     return notFound();
   }
 
