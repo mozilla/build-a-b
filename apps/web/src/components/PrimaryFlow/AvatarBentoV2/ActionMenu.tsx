@@ -92,7 +92,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
   );
 
   return (
-    <nav className="relative portrait:p-2.5" aria-label="Share billionaire">
+    <nav className="relative portrait:p-2.5" aria-label="Share Billionaire">
       <ul className="flex landscape:flex-col items-center portrait:gap-x-[0.875rem] landscape:gap-y-4">
         <li>
           <button

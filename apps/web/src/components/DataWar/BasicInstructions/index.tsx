@@ -37,7 +37,7 @@ const BasicInstructions = () => {
 
         <div className="block relative w-[15.25rem] h-[auto] order-1 landscape:order-2">
           <Image
-            src="/assets/images/data-war/billionaire-icon.webp"
+            src="/assets/images/data-war/chaz-icons.webp"
             alt="billionaire icon"
             width={308}
             height={266}
