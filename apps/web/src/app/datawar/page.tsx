@@ -13,6 +13,8 @@ import ImageGallery from '@/components/ImageGallery';
 import Bento from '@/components/Bento';
 import Window from '@/components/Window';
 import PhysicalDeckButton from '@/components/PhysicalDeckButton';
+import { socials } from '../layout';
+import SocialIcon from '@/components/SocialIcon';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
@@ -160,7 +162,7 @@ export default async function Page() {
 
       <ImageGallery images={imagesForGallery} />
 
-      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+      <section className="mb-4 landscape:mb-8 flex flex-col-reverse gap-4 landscape:flex-row landscape:gap-8">
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
@@ -193,8 +195,46 @@ export default async function Page() {
         <Bento
           image="/assets/images/data-war/bag.webp"
           imageAlt="Billionaire in a box"
-          className="landscape:w-[30%] aspect-[377/275] border-none"
+          className="landscape:w-[30%] aspect-square border-none"
         />
+      </section>
+
+      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+        <Bento
+          image="/assets/images/shark-billionaire.webp"
+          imageAlt="Billionaire riding a shark"
+          className="landscape:w-[30%] aspect-square border-none"
+        />
+        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
+          <Window className="bg-common-ash">
+            <div className="p-4 landscape:p-12 flex flex-col gap-4">
+              <h2 className="text-title-1 text-charcoal">Data War goes digital</h2>
+              <p className="text-body-regular text-charcoal">
+                From TwitchCon to the world! We&apos;re hard at work on a digital version of Data
+                War, launching in November, so follow us for the release date.
+              </p>
+              <ul className="flex flex-row gap-4">
+                {socials.map(({ href, title, type }) => (
+                  <li key={href}>
+                    <LinkButton
+                      href={href}
+                      target="_blank"
+                      title={title}
+                      className="relative inline-flex items-center justify-center
+                                 rounded-full overflow-hidden text-charcoal
+                                 transition-transform duration-300
+                                 hover:-rotate-30"
+                      // trackableEvent="click_social_icon_datawar"
+                      trackablePlatform={type}
+                    >
+                      <SocialIcon type={type} className="w-10 h-10" />
+                    </LinkButton>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Window>
+        </Bento>
       </section>
 
       <CountDown
