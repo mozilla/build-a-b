@@ -49,8 +49,9 @@ export default async function Page() {
                 How to Play
               </LinkButton>
               <LinkButton
-                href="#"
+                href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
                 title="Get your own cards game"
+                download
                 className='secondary-button landscape:w-fit
                            before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                            before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
