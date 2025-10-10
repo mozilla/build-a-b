@@ -36,7 +36,7 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
   const navigatorShareAvailable = externalNavigatorShareAvailable ?? isNavigatorShareAvailable;
 
   return (
-    <nav aria-label="Share billionaire">
+    <nav aria-label="Share Billionaire">
       <ul className={`flex items-start gap-x-4 ${centered && 'justify-center'}`}>
         <li>
           {navigatorShareAvailable ? (
