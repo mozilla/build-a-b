@@ -17,10 +17,9 @@ export interface HeaderProps {
     trackableEvent: string;
   }[];
   socials: {
+    type: 'tiktok' | 'instagram' | 'threads' | 'youtube';
     href: string;
     title: string;
-    alt: string;
-    src: string;
   }[];
   ctaCopy: string;
   ctaLabel: string;
