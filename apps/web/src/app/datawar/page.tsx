@@ -9,6 +9,7 @@ import { evaluateFlag } from '@/app/flags';
 import { notFound } from 'next/navigation';
 import CardsSection from '@/components/CardsSection';
 import IconCard from '@/components/IconCard';
+import ImageGallery from '@/components/ImageGallery';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
@@ -17,6 +18,30 @@ export default async function Page() {
   if (!isDataWarEnabled) {
     notFound();
   }
+
+  const imagesForGallery = [
+    {
+      alt: 'Cards on table',
+      src: '/assets/images/galleries/datawar/1.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Cards and computer',
+      src: '/assets/images/galleries/datawar/2.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Stack of cards',
+      src: '/assets/images/galleries/datawar/3.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Cutting my own cards',
+      src: '/assets/images/galleries/datawar/4.webp',
+      isVideo: false,
+    },
+  ];
+
   return (
     <>
       <Hero
@@ -129,6 +154,8 @@ export default async function Page() {
           differently every time!
         </p>
       </CardsSection>
+
+      <ImageGallery images={imagesForGallery} />
 
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
