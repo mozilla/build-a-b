@@ -65,11 +65,6 @@ export default async function Page() {
         </div>
       </Hero>
 
-      <section className="h-20 flex items-center justify-center pb-8">
-        <Link href="/datawar/instructions" className="primary-button">
-          Go to DataWar Instructions!
-        </Link>
-      </section>
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
         cta={
