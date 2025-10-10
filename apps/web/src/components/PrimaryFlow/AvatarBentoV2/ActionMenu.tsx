@@ -59,7 +59,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
         content: {
           title: 'Ready for a do-over?',
           description:
-            'If so, this old Billionaire&apos;s empire stays in your gallery, but it&apos;s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
+            'If so, this old Billionaire’s empire stays in your gallery, but it&apos;s retired from the launchpad. All new creations blast off with your new Billionaire, whoever they may be.',
         },
       },
       save: {
