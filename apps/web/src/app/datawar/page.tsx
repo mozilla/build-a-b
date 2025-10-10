@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import LinkButton from '@/components/LinkButton';
@@ -7,6 +7,8 @@ import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetSt
 import { avatarBentoData } from '@/utils/constants';
 import { evaluateFlag } from '@/app/flags';
 import { notFound } from 'next/navigation';
+import CardsSection from '@/components/CardsSection';
+import IconCard from '@/components/IconCard';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
@@ -64,6 +66,69 @@ export default async function Page() {
           </div>
         </div>
       </Hero>
+
+      <CardsSection
+        image="/assets/images/mixed-gray-grid.webp"
+        cards={[
+          <IconCard
+            key="1"
+            icon="/assets/images/icons/rabbit.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Short enough to play between 3am rabbit holes</h3>
+          </IconCard>,
+          <IconCard
+            key="2"
+            icon="/assets/images/icons/broken-heart.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Messy enough to stir the pot (and spill it everywhere)</h3>
+          </IconCard>,
+          <IconCard
+            key="3"
+            icon="/assets/images/icons/snake.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Surprising enough to play out differently every time</h3>
+          </IconCard>,
+        ]}
+        postContent={
+          <div className="flex flex-col landscape:flex-row justify-center items-start landscape:items-center p-4 landscape:p-8 mt-4 gap-4 rounded-xl border-common-ash border-2">
+            <figure className="relative w-15 h-15">
+              <Image src="/assets/images/icons/award.webp" alt="Cup" sizes="10wv" fill />
+            </figure>
+            <div className="flex-1">
+              <h3 className="text-title-3 mb-2">Immerse yourself in Data War</h3>
+              <p className="text-body-regular">
+                It&apos;s more instructions than you need to start, but all the instructions you
+                need to dominate.
+              </p>
+            </div>
+            <div className="w-full landscape:w-auto">
+              <LinkButton
+                href="/datawar/instructions"
+                title="Read instructions now"
+                className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                target="_blank"
+                // trackableEvent="click_data_war_instructions"
+              >
+                Data War Instructions
+              </LinkButton>
+            </div>
+          </div>
+        }
+      >
+        <h2 className="text-title-1">Sow chaos, acquire power and blast off</h2>
+        <p className="text-body-regular">
+          In Data War, you compete for a One-Way Ticket to Space for egomaniacal, tantrum-prone
+          little Billionaires. It plays like Classic War, but with the ability to chain effects from
+          unique cards, resulting in unpredictable twists and explosive endings that play out
+          differently every time!
+        </p>
+      </CardsSection>
 
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
