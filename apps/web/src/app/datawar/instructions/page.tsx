@@ -31,7 +31,7 @@ export default async function Page() {
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">DIY your own deck</h2>
-              <p className="text-body-regular text-charcoal text-sm-custom">
+              <p className="text-body-regular text-charcoal">
                 Scissors + printer = game night unlocked. Download your own copy of Data War to cut
                 up and blast off with right here.
               </p>
