@@ -8,6 +8,7 @@ interface LinkButtonProps extends PropsWithChildren {
   href: string;
   title?: string;
   target?: '_self' | '_blank';
+  download?: boolean;
   className?: string;
   tabIndex?: number;
   trackableEvent?: TrackableEvent;
@@ -17,6 +18,7 @@ interface LinkButtonProps extends PropsWithChildren {
 const LinkButton: FC<LinkButtonProps> = ({
   href,
   title,
+  download,
   target,
   className,
   tabIndex,
@@ -28,6 +30,7 @@ const LinkButton: FC<LinkButtonProps> = ({
     <Link
       href={href}
       title={title}
+      download={download}
       target={target}
       className={className}
       tabIndex={tabIndex}
