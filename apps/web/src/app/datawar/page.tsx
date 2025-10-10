@@ -165,8 +165,8 @@ export default async function Page() {
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">Dropping at TwitchCon 2025</h2>
-              <p className="text-body-regular text-charcoal text-sm-custom">
-                Can&apos;t make it to TwitchCon? Don’t worry, you can still check out the game,
+              <p className="text-body-regular text-charcoal">
+                Can&apos;t make it to TwitchCon? Don&apos;t worry, you can still check out the game,
                 download a printable copy, and share your gameplay and ideas with{' '}
                 <strong>@firefox!</strong>
               </p>
