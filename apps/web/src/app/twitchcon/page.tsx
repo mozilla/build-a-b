@@ -41,22 +41,22 @@ export default async function Page() {
   const imagesForGallery = [
     {
       alt: 'Rocket blueprint',
-      src: '/assets/images/gallery/1.webp',
+      src: '/assets/images/galleries/twitchcon/1.webp',
       isVideo: false,
     },
     {
       alt: 'Launch planning',
-      src: '/assets/images/gallery/2.webp',
+      src: '/assets/images/galleries/twitchcon/2.webp',
       isVideo: false,
     },
     {
       alt: 'Rocket mockup',
-      src: '/assets/images/gallery/3.webp',
+      src: '/assets/images/galleries/twitchcon/3.webp',
       isVideo: false,
     },
     {
       alt: 'Launch simulation',
-      src: '/assets/images/gallery/4.webp',
+      src: '/assets/images/galleries/twitchcon/4.webp',
       isVideo: false,
     },
   ];

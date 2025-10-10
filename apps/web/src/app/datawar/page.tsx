@@ -1,12 +1,18 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
+import { avatarBentoData } from '@/utils/constants';
+import { evaluateFlag } from '@/app/flags';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
 import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
-import { evaluateFlag } from '@/app/flags';
-import { notFound } from 'next/navigation';
+import CardsSection from '@/components/CardsSection';
+import IconCard from '@/components/IconCard';
+import ImageGallery from '@/components/ImageGallery';
+import Bento from '@/components/Bento';
+import Window from '@/components/Window';
+import PhysicalDeckButton from '@/components/PhysicalDeckButton';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
@@ -15,6 +21,30 @@ export default async function Page() {
   if (!isDataWarEnabled) {
     notFound();
   }
+
+  const imagesForGallery = [
+    {
+      alt: 'Cards on table',
+      src: '/assets/images/galleries/datawar/1.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Cards and computer',
+      src: '/assets/images/galleries/datawar/2.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Stack of cards',
+      src: '/assets/images/galleries/datawar/3.webp',
+      isVideo: false,
+    },
+    {
+      alt: 'Cutting my own cards',
+      src: '/assets/images/galleries/datawar/4.webp',
+      isVideo: false,
+    },
+  ];
+
   return (
     <>
       <Hero
@@ -64,6 +94,108 @@ export default async function Page() {
           </div>
         </div>
       </Hero>
+
+      <CardsSection
+        image="/assets/images/mixed-gray-grid.webp"
+        cards={[
+          <IconCard
+            key="1"
+            icon="/assets/images/icons/rabbit.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Short enough to play between 3am rabbit holes</h3>
+          </IconCard>,
+          <IconCard
+            key="2"
+            icon="/assets/images/icons/broken-heart.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Messy enough to stir the pot (and spill it everywhere)</h3>
+          </IconCard>,
+          <IconCard
+            key="3"
+            icon="/assets/images/icons/snake.webp"
+            iconEffect
+            className="bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal"
+          >
+            <h3 className="text-title-3">Surprising enough to play out differently every time</h3>
+          </IconCard>,
+        ]}
+        postContent={
+          <div className="flex flex-col landscape:flex-row justify-center items-start landscape:items-center p-4 landscape:p-8 mt-4 gap-4 rounded-xl border-common-ash border-2">
+            <figure className="relative w-15 h-15">
+              <Image src="/assets/images/icons/award.webp" alt="Cup" sizes="10wv" fill />
+            </figure>
+            <div className="flex-1">
+              <h3 className="text-title-3 mb-2">Immerse yourself in Data War</h3>
+              <p className="text-body-regular">
+                It&apos;s more instructions than you need to start, but all the instructions you
+                need to dominate.
+              </p>
+            </div>
+            <div className="w-full landscape:w-auto">
+              <LinkButton
+                href="/datawar/instructions"
+                title="Read instructions now"
+                className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                target="_blank"
+                // trackableEvent="click_data_war_instructions"
+              >
+                Data War Instructions
+              </LinkButton>
+            </div>
+          </div>
+        }
+      >
+        <h2 className="text-title-1">Sow chaos, acquire power and blast off</h2>
+        <p className="text-body-regular">
+          In Data War, you compete for a One-Way Ticket to Space for egomaniacal, tantrum-prone
+          little Billionaires. It plays like Classic War, but with the ability to chain effects from
+          unique cards, resulting in unpredictable twists and explosive endings that play out
+          differently every time!
+        </p>
+      </CardsSection>
+
+      <ImageGallery images={imagesForGallery} />
+
+      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
+          <Window className="bg-common-ash">
+            <div className="p-4 landscape:p-12 flex flex-col gap-4">
+              <h2 className="text-title-1 text-charcoal">Dropping at TwitchCon 2025</h2>
+              <p className="text-body-regular text-charcoal">
+                Can&apos;t make it to TwitchCon? Don&apos;t worry, you can still check out the game,
+                download a printable copy, and share your gameplay and ideas with{' '}
+                <strong>@firefox!</strong>
+              </p>
+              <div className="flex flex-col landscape:flex-row gap-4">
+                <LinkButton
+                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
+                  title="Get your own cards game"
+                  download
+                  className='secondary-button landscape:w-fit
+                           border-charcoal text-charcoal hover:border-charcoal
+                             hover:bg-charcoal hover:text-common-ash
+                             before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
+                             before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
+                             before:mask-no-repeat before:mask-center before:mask-contain'
+                  // trackableEvent="click_download_datawar_deck"
+                >
+                  Download the Deck!
+                </LinkButton>
+                <PhysicalDeckButton />
+              </div>
+            </div>
+          </Window>
+        </Bento>
+        <Bento
+          image="/assets/images/data-war/bag.webp"
+          imageAlt="Billionaire in a box"
+          className="landscape:w-[30%] aspect-[377/275] border-none"
+        />
+      </section>
 
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
