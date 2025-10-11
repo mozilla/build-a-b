@@ -119,28 +119,24 @@ export const metadata: Metadata = {
 
 export const socials: SocialNetworkItem[] = [
   {
+    type: 'tiktok',
     href: 'https://www.tiktok.com/@firefox',
     title: 'Visit our TikTok',
-    alt: 'TikTok',
-    src: '/assets/images/social/tiktok.svg',
   },
   {
+    type: 'instagram',
     href: 'https://www.instagram.com/firefox/',
     title: 'Check our Instagram',
-    alt: 'Instagram',
-    src: '/assets/images/social/instagram.svg',
   },
   {
+    type: 'threads',
     href: 'https://www.threads.com/@firefox',
     title: 'Check our Threads',
-    alt: 'Threads',
-    src: '/assets/images/social/threads.svg',
   },
   {
+    type: 'youtube',
     href: 'https://www.youtube.com/firefoxchannel',
     title: 'Watch our YouTube channel',
-    alt: 'YouTube',
-    src: '/assets/images/social/youtube.svg',
   },
 ];
 
