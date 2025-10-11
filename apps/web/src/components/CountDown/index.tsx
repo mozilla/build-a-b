@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import Bento from '../Bento';
+import PoweredBy from '../PoweredBy';
 
 export interface CountDownProps {
   targetDate: string; // Format "2025-10-10T23:59:59-05:00"
@@ -105,12 +106,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta }) => {
                 <Image src="/assets/images/rocket-countdown.webp" sizes="25vw" alt="Rocket" fill />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2 text-lg-custom mt-2">
-              Powered by
-              <div className="relative h-[2rem] w-[6rem]">
-                <Image src="/assets/images/firefox-logo.png" alt="Firefox logo" fill sizes="10vw" />
-              </div>
-            </div>
+            <PoweredBy />
           </div>
           <div className="landscape:hidden w-full">{cta}</div>
         </div>
