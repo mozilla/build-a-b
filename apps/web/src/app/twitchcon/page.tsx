@@ -1,18 +1,28 @@
 export const dynamic = 'force-dynamic';
 
+import Bento from '@/components/Bento';
+import CardsSection from '@/components/CardsSection';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
-import Image from 'next/image';
 import IconCard from '@/components/IconCard';
-import CardsSection from '@/components/CardsSection';
-import Window from '@/components/Window';
-import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
 import LinkButton from '@/components/LinkButton';
+import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
+import SocialFeed from '@/components/SocialFeed';
+import Window from '@/components/Window';
+import { avatarBentoData } from '@/utils/constants';
+import { Metadata } from 'next';
+import Image from 'next/image';
+import { Suspense } from 'react';
+import { evaluateFlag } from '../flags';
+
+/**
+ * SocialEmbed will give you the entire script, but what we really need
+ * is the ID and source. Please do not modify these unless you use
+ * a different SocialEmbed account.
+ */
+const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
+const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -38,6 +48,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const [b, c] = await Promise.all([
+    evaluateFlag('showPhase2bFeatures'),
+    evaluateFlag('showPhase2cFeatures'),
+  ]);
+
+  const isSocialFeedEnabled = b || c;
+
   const imagesForGallery = [
     {
       alt: 'Rocket blueprint',
@@ -270,7 +287,7 @@ export default async function Page() {
           Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
-
+      {isSocialFeedEnabled && <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />}
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
         cta={
