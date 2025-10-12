@@ -273,7 +273,7 @@ const FullInstructions = () => {
             </p>
           </div>
         </div>
-        <div className="landscape:w-1/6 portrait:mb-8 portrait:flex portrait:justify-center">
+        <div className="landscape:w-1/6 portrait:mb-8 portrait:flex portrait:justify-center mr-0 landscape:mr-2">
           <SocialNetwork isInModal={true} socials={socials} />
         </div>
       </div>

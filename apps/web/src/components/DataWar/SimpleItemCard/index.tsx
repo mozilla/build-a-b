@@ -73,14 +73,21 @@ const SimpleItemCard:FC<SimpleItemCardProps> =({
 
     useEffect(() => {
         const onScroll = () => {
-            if (window.matchMedia('(orientation: portrait)').matches) return;
+            if (window.matchMedia('(orientation: portrait)').matches) {
+                y.set(0);
+                return;
+            }
             const delta = window.scrollY - sectionStartY;
             const next = Math.max(0, Math.min(delta, maxShift));
             y.set(next);
             
         };
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
+        if (window.matchMedia('(orientation: landscape)').matches) {
+            onScroll();
+            window.addEventListener("scroll", onScroll, { passive: true });
+        }
+        
+        
         return () => window.removeEventListener("scroll", onScroll);
     }, [sectionStartY, maxShift, y]);
 
