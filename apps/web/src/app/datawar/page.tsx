@@ -1,24 +1,29 @@
-import { Suspense } from 'react';
-import { avatarBentoData } from '@/utils/constants';
 import { evaluateFlag } from '@/app/flags';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
+import Bento from '@/components/Bento';
+import CardsSection from '@/components/CardsSection';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
-import LinkButton from '@/components/LinkButton';
-import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
-import CardsSection from '@/components/CardsSection';
 import IconCard from '@/components/IconCard';
 import ImageGallery from '@/components/ImageGallery';
-import Bento from '@/components/Bento';
-import Window from '@/components/Window';
+import LinkButton from '@/components/LinkButton';
 import PhysicalDeckButton from '@/components/PhysicalDeckButton';
-import { socials } from '../layout';
+import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialIcon from '@/components/SocialIcon';
+import Window from '@/components/Window';
+import { avatarBentoData } from '@/utils/constants';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import { socials } from '../layout';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
-  const isDataWarEnabled = await evaluateFlag('showDataWar');
+  const [shouldDisplayLaunchCta, isDataWarEnabled, isLaunchCompleted] = await Promise.all([
+    evaluatePhase2Flag('a'),
+    evaluateFlag('showDataWar'),
+    evaluatePhase2Flag('c'),
+  ]);
 
   if (!isDataWarEnabled) {
     notFound();
@@ -239,14 +244,21 @@ export default async function Page() {
 
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
+        isLaunchCompleted={isLaunchCompleted}
         cta={
-          <Suspense fallback={<div>Loading...</div>}>
-            <GetStarted
-              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-              ctaText="Build a Billionaire"
-              triggerClassNames="secondary-button"
-            />
-          </Suspense>
+          shouldDisplayLaunchCta ? (
+            <LinkButton href="/" className="secondary-button flex">
+              Watch the Launch!
+            </LinkButton>
+          ) : (
+            <Suspense fallback={<div>Loading...</div>}>
+              <GetStarted
+                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                ctaText="Build a Billionaire"
+                triggerClassNames="secondary-button"
+              />
+            </Suspense>
+          )
         }
       />
     </>
