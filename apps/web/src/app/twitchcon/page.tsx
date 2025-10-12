@@ -10,8 +10,8 @@ import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
-import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { avatarBentoData } from '@/utils/constants';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -48,7 +48,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const isSocialFeedEnabled = await evaluatePhase2Flag('a');
+  const [isSocialFeedEnabled, isLaunchCompleted] = await Promise.all([
+    evaluatePhase2Flag('a'),
+    evaluatePhase2Flag('c'),
+  ]);
 
   const imagesForGallery = [
     {
@@ -285,15 +288,22 @@ export default async function Page() {
       {isSocialFeedEnabled && <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />}
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
+        isLaunchCompleted={isLaunchCompleted}
         cta={
-          <Suspense fallback={<div>Loading...</div>}>
-            <GetStarted
-              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-              ctaText="Build a Billionaire"
-              triggerClassNames="secondary-button"
-              trackableEvent="click_build_billionaire_countdown"
-            />
-          </Suspense>
+          isSocialFeedEnabled ? (
+            <LinkButton href="/" className="secondary-button flex">
+              Watch the Launch!
+            </LinkButton>
+          ) : (
+            <Suspense fallback={<div>Loading...</div>}>
+              <GetStarted
+                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                ctaText="Build a Billionaire"
+                triggerClassNames="secondary-button"
+                trackableEvent="click_build_billionaire_countdown"
+              />
+            </Suspense>
+          )
         }
       />
     </>
