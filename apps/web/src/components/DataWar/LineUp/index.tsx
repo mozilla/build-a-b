@@ -40,6 +40,30 @@ const LineUp = () => {
                 cardImgSrc: '/assets/images/cards/card-06.webp',
                 cardImgAlt: 'Launch Stacks Card',
                 cardDesc: 'No value (but essential). Collect 3 + 1 Billionaire to win!'            
+            },
+            {
+                cardTitle: 'Billionaires',
+                cardImgSrc: '/assets/images/cards/card-07.webp',
+                cardImgAlt: 'Billionaires Card',
+                cardDesc: 'No value, collect and use special effects but save 1 to win!'            
+            },
+            {
+                cardTitle: 'One Way Ticket to Space',
+                cardImgSrc: '/assets/images/cards/card-08.webp',
+                cardImgAlt: 'One Way Ticket to Space Card',
+                cardDesc: 'Price: 1 Billionaire + 3 Launch Stacks.'            
+            },
+            {
+                cardTitle: 'Blockers',
+                cardImgSrc: '/assets/images/cards/card-09.webp',
+                cardImgAlt: 'Blockers Card',
+                cardDesc: 'Go on the offensive with these expansion pack exclusives.'            
+            },
+            {
+                cardTitle: 'Blanks',
+                cardImgSrc: '/assets/images/cards/card-10.webp',
+                cardImgAlt: 'Blanks Card',
+                cardDesc: 'Hey, Billionaires make up rules all the time. Go nuts.'            
             }
 
         ]
