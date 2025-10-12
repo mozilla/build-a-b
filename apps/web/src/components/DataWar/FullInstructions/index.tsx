@@ -35,6 +35,7 @@ const FullInstructions = () => {
           prefixTitle="1"
           image="/assets/images/data-war/01-setup.webp"
           imageAlt="Setup Image"
+          addAnimation={false}
         >
           <h3 className="text-title-3 mb-4 mt-4">Set aside the One Way Ticket to Space</h3>
           <p>
@@ -53,6 +54,7 @@ const FullInstructions = () => {
           prefixTitle="2"
           image="/assets/images/data-war/02-gameplay.webp"
           imageAlt="Gameplay Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">High value wins, high ties go to (Data) War!</h3>
           <p className="mt-3">
@@ -118,6 +120,7 @@ const FullInstructions = () => {
           prefixTitle="3"
           image="/assets/images/data-war/03-firewalls.webp"
           imageAlt="Firewalls & Billionaire Moves Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">
             Use the card value (6) for your play and follow instructions on the card if conditions
@@ -165,6 +168,7 @@ const FullInstructions = () => {
           prefixTitle="4"
           image="/assets/images/data-war/04-billionaires.webp"
           imageAlt="Billionaires Image"
+          addAnimation={false}
         >
           <h3 className="text-title-3 mb-4 mt-4">Collect and use Billionaires</h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
@@ -189,6 +193,7 @@ const FullInstructions = () => {
           prefixTitle="5"
           image="/assets/images/data-war/05-wining.webp"
           imageAlt="Winning & Losing Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">Win Conditions</h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
