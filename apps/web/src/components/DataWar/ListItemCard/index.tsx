@@ -26,7 +26,7 @@ const ListItemCard:FC<ListItemCardProps> = ({imageAlt, imageSrc, text, className
                 />
             </div>
             <div>
-                <p>{text}</p>
+                <p className='font-extrabold'>{text}</p>
             </div>
         </div>
     );
