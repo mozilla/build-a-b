@@ -51,7 +51,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       uuid: userAssociationId,
       selfies: avatar.selfies.sort(sortSelfies()),
       selfieAvailability: {
-        next_n: availableSelfies?.next_n || 0,
+        selfies_available: availableSelfies?.selfies_available || 0,
         next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
       },
     };

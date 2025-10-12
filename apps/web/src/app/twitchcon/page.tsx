@@ -17,12 +17,12 @@ import LinkButton from '@/components/LinkButton';
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
   description:
-    'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+    'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
   openGraph: {
     siteName: 'Billionaire Blast Off Powered by Firefox',
     title: 'Firefox Billionaire Blast Off lands at TwitchCon',
     description:
-      'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+      'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
     images: [
       {
         url: '/assets/images/opengraph/twitchcon.jpg',
@@ -41,22 +41,22 @@ export default async function Page() {
   const imagesForGallery = [
     {
       alt: 'Rocket blueprint',
-      src: '/assets/images/gallery/1.webp',
+      src: '/assets/images/galleries/twitchcon/1.webp',
       isVideo: false,
     },
     {
       alt: 'Launch planning',
-      src: '/assets/images/gallery/2.webp',
+      src: '/assets/images/galleries/twitchcon/2.webp',
       isVideo: false,
     },
     {
       alt: 'Rocket mockup',
-      src: '/assets/images/gallery/3.webp',
+      src: '/assets/images/galleries/twitchcon/3.webp',
       isVideo: false,
     },
     {
       alt: 'Launch simulation',
-      src: '/assets/images/gallery/4.webp',
+      src: '/assets/images/galleries/twitchcon/4.webp',
       isVideo: false,
     },
   ];
@@ -79,7 +79,7 @@ export default async function Page() {
               Billionaire Blast Off lands at TwitchCon
             </h1>
             <p className="text-body-small">
-              Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
+              Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the
               floor or follow along online.
             </p>
             <LinkButton

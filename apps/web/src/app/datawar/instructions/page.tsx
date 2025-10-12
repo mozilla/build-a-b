@@ -9,11 +9,12 @@ import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetSt
 import { avatarBentoData } from '@/utils/constants';
 import { evaluateFlag } from '@/app/flags';
 import { notFound } from 'next/navigation';
+import LinkButton from '@/components/LinkButton';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
   const isDataWarEnabled = await evaluateFlag('showDataWar');
-  
+
   if (!isDataWarEnabled) {
     notFound();
   }
@@ -30,24 +31,25 @@ export default async function Page() {
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
               <h2 className="text-title-1 text-charcoal">DIY your own deck</h2>
-              <p className="text-body-regular text-charcoal text-sm-custom">
+              <p className="text-body-regular text-charcoal">
                 Scissors + printer = game night unlocked. Download your own copy of Data War to cut
                 up and blast off with right here.
               </p>
               <div>
-                <a
-                  href="#"
-                  title="Download the Deck!"
-                  className='text-sm-custom secondary-button 
-                        border-charcoal text-charcoal hover:border-charcoal 
-                        hover:bg-charcoal hover:text-common-ash
-                        before:content-[""] before:inline-block before:bg-[url(/assets/images/icons/download-icon.webp)]
-                        before:w-4 before:h-4 before:mr-2 before:bg-no-repeat before:bg-center before:bg-cover
-                        hover:before:bg-[url(/assets/images/icons/download-icon-hover.webp)]
-                  '
+                <LinkButton
+                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
+                  title="Get your own cards game"
+                  download
+                  className='secondary-button landscape:w-fit
+                           border-charcoal text-charcoal hover:border-charcoal
+                             hover:bg-charcoal hover:text-common-ash
+                             before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
+                             before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
+                             before:mask-no-repeat before:mask-center before:mask-contain'
+                  // trackableEvent="click_download_datawar_deck"
                 >
                   Download the Deck!
-                </a>
+                </LinkButton>
               </div>
             </div>
           </Window>
