@@ -264,7 +264,7 @@ const FullInstructions = () => {
             <p className="text-sm-custom">
               We&apos;ve included blank cards in the deck because hey, Billionaires make up rules
               all the time. Share your best blank card ideas, and make Data War your own brand of
-              extra.!
+              extra!
             </p>
           </div>
         </div>
