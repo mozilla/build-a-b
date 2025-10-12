@@ -1,6 +1,7 @@
 import Bento from '@/components/Bento';
 import Image from 'next/image';
 import ListItemCard from '@/components/DataWar/ListItemCard';
+import PoweredBy from '@/components/PoweredBy';
 
 const BasicInstructions = () => {
   return (
@@ -26,12 +27,7 @@ const BasicInstructions = () => {
               <br />
               <span className="font-bold text-lg-custom">5-15 </span>min
             </div>
-            <div className="landscape:ml-10 flex flex-row items-center text-sm-custom">
-              <span>Powered By</span>
-              <span className="inline-block ml-2 relative w-[4.491rem] h-[1.5rem] landscape:w-[5.389rem] landscape:h-[1.8rem]">
-                <Image src="/assets/images/firefox-logo.png" alt="Firefox logo" sizes="10vw" fill />
-              </span>
-            </div>
+            <PoweredBy />
           </div>
         </div>
 
