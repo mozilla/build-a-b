@@ -431,3 +431,74 @@ Table user_cooldowns {
 
 ```
 
+# Migrations
+
+## Pulling Schema from Remote
+
+To pull the database schema (tables, functions, policies, etc.) from your remote Supabase project as migration files:
+
+1. **Set the database password** (required for authentication):
+   ```bash
+   export SUPABASE_DB_PASSWORD="your-password-here"
+   ```
+
+   You can find this password in `apps/web/.env` under `SUPABASE_DB_PASSWORD`.
+
+2. **Link to your remote project** (one time only):
+   ```bash
+   supabase link --project-ref oqqutatvbdlpumixjiwg
+   ```
+
+3. **Pull the schema**:
+   ```bash
+   supabase db pull
+   ```
+
+This will generate migration files in `supabase/migrations/` that can be committed to git as a backup of your database structure.
+
+> **Note:** `supabase db pull` only pulls the schema (DDL), not the data. To add seed data, manually edit `supabase/seed.sql` or use `supabase db dump --data-only > supabase/seed.sql`.
+
+## Running Migrations
+
+To apply migration files to a database (useful for disaster recovery or setting up a new environment):
+
+1. **Set the database password**:
+   ```bash
+   export SUPABASE_DB_PASSWORD="your-password-here"
+   ```
+
+2. **Link to your target project** (if not already linked):
+   ```bash
+   supabase link --project-ref <your-project-ref>
+   ```
+
+3. **Push migrations to remote**:
+   ```bash
+   supabase db push
+   ```
+
+   This will apply all pending migration files from `supabase/migrations/` to your remote database.
+
+4. **Optional: Apply seed data**:
+   ```bash
+   supabase db seed
+   ```
+
+   This runs the `supabase/seed.sql` file to populate initial data.
+
+### Local Development
+
+To run migrations locally (requires Docker):
+
+1. **Start local Supabase**:
+   ```bash
+   supabase start
+   ```
+
+2. **Migrations are applied automatically** when starting. To manually reset and reapply:
+   ```bash
+   supabase db reset
+   ```
+
+   This drops the local database, reruns all migrations, and applies seed data.
+

@@ -15,6 +15,7 @@ import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
 import CountDown from '@/components/CountDown';
 import LinkButton from '@/components/LinkButton';
+import { notFound } from 'next/navigation';
 
 interface TickerItem {
   id?: number;
@@ -62,6 +63,10 @@ export default async function Home({
 
   const effectiveUserId = idFromUrl || userId;
   const avatarData = effectiveUserId && !searchTerm ? await getUserAvatar(effectiveUserId) : null;
+
+  if (idFromUrl && !userId && !avatarData) {
+    return notFound();
+  }
 
   return (
     <>

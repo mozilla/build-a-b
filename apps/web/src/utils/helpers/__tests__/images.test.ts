@@ -1,5 +1,5 @@
-import { buildImageUrl } from './images';
-import { DEFAULT_AVATAR_WIDTH, DEFAULT_AVATAR_HEIGHT } from '../constants';
+import { buildImageUrl } from '../images';
+import { DEFAULT_AVATAR_WIDTH, DEFAULT_AVATAR_HEIGHT } from '../../constants';
 
 describe('buildImageUrl', () => {
   it('returns empty string when filePath is null', () => {

@@ -156,7 +156,7 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
                 </div>
               </div>
             )}
-            {selfieAvailabilityState === 'REACHED_MAX_LIMIT' && (
+            {selfieAvailabilityState === 'COMING_SOON' && (
               <div className="flex flex-col items-center justify-center relative">
                 <span className="text-charcoal mt-2 font-extrabold">Coming soon</span>
               </div>

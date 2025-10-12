@@ -93,7 +93,7 @@ export type DatabaseAvatarResponse = Pick<
 
 export type Selfie = Pick<
   Database['public']['Tables']['selfies']['Row'],
-  'asset' | 'id' | 'created_at' | 'n_index'
+  'asset' | 'id' | 'created_at'
 >;
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
@@ -101,21 +101,20 @@ export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
 export type DatabaseSelfieResponse = {
   id: number;
   asset: string;
-  n_index: number;
   created_at: string;
 };
 
 export type DatabaseAvailableSelfiesResponse = {
-  next_n: number;
+  selfies_available: number;
   next_at: string;
 };
 
 export type SelfieAvailabilityData = {
-  next_n: number;
+  selfies_available: number;
   next_at: Date | null;
 };
 
-export type SelfieAvailabilityState = 'REACHED_MAX_LIMIT' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
+export type SelfieAvailabilityState = 'COMING_SOON' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
 
 export type StatusEndpointBaseResponse = {
   status: string;

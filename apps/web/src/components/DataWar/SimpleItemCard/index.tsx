@@ -4,7 +4,6 @@ import { FC, PropsWithChildren, useRef, useEffect, useState, useLayoutEffect  } 
 import { motion, useSpring, useMotionValue  } from 'framer-motion';
 import Bento from '@/components/Bento';
 
-
 export interface SimpleItemCardProps extends PropsWithChildren {
     title: string;
     prefixTitle?: string;
