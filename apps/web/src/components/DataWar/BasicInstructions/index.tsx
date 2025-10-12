@@ -102,7 +102,7 @@ const BasicInstructions =() => {
                     </div>
                 </div>
                 <div className='landscape:w-1/3 portrait:flex portrait:flex-col portrait:gap-4 portrait:p-4 portrait:mb-4'>
-                    <a href='#' title='Go to Data War Details' className='secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal'>Data War Details</a>
+                    <a href='/datawar' title='Go to Data War Details' className='secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal'>Data War Details</a>
                     <a href='/twitchcon' title='Go to TwitchCon detail page' className='landscape:ml-4 secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal'>TwitchCon Details</a>
                 </div>
             </div>
