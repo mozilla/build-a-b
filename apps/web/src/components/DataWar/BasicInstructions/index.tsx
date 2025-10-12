@@ -18,7 +18,7 @@ const BasicInstructions = () => {
           </h1>
           <div className="flex flex-row justify-start flex-wrap content-end items-end gap-5 mt-2">
             <div className="border-common-ash border-1 rounded-xl p-2 text-sm-custom">
-              <span>Payers</span>
+              <span>Players</span>
               <br />
               <span className="font-bold text-lg-custom">2-4</span>
             </div>
