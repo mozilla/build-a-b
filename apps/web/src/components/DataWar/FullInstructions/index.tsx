@@ -81,7 +81,9 @@ const FullInstructions = () => {
             Chain cards, and apply special effects where instructed (even during War).{' '}
           </p>
           <p className="mt-3">
-            <strong>If a <i>Tracker</i> card is played...</strong>
+            <strong>
+              If a <i>Tracker</i> card is played...
+            </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
@@ -90,22 +92,31 @@ const FullInstructions = () => {
             </li>
           </ul>
           <p>
-            <strong>If a <i>Blocker</i> card is played (expansion only)...</strong>
-          </p>
-          <ul className="mt-2 mb-2 list-[circle] ml-6">
-            <li>Play another card and subtract the <i>Blocker</i> value from all opponent plays. </li>
-          </ul>
-          <p>
-            <strong>If a <i>Data Grab</i> is played...it&apos;s scramble time!</strong>
+            <strong>
+              If a <i>Blocker</i> card is played (expansion only)...
+            </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
-              All players reach in and grab as many cards as they can <strong>from the play area only,</strong>
+              Play another card and subtract the <i>Blocker</i> value from all opponent plays.{' '}
+            </li>
+          </ul>
+          <p>
+            <strong>
+              If a <i>Data Grab</i> is played...it&apos;s scramble time!
+            </strong>
+          </p>
+          <ul className="mt-2 mb-2 list-[circle] ml-6">
+            <li>
+              All players reach in and grab as many cards as they can{' '}
+              <strong>from the play area only,</strong>
               leaving other players&apos; decks and collected Billionaires and Launch Stacks alone.
             </li>
           </ul>
           <p>
-            <strong>If a <i>Launch Stack</i> or <i>Billionaire</i> card is played...</strong>
+            <strong>
+              If a <i>Launch Stack</i> or <i>Billionaire</i> card is played...
+            </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
@@ -247,7 +258,9 @@ const FullInstructions = () => {
           <div>
             <h3 className="text-title-3 font-bold">Rapid Play Mod</h3>
             <p className="text-sm-custom">
-              If you're looking for an even easier way to play, remove Billionaire, Talent Poach (Billionaire Move)  and Redistribution (Firewall) cards from the deck and play till someone has 3 Launch Stacks for the win.
+              If you&apos;re looking for an even easier way to play, remove Billionaire, Talent
+              Poach (Billionaire Move) and Redistribution (Firewall) cards from the deck and play
+              till someone has 3 Launch Stacks for the win.
             </p>
           </div>
         </div>
