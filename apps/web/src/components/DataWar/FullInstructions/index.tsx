@@ -35,6 +35,7 @@ const FullInstructions = () => {
           prefixTitle="1"
           image="/assets/images/data-war/01-setup.webp"
           imageAlt="Setup Image"
+          addAnimation={false}
         >
           <h3 className="text-title-3 mb-4 mt-4">Set aside the One Way Ticket to Space</h3>
           <p>
@@ -53,6 +54,7 @@ const FullInstructions = () => {
           prefixTitle="2"
           image="/assets/images/data-war/02-gameplay.webp"
           imageAlt="Gameplay Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">High value wins, high ties go to (Data) War!</h3>
           <p className="mt-3">
@@ -79,7 +81,7 @@ const FullInstructions = () => {
             Chain cards, and apply special effects where instructed (even during War).{' '}
           </p>
           <p className="mt-3">
-            <strong>If a Tracker card is played...</strong>
+            <strong>If a <i>Tracker</i> card is played...</strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
@@ -88,22 +90,22 @@ const FullInstructions = () => {
             </li>
           </ul>
           <p>
-            <strong>If a Blocker card is played (expansion only)...</strong>
+            <strong>If a <i>Blocker</i> card is played (expansion only)...</strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
-            <li>Play another card and subtract the Blocker value from all opponent plays. </li>
+            <li>Play another card and subtract the <i>Blocker</i> value from all opponent plays. </li>
           </ul>
           <p>
-            <strong>If a Data Grab is played...it&apos;s scramble time!</strong>
+            <strong>If a <i>Data Grab</i> is played...it&apos;s scramble time!</strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
-              All players reach in and grab as many cards as they can from the play area only,
+              All players reach in and grab as many cards as they can <strong>from the play area only,</strong>
               leaving other players&apos; decks and collected Billionaires and Launch Stacks alone.
             </li>
           </ul>
           <p>
-            <strong>If a Launch Stack or Billionaire card is played...</strong>
+            <strong>If a <i>Launch Stack</i> or <i>Billionaire</i> card is played...</strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
@@ -118,6 +120,7 @@ const FullInstructions = () => {
           prefixTitle="3"
           image="/assets/images/data-war/03-firewalls.webp"
           imageAlt="Firewalls & Billionaire Moves Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">
             Use the card value (6) for your play and follow instructions on the card if conditions
@@ -165,6 +168,7 @@ const FullInstructions = () => {
           prefixTitle="4"
           image="/assets/images/data-war/04-billionaires.webp"
           imageAlt="Billionaires Image"
+          addAnimation={false}
         >
           <h3 className="text-title-3 mb-4 mt-4">Collect and use Billionaires</h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
@@ -189,6 +193,7 @@ const FullInstructions = () => {
           prefixTitle="5"
           image="/assets/images/data-war/05-wining.webp"
           imageAlt="Winning & Losing Image"
+          addAnimation={true}
         >
           <h3 className="text-title-3 mb-4 mt-4">Win Conditions</h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">

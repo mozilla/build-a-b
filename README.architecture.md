@@ -78,3 +78,10 @@ Notes:
 - Sanity Studio: [`apps/studio`](apps/studio:1)
 - Shared UI tokens/components: [`packages/ui`](packages/ui:1) (create if missing)
 - Root scripts & CI: see [`package.json`](package.json:1)
+
+## Missing SQL functions
+
+- upsert_user_with_avatar
+- get_selfie_for_user_avatar
+- get_available_selfies
+- remove_avatar_by_user
