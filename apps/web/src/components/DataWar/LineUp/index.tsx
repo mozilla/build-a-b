@@ -1,7 +1,8 @@
-import Bento from "@/components/Bento";
-import CardGallery from "@/components/DataWar/CardGallery";
+import Bento from '@/components/Bento';
+import CardGallery from '@/components/DataWar/CardGallery';
 
 const LineUp = () => {
+
 
     const CardData = {
         cards: [
@@ -74,17 +75,15 @@ const LineUp = () => {
             className="bg-cover bg-[url(/assets/images/background-dark-gray.webp)] landscape:bg-[url(/assets/images/background-dark-gray.webp)] 
                         relative portrait:mt-8 mb-4 landscape:mb-8 pl-3 pr-4 pt-4 pb-4 landscape:pl-12 landscape:pr-12
                         landscape:pt-12 landscape:pb-12"
-        >
-            <div>
-                <h1 className="text-title-1 landscape:text-5xl-custom">The Lineup</h1>
-                <p className="text-sm-custom">Meet the cards of Data War.</p>
-            </div>
-            
-            <CardGallery
-                cards={CardData.cards}
-            />
-        </Bento>
-    );
+    >
+      <div>
+        <h1 className="text-title-1 landscape:text-5xl-custom">The Lineup</h1>
+        <p className="text-sm-custom">Meet the cards of Data War.</p>
+      </div>
+
+      <CardGallery cards={CardData.cards} />
+    </Bento>
+  );
 };
 
 export default LineUp;

@@ -1,20 +1,21 @@
 import { evaluateFlag } from '@/app/flags';
-import { cookies } from 'next/headers';
-import { COOKIE_NAME } from '@/utils/constants';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import { avatarBentoData } from '@/utils/constants';
+import { avatarBentoData, COOKIE_NAME } from '@/utils/constants';
+import { cookies } from 'next/headers';
 
 import Image from 'next/image';
 
-import Ticker from '@/components/Ticker';
-import AvatarBentoV2 from '@/components/PrimaryFlow/AvatarBentoV2';
 import BentoDual from '@/components/BentoDual';
-import Window from '@/components/Window';
-import Scrim from '@/components/Scrim';
+import CountDown from '@/components/CountDown';
 import GalleryBentoLarge from '@/components/GalleryBentoLarge';
 import GalleryBentoSmall from '@/components/GalleryBentoSmall';
-import CountDown from '@/components/CountDown';
 import LinkButton from '@/components/LinkButton';
+import AvatarBentoV2 from '@/components/PrimaryFlow/AvatarBentoV2';
+import Scrim from '@/components/Scrim';
+import Ticker from '@/components/Ticker';
+import Window from '@/components/Window';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
+import { notFound } from 'next/navigation';
 
 interface TickerItem {
   id?: number;
@@ -49,7 +50,10 @@ export default async function Home({
   params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const showPlaypenButtons = await evaluateFlag('showAvatarPlaypenButtons');
+  const [showPlaypenButtons, isLaunchCompleted] = await Promise.all([
+    evaluateFlag('showAvatarPlaypenButtons'),
+    evaluatePhase2Flag('c'),
+  ]);
 
   const { id: idFromUrl } = await params;
 
@@ -62,6 +66,10 @@ export default async function Home({
 
   const effectiveUserId = idFromUrl || userId;
   const avatarData = effectiveUserId && !searchTerm ? await getUserAvatar(effectiveUserId) : null;
+
+  if (idFromUrl && !userId && !avatarData) {
+    return notFound();
+  }
 
   return (
     <>
@@ -280,6 +288,7 @@ export default async function Home({
           <CountDown
             targetDate="2025-10-18T10:20:30-07:00"
             className="landscape:mb-0!"
+            isLaunchCompleted={isLaunchCompleted}
             cta={
               <LinkButton
                 href="/twitchcon"
