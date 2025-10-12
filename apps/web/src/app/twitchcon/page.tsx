@@ -10,11 +10,11 @@ import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { avatarBentoData } from '@/utils/constants';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
-import { evaluateFlag } from '../flags';
 
 /**
  * SocialEmbed will give you the entire script, but what we really need
@@ -48,12 +48,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [b, c] = await Promise.all([
-    evaluateFlag('showPhase2bFeatures'),
-    evaluateFlag('showPhase2cFeatures'),
-  ]);
-
-  const isSocialFeedEnabled = b || c;
+  const isSocialFeedEnabled = await evaluatePhase2Flag('a');
 
   const imagesForGallery = [
     {
