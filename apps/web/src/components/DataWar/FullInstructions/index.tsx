@@ -242,8 +242,7 @@ const FullInstructions = () => {
           <div>
             <h3 className="text-title-3 font-bold">Rapid Play Mod</h3>
             <p className="text-sm-custom">
-              Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but
-              there are other ways to play and new versions dropping soon!
+              If you're looking for an even easier way to play, remove Billionaire, Talent Poach (Billionaire Move)  and Redistribution (Firewall) cards from the deck and play till someone has 3 Launch Stacks for the win.
             </p>
           </div>
         </div>
