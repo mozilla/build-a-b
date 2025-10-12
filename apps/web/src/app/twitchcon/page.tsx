@@ -1,28 +1,38 @@
 export const dynamic = 'force-dynamic';
 
+import Bento from '@/components/Bento';
+import CardsSection from '@/components/CardsSection';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
-import Image from 'next/image';
 import IconCard from '@/components/IconCard';
-import CardsSection from '@/components/CardsSection';
-import Window from '@/components/Window';
-import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
 import LinkButton from '@/components/LinkButton';
+import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
+import SocialFeed from '@/components/SocialFeed';
+import Window from '@/components/Window';
+import { avatarBentoData } from '@/utils/constants';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
+import { Metadata } from 'next';
+import Image from 'next/image';
+import { Suspense } from 'react';
+
+/**
+ * SocialEmbed will give you the entire script, but what we really need
+ * is the ID and source. Please do not modify these unless you use
+ * a different SocialEmbed account.
+ */
+const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
+const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
   description:
-    'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+    'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
   openGraph: {
     siteName: 'Billionaire Blast Off Powered by Firefox',
     title: 'Firefox Billionaire Blast Off lands at TwitchCon',
     description:
-      'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+      'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
     images: [
       {
         url: '/assets/images/opengraph/twitchcon.jpg',
@@ -38,25 +48,30 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const [isSocialFeedEnabled, isLaunchCompleted] = await Promise.all([
+    evaluatePhase2Flag('a'),
+    evaluatePhase2Flag('c'),
+  ]);
+
   const imagesForGallery = [
     {
       alt: 'Rocket blueprint',
-      src: '/assets/images/gallery/1.webp',
+      src: '/assets/images/galleries/twitchcon/1.webp',
       isVideo: false,
     },
     {
       alt: 'Launch planning',
-      src: '/assets/images/gallery/2.webp',
+      src: '/assets/images/galleries/twitchcon/2.webp',
       isVideo: false,
     },
     {
       alt: 'Rocket mockup',
-      src: '/assets/images/gallery/3.webp',
+      src: '/assets/images/galleries/twitchcon/3.webp',
       isVideo: false,
     },
     {
       alt: 'Launch simulation',
-      src: '/assets/images/gallery/4.webp',
+      src: '/assets/images/galleries/twitchcon/4.webp',
       isVideo: false,
     },
   ];
@@ -79,7 +94,7 @@ export default async function Page() {
               Billionaire Blast Off lands at TwitchCon
             </h1>
             <p className="text-body-small">
-              Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
+              Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the
               floor or follow along online.
             </p>
             <LinkButton
@@ -270,18 +285,25 @@ export default async function Page() {
           Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
-
+      {isSocialFeedEnabled && <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />}
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
+        isLaunchCompleted={isLaunchCompleted}
         cta={
-          <Suspense fallback={<div>Loading...</div>}>
-            <GetStarted
-              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-              ctaText="Build a Billionaire"
-              triggerClassNames="secondary-button"
-              trackableEvent="click_build_billionaire_countdown"
-            />
-          </Suspense>
+          isSocialFeedEnabled ? (
+            <LinkButton href="/" className="secondary-button flex">
+              Watch the Launch!
+            </LinkButton>
+          ) : (
+            <Suspense fallback={<div>Loading...</div>}>
+              <GetStarted
+                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                ctaText="Build a Billionaire"
+                triggerClassNames="secondary-button"
+                trackableEvent="click_build_billionaire_countdown"
+              />
+            </Suspense>
+          )
         }
       />
     </>

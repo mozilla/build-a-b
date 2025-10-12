@@ -7,9 +7,9 @@ import { useCallback } from 'react';
 const AVATAR_FILE_TYPE = 'png';
 
 const microcopy = {
-  shareTitle: 'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff',
+  shareTitle: 'Just built my very own Billionaire… next stop, outer space. #BillionaireBlastOff',
   shareText:
-    'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff \nMake yours here https://billionaireblastoff.firefox.com/',
+    'Just built my very own Billionaire… next stop, outer space. #BillionaireBlastOff \nMake yours here https://billionaireblastoff.firefox.com/',
 } as const;
 
 export interface UseNavigatorShareActionOptions {
