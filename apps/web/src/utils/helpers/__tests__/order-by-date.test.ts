@@ -60,7 +60,9 @@ describe('sortSelfies', () => {
     });
 
     it('Should handle single selfie.', () => {
-      const singleSelfie: Selfie[] = [{ id: '1', asset: 'image1.png', created_at: '2025-01-10T10:00:00Z' }];
+      const singleSelfie: Selfie[] = [
+        { id: '1', asset: 'image1.png', created_at: '2025-01-10T10:00:00Z' },
+      ];
       const sorted = [...singleSelfie].sort(sortSelfies());
 
       expect(sorted).toEqual(singleSelfie);
@@ -77,7 +79,7 @@ describe('sortSelfies', () => {
 
       // Should maintain relative order when dates are equal
       expect(sorted.length).toBe(3);
-      expect(sorted.every(s => s.created_at === '2025-01-10T10:00:00Z')).toBe(true);
+      expect(sorted.every((s) => s.created_at === '2025-01-10T10:00:00Z')).toBe(true);
     });
   });
 });
