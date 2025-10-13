@@ -25,7 +25,7 @@ const AvatarView: FC<AvatarData> = ({
   instragramAsset,
   originalRidingAsset,
   selfies,
-  selfieAvailability
+  selfieAvailability,
 }) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
   const [actionType, setActionType] = useState<ActionTypeOrNull>(null);
@@ -136,7 +136,7 @@ const AvatarView: FC<AvatarData> = ({
                         instragramAsset,
                         originalRidingAsset,
                         selfies,
-                        selfieAvailability
+                        selfieAvailability,
                       }}
                       setActionType={setActionType}
                       saveActionValue="save"
@@ -154,7 +154,7 @@ const AvatarView: FC<AvatarData> = ({
                         instragramAsset,
                         originalRidingAsset,
                         selfies,
-                        selfieAvailability
+                        selfieAvailability,
                       }}
                       onCancel={() => setActionType(null)}
                     />
