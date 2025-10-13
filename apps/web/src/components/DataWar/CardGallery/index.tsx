@@ -126,7 +126,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
                   />
                   <div className="mt-4">
                     <h4 className="text-lg-custom font-bold">{cardTitle}</h4>
-                    <p className="text-sm-custom">{cardDesc}</p>
+                    <p className="text-sm-custom mt-2">{cardDesc}</p>
                   </div>
                 </div>
               </article>
