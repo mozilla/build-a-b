@@ -46,7 +46,7 @@ export default function PhysicalDeckButton() {
     <Button
       onPress={handleClick}
       title="Express interest for a physical deck"
-      className='secondary-button landscape:w-fit
+      className='secondary-button h-full landscape:w-fit
                  border-charcoal text-charcoal hover:border-charcoal
                  hover:bg-charcoal hover:text-common-ash
                  before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
