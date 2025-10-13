@@ -53,9 +53,9 @@ const BasicInstructions = () => {
         <div>
           <Bento
             image="/assets/images/data-war/cards.webp"
-            imageAlt="Data war cards"
+            imageAlt="Data War cards"
             className="w-[20.5rem] landscape:w-[30.5rem] border-none aspect-square"
-          ></Bento>
+          />
         </div>
         <div className="flex flex-col gap-4 justify-between">
           <ListItemCard
@@ -79,7 +79,7 @@ const BasicInstructions = () => {
         </div>
       </div>
 
-      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
+      <div className="border-common-ash rounded-xl border-2 mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
         <div className="flex flex-col p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-2/3">
           <div className="w-20 h-20">
             <Image
