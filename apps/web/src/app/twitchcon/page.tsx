@@ -10,12 +10,14 @@ import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
-import { avatarBentoData } from '@/utils/constants';
+import { avatarBentoData, COOKIE_NAME } from '@/utils/constants';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { evaluateFlag } from '@/app/flags';
+import { cookies } from 'next/headers';
+import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 
 /**
  * SocialEmbed will give you the entire script, but what we really need
@@ -76,6 +78,68 @@ export default async function Page() {
       isVideo: false,
     },
   ];
+
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get(COOKIE_NAME);
+  const userId = userCookie?.value;
+
+  const avatarData = userId ? await getUserAvatar(userId) : null;
+
+  const holoboxSection = (
+    <section
+      className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
+    >
+      <Bento
+        image="/assets/images/doll.webp"
+        imageAlt="Billionaire in a box"
+        className={`landscape:w-[30%] aspect-[377/275] border-none ${isLaunchCompleted ? 'order-2' : 'order-1'}`}
+      />
+      <Bento
+        className={`border-none h-full landscape:flex-1 landscape:h-auto ${isLaunchCompleted ? 'order-1' : 'order-2'}`}
+      >
+        <Window className="bg-common-ash">
+          <div className="p-4 landscape:p-12 flex flex-col gap-4">
+            <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
+            {!isAnyPhase2 && (
+              <p className="text-body-regular text-charcoal">
+                Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
+                move.
+              </p>
+            )}
+
+            {isAnyPhase2 && (
+              <>
+                <p className="text-body-regular text-charcoal">
+                  Use our super futuristic hologram kiosk to build a Billionaire and bust a move.
+                  Can&apos;t make it to the Holobox at TwitchCon? You can still create a Billionaire
+                  and join the party right here!
+                </p>
+                {avatarData && (
+                  <LinkButton
+                    href="/"
+                    title="Generate a selfie"
+                    className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                  >
+                    Take a Space Selfie
+                  </LinkButton>
+                )}
+                {!avatarData && avatarBentoData?.primaryFlowData && (
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <GetStarted
+                      {...avatarBentoData.primaryFlowData}
+                      ctaText={!avatarData ? 'Build a Billionaire' : 'Take a Space Selfie'}
+                      triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                      trackableEvent="click_build_billionaire_footer"
+                    />
+                  </Suspense>
+                )}
+              </>
+            )}
+          </div>
+        </Window>
+      </Bento>
+    </section>
+  );
 
   return (
     <>
@@ -178,24 +242,7 @@ export default async function Page() {
         </p>
       </CardsSection>
 
-      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-        <Bento
-          image="/assets/images/doll.webp"
-          imageAlt="Billionaire in a box"
-          className="landscape:w-[30%] aspect-[377/275] border-none"
-        />
-        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
-          <Window className="bg-common-ash">
-            <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
-              <p className="text-body-regular text-charcoal">
-                Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
-                move.
-              </p>
-            </div>
-          </Window>
-        </Bento>
-      </section>
+      {!isLaunchCompleted && holoboxSection}
 
       <CardsSection
         className="bg-[url(/assets/images/yellow-grid.webp)] bg-no-repeat bg-center bg-cover flex-warp"
@@ -328,6 +375,7 @@ export default async function Page() {
           )
         }
       />
+      {isLaunchCompleted && holoboxSection}
     </>
   );
 }
