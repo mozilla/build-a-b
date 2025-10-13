@@ -186,7 +186,18 @@ export default async function Home({
               <Window flip>
                 <div className="p-4 landscape:p-8">
                   <h3 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h3>
-                  {isAtLeastPhase2ALive ? (
+                  {!isAtLeastPhase2ALive ? (
+                    <>
+                      <p>
+                        Data War is a game of Billionaire brinksmanship where space is the place,
+                        data is the currency, and chaos reigns. Get your copy at TwitchCon!
+                      </p>
+                      <p className="mt-3">
+                        <strong>COMING SOON</strong>
+                      </p>
+                    </>
+                  ) : null}
+                  {isAtLeastPhase2ALive && !isLaunchCompleted ? (
                     <>
                       <p>
                         Data War is a game of Billionaire brinksmanship where space is the place,
@@ -201,17 +212,23 @@ export default async function Home({
                         Check out Data War
                       </LinkButton>
                     </>
-                  ) : (
+                  ) : null}
+                  {isLaunchCompleted ? (
                     <>
                       <p>
                         Data War is a game of Billionaire brinksmanship where space is the place,
-                        data is the currency, and chaos reigns. Get your copy at TwitchCon!
+                        data is the currency, and chaos reigns. Just dropped at TwitchCon!
                       </p>
-                      <p className="mt-3">
-                        <strong>COMING SOON</strong>
-                      </p>
+                      <LinkButton
+                        href="/datawar"
+                        title="Learn more about the game"
+                        className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                        // trackableEvent="click_datawar_details_cta"
+                      >
+                        Check out Data War
+                      </LinkButton>
                     </>
-                  )}
+                  ) : null}
                 </div>
               </Window>
             }
