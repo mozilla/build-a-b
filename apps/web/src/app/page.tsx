@@ -176,10 +176,15 @@ export default async function Home({
             </div>
           </BentoDual>
         </div>
-        <div className="portrait:mb-4 portrait:order-11 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-5 landscape:row-start-4">
+        <div
+          className={`portrait:mb-4 portrait:order-11 portrait:w-full
+                      landscape:row-span-2
+                      ${isLaunchCompleted ? 'landscape:col-span-8 landscape:col-start-5' : 'landscape:col-span-4 landscape:col-start-5'}
+                      landscape:row-start-4`}
+        >
           {/* Small Teaser Bento (Data War) */}
           <BentoDual
-            className="h-full aspect-square"
+            className="h-full aspect-square landscape:aspect-auto"
             effect="flip"
             image="/assets/images/data-war.webp"
             back={
@@ -247,45 +252,47 @@ export default async function Home({
             </div>
           </BentoDual>
         </div>
-        <div className="portrait:mb-4 portrait:order-12 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
-          {/* Small Teaser Bento (Twitchcon) */}
-          <BentoDual
-            className="h-full aspect-square"
-            effect="flip"
-            image="/assets/images/blast-twitchcon.webp"
-            back={
-              <Window flip>
-                <div className="p-4 landscape:p-8">
-                  <h3 className="text-title-1 pb-4">Two Launches in One</h3>
-                  <p>
-                    We&apos;re launching a new card game, Data War, and launching Billionaires to
-                    space, one-way. Join us IRL at TwitchCon or right here on this site to follow
-                    along.
-                  </p>
-                  <LinkButton
-                    href="/twitchcon"
-                    title="Visit TwitchCon page"
-                    className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
-                    trackableEvent="click_twitchcon_details_cta"
-                  >
-                    TwitchCon Details
-                  </LinkButton>
+        {!isLaunchCompleted && (
+          <div className="portrait:mb-4 portrait:order-12 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
+            {/* Small Teaser Bento (Twitchcon) */}
+            <BentoDual
+              className="h-full aspect-square"
+              effect="flip"
+              image="/assets/images/blast-twitchcon.webp"
+              back={
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h3 className="text-title-1 pb-4">Two Launches in One</h3>
+                    <p>
+                      We&apos;re launching a new card game, Data War, and launching Billionaires to
+                      space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                      along.
+                    </p>
+                    <LinkButton
+                      href="/twitchcon"
+                      title="Visit TwitchCon page"
+                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                      trackableEvent="click_twitchcon_details_cta"
+                    >
+                      TwitchCon Details
+                    </LinkButton>
+                  </div>
+                </Window>
+              }
+            >
+              <div className="bg-gradient-to-t from-black to-transparent h-full w-full">
+                <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
+                  <p className="text-nav-item pb-2">JOIN US IRL</p>
+                  <h2 className="text-title-1">
+                    Blast off at
+                    <br />
+                    TwitchCon
+                  </h2>
                 </div>
-              </Window>
-            }
-          >
-            <div className="bg-gradient-to-t from-black to-transparent h-full w-full">
-              <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                <p className="text-nav-item pb-2">JOIN US IRL</p>
-                <h2 className="text-title-1">
-                  Blast off at
-                  <br />
-                  TwitchCon
-                </h2>
               </div>
-            </div>
-          </BentoDual>
-        </div>
+            </BentoDual>
+          </div>
+        )}
         <div
           className={`${showPlaypenButtons ? '' : 'portrait:hidden'} portrait:mb-4 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-1 landscape:row-start-5'`}
         >
