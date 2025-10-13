@@ -50,8 +50,9 @@ export default async function Home({
   params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [showPlaypenButtons, isLaunchCompleted] = await Promise.all([
+  const [showPlaypenButtons, isAtLeastPhase2ALive, isLaunchCompleted] = await Promise.all([
     evaluateFlag('showAvatarPlaypenButtons'),
+    evaluatePhase2Flag('a'),
     evaluatePhase2Flag('c'),
   ]);
 
@@ -185,20 +186,41 @@ export default async function Home({
               <Window flip>
                 <div className="p-4 landscape:p-8">
                   <h3 className="text-title-1 pb-4">Play Your Way to Inner Space Dominance</h3>
-                  <p>
-                    Data War is a game of Billionaire brinksmanship where space is the place, data
-                    is the currency, and chaos reigns. Get your copy at TwitchCon!
-                  </p>
-                  <p className="mt-3">
-                    <strong>COMING SOON</strong>
-                  </p>
+                  {isAtLeastPhase2ALive ? (
+                    <>
+                      <p>
+                        Data War is a game of Billionaire brinksmanship where space is the place,
+                        data is the currency, and chaos reigns. Dropping this week at TwitchCon!
+                      </p>
+                      <LinkButton
+                        href="/datawar"
+                        title="Learn more about the game"
+                        className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent"
+                        // trackableEvent="click_datawar_details_cta"
+                      >
+                        Check out Data War
+                      </LinkButton>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        Data War is a game of Billionaire brinksmanship where space is the place,
+                        data is the currency, and chaos reigns. Get your copy at TwitchCon!
+                      </p>
+                      <p className="mt-3">
+                        <strong>COMING SOON</strong>
+                      </p>
+                    </>
+                  )}
                 </div>
               </Window>
             }
           >
             <div className="bg-gradient-to-t from-black to-transparent h-full w-full">
               <div className="absolute bottom-4 left-4 landscape:bottom-8 landscape:left-8">
-                <p className="text-nav-item pb-2">DROPPING SOON</p>
+                <p className="text-nav-item pb-2">
+                  {isAtLeastPhase2ALive ? 'JUST DROPPED!' : 'DROPPING SOON'}
+                </p>
                 <h2 className="text-title-1">
                   Data War:
                   <br />
