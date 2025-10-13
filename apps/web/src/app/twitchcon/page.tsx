@@ -100,40 +100,29 @@ export default async function Page() {
         <Window className="bg-common-ash">
           <div className="p-4 landscape:p-12 flex flex-col gap-4">
             <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
-            {!isAnyPhase2 && (
-              <p className="text-body-regular text-charcoal">
-                Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
-                move.
-              </p>
+            <p className="text-body-regular text-charcoal">
+              Use our super futuristic hologram kiosk to build a Billionaire and bust a move.
+              Can&apos;t make it to the Holobox at TwitchCon? You can still create a Billionaire and
+              join the party right here!
+            </p>
+            {isAnyPhase2 && avatarData && (
+              <LinkButton
+                href="/"
+                title="Generate a selfie"
+                className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+              >
+                Take a Space Selfie
+              </LinkButton>
             )}
-
-            {isAnyPhase2 && (
-              <>
-                <p className="text-body-regular text-charcoal">
-                  Use our super futuristic hologram kiosk to build a Billionaire and bust a move.
-                  Can&apos;t make it to the Holobox at TwitchCon? You can still create a Billionaire
-                  and join the party right here!
-                </p>
-                {avatarData && (
-                  <LinkButton
-                    href="/"
-                    title="Generate a selfie"
-                    className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
-                  >
-                    Take a Space Selfie
-                  </LinkButton>
-                )}
-                {!avatarData && avatarBentoData?.primaryFlowData && (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <GetStarted
-                      {...avatarBentoData.primaryFlowData}
-                      ctaText={!avatarData ? 'Build a Billionaire' : 'Take a Space Selfie'}
-                      triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
-                      trackableEvent="click_build_billionaire_footer"
-                    />
-                  </Suspense>
-                )}
-              </>
+            {isAnyPhase2 && !avatarData && avatarBentoData?.primaryFlowData && (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText={!avatarData ? 'Build a Billionaire' : 'Take a Space Selfie'}
+                  triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                  trackableEvent="click_build_billionaire_footer"
+                />
+              </Suspense>
             )}
           </div>
         </Window>
