@@ -109,8 +109,8 @@ const FullInstructions = () => {
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
               All players reach in and grab as many cards as they can{' '}
-              <strong>from the play area only,</strong>
-              leaving other players&apos; decks and collected Billionaires and Launch Stacks alone.
+              <strong>from the play area only,</strong> leaving other players&apos; decks and
+              collected Billionaires and Launch Stacks alone.
             </li>
           </ul>
           <p>
