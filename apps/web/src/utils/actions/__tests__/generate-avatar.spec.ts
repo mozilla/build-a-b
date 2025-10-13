@@ -161,7 +161,7 @@ describe('generateAvatar', () => {
 
     const promise = generateAvatar(mockOptions);
     await jest.advanceTimersByTimeAsync(4000);
-    const result = await promise; 
+    const result = await promise;
 
     expect(getMock).toHaveBeenCalledWith(COOKIE_NAME);
     expect(rpcMock).toHaveBeenCalledWith('get_random_avatar_v2', {

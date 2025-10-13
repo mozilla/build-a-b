@@ -15,6 +15,7 @@ import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
+import { evaluateFlag } from '@/app/flags';
 
 /**
  * SocialEmbed will give you the entire script, but what we really need
@@ -285,7 +286,9 @@ export default async function Page() {
           Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
-      {isSocialFeedEnabled && <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />}
+      {isSocialFeedEnabled && evaluateFlag('showSocialFeed') && (
+        <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />
+      )}
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
         isLaunchCompleted={isLaunchCompleted}
