@@ -46,13 +46,12 @@ export default function PhysicalDeckButton() {
     <Button
       onPress={handleClick}
       title="Express interest for a physical deck"
-      className={`secondary-button landscape:w-fit
-                  border-charcoal text-charcoal hover:border-charcoal
-                  hover:bg-charcoal hover:text-common-ash
-                  before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
-                  before:bg-current before:mask-[url(/assets/images/icons/hand.svg)]
-                  before:mask-no-repeat before:mask-center before:mask-contain
-                  ${acknowledged ? 'bg-charcoal text-common-ash pointer-events-none' : ''}`}
+      className='secondary-button landscape:w-fit
+                 border-charcoal text-charcoal hover:border-charcoal
+                 hover:bg-charcoal hover:text-common-ash
+                 before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
+                 before:bg-current before:mask-[url(/assets/images/icons/hand.svg)]
+                 before:mask-no-repeat before:mask-center before:mask-contain'
     >
       {acknowledged ? 'Desire acknowledged!' : 'I Want a Physical Deck!'}
     </Button>
