@@ -64,7 +64,7 @@ const CountDown: FC<CountDownProps> = ({ targetDate, className, cta, isLaunchCom
                   <span> miss you, Billionaires.</span>
                 </div>
               ) : (
-                'The Countdown is on'
+                'The countdown is on'
               )}
             </h2>
             <p className="text-body-regular">

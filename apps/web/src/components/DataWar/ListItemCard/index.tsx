@@ -16,10 +16,10 @@ const ListItemCard: FC<ListItemCardProps> = ({ imageAlt, imageSrc, text, classNa
   return (
     <div className={classData}>
       <div className="block relative landscape:w-[4rem]">
-        <Image src={imageSrc} alt={imageAlt} width={180} height={180} className="" />
+        <Image src={imageSrc} alt={imageAlt} width={180} height={180} />
       </div>
       <div>
-        <p>{text}</p>
+        <p className="font-extrabold">{text}</p>
       </div>
     </div>
   );

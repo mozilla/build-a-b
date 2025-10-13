@@ -79,44 +79,29 @@ const BasicInstructions = () => {
         </div>
       </div>
 
-      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
-        <div className="flex flex-col p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-2/3">
-          <div className="w-20 h-20">
-            <Image
-              src="/assets/images/icons/deck.webp"
-              alt="Icon for deck"
-              width={80}
-              height={80}
-              className="w-full h-auto"
-            />
-          </div>
-          <div>
-            <h3 className="font-bold text-title-3">Want a deck of your own?</h3>
-            <p className="text-sm-custom">
-              Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but
-              there are other ways to play and new versions dropping soon!
-            </p>
-          </div>
-        </div>
-        <div className="landscape:w-1/3 portrait:flex portrait:flex-col portrait:gap-4 portrait:p-4 portrait:mb-4">
-          <a
-            href="#"
-            title="Go to Data War Details"
-            className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
-          >
-            Data War Details
-          </a>
-          <a
-            href="/twitchcon"
-            title="Go to TwitchCon detail page"
-            className="landscape:ml-4 secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
-          >
-            TwitchCon Details
-          </a>
-        </div>
-      </div>
-    </Bento>
-  );
+            <div className='border-common-ash rounded-xl border-2 mt-4 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center'>
+                <div className='flex flex-col p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-2/3'>
+                    <div className='w-20 h-20'>
+                        <Image
+                            src='/assets/images/icons/deck.webp'
+                            alt='Icon for deck'
+                            width={80}
+                            height={80}
+                            className='w-full h-auto'
+                        />
+                    </div>
+                    <div>
+                        <h3 className='font-bold text-title-3'>Want a deck of your own?</h3>
+                        <p className='text-sm-custom'>Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but there are other ways to play and new versions dropping soon!</p>
+                    </div>
+                </div>
+                <div className='landscape:w-1/3 portrait:flex portrait:flex-col portrait:gap-4 portrait:p-4 portrait:mb-4'>
+                    <a href='/datawar' title='Go to Data War Details' className='secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal'>Data War Details</a>
+                    <a href='/twitchcon' title='Go to TwitchCon detail page' className='landscape:ml-4 secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal'>TwitchCon Details</a>
+                </div>
+            </div>
+        </Bento>
+    );
 };
 
 export default BasicInstructions;
