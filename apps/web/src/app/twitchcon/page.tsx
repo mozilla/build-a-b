@@ -393,6 +393,37 @@ export default async function Page() {
           )
         }
       />
+      {isLaunchCompleted && (
+        <section
+          className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
+        >
+          <Bento
+            image="/assets/images/avatar-cards.webp"
+            imageAlt="Cards and Billionaires"
+            className={`landscape:w-[30%] aspect-[377/275] border-none`}
+          />
+          <Bento className={`border-none h-full landscape:flex-1 landscape:h-auto`}>
+            <Window className="bg-common-ash">
+              <div className="p-4 landscape:p-12 flex flex-col gap-4">
+                <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
+                <p className="text-body-regular text-charcoal">
+                  At TwitchCon we launched Data War, the chaotic-casual card game where players
+                  compete to send egomaniacal, tantrum-prone little Billionaires on a one-way ticket
+                  to space. If you couldn&apos;t join us, you can still download a deck and stay
+                  tuned for the digital version, dropping in November!
+                </p>
+                <LinkButton
+                  href="/datawar"
+                  title="Learn more about Data War"
+                  className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                >
+                  Check out Data War
+                </LinkButton>
+              </div>
+            </Window>
+          </Bento>
+        </section>
+      )}
       {isLaunchCompleted && holoboxSection}
     </>
   );
