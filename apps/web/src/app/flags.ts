@@ -18,6 +18,14 @@ const flags = {
       return process.env.FLAG_SHOW_DATA_WAR === 'true';
     },
   }),
+  showSocialFeed: flag({
+    key: 'show-social-feed',
+    description: 'Shows the social feed',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_SOCIAL_FEED === 'true';
+    },
+  }),
   showPhase2aFeatures: flag({
     key: 'show-phase-2a-features',
     description: 'Display phase 2A changes',
