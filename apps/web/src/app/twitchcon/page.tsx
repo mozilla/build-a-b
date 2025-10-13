@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [isSocialFeedEnabled, isLaunchCompleted] = await Promise.all([
+  const [isAnyPhase2, isLaunchCompleted] = await Promise.all([
     evaluatePhase2Flag('a'),
     evaluatePhase2Flag('c'),
   ]);
@@ -90,23 +90,42 @@ export default async function Page() {
                         landscape:bg-gradient-to-r"
         >
           <div className="h-full flex flex-col gap-6 justify-end landscape:justify-center landscape:max-w-1/2">
-            <h6 className="text-nav-item">October 17-19, 2025</h6>
-            <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
-              Billionaire Blast Off lands at TwitchCon
-            </h1>
-            <p className="text-body-small">
-              Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the
-              floor or follow along online.
-            </p>
-            <LinkButton
-              href="https://www.twitchcon.com/san-diego-2025/tickets/"
-              className="secondary-button landscape:w-fit"
-              title="Get your event tickets"
-              target="_blank"
-              trackableEvent="click_get_twitchcon_tickets"
-            >
-              Get Tickets
-            </LinkButton>
+            {!isLaunchCompleted && (
+              <>
+                <h6 className="text-nav-item">October 17-19, 2025</h6>
+                <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
+                  Billionaire Blast Off lands at TwitchCon
+                </h1>
+                <p className="text-body-small">
+                  Make a Billionaire. Beat them at their own game. Send them into Space. Find us on
+                  the floor or follow along online.
+                </p>
+                {!isAnyPhase2 && (
+                  <LinkButton
+                    href="https://www.twitchcon.com/san-diego-2025/tickets/"
+                    className="secondary-button landscape:w-fit"
+                    title="Get your event tickets"
+                    target="_blank"
+                    trackableEvent="click_get_twitchcon_tickets"
+                  >
+                    Get Tickets
+                  </LinkButton>
+                )}
+              </>
+            )}
+            {isLaunchCompleted && (
+              <>
+                <h6 className="text-nav-item">THANK YOU, SAN DIEGO!</h6>
+                <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
+                  Billionaire Blast Off TwitchCon recap
+                </h1>
+                <p className="text-body-small">
+                  We brought the chaos, the cards, holographic dancing Billionaires, and a rocket
+                  countdown. It was a legitimate blast. Did you miss us at TwitchCon? We missed you!
+                  Catch up on all of the TwitchCon action right here!
+                </p>
+              </>
+            )}
           </div>
         </div>
       </Hero>
@@ -286,14 +305,14 @@ export default async function Page() {
           Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
-      {isSocialFeedEnabled && evaluateFlag('showSocialFeed') && (
+      {isAnyPhase2 && evaluateFlag('showSocialFeed') && (
         <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />
       )}
       <CountDown
         targetDate="2025-10-18T10:20:30-07:00"
         isLaunchCompleted={isLaunchCompleted}
         cta={
-          isSocialFeedEnabled ? (
+          isAnyPhase2 ? (
             <LinkButton href="/" className="secondary-button flex">
               Watch the Launch!
             </LinkButton>
