@@ -53,33 +53,30 @@ const BasicInstructions = () => {
         <div>
           <Bento
             image="/assets/images/data-war/cards.webp"
-            imageAlt="Data war cards"
+            imageAlt="Data War cards"
             className="w-[20.5rem] landscape:w-[30.5rem] border-none aspect-square"
-          ></Bento>
+          />
         </div>
-        <div className="flex flex-col gap-4 justify-between">
+        <div className="flex flex-col gap-4 justify-between flex-1">
           <ListItemCard
             imageAlt="Infinite icon"
             imageSrc="/assets/images/data-war/infinite-icon.webp"
             text="Like Classic War with infinite twists and drama."
-            className="text-charcoal"
           />
           <ListItemCard
             imageAlt="Fire Dice icon"
             imageSrc="/assets/images/data-war/fire-dice-icon.webp"
             text="Casual and chaotic with chained effects sudden shifts in power."
-            className="text-charcoal"
           />
           <ListItemCard
             imageAlt="Rocket icon"
             imageSrc="/assets/images/data-war/rocket-icon.webp"
             text="Collect all win conditions and blast your Billionaire off into space!"
-            className="text-charcoal"
           />
         </div>
       </div>
 
-      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
+      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
         <div className="flex flex-col p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-2/3">
           <div className="w-20 h-20">
             <Image
