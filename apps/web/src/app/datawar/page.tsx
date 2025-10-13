@@ -6,7 +6,7 @@ import Hero from '@/components/Hero';
 import IconCard from '@/components/IconCard';
 import ImageGallery from '@/components/ImageGallery';
 import LinkButton from '@/components/LinkButton';
-import PhysicalDeckButton from '@/components/PhysicalDeckButton';
+import PhysicalDeckButton from '@/components/DataWar/PhysicalDeckButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialIcon from '@/components/SocialIcon';
 import Window from '@/components/Window';
