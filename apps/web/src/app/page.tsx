@@ -76,13 +76,11 @@ export default async function Home({
   return (
     <>
       {isAtLeastPhase2ALive && (
-        <div className="landscape:mb-8">
-          <CountDown
-            targetDate="2025-10-18T10:20:30-07:00"
-            className="landscape:mb-0!"
-            isLaunchCompleted={isLaunchCompleted}
-          />
-        </div>
+        <CountDown
+          targetDate="2025-10-18T10:20:30-07:00"
+          isLaunchCompleted={isLaunchCompleted}
+          mode="home"
+        />
       )}
 
       <Ticker items={tickerData} />
