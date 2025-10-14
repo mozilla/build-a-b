@@ -73,7 +73,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
       {showBookmarkScreen ? (
         <PlaypenSave action={action} V2 />
       ) : (
-        <div className="w-full h-[70vh] flex flex-col items-center justify-center my-6">
+        <div className="w-full flex flex-col items-center justify-center my-6">
           <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
           <p className="text-center max-w-[625px]">
             This is your gallery of everything you and your Billionaire have done together. Every

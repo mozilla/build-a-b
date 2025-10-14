@@ -40,6 +40,7 @@ const PlaypenRestart: FC<PlaypenRestartProps> = ({ action, avatar, asset, onCanc
 
   const handleRestart = () => {
     const currentUserId = getCookie(COOKIE_NAME);
+    console.log('currentUserId', currentUserId);
     if (!currentUserId) return;
 
     removeAvatarByUser(currentUserId)
