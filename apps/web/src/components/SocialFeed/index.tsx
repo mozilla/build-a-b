@@ -1,4 +1,4 @@
-import { socials } from '@/app/layout';
+import { socials } from '@/utils/constants';
 import Script from 'next/script';
 import type { FC } from 'react';
 import BrowserBento from '../BrowserBento';
