@@ -91,13 +91,13 @@ const SimpleItemCard: FC<SimpleItemCardProps> = ({
       <div className="w-full">
         <div className="flex items-center flex-row mb-4">
           {prefixTitle && (
-            <div className="text-xl-custom landscape:text-3xl-custom w-1/6 text-center">
+            <div className="text-xl-custom landscape:text-3xl-custom w-1/6 text-center mr-2">
               <span className="grid place-items-center rounded-full border-2 w-12 h-12 landscape:w-15 landscape:h-15">
                 {prefixTitle}
               </span>
             </div>
           )}
-          <h2 className="text-title-1 w-5/6">{title}</h2>
+          <h2 className="text-3xl-custom font-extrabold w-5/6">{title}</h2>
         </div>
       </div>
       <Bento image={image} imageAlt={imageAlt} className="aspect-[441/441]" />
