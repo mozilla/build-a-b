@@ -75,6 +75,14 @@ export default async function Home({
 
   return (
     <>
+      {isAtLeastPhase2ALive && (
+        <CountDown
+          targetDate="2025-10-18T10:20:30-07:00"
+          isLaunchCompleted={isLaunchCompleted}
+          mode="home"
+        />
+      )}
+
       <Ticker items={tickerData} />
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
@@ -339,23 +347,25 @@ export default async function Home({
             currentIndex={4}
           />
         </div>
-        <div className="portrait:order-13 landscape:col-span-12">
-          <CountDown
-            targetDate="2025-10-18T10:20:30-07:00"
-            className="landscape:mb-0!"
-            isLaunchCompleted={isLaunchCompleted}
-            cta={
-              <LinkButton
-                href="/twitchcon"
-                title="Learn more about the launch"
-                className="secondary-button flex"
-                trackableEvent="click_space_launch_details_cta"
-              >
-                Space Launch Details
-              </LinkButton>
-            }
-          />
-        </div>
+        {!isAtLeastPhase2ALive && (
+          <div className="portrait:order-13 landscape:col-span-12">
+            <CountDown
+              targetDate="2025-10-18T10:20:30-07:00"
+              className="landscape:mb-0!"
+              isLaunchCompleted={isLaunchCompleted}
+              cta={
+                <LinkButton
+                  href="/twitchcon"
+                  title="Learn more about the launch"
+                  className="secondary-button flex"
+                  trackableEvent="click_space_launch_details_cta"
+                >
+                  Space Launch Details
+                </LinkButton>
+              }
+            />
+          </div>
+        )}
       </main>
       <VaultWrapper />
     </>
