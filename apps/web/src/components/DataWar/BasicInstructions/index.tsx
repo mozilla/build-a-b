@@ -90,8 +90,8 @@ const BasicInstructions = () => {
           <div>
             <h3 className="font-bold text-title-3">Want a deck of your own?</h3>
             <p className="text-sm-custom">
-              Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but
-              there are other ways to play and new versions dropping soon!
+              Right now, the only way to get a physical version of Data War is at TwitchCon 2025,
+              but there are other ways to play and new versions dropping soon!
             </p>
           </div>
         </div>
