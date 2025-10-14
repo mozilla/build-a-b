@@ -1,48 +1,24 @@
 'use client';
 
-import { useWindowSize } from '@/hooks/useWindowSize';
 import { AvatarData } from '@/types';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
-import { Button, useDisclosure } from '@heroui/react';
+import { Button } from '@heroui/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FC, startTransition, useMemo, useState, useEffect } from 'react';
+import { FC, startTransition, useEffect, useState } from 'react';
 import Bento from '../Bento';
-import PlaypenPopup from '../PlaypenPopup';
-import Carousel from '../PrimaryFlow/Carousel';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
-import ShareAvatar from '../ShareAvatar';
+import { useVaultContext } from '../Vault/VaultContext';
 
 const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => {
   const router = useRouter();
-  const { onOpenChange } = useDisclosure();
-  const {
-    setShowVault,
-    showVault,
-    selfieAvailabilityState,
-    setAvatarData,
-    setSelfieAvailabilityState,
-  } = usePrimaryFlowContext();
-  const resolution = useWindowSize();
+  const { selfieAvailabilityState, setAvatarData, setSelfieAvailabilityState } =
+    usePrimaryFlowContext();
+  const { setShowVault } = useVaultContext();
   const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
   const [timerRole, setTimerRole] = useState<'timer' | 'alert'>('timer');
   const [timeRemaining, setTimeRemaining] = useState<string>('');
-  const swiperOptions = useMemo(
-    () => ({
-      spaceBetween: resolution === 'landscape' ? -400 : -10,
-      slidesPerView: resolution === 'landscape' ? 3 : 1,
-      watchSlidesProgress: true,
-      speed: 800,
-      effect: 'slide',
-    }),
-    [resolution],
-  );
-
-  const handleClose = () => {
-    setShowVault(false);
-    onOpenChange();
-  };
 
   useEffect(() => {
     if (
@@ -165,48 +141,6 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
         ) : (
           <ProgressBar duration={12000} />
         )}
-        <PlaypenPopup title="Your Billionaire vault" isOpen={showVault} onOpenChange={handleClose}>
-          <div className="w-full h-[70vh] flex flex-col items-center justify-center my-6">
-            <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
-            <p className="text-center max-w-[625px]">
-              This is your gallery of everything you and your Billionaire have done together. Every
-              dance, every selfie, every successful launch into space. You’re always welcome back to
-              reminisce.
-            </p>
-            <div className="w-full my-6">
-              <Carousel
-                containerClassName="w-full max-w-[44rem]"
-                swiperOptions={swiperOptions}
-                withArrowNavigation={resolution === 'landscape'}
-                slides={
-                  avatarData?.selfies.map(({ asset }, i) => (
-                    <div key={i} className="flex justify-center items-center">
-                      <Image
-                        src={asset ?? ''}
-                        width={300}
-                        height={300}
-                        className="rounded-xl max-w-[300px] landscape:hidden"
-                        alt=""
-                        priority
-                      />
-                      <Image
-                        src={asset ?? ''}
-                        width={466}
-                        height={466}
-                        className="rounded-xl hidden w-auto max-w-[466px] landscape:block"
-                        alt=""
-                        priority
-                      />
-                    </div>
-                  )) || []
-                }
-              />
-            </div>
-            {avatarData?.selfies && (
-              <ShareAvatar avatar={avatarData} onBookmarkClick={() => {}} centered />
-            )}
-          </div>
-        </PlaypenPopup>
       </Bento>
     </>
   );

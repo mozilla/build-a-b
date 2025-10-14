@@ -9,7 +9,7 @@ export interface ListItemCardProps {
   className?: string;
 }
 const defaultStyles =
-  'flex gap-4 p-6 landscape:flex-row landscape:content-center items-center rounded-xl landscape:gap-4 landscape:p-10 bg-gradient-to-r from-[#FFEA80] to-[#FF8A50]';
+  'flex gap-4 p-6 landscape:flex-row landscape:content-center items-center rounded-xl landscape:gap-4 bg-gradient-to-r from-[#FFEA80] to-[#FF8A50] text-charcoal landscape:p-10 flex-1';
 
 const ListItemCard: FC<ListItemCardProps> = ({ imageAlt, imageSrc, text, className }) => {
   const classData = clsx(defaultStyles, className);

@@ -13,6 +13,7 @@ import LinkButton from '@/components/LinkButton';
 import AvatarBentoV2 from '@/components/PrimaryFlow/AvatarBentoV2';
 import Scrim from '@/components/Scrim';
 import Ticker from '@/components/Ticker';
+import VaultWrapper from '@/components/Vault/VaultWrapper';
 import Window from '@/components/Window';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
@@ -317,6 +318,8 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[1]?.asset ?? '/assets/images/placeholders/diamond.jpg'}
+            isActive={!!avatarData?.selfies?.[1]?.asset}
+            currentIndex={1}
           />
         </div>
         <div
@@ -324,6 +327,8 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[2]?.asset ?? '/assets/images/placeholders/rocket.jpg'}
+            isActive={!!avatarData?.selfies?.[2]?.asset}
+            currentIndex={2}
           />
         </div>
         <div
@@ -331,6 +336,8 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[3]?.asset ?? '/assets/images/placeholders/crown.jpg'}
+            isActive={!!avatarData?.selfies?.[3]?.asset}
+            currentIndex={3}
           />
         </div>
         <div
@@ -338,6 +345,8 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[4]?.asset ?? '/assets/images/placeholders/meteor.jpg'}
+            isActive={!!avatarData?.selfies?.[4]?.asset}
+            currentIndex={4}
           />
         </div>
         {!isAtLeastPhase2ALive && (
@@ -360,6 +369,7 @@ export default async function Home({
           </div>
         )}
       </main>
+      <VaultWrapper />
     </>
   );
 }
