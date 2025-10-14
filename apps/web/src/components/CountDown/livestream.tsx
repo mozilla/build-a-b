@@ -1,17 +1,10 @@
-import { FC } from 'react';
 import { socials } from '@/utils/constants';
 import PoweredBy from '../PoweredBy';
 import SocialNetwork from '@/components/SocialNetwork';
-import RocketCountdown from './rocket-countdown';
 import Window from '../Window';
 import Bento from '../Bento';
 
-export interface LivestreamProps {
-  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
-  isLaunchCompleted: boolean;
-}
-
-const Livestream: FC<LivestreamProps> = ({ targetDate, isLaunchCompleted }) => {
+const Livestream = () => {
   return (
     <Bento className="border-none">
       <Window
@@ -20,22 +13,32 @@ const Livestream: FC<LivestreamProps> = ({ targetDate, isLaunchCompleted }) => {
         headerClassName="border-0!"
         bulletsClassName="bg-[#F7B750]!"
       >
-        <div className="p-8 w-full">
+        <div className="p-4 landscape:p-8 w-full">
           <h3 className="text-mobile-title-2 font-extrabold mb-4">
-            Final launch sequence initiated&hellip;
+            We have Billionaire Blast Off!
           </h3>
           <p className="text-lg-custom">
-            On October 18 at TwitchCon, we blast our little Billionaires off-planet for good in an
-            actual space launch. Be there… or be here–we’ll be showing it here, too.
+            It&apos;s one small step for a Billionaire, but one giant leap for your data freedom!
           </p>
 
-          {/** Livestream goes here!  **/}
-          <RocketCountdown targetDate={targetDate} isLaunchCompleted={isLaunchCompleted} />
+          {/** YouTube Livestream **/}
+          <Bento className="my-4 landscape:my-8 aspect-video">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/eqUxVAsA80k?si=qxPc0_sejgJN8nKv"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          </Bento>
 
           {/** Bottom content */}
-          <div className="flex flex-col items-start landscape:flex-row gap-6 landscape:justify-between landscape:items-center">
+          <div className="flex flex-col items-start landscape:flex-row gap-4 landscape:justify-between landscape:items-center">
             <PoweredBy className="order-1 landscape:order-3" />
-            <div className="flex flex-col landscape:flex-row landscape:items-center gap-6 order-2">
+            <div className="flex flex-col landscape:flex-row landscape:items-center gap-4 order-2">
               <SocialNetwork socials={socials} isInModal />
               <div className="font-extrabold landscape:text-left flex flex-col landscape:flex-row landscape:gap-2">
                 <span className="mb-2 landscape:mb-0 text-2xl-custom">@firefox</span>

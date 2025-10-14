@@ -62,7 +62,7 @@ const CountDown: FC<CountDownProps> = ({
   return (
     <section className={clsx('mb-4 landscape:mb-8', className)}>
       {showLivestream ? (
-        <Livestream targetDate={targetDate} isLaunchCompleted={isLaunchCompleted} />
+        <Livestream />
       ) : (
         <CountDownHorizontal
           targetDate={targetDate}
