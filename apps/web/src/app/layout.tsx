@@ -6,10 +6,10 @@ import { Providers } from './providers';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { SocialNetworkItem } from '@/components/SocialNetwork';
 import { evaluateFlag } from './flags';
 import AnalyticsListener from '@/components/AnalyticsListener';
 import { Suspense } from 'react';
+import { socials } from '@/utils/constants';
 
 const sharpSans = localFont({
   src: [
@@ -116,29 +116,6 @@ export const metadata: Metadata = {
     images: ['/assets/images/opengraph/home.jpg'],
   },
 };
-
-export const socials: SocialNetworkItem[] = [
-  {
-    type: 'tiktok',
-    href: 'https://www.tiktok.com/@firefox',
-    title: 'Visit our TikTok',
-  },
-  {
-    type: 'instagram',
-    href: 'https://www.instagram.com/firefox/',
-    title: 'Check our Instagram',
-  },
-  {
-    type: 'threads',
-    href: 'https://www.threads.com/@firefox',
-    title: 'Check our Threads',
-  },
-  {
-    type: 'youtube',
-    href: 'https://www.youtube.com/firefoxchannel',
-    title: 'Watch our YouTube channel',
-  },
-];
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Check if DataWar feature is enabled

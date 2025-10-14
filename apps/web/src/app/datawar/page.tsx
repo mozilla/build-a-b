@@ -15,7 +15,7 @@ import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { socials } from '../layout';
+import { socials } from '@/utils/constants';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
