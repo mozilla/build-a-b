@@ -81,7 +81,7 @@ export default async function Home({
             targetDate="2025-10-18T10:20:30-07:00"
             className="landscape:mb-0!"
             isLaunchCompleted={isLaunchCompleted}
-          ></CountDown>
+          />
         </div>
       )}
 
@@ -365,7 +365,7 @@ export default async function Home({
                   Space Launch Details
                 </LinkButton>
               }
-            ></CountDown>
+            />
           </div>
         )}
       </main>
