@@ -66,7 +66,7 @@ const BasicInstructions = () => {
           <ListItemCard
             imageAlt="Fire Dice icon"
             imageSrc="/assets/images/data-war/fire-dice-icon.webp"
-            text="Casual and chaotic with chained effects sudden shifts in power."
+            text="Casual and chaotic with chained effects for sudden shifts in power."
           />
           <ListItemCard
             imageAlt="Rocket icon"
