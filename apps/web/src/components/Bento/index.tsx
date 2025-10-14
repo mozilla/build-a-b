@@ -17,6 +17,7 @@ export interface BentoProps extends PropsWithChildren {
   imageProps?: Partial<ImageProps>;
   imagePropsPortrait?: Partial<ImageProps>;
   imagePropsLandscape?: Partial<ImageProps>;
+  onClick?: () => void | Promise<void>;
 }
 
 const defaultStyle =
@@ -38,8 +39,9 @@ const Bento: FC<BentoProps> = ({
   imageProps,
   imagePropsPortrait,
   imagePropsLandscape,
+  onClick,
 }) => (
-  <div className={clsx(defaultStyle, className)}>
+  <div className={clsx(defaultStyle, className)} onClick={onClick}>
     {image && (
       <Image
         src={image}

@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
 import { useRouter } from 'next/navigation';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
+import { useVaultContext } from '../Vault/VaultContext';
 import ProgressBar from '../ProgressBar';
 
 export interface GalleryBentoLargeProps {
@@ -17,7 +18,8 @@ export interface GalleryBentoLargeProps {
 
 const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, image }) => {
   const router = useRouter();
-  const { setShowVault, selfieAvailabilityState, avatarData } = usePrimaryFlowContext();
+  const { selfieAvailabilityState, avatarData } = usePrimaryFlowContext();
+  const { setShowVault, setVaultInitialImage } = useVaultContext();
   const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
   const canGenerateSelfie =
     avatarData && selfieAvailabilityState === 'AVAILABLE' && avatarData.selfies.length === 0;
@@ -38,6 +40,7 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
           // Background refresh of the server component tree
           startTransition(() => router.refresh());
 
+          setVaultInitialImage(0);
           setShowVault(true);
         } catch {
           // Do nothing.
@@ -71,14 +74,22 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
   );
 
   return (
-    <BentoDual
-      className={clsx('aspect-square', className)}
-      image={image || '/assets/images/placeholders/planet.jpg'}
-      effect="flip"
-      bgEffect={disabled}
-      back={back}
-      disabled={!canGenerateSelfie}
-    />
+    <>
+      <BentoDual
+        className={clsx('aspect-square', className)}
+        image={image || '/assets/images/placeholders/planet.jpg'}
+        effect="flip"
+        bgEffect={disabled}
+        back={back}
+        disabled={!canGenerateSelfie}
+        onClick={() => {
+          if (image) {
+            setVaultInitialImage(0);
+            setShowVault(true);
+          }
+        }}
+      />
+    </>
   );
 };
 
