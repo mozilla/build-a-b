@@ -308,6 +308,7 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[1]?.asset ?? '/assets/images/placeholders/diamond.jpg'}
+            isActive={!!avatarData?.selfies?.[1]?.asset}
             currentIndex={1}
           />
         </div>
@@ -316,6 +317,7 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[2]?.asset ?? '/assets/images/placeholders/rocket.jpg'}
+            isActive={!!avatarData?.selfies?.[2]?.asset}
             currentIndex={2}
           />
         </div>
@@ -324,6 +326,7 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[3]?.asset ?? '/assets/images/placeholders/crown.jpg'}
+            isActive={!!avatarData?.selfies?.[3]?.asset}
             currentIndex={3}
           />
         </div>
@@ -332,6 +335,7 @@ export default async function Home({
         >
           <GalleryBentoSmall
             image={avatarData?.selfies?.[4]?.asset ?? '/assets/images/placeholders/meteor.jpg'}
+            isActive={!!avatarData?.selfies?.[4]?.asset}
             currentIndex={4}
           />
         </div>
