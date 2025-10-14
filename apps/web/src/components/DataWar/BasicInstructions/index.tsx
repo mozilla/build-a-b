@@ -43,9 +43,9 @@ const BasicInstructions = () => {
       </div>
       <div className="mt-4">
         <p>
-          Get ready for the world-dominating, market-manipulating bonanza of boilerplate Billionaire
-          behavior ever packaged in a card game. Read below for full instructions, or go to the Data
-          War Detail page to learn how to get your official deck.
+          Get ready for the most world-dominating, market-manipulating bonanza of boilerplate
+          Billionaire behavior ever packaged in a card game. Read below for full instructions, or go
+          to the Data War Detail page to learn how to get your official deck.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ const BasicInstructions = () => {
           <ListItemCard
             imageAlt="Fire Dice icon"
             imageSrc="/assets/images/data-war/fire-dice-icon.webp"
-            text="Casual and chaotic with chained effects sudden shifts in power."
+            text="Casual and chaotic with chained effects for sudden shifts in power."
           />
           <ListItemCard
             imageAlt="Rocket icon"
@@ -90,8 +90,8 @@ const BasicInstructions = () => {
           <div>
             <h3 className="font-bold text-title-3">Want a deck of your own?</h3>
             <p className="text-sm-custom">
-              Right now, the only way to get an official copy of Data War is at TwitchCon 2025, but
-              there are other ways to play and new versions dropping soon!
+              Right now, the only way to get a physical version of Data War is at TwitchCon 2025,
+              but there are other ways to play and new versions dropping soon!
             </p>
           </div>
         </div>
