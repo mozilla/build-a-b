@@ -4,9 +4,12 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
 
 ## Branch → environment mapping
 
-- `main` → Production (Netlify)
+- `prod` → Production (Netlify)
+- `main` → Staging / Pre-release (Netlify)
+- `release/2a` → Phase 2a Preview (Netlify deploy with Phase 2a feature flags)
+- `release/2b` → Phase 2b Preview (Netlify deploy with Phase 2b feature flags)
+- `release/2c` → Phase 2c Preview (Netlify deploy with Phase 2c feature flags)
 - PR branches → Netlify Preview (short-lived preview URLs)
-- Long-lived integration/staging branches → Staging (optional, if configured)
 
 ## Environment variables & secrets
 
@@ -44,7 +47,12 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
 ## CI / Deploy notes
 
 -   PR pipelines should run Quality Gates (typecheck, format, lint, tests, schema validate, build) before preview deploy.
--   Merging to `main` should only occur after all checks pass; main triggers production deploy (Netlify or configured workflow).
+-   Merging to `main` triggers staging/pre-release deployment for final validation before production.
+-   Merging to `prod` triggers production deploy (Netlify) after staging validation is complete.
+-   **Release Branches**: Each `release/{phase}` branch (`2a`, `2b`, `2c`) has its own Netlify deployment:
+    -   Merging a PR into a release branch triggers a Netlify deployment with custom feature flags configured for that specific phase.
+    -   These deployments allow testing features in isolation before promoting to staging/production.
+    -   Feature flags for each phase should be configured in Netlify environment variables for the corresponding deployment.
 -   Use least-privilege service principals or deploy keys for automated S3/CloudFront operations. Keep these credentials in secret stores and the CI provider.
 
 ## Rollback & promotion
