@@ -11,6 +11,7 @@ import { FC } from 'react';
 
 interface PlaypenPopupProps extends ModalProps {
   title: string;
+  bodyClass?: string;
 }
 
 const microcopy = {
@@ -24,6 +25,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
   children,
   title,
   isOpen,
+  bodyClass = '',
   onOpenChange,
   ...modalProps
 }) => {
@@ -87,7 +89,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                 </div>
               </Button>
               <div className="relative z-20 flex flex-col h-full">
-                <ModalBody className="overflow-y-auto flex-1 p-[2.5rem]">{children}</ModalBody>
+                <ModalBody className={`overflow-y-auto flex-1 ${bodyClass}`}>{children}</ModalBody>
               </div>
             </>
           )}

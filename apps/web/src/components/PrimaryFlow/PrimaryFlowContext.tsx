@@ -63,8 +63,6 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
       return;
     }
 
-    console.log(avatarData.selfieAvailability);
-
     const { selfies_available, next_at } = avatarData.selfieAvailability;
 
     if (next_at && next_at.getTime() >= now) {
