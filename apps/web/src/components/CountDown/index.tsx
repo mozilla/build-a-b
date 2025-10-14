@@ -6,7 +6,7 @@ import CountDownHorizontal from './countdown-horizontal';
 import Livestream from './livestream';
 
 // Switch to livestream this many minutes before launch
-const LIVESTREAM_SWITCH_THRESHOLD_MINUTES = 15;
+const LIVESTREAM_SWITCH_THRESHOLD_MINUTES = 30;
 
 export interface CountDownProps {
   targetDate: string; // Format "2025-10-10T23:59:59-05:00"
@@ -62,7 +62,7 @@ const CountDown: FC<CountDownProps> = ({
   return (
     <section className={clsx('mb-4 landscape:mb-8', className)}>
       {showLivestream ? (
-        <Livestream />
+        <Livestream targetDate={targetDate} isLaunchCompleted={isLaunchCompleted} />
       ) : (
         <CountDownHorizontal
           targetDate={targetDate}

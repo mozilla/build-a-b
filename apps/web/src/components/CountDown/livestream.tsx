@@ -1,9 +1,16 @@
+import { FC } from 'react';
 import { socials } from '@/utils/constants';
 import BrowserBento from '../BrowserBento';
 import PoweredBy from '../PoweredBy';
 import SocialNetwork from '@/components/SocialNetwork';
+import RocketCountdown from './rocket-countdown';
 
-const Livestream = () => {
+export interface LivestreamProps {
+  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
+  isLaunchCompleted: boolean;
+}
+
+const Livestream: FC<LivestreamProps> = ({ targetDate, isLaunchCompleted }) => {
   return (
     <BrowserBento gradient inverseElement="dots" bodyBg="bg-black">
       <div className="p-8 w-full">
@@ -14,6 +21,7 @@ const Livestream = () => {
         </p>
 
         {/** Livestream goes here!  **/}
+        <RocketCountdown targetDate={targetDate} isLaunchCompleted={isLaunchCompleted} />
 
         {/** Bottom content */}
         <div className="flex flex-col items-start landscape:flex-row gap-6 landscape:justify-between landscape:items-center">
