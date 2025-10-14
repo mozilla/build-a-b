@@ -43,9 +43,9 @@ const BasicInstructions = () => {
       </div>
       <div className="mt-4">
         <p>
-          Get ready for the world-dominating, market-manipulating bonanza of boilerplate Billionaire
-          behavior ever packaged in a card game. Read below for full instructions, or go to the Data
-          War Detail page to learn how to get your official deck.
+          Get ready for the most world-dominating, market-manipulating bonanza of boilerplate
+          Billionaire behavior ever packaged in a card game. Read below for full instructions, or go
+          to the Data War Detail page to learn how to get your official deck.
         </p>
       </div>
 
