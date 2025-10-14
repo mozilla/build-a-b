@@ -123,6 +123,7 @@ const AvatarView: FC<AvatarData> = ({
                   title={action.content.title}
                   isOpen={actionType === actionName}
                   onOpenChange={handleModalClose}
+                  bodyClass="p-[2.5rem]"
                 >
                   {actionName === 'share' && (
                     <PlaypenShare<ActionType>

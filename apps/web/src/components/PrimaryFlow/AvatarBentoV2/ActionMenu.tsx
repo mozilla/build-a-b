@@ -115,6 +115,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             title={actions.restart.content.title}
             isOpen={actionType === 'restart'}
             onOpenChange={handleModalClose}
+            bodyClass="p-[2.5rem]"
           >
             <PlaypenRestart
               avatar={avatar}
@@ -141,6 +142,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ avatar, navigatorShareAvailable }) =>
             title={actions.save.content.title}
             isOpen={actionType === 'save'}
             onOpenChange={handleModalClose}
+            bodyClass="p-[2.5rem]"
           >
             <PlaypenSave action={actions.save} V2 />
           </PlaypenPopup>
