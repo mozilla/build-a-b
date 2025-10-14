@@ -9,6 +9,7 @@ export interface BentoDualProps extends BentoProps {
   back: ReactNode;
   effect: 'flip' | 'fade';
   disabled?: boolean;
+  onClick?: () => void | Promise<void>;
 }
 
 const baseBentoClasses =
@@ -32,6 +33,7 @@ const BentoDual: FC<BentoDualProps> = ({
   bgEffect,
   effect = 'flip',
   disabled,
+  onClick,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -59,6 +61,10 @@ const BentoDual: FC<BentoDualProps> = ({
   const handleTouch = () => {
     if (!disabled && window.matchMedia('(hover: none)').matches) {
       setIsFlipped(!isFlipped);
+    }
+
+    if (onClick) {
+      onClick();
     }
   };
 
