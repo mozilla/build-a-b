@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import SimpleItemCard from '@/components/DataWar/SimpleItemCard';
 import SocialNetwork from '@/components/SocialNetwork';
-import { socials } from '@/app/layout';
+import { socials } from '@/utils/constants';
 
 const FullInstructions = () => {
   return (
