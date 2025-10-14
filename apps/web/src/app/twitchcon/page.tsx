@@ -297,7 +297,7 @@ export default async function Page() {
           <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
           <p className="text-body-regular text-charcoal">
             Data War is the chaotic-casual card game where players compete to send egomaniacal,
-            tantrum-prone little Billionaires on a one-way ticket to space. Created by Firefox, and
+            tantrum-prone little Billionaires on a one way ticket to space. Created by Firefox, and
             only available at TwitchCon.
           </p>
         </CardsSection>
@@ -343,7 +343,7 @@ export default async function Page() {
             </figure>
             <div className="flex-1">
               <h3 className="text-title-3 mb-2">
-                You don&apos;t need a one-way ticket to space to join
+                You don&apos;t need a one way ticket to space to join
               </h3>
               <p className="text-body-regular">
                 But you do need Block Party tickets to join us live. Luckily, they&apos;re right
@@ -408,7 +408,7 @@ export default async function Page() {
                 <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
                 <p className="text-body-regular text-charcoal">
                   At TwitchCon we launched Data War, the chaotic-casual card game where players
-                  compete to send egomaniacal, tantrum-prone little Billionaires on a one-way ticket
+                  compete to send egomaniacal, tantrum-prone little Billionaires on a one way ticket
                   to space. If you couldn&apos;t join us, you can still download a deck and stay
                   tuned for the digital version, dropping in November!
                 </p>

@@ -89,6 +89,7 @@ export default async function Page() {
                 href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
                 title="Get your own cards game"
                 download
+                target="_blank"
                 className='secondary-button landscape:w-fit
                            before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                            before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
@@ -158,7 +159,7 @@ export default async function Page() {
       >
         <h2 className="text-title-1">Sow chaos, acquire power and blast off</h2>
         <p className="text-body-regular">
-          In Data War, you compete for a One-Way Ticket to Space for egomaniacal, tantrum-prone
+          In Data War, you compete for a One Way Ticket to Space for egomaniacal, tantrum-prone
           little Billionaires. It plays like Classic War, but with the ability to chain effects from
           unique cards, resulting in unpredictable twists and explosive endings that play out
           differently every time!
@@ -183,6 +184,7 @@ export default async function Page() {
                     href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
                     title="Get your own cards game"
                     download
+                    target="_blank"
                     className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
                              hover:bg-charcoal hover:text-common-ash
