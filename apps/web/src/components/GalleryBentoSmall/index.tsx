@@ -5,10 +5,11 @@ import Bento, { BentoProps } from '../Bento';
 import { useVaultContext } from '../Vault/VaultContext';
 
 interface GalleryBentoSmallProps extends BentoProps {
+  isActive?: boolean;
   currentIndex?: number;
 }
 
-const GalleryBentoSmall: FC<GalleryBentoSmallProps> = ({ image, currentIndex }) => {
+const GalleryBentoSmall: FC<GalleryBentoSmallProps> = ({ image, isActive, currentIndex }) => {
   const { setShowVault, setVaultInitialImage } = useVaultContext();
   const onOpenVault = () => {
     setVaultInitialImage(currentIndex);
@@ -20,7 +21,7 @@ const GalleryBentoSmall: FC<GalleryBentoSmallProps> = ({ image, currentIndex }) 
       image={image}
       className="aspect-square group"
       bgEffect
-      onClick={typeof currentIndex === 'number' ? onOpenVault : undefined}
+      onClick={isActive ? onOpenVault : undefined}
     />
   );
 };
