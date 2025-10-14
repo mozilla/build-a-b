@@ -274,7 +274,7 @@ export default async function Home({
                     <h3 className="text-title-1 pb-4">Two Launches in One</h3>
                     <p>
                       We&apos;re launching a new card game, Data War, and launching Billionaires to
-                      space, one-way. Join us IRL at TwitchCon or right here on this site to follow
+                      space, one way. Join us IRL at TwitchCon or right here on this site to follow
                       along.
                     </p>
                     <LinkButton
