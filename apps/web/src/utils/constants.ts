@@ -1,4 +1,5 @@
 import type { AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
+import { SocialNetworkItem } from '@/components/SocialNetwork';
 
 export const BUCKET_NAME = 'billionaires';
 export const COOKIE_NAME = 'user_id';
@@ -24,3 +25,26 @@ export const avatarBentoData: AvatarBentoProps = {
 };
 
 export const actionTypes = ['share', 'save', 'restart'] as const;
+
+export const socials: SocialNetworkItem[] = [
+  {
+    type: 'tiktok',
+    href: 'https://www.tiktok.com/@firefox',
+    title: 'Visit our TikTok',
+  },
+  {
+    type: 'instagram',
+    href: 'https://www.instagram.com/firefox/',
+    title: 'Check our Instagram',
+  },
+  {
+    type: 'threads',
+    href: 'https://www.threads.net/@firefox',
+    title: 'Check our Threads',
+  },
+  {
+    type: 'youtube',
+    href: 'https://www.youtube.com/firefoxchannel',
+    title: 'Watch our YouTube channel',
+  },
+];
