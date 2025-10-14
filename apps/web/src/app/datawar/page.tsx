@@ -159,7 +159,7 @@ export default async function Page() {
       >
         <h2 className="text-title-1">Sow chaos, acquire power and blast off</h2>
         <p className="text-body-regular">
-          In Data War, you compete for a One-Way Ticket to Space for egomaniacal, tantrum-prone
+          In Data War, you compete for a One Way Ticket to Space for egomaniacal, tantrum-prone
           little Billionaires. It plays like Classic War, but with the ability to chain effects from
           unique cards, resulting in unpredictable twists and explosive endings that play out
           differently every time!
