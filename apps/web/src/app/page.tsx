@@ -215,7 +215,6 @@ export default async function Home({
                         href="/datawar"
                         title="Learn more about the game"
                         className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent active:bg-accent"
-                        // trackableEvent="click_datawar_details_cta"
                       >
                         Check out Data War
                       </LinkButton>
@@ -231,7 +230,6 @@ export default async function Home({
                         href="/datawar"
                         title="Learn more about the game"
                         className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent active:bg-accent"
-                        // trackableEvent="click_datawar_details_cta"
                       >
                         Check out Data War
                       </LinkButton>

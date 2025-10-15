@@ -285,7 +285,6 @@ export default async function Page() {
                     href="/datawar"
                     title="Learn more about Data War"
                     className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
-                    // trackableEvent="click_jump_in"
                   >
                     Jump In
                   </LinkButton>
