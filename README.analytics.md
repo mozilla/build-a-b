@@ -46,6 +46,7 @@ All events are organized into five main categories:
 | `click_save_avatar` | User saves their created avatar | Vault, ActionMenu components | All |
 | `click_share_avatar` | User initiates sharing their avatar | ActionMenu, share hooks | All |
 | `click_download_avatar` | User downloads their avatar image | ActionMenu component | All |
+| `click_view_selfie` | User opens the vault to see a selfie | GalleryBentoLarge & GalleryBentoSmall components | All |
 
 **Components that fire these events:**
 - `/apps/web/src/components/PrimaryFlow/GetStarted/index.tsx`
@@ -56,6 +57,8 @@ All events are organized into five main categories:
 - `/apps/web/src/hooks/useNavigatorShareAction.ts`
 - `/apps/web/src/components/Footer/index.tsx`
 - `/apps/web/src/components/MobileMenu/index.tsx`
+- `/apps/web/src/components/GalleryBentoLarge/index.tsx`
+- `/apps/web/src/components/GalleryBentoSmall/index.tsx`
 
 ---
 
@@ -98,8 +101,11 @@ All events are organized into five main categories:
 | `click_download_deck_datawar_diy` | User downloads the Data War deck from DIY section | Data War page (DIY) | All |
 | `click_download_deck_instructions` | User downloads the deck from instructions page | Instructions page | All |
 | `click_want_physical_deck` | User expresses interest in a physical deck | Data War page | All |
+| `click_go_to_datawar` | User clicks on a CTA which takes user to Data War page | Home & Twitchcon pages | All |
+| `click_go_to_instructions` | User clicks on a CTA which takes user to Data War Instructions page | Data War page | All |
 
 **Components that fire these events:**
+- `/apps/web/src/app/page.tsx`
 - `/apps/web/src/app/datawar/page.tsx`
 - `/apps/web/src/app/datawar/instructions/page.tsx`
 - `/apps/web/src/components/DataWar/PhysicalDeckButton/index.tsx`
