@@ -48,3 +48,5 @@ export const socials: SocialNetworkItem[] = [
     title: 'Watch our YouTube channel',
   },
 ];
+
+export const rocketLaunchDate = '2025-10-18T20:30:00-07:00';

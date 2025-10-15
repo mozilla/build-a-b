@@ -75,13 +75,7 @@ export default async function Home({
 
   return (
     <>
-      {isAtLeastPhase2ALive && (
-        <CountDown
-          targetDate="2025-10-18T10:20:30-07:00"
-          isLaunchCompleted={isLaunchCompleted}
-          mode="home"
-        />
-      )}
+      {isAtLeastPhase2ALive && <CountDown isLaunchCompleted={isLaunchCompleted} mode="home" />}
 
       <Ticker items={tickerData} />
 
@@ -350,7 +344,6 @@ export default async function Home({
         {!isAtLeastPhase2ALive && (
           <div className="portrait:order-13 landscape:col-span-12">
             <CountDown
-              targetDate="2025-10-18T10:20:30-07:00"
               className="landscape:mb-0!"
               isLaunchCompleted={isLaunchCompleted}
               cta={
