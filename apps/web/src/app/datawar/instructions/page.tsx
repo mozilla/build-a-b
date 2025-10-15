@@ -44,7 +44,6 @@ export default async function Page() {
                 <LinkButton
                   href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
                   title="Get your own cards game"
-                  download
                   target="_blank"
                   className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
@@ -67,7 +66,6 @@ export default async function Page() {
         />
       </section>
       <CountDown
-        targetDate="2025-10-18T10:20:30-07:00"
         isLaunchCompleted={isLaunchCompleted}
         cta={
           shouldDisplayLaunchCta ? (
