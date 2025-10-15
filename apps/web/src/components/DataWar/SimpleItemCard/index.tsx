@@ -52,7 +52,7 @@ const SimpleItemCard: FC<SimpleItemCardProps> = ({
       const contentH = (contentRef.current?.offsetHeight ?? 0) + contentMT;
       const vhAvail = window.innerHeight - TOP_PX;
       const visibleAsideH = Math.min(asideH, vhAvail);
-      const maxAllowed = Math.max(0, contentH - visibleAsideH);
+      const maxAllowed = Math.max(0, contentH - visibleAsideH * 1.1);
       const desired = Infinity;
       setMaxShift(Math.min(maxAllowed, desired));
     };

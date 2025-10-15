@@ -147,7 +147,7 @@ export default async function Page() {
               <LinkButton
                 href="/datawar/instructions"
                 title="Read instructions now"
-                className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal active:bg-common-ash active:text-charcoal"
                 target="_blank"
                 // trackableEvent="click_data_war_instructions"
               >
@@ -188,6 +188,7 @@ export default async function Page() {
                     className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
                              hover:bg-charcoal hover:text-common-ash
+                             active:border-charcoal active:bg-charcoal active:text-common-ash
                              before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                              before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                              before:mask-no-repeat before:mask-center before:mask-contain'
@@ -232,7 +233,7 @@ export default async function Page() {
                       className="relative inline-flex items-center justify-center
                                  rounded-full overflow-hidden text-charcoal
                                  transition-transform duration-300
-                                 hover:-rotate-30"
+                                 hover:-rotate-30 active:-rotate-30"
                       // trackableEvent="click_social_icon_datawar"
                       trackablePlatform={type}
                     >
@@ -264,6 +265,7 @@ export default async function Page() {
                   className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
                              hover:bg-charcoal hover:text-common-ash
+                             active:border-charcoal active:bg-charcoal active:text-common-ash
                              before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                              before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                              before:mask-no-repeat before:mask-center before:mask-contain'
