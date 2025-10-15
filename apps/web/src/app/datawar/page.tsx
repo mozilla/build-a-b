@@ -229,7 +229,7 @@ export default async function Page() {
                                  rounded-full overflow-hidden text-charcoal
                                  transition-transform duration-300
                                  hover:-rotate-30 active:-rotate-30"
-                      // trackableEvent="click_social_icon_datawar"
+                      trackableEvent="click_social_icon_datawar"
                       trackablePlatform={type}
                     >
                       <SocialIcon type={type} className="w-10 h-10" />
