@@ -81,7 +81,6 @@ export default async function Page() {
                 href="datawar/instructions"
                 className="secondary-button landscape:w-fit"
                 title="Read game instructions"
-                // trackableEvent="click_get_twitchcon_tickets"
               >
                 How to Play
               </LinkButton>
@@ -93,7 +92,7 @@ export default async function Page() {
                            before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                            before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                            before:mask-no-repeat before:mask-center before:mask-contain'
-                // trackableEvent="click_download_datawar_deck"
+                trackableEvent="click_download_deck_datawar_hero"
               >
                 Download the Deck!
               </LinkButton>
@@ -147,8 +146,6 @@ export default async function Page() {
                 href="/datawar/instructions"
                 title="Read instructions now"
                 className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal active:bg-common-ash active:text-charcoal"
-                target="_blank"
-                // trackableEvent="click_data_war_instructions"
               >
                 Data War Instructions
               </LinkButton>
@@ -190,7 +187,7 @@ export default async function Page() {
                              before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                              before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                              before:mask-no-repeat before:mask-center before:mask-contain'
-                    // trackableEvent="click_download_datawar_deck"
+                    trackableEvent="click_download_deck_datawar_twitchcon"
                   >
                     Download the Deck!
                   </LinkButton>
@@ -266,7 +263,7 @@ export default async function Page() {
                              before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                              before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                              before:mask-no-repeat before:mask-center before:mask-contain'
-                  // trackableEvent="click_download_datawar_deck"
+                  trackableEvent="click_download_deck_datawar_diy"
                 >
                   Download the Deck!
                 </LinkButton>

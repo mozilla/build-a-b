@@ -24,6 +24,14 @@ export type HomeEvent = (typeof homeEvents)[number];
 const twitchconEvents = ['click_get_twitchcon_tickets'] as const;
 export type TwitchConEvent = (typeof twitchconEvents)[number];
 
+const dataWarEvents = [
+  'click_download_deck_datawar_hero',
+  'click_download_deck_datawar_twitchcon',
+  'click_download_deck_datawar_diy',
+  'click_download_deck_instructions',
+] as const;
+export type DataWarEvent = (typeof dataWarEvents)[number];
+
 const navigationEvents = [
   'click_bbo_logo_header',
   'click_bbo_logo_footer',
@@ -37,7 +45,12 @@ const navigationEvents = [
 ] as const;
 export type NavigationEvent = (typeof navigationEvents)[number];
 
-export type TrackableEvent = AvatarEvent | HomeEvent | TwitchConEvent | NavigationEvent;
+export type TrackableEvent =
+  | AvatarEvent
+  | HomeEvent
+  | TwitchConEvent
+  | DataWarEvent
+  | NavigationEvent;
 
 interface TrackEventOptions {
   action: TrackableEvent;
@@ -73,6 +86,21 @@ export function trackEvent({ action, platform }: TrackEventOptions) {
     event({
       action,
       category: 'twitchcon',
+      label: action.replace('click_', ''),
+    });
+    return;
+  }
+
+  // Data War events
+  if (dataWarEvents.includes(action as DataWarEvent)) {
+    event({
+      action,
+      category: 'datawar',
+      label: action.replace('click_', ''),
+    });
+    console.log({
+      action,
+      category: 'datawar',
       label: action.replace('click_', ''),
     });
     return;
