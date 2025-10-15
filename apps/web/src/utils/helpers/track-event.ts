@@ -11,6 +11,7 @@ const avatarEvents = [
   'click_save_avatar',
   'click_share_avatar',
   'click_download_avatar',
+  'click_view_selfie',
 ] as const;
 export type AvatarEvent = (typeof avatarEvents)[number];
 
