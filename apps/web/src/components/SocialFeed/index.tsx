@@ -2,7 +2,6 @@ import { socials } from '@/utils/constants';
 import Script from 'next/script';
 import type { FC } from 'react';
 import BrowserBento from '../BrowserBento';
-import PoweredBy from '../PoweredBy';
 import SocialNetwork from '../SocialNetwork';
 
 type SocialFeedProps = {
@@ -32,7 +31,6 @@ const SocialFeed: FC<SocialFeedProps> = ({ refId, src }) => {
           <div className="embedsocial-hashtag" data-ref={refId} />
           {/** Bottom content */}
           <div className="flex flex-col items-start landscape:flex-row gap-6 landscape:justify-between landscape:items-center">
-            <PoweredBy className="order-1 landscape:order-3" />
             <div className="flex flex-col landscape:flex-row landscape:items-center gap-6 order-2">
               <SocialNetwork socials={socials} isInModal />
               <div className="font-extrabold landscape:text-left flex flex-col landscape:flex-row landscape:gap-2">
