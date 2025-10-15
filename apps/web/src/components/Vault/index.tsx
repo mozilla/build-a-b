@@ -62,10 +62,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     // Wrap initialImage to valid index using modulo
     const validIndex = initialImage % avatarData.selfies.length;
     // Reorder array starting from initialImage index
-    return [
-      ...avatarData.selfies.slice(validIndex),
-      ...avatarData.selfies.slice(0, validIndex),
-    ];
+    return [...avatarData.selfies.slice(validIndex), ...avatarData.selfies.slice(0, validIndex)];
   }, [avatarData?.selfies, initialImage]);
 
   return (
@@ -77,7 +74,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
           <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
           <p className="text-center max-w-[625px]">
             This is your gallery of everything you and your Billionaire have done together. Every
-            dance, every selfie, every successful launch into space. You’re always welcome back to
+            selfie, every successful launch into space. You&apos;re always welcome back to
             reminisce.
           </p>
           <div className="w-full my-6">
