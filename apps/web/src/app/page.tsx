@@ -1,6 +1,11 @@
 import { evaluateFlag } from '@/app/flags';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import { avatarBentoData, COOKIE_NAME } from '@/utils/constants';
+import {
+  avatarBentoData,
+  COOKIE_NAME,
+  tickerData,
+  tickerDataAfterTwitchCon,
+} from '@/utils/constants';
 import { cookies } from 'next/headers';
 
 import Image from 'next/image';
@@ -17,32 +22,6 @@ import VaultWrapper from '@/components/Vault/VaultWrapper';
 import Window from '@/components/Window';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
-
-interface TickerItem {
-  id?: number;
-  text: string;
-  emoji?: string;
-  hashtag?: string;
-  href?: string;
-}
-
-const tickerData: TickerItem[] = [
-  {
-    id: 4,
-    text: 'Battle for Data Supremacy!',
-    emoji: '🚀',
-  },
-  {
-    id: 5,
-    text: 'Join us at TwitchCon',
-    emoji: '🪐',
-  },
-  {
-    id: 6,
-    text: 'Watch the Billionaire space launch',
-    emoji: '💰',
-  },
-];
 
 export default async function Home({
   params,
@@ -77,7 +56,7 @@ export default async function Home({
     <>
       {isAtLeastPhase2ALive && <CountDown isLaunchCompleted={isLaunchCompleted} mode="home" />}
 
-      <Ticker items={tickerData} />
+      <Ticker items={isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData} />
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">

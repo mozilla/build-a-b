@@ -50,3 +50,39 @@ export const socials: SocialNetworkItem[] = [
 ];
 
 export const rocketLaunchDate = '2025-10-18T20:30:00-07:00';
+
+export const tickerData = [
+  {
+    id: 4,
+    text: 'Battle for Data Supremacy!',
+    emoji: '🚀',
+  },
+  {
+    id: 5,
+    text: 'Join us at TwitchCon',
+    emoji: '🪐',
+  },
+  {
+    id: 6,
+    text: 'Watch the Billionaire Space Launch',
+    emoji: '💰',
+  },
+];
+
+export const tickerDataAfterTwitchCon = [
+  {
+    id: 4,
+    text: 'Get Ready for Data War Digital',
+    emoji: '🚀',
+  },
+  {
+    id: 5,
+    text: 'TwitchCon Recap',
+    emoji: '🪐',
+  },
+  {
+    id: 6,
+    text: 'Watch the Billionaire Space Launch',
+    emoji: '💰',
+  },
+];
