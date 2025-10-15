@@ -22,7 +22,7 @@ const CountDown: FC<CountDownProps> = ({
   isLaunchCompleted,
   mode = 'twitchcon',
 }) => {
-  const target = useMemo(() => new Date(rocketLaunchDate), [rocketLaunchDate]);
+  const target = useMemo(() => new Date(rocketLaunchDate), []);
   const [showLivestream, setShowLivestream] = useState(false);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const CountDown: FC<CountDownProps> = ({
 
     // Cleanup when unmounted
     return () => clearInterval(interval);
-  }, [rocketLaunchDate, target]);
+  }, [target]);
 
   // TwitchCon mode always shows countdown
   if (mode === 'twitchcon') {
