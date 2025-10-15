@@ -39,6 +39,8 @@ const navigationEvents = [
   'click_home_footer',
   'click_twitchcon_header',
   'click_twitchcon_footer',
+  'click_datawar_header',
+  'click_datawar_footer',
   'click_firefox_footer_logo',
   'click_social_icon_header',
   'click_social_icon_footer',
@@ -94,11 +96,6 @@ export function trackEvent({ action, platform }: TrackEventOptions) {
   // Data War events
   if (dataWarEvents.includes(action as DataWarEvent)) {
     event({
-      action,
-      category: 'datawar',
-      label: action.replace('click_', ''),
-    });
-    console.log({
       action,
       category: 'datawar',
       label: action.replace('click_', ''),
