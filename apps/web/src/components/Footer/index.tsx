@@ -61,7 +61,10 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                              origin-left
                              hover:-rotate-3 hover:translate-y-1
                              hover:bg-gradient-to-r hover:from-accent hover:to-secondary-blue
-                             hover:bg-clip-text hover:text-transparent"
+                             hover:bg-clip-text hover:text-transparent
+                             active:-rotate-3 active:translate-y-1
+                             active:bg-gradient-to-r active:from-accent active:to-secondary-blue
+                             active:bg-clip-text active:text-transparent"
                   aria-current={pathname === href ? 'page' : undefined}
                   trackableEvent={`${trackableEvent}_footer` as TrackableEvent}
                 >
@@ -82,10 +85,10 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
                   className="relative inline-flex items-center justify-center
                              rounded-full overflow-hidden text-accent
                              transition-transform duration-300
-                             hover:-rotate-30
+                             hover:-rotate-30 active:-rotate-30
                              after:content-[''] after:absolute after:inset-0
                              after:bg-gradient-to-br after:from-transparent after:to-secondary-blue
-                             after:opacity-0 hover:after:opacity-70
+                             after:opacity-0 hover:after:opacity-70 active:after:opacity-70
                              after:transition-opacity after:duration-300"
                   trackableEvent="click_social_icon_footer"
                   trackablePlatform={type}

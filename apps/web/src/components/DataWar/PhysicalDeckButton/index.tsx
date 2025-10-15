@@ -49,6 +49,7 @@ export default function PhysicalDeckButton() {
       className='secondary-button h-full landscape:w-fit
                  border-charcoal text-charcoal hover:border-charcoal
                  hover:bg-charcoal hover:text-common-ash
+                 active:border-charcoal active:bg-charcoal active:text-common-ash
                  before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                  before:bg-current before:mask-[url(/assets/images/icons/hand.svg)]
                  before:mask-no-repeat before:mask-center before:mask-contain'

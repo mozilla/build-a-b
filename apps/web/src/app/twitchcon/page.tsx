@@ -109,7 +109,7 @@ export default async function Page() {
               <LinkButton
                 href="/"
                 title="Generate a selfie"
-                className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
               >
                 Take a Space Selfie
               </LinkButton>
@@ -119,7 +119,7 @@ export default async function Page() {
                 <GetStarted
                   {...avatarBentoData.primaryFlowData}
                   ctaText={!avatarData ? 'Build a Billionaire' : 'Take a Space Selfie'}
-                  triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                  triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
                   trackableEvent="click_build_billionaire_footer"
                 />
               </Suspense>
@@ -284,7 +284,7 @@ export default async function Page() {
                   <LinkButton
                     href="/datawar"
                     title="Learn more about Data War"
-                    className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                    className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
                     // trackableEvent="click_jump_in"
                   >
                     Jump In
@@ -354,7 +354,7 @@ export default async function Page() {
               <LinkButton
                 href="https://www.twitchcon.com/san-diego-2025/tickets/"
                 title="Buy your ticket"
-                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal active:bg-common-ash active:text-charcoal"
                 target="_blank"
                 trackableEvent="click_get_twitchcon_tickets"
               >
@@ -415,7 +415,7 @@ export default async function Page() {
                 <LinkButton
                   href="/datawar"
                   title="Learn more about Data War"
-                  className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash"
+                  className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
                 >
                   Check out Data War
                 </LinkButton>
