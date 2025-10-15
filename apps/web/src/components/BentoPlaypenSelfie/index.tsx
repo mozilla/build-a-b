@@ -11,7 +11,12 @@ import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
 import { useVaultContext } from '../Vault/VaultContext';
 
-const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => {
+interface BentoPlaypenSelfieProps {
+  avatarData?: AvatarData;
+  isLaunchCompleted?: boolean;
+}
+
+const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchCompleted }) => {
   const router = useRouter();
   const { selfieAvailabilityState, setAvatarData, setSelfieAvailabilityState } =
     usePrimaryFlowContext();
@@ -78,13 +83,15 @@ const BentoPlaypenSelfie: FC<{ avatarData?: AvatarData }> = ({ avatarData }) => 
                      : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
                  }`}
       >
-        <Image
-          className="absolute top-[-1.5rem] left-[-1.5rem]"
-          alt=""
-          src="/assets/images/ribbon.webp"
-          width={117}
-          height={40}
-        />
+        {!isLaunchCompleted && (
+          <Image
+            className="absolute top-[-1.5rem] left-[-1.5rem]"
+            alt=""
+            src="/assets/images/ribbon.webp"
+            width={117}
+            height={40}
+          />
+        )}
         <Image
           src="/assets/images/icons/camera.webp"
           width={60}

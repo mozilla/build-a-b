@@ -39,6 +39,7 @@ const LinkButton: FC<LinkButtonProps> = ({
           trackEvent({ action: trackableEvent, platform: trackablePlatform });
         }
       }}
+      
     >
       {children}
     </Link>

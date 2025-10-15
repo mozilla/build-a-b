@@ -63,7 +63,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                     onPress={onClose}
                     isIconOnly
                     variant="light"
-                    className="flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
+                    className="flex items-center justify-center w-6 h-6 hover:opacity-70 active:opacity-70 transition-opacity min-w-6 h-6"
                     aria-label="Close modal"
                   >
                     <Image
@@ -81,7 +81,7 @@ const Modal: FC<PropsWithChildren<CustomModalProps>> = ({
                   onPress={onClose}
                   isIconOnly
                   variant="light"
-                  className="landscape:hidden absolute top-[3.5rem] right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 transition-opacity min-w-6 h-6"
+                  className="landscape:hidden absolute top-[3.5rem] right-4 z-50 flex items-center justify-center w-6 h-6 hover:opacity-70 active:opacity-70 transition-opacity min-w-6 h-6"
                   aria-label="Close modal"
                 >
                   <Image
