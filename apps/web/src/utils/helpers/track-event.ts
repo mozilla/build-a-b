@@ -45,6 +45,7 @@ const navigationEvents = [
   'click_firefox_footer_logo',
   'click_social_icon_header',
   'click_social_icon_footer',
+  'click_social_icon_datawar',
 ] as const;
 export type NavigationEvent = (typeof navigationEvents)[number];
 
