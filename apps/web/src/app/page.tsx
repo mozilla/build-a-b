@@ -81,7 +81,11 @@ export default async function Home({
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 landscape:grid-rows-6 landscape:gap-8">
         <div className="portrait:mb-4 portrait:w-full landscape:row-span-3 landscape:row-start-1 landscape:col-span-7">
-          <AvatarBentoV2 {...avatarBentoData} avatar={avatarData} />
+          <AvatarBentoV2
+            {...avatarBentoData}
+            avatar={avatarData}
+            isLaunchCompleted={isLaunchCompleted}
+          />
         </div>
         <div className="portrait:mb-4 portrait:w-full h-[32rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
           <BentoDual
