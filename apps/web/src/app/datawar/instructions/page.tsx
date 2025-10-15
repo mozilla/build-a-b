@@ -52,7 +52,7 @@ export default async function Page() {
                              before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                              before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
                              before:mask-no-repeat before:mask-center before:mask-contain'
-                  // trackableEvent="click_download_datawar_deck"
+                  trackableEvent="click_download_deck_instructions"
                 >
                   Download the Deck!
                 </LinkButton>

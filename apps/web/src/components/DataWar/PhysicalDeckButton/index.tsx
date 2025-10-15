@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { setCookie, getCookie } from 'cookies-next';
 import { Button } from '@heroui/react';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 export default function PhysicalDeckButton() {
   const COOKIE_NAME = 'physical_deck_desire';
@@ -18,6 +19,7 @@ export default function PhysicalDeckButton() {
   const handleClick = () => {
     setCookie(COOKIE_NAME, 'true', { maxAge: 60 * 60 * 24 * 365 }); // 1 year
     setAcknowledged(true);
+    trackEvent({ action: 'click_want_physical_deck' });
   };
 
   if (acknowledged) {
