@@ -374,7 +374,6 @@ export default async function Page() {
         <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />
       )}
       <CountDown
-        targetDate="2025-10-18T10:20:30-07:00"
         isLaunchCompleted={isLaunchCompleted}
         cta={
           isAnyPhase2 ? (

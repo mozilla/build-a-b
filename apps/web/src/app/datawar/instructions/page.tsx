@@ -67,7 +67,6 @@ export default async function Page() {
         />
       </section>
       <CountDown
-        targetDate="2025-10-18T10:20:30-07:00"
         isLaunchCompleted={isLaunchCompleted}
         cta={
           shouldDisplayLaunchCta ? (

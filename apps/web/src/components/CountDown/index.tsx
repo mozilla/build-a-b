@@ -4,12 +4,12 @@ import clsx from 'clsx';
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import CountDownHorizontal from './countdown-horizontal';
 import Livestream from './livestream';
+import { rocketLaunchDate } from '@/utils/constants';
 
 // Switch to livestream this many minutes before launch
 const LIVESTREAM_SWITCH_THRESHOLD_MINUTES = 30;
 
 export interface CountDownProps {
-  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
   className?: string;
   cta?: ReactNode;
   isLaunchCompleted: boolean;
@@ -17,13 +17,12 @@ export interface CountDownProps {
 }
 
 const CountDown: FC<CountDownProps> = ({
-  targetDate,
   className,
   cta,
   isLaunchCompleted,
   mode = 'twitchcon',
 }) => {
-  const target = useMemo(() => new Date(targetDate), [targetDate]);
+  const target = useMemo(() => new Date(rocketLaunchDate), [rocketLaunchDate]);
   const [showLivestream, setShowLivestream] = useState(false);
 
   useEffect(() => {
@@ -43,14 +42,14 @@ const CountDown: FC<CountDownProps> = ({
 
     // Cleanup when unmounted
     return () => clearInterval(interval);
-  }, [targetDate, target]);
+  }, [rocketLaunchDate, target]);
 
   // TwitchCon mode always shows countdown
   if (mode === 'twitchcon') {
     return (
       <section className={clsx('mb-4 landscape:mb-8', className)}>
         <CountDownHorizontal
-          targetDate={targetDate}
+          targetDate={rocketLaunchDate}
           cta={cta}
           isLaunchCompleted={isLaunchCompleted}
         />
@@ -65,7 +64,7 @@ const CountDown: FC<CountDownProps> = ({
         <Livestream />
       ) : (
         <CountDownHorizontal
-          targetDate={targetDate}
+          targetDate={rocketLaunchDate}
           cta={cta}
           isLaunchCompleted={isLaunchCompleted}
         />
