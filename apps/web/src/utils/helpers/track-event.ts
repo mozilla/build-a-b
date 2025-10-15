@@ -29,6 +29,7 @@ const dataWarEvents = [
   'click_download_deck_datawar_twitchcon',
   'click_download_deck_datawar_diy',
   'click_download_deck_instructions',
+  'click_want_physical_deck',
 ] as const;
 export type DataWarEvent = (typeof dataWarEvents)[number];
 
