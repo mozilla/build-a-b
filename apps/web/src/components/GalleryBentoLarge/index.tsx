@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import { useVaultContext } from '../Vault/VaultContext';
 import ProgressBar from '../ProgressBar';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 export interface GalleryBentoLargeProps {
   className?: string;
@@ -42,6 +43,7 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
 
           setVaultInitialImage(0);
           setShowVault(true);
+          trackEvent({ action: 'click_view_selfie' });
         } catch {
           // Do nothing.
         } finally {
@@ -86,6 +88,7 @@ const GalleryBentoLarge: FC<GalleryBentoLargeProps> = ({ className, disabled, im
           if (image) {
             setVaultInitialImage(0);
             setShowVault(true);
+            trackEvent({ action: 'click_view_selfie' });
           }
         }}
       />

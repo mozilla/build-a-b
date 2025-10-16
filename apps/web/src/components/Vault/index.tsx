@@ -21,6 +21,7 @@ interface VaultProps {
 
 const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
   const [showBookmarkScreen, setShowBookmarkScreen] = useState(false);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const resolution = useWindowSize();
   const { avatarData } = usePrimaryFlowContext();
   const swiperOptions = useMemo(
@@ -65,6 +66,16 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     return [...avatarData.selfies.slice(validIndex), ...avatarData.selfies.slice(0, validIndex)];
   }, [avatarData?.selfies, initialImage]);
 
+  // Create avatar data with the current selfie's asset for sharing
+  const avatarWithCurrentSelfie = useMemo(() => {
+    if (!avatarData || !sortedSelfies[activeSlideIndex]) return avatarData;
+
+    return {
+      ...avatarData,
+      instragramAsset: sortedSelfies[activeSlideIndex].asset ?? '',
+    };
+  }, [avatarData, sortedSelfies, activeSlideIndex]);
+
   return (
     <PlaypenPopup title="Your Billionaire vault" isOpen={isOpen} onOpenChange={onOpenChange}>
       {showBookmarkScreen ? (
@@ -72,7 +83,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
       ) : (
         <div className="w-full flex flex-col items-center justify-center my-6">
           <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
-          <p className="text-center max-w-[625px]">
+          <p className="text-center max-w-[39.0625rem]">
             This is your gallery of everything you and your Billionaire have done together. Every
             selfie, every successful launch into space. You&apos;re always welcome back to
             reminisce.
@@ -82,6 +93,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
               containerClassName="w-full max-w-[44rem]"
               swiperOptions={swiperOptions}
               withArrowNavigation={resolution === 'landscape'}
+              onSlideChange={setActiveSlideIndex}
               slides={
                 sortedSelfies.map(({ asset }, i) => (
                   <div key={i} className="flex justify-center items-center">
@@ -89,7 +101,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                       src={asset ?? ''}
                       width={300}
                       height={300}
-                      className="rounded-xl max-w-[300px] landscape:hidden"
+                      className="rounded-xl max-w-[18.75rem] landscape:hidden"
                       alt=""
                       priority
                     />
@@ -97,7 +109,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                       src={asset ?? ''}
                       width={466}
                       height={466}
-                      className="rounded-xl hidden w-auto max-w-[466px] landscape:block"
+                      className="rounded-xl hidden w-auto max-w-[29.125rem] landscape:block"
                       alt=""
                       priority
                     />
@@ -106,9 +118,9 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
               }
             />
           </div>
-          {avatarData?.selfies && (
+          {avatarWithCurrentSelfie?.selfies && (
             <ShareAvatar
-              avatar={avatarData}
+              avatar={avatarWithCurrentSelfie}
               onBookmarkClick={() => setShowBookmarkScreen(true)}
               centered
             />

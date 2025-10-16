@@ -81,6 +81,7 @@ export default async function Page() {
                 href="datawar/instructions"
                 className="secondary-button landscape:w-fit"
                 title="Read game instructions"
+                trackableEvent="click_go_to_instructions"
               >
                 How to Play
               </LinkButton>
@@ -146,6 +147,7 @@ export default async function Page() {
                 href="/datawar/instructions"
                 title="Read instructions now"
                 className="secondary-button w-full border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal active:bg-common-ash active:text-charcoal"
+                trackableEvent="click_go_to_instructions"
               >
                 Data War Instructions
               </LinkButton>

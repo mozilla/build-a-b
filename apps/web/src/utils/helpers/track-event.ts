@@ -11,6 +11,7 @@ const avatarEvents = [
   'click_save_avatar',
   'click_share_avatar',
   'click_download_avatar',
+  'click_view_selfie',
 ] as const;
 export type AvatarEvent = (typeof avatarEvents)[number];
 
@@ -30,6 +31,8 @@ const dataWarEvents = [
   'click_download_deck_datawar_diy',
   'click_download_deck_instructions',
   'click_want_physical_deck',
+  'click_go_to_datawar',
+  'click_go_to_instructions',
 ] as const;
 export type DataWarEvent = (typeof dataWarEvents)[number];
 
