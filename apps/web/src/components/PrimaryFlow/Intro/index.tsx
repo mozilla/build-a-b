@@ -91,14 +91,14 @@ const Intro: FC<IntroProps> = ({
               autoFocus
               onPress={generateCustomAvatar}
               type="button"
-              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent active:text-charcoal active:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
             >
               {createAvatarCtaText}
             </Button>
             <Button
               onPress={generateRandomAvatar}
               type="button"
-              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent active:text-charcoal active:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
             >
               {randomAvatarCtaText}
             </Button>
