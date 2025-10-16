@@ -12,6 +12,7 @@ type CarouselProps = {
   containerClassName?: string;
   swiperOptions?: Partial<SwiperOptions>;
   withArrowNavigation?: boolean;
+  onSlideChange?: (activeIndex: number) => void;
 };
 
 const Carousel: FC<CarouselProps> = ({
@@ -20,6 +21,7 @@ const Carousel: FC<CarouselProps> = ({
   containerClassName,
   swiperOptions = {},
   withArrowNavigation,
+  onSlideChange,
 }) => {
   const hasMultiple = slides.length > 1;
 
@@ -55,7 +57,11 @@ const Carousel: FC<CarouselProps> = ({
 
   return (
     <div className="relative overflow-visible">
-      <Swiper {...mergedOptions} className={containerClassName}>
+      <Swiper
+        {...mergedOptions}
+        className={containerClassName}
+        onSlideChange={(swiper) => onSlideChange?.(swiper.activeIndex)}
+      >
         {slides.map((slide, index) => (
           <SwiperSlide
             key={index}
