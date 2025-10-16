@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { setCookie, getCookie } from 'cookies-next';
 import { Button } from '@heroui/react';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 export default function PhysicalDeckButton() {
   const COOKIE_NAME = 'physical_deck_desire';
@@ -18,6 +19,7 @@ export default function PhysicalDeckButton() {
   const handleClick = () => {
     setCookie(COOKIE_NAME, 'true', { maxAge: 60 * 60 * 24 * 365 }); // 1 year
     setAcknowledged(true);
+    trackEvent({ action: 'click_want_physical_deck' });
   };
 
   if (acknowledged) {
@@ -49,6 +51,7 @@ export default function PhysicalDeckButton() {
       className='secondary-button h-full landscape:w-fit
                  border-charcoal text-charcoal hover:border-charcoal
                  hover:bg-charcoal hover:text-common-ash
+                 active:border-charcoal active:bg-charcoal active:text-common-ash
                  before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
                  before:bg-current before:mask-[url(/assets/images/icons/hand.svg)]
                  before:mask-no-repeat before:mask-center before:mask-contain'

@@ -34,10 +34,10 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal, trackableEv
                         rounded-full overflow-hidden
                          text-accent
                          transition-transform duration-300
-                         hover:-rotate-30
+                         hover:-rotate-30 active:-rotate-30
                          after:content-[''] after:absolute after:inset-0
                          after:bg-gradient-to-br after:from-transparent after:to-secondary-blue
-                         after:opacity-0 hover:after:opacity-70
+                         after:opacity-0 hover:after:opacity-70 active:after:opacity-70
                          after:transition-opacity after:duration-300"
               trackableEvent={trackableEvent}
               trackablePlatform={type}
