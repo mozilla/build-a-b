@@ -30,14 +30,11 @@ export default async function Home({
   params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [showPlaypenButtons, isAtLeastPhase2ALive, isLaunchCompleted, isPhase4] = await Promise.all(
-    [
-      evaluateFlag('showAvatarPlaypenButtons'),
-      evaluatePhase2Flag('a'),
-      evaluatePhase2Flag('c'),
-      evaluateFlag('showPhase4Features'),
-    ],
-  );
+  const [showPlaypenButtons, isAtLeastPhase2ALive, isLaunchCompleted] = await Promise.all([
+    evaluateFlag('showAvatarPlaypenButtons'),
+    evaluatePhase2Flag('a'),
+    evaluatePhase2Flag('c'),
+  ]);
 
   const { id: idFromUrl } = await params;
 
@@ -57,9 +54,7 @@ export default async function Home({
 
   return (
     <>
-      {(isAtLeastPhase2ALive || isPhase4) && (
-        <CountDown isLaunchCompleted={isLaunchCompleted} isPhase4={isPhase4} mode="home" />
-      )}
+      {isAtLeastPhase2ALive && <CountDown isLaunchCompleted={isLaunchCompleted} mode="home" />}
 
       <Ticker items={isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData} />
 
