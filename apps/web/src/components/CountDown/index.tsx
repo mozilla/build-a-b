@@ -1,84 +1,45 @@
-'use client';
-
 import clsx from 'clsx';
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
-import CountDownHorizontal from './countdown-horizontal';
-import Livestream from './livestream';
+import { FC, ReactNode } from 'react';
+import Bento from '../Bento';
+import RocketCountdown from './rocket-countdown';
 import { rocketLaunchDate } from '@/utils/constants';
-import LaunchRecording from './launch-recording';
-
-// Switch to livestream this many minutes before launch
-const LIVESTREAM_SWITCH_THRESHOLD_MINUTES = 30;
 
 export interface CountDownProps {
   className?: string;
   cta?: ReactNode;
   isLaunchCompleted: boolean;
-  mode?: 'home' | 'twitchcon';
 }
 
-const CountDown: FC<CountDownProps> = ({
-  className,
-  cta,
-  isLaunchCompleted,
-  mode = 'twitchcon',
-}) => {
-  const target = useMemo(() => new Date(rocketLaunchDate), []);
-  const [showLivestream, setShowLivestream] = useState(false);
-
-  useEffect(() => {
-    const updateView = () => {
-      const now = new Date();
-      const diffMs = target.getTime() - now.getTime();
-      const minsThresholdMs = LIVESTREAM_SWITCH_THRESHOLD_MINUTES * 60 * 1000;
-
-      setShowLivestream(diffMs <= minsThresholdMs);
-    };
-
-    // Run immediately to set the initial state
-    updateView();
-
-    // Update every 30 seconds (fine-grained enough without wasting CPU)
-    const interval = setInterval(updateView, 1_000);
-
-    // Cleanup when unmounted
-    return () => clearInterval(interval);
-  }, [target]);
-
-  // TwitchCon mode always shows countdown
-  if (mode === 'twitchcon') {
-    return (
-      <section className={clsx('mb-4 landscape:mb-8', className)}>
-        <CountDownHorizontal
-          targetDate={rocketLaunchDate}
-          cta={cta}
-          isLaunchCompleted={isLaunchCompleted}
-        />
-      </section>
-    );
-  }
-
-  // If this is phase 2C, display launch recording
-  if (isLaunchCompleted) {
-    return (
-      <section className={clsx('mb-4 landscape:mb-8', className)}>
-        <LaunchRecording />
-      </section>
-    );
-  }
-
-  // Home mode — switches dynamically between countdown and livestream
+const CountDown: FC<CountDownProps> = ({ className, cta, isLaunchCompleted }) => {
   return (
     <section className={clsx('mb-4 landscape:mb-8', className)}>
-      {showLivestream ? (
-        <Livestream />
-      ) : (
-        <CountDownHorizontal
-          targetDate={rocketLaunchDate}
-          cta={cta}
-          isLaunchCompleted={isLaunchCompleted}
-        />
-      )}
+      <Bento image="/assets/images/space.webp">
+        <div
+          className="relative p-4 landscape:p-12 landscape:py-16 bg-gradient-to-r from-black to-transparent
+                     flex flex-col landscape:flex-row gap-18 justify-center items-center"
+        >
+          <div className="flex flex-col gap-4 items-start">
+            <h2 className="text-title-1 text-balance">
+              {isLaunchCompleted ? (
+                <div className="flex flex-col items-left">
+                  <span>We already don&apos;t</span>
+                  <span> miss you, Billionaires.</span>
+                </div>
+              ) : (
+                'The countdown is on'
+              )}
+            </h2>
+            <p className="text-body-regular">
+              {isLaunchCompleted
+                ? 'You know? Watching something as it happens isn’t for everyone. Way to honor your time. (We recorded it if you want.)'
+                : `All the Billionaires, all the gameplay, all the satire — it all leads to this. A real rocket, built with Sent Into Space, carrying the absurd creations of a community that refused to play by Big Tech's rules.`}
+            </p>
+            <div className="hidden landscape:block">{cta}</div>
+          </div>
+          <RocketCountdown targetDate={rocketLaunchDate} isLaunchCompleted={isLaunchCompleted} />
+          <div className="landscape:hidden w-full">{cta}</div>
+        </div>
+      </Bento>
     </section>
   );
 };
