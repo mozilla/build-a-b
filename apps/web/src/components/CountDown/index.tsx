@@ -38,7 +38,7 @@ const CountDown: FC<CountDownProps> = ({
     updateView();
 
     // Update every 30 seconds (fine-grained enough without wasting CPU)
-    const interval = setInterval(updateView, 30_000);
+    const interval = setInterval(updateView, 1_000);
 
     // Cleanup when unmounted
     return () => clearInterval(interval);
