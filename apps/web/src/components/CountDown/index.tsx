@@ -14,7 +14,6 @@ export interface CountDownProps {
   className?: string;
   cta?: ReactNode;
   isLaunchCompleted: boolean;
-  isPhase4?: boolean;
   mode?: 'home' | 'twitchcon';
 }
 
@@ -22,7 +21,6 @@ const CountDown: FC<CountDownProps> = ({
   className,
   cta,
   isLaunchCompleted,
-  isPhase4 = false,
   mode = 'twitchcon',
 }) => {
   const target = useMemo(() => new Date(rocketLaunchDate), []);
@@ -61,7 +59,7 @@ const CountDown: FC<CountDownProps> = ({
   }
 
   // If this is phase 2C, display launch recording
-  if (isPhase4) {
+  if (isLaunchCompleted) {
     return (
       <section className={clsx('mb-4 landscape:mb-8', className)}>
         <LaunchRecording />
