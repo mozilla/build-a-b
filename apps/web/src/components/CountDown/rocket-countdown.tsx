@@ -1,3 +1,5 @@
+'use client';
+
 import { FC, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import PoweredBy from '../PoweredBy';
