@@ -22,6 +22,8 @@ import VaultWrapper from '@/components/Vault/VaultWrapper';
 import Window from '@/components/Window';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
+import LaunchRecording from '@/components/LaunchRecording';
+import Livestream from '@/components/Livestream';
 
 export default async function Home({
   params,
@@ -30,9 +32,19 @@ export default async function Home({
   params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [showPlaypenButtons, isAtLeastPhase2ALive, isLaunchCompleted] = await Promise.all([
+  const [
+    showPlaypenButtons,
+    isAtLeastPhase2ALive,
+    isPhase2A,
+    isPhase2B,
+    isPhase2C,
+    isLaunchCompleted,
+  ] = await Promise.all([
     evaluateFlag('showAvatarPlaypenButtons'),
     evaluatePhase2Flag('a'),
+    evaluateFlag('showPhase2aFeatures'),
+    evaluateFlag('showPhase2bFeatures'),
+    evaluateFlag('showPhase2cFeatures'),
     evaluatePhase2Flag('c'),
   ]);
 
@@ -54,7 +66,9 @@ export default async function Home({
 
   return (
     <>
-      {isAtLeastPhase2ALive && <CountDown isLaunchCompleted={isLaunchCompleted} mode="home" />}
+      {isPhase2A && <CountDown isLaunchCompleted={isLaunchCompleted} />}
+      {isPhase2B && <Livestream />}
+      {isPhase2C && <LaunchRecording />}
 
       <Ticker items={isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData} />
 
