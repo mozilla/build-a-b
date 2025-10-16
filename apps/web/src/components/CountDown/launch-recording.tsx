@@ -1,6 +1,34 @@
 import Bento from '../Bento';
 import Image from 'next/image';
 import LinkButton from '../LinkButton';
+import clsx from 'clsx';
+
+const floatingImages = [
+  {
+    asset: 'animations/floater-footer.webp',
+    classNameMobile: 'absolute bottom-0 left-[12rem] h-15 w-15 rotate-[25deg] animate-float-tilt',
+    classNameDesktop:
+      'landscape:top-[4rem] landscape:left-auto landscape:right-[24rem] landscape:h-25 landscape:w-25',
+  },
+  {
+    asset: 'astronaut.webp',
+    classNameMobile: 'absolute bottom-[6rem] left-[6rem] h-20 w-20 animate-float-tilt',
+    classNameDesktop:
+      'landscape:bottom-auto landscape:top-[2rem] landscape:left-auto landscape:right-[2rem] landscape:h-30 landscape:w-30',
+  },
+  {
+    asset: 'animations/flier2-header.webp',
+    classNameMobile:
+      'absolute bottom-[5rem] right-0 h-25 w-25 -rotate-[10deg] animate-float-tilt-left',
+    classNameDesktop: 'landscape:right-[5rem]',
+  },
+  {
+    asset: 'upside-down.webp',
+    classNameMobile: 'absolute bottom-0 left-0 h-25 w-25 -rotate-[10deg] animate-float-tilt',
+    classNameDesktop:
+      'landscape:bottom-[3rem] landscape:left-auto landscape:right-[27rem] landscape:h-40 landscape:w-40',
+  },
+];
 
 const LaunchRecording = () => {
   const youtubePlayer = (
@@ -54,6 +82,23 @@ const LaunchRecording = () => {
         <div className="hidden landscape:flex flex-col justify-center w-[40%]">
           <div className="w-full aspect-video">{youtubePlayer}</div>
         </div>
+      </div>
+      <div className="absolute inset-0 pointer-events-none">
+        {floatingImages.map(({ asset, classNameMobile, classNameDesktop }, index) => (
+          <div
+            key={index}
+            className={clsx(classNameMobile, classNameDesktop)}
+            style={{ animationDuration: `${6 + Math.random() * 6}s` }}
+          >
+            <Image
+              src={`/assets/images/${asset}`}
+              alt={`Floating character ${index + 1}`}
+              fill
+              sizes="(max-width: 768px) 30vw, 20vw"
+              className="object-contain"
+            />
+          </div>
+        ))}
       </div>
     </Bento>
   );
