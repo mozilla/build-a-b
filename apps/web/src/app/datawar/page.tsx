@@ -86,8 +86,8 @@ export default async function Page() {
                 How to Play
               </LinkButton>
               <LinkButton
-                href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
-                title="Get your own cards game"
+                href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                title="Get your own game cards"
                 target="_blank"
                 className='secondary-button landscape:w-fit
                            before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
@@ -179,8 +179,8 @@ export default async function Page() {
                 </p>
                 <div className="flex flex-col landscape:flex-row gap-4">
                   <LinkButton
-                    href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
-                    title="Get your own cards game"
+                    href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                    title="Get your own game cards"
                     target="_blank"
                     className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
@@ -256,8 +256,8 @@ export default async function Page() {
                 </p>
 
                 <LinkButton
-                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
-                  title="Get your own cards game"
+                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                  title="Get your own game cards"
                   className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
                              hover:bg-charcoal hover:text-common-ash
