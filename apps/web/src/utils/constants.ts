@@ -1,4 +1,5 @@
 import type { AvatarBentoProps } from '@/components/PrimaryFlow/AvatarBento';
+import { SocialNetworkItem } from '@/components/SocialNetwork';
 
 export const BUCKET_NAME = 'billionaires';
 export const COOKIE_NAME = 'user_id';
@@ -13,9 +14,10 @@ export const avatarBentoData: AvatarBentoProps = {
     ctaText: 'Get Started',
     title: 'Make Earth a Better Place. Launch a Billionaire.',
     description:
-      'When Billionaires harvest your data for ego trips to space, it makes the internet and everything connected to it worse. Build your own Billionaire and send them safely off-planet (one-way).',
+      'When Billionaires harvest your data for ego trips to space, it makes the internet and everything connected to it worse. Build your own Billionaire and send them safely off-planet (one way).',
     createAvatarCtaText: 'Start Building Your Billionaire',
     randomAvatarCtaText: 'Create a Random Billionaire',
+    trackableEvent: 'click_get_started_cta',
   },
   imageSrcLandscape: '/assets/images/avatar-square.webp',
   imageSrcPortrait: '/assets/images/avatar-portrait.png',
@@ -23,3 +25,64 @@ export const avatarBentoData: AvatarBentoProps = {
 };
 
 export const actionTypes = ['share', 'save', 'restart'] as const;
+
+export const socials: SocialNetworkItem[] = [
+  {
+    type: 'tiktok',
+    href: 'https://www.tiktok.com/@firefox',
+    title: 'Visit our TikTok',
+  },
+  {
+    type: 'instagram',
+    href: 'https://www.instagram.com/firefox/',
+    title: 'Check our Instagram',
+  },
+  {
+    type: 'threads',
+    href: 'https://www.threads.net/@firefox',
+    title: 'Check our Threads',
+  },
+  {
+    type: 'youtube',
+    href: 'https://www.youtube.com/firefoxchannel',
+    title: 'Watch our YouTube channel',
+  },
+];
+
+export const rocketLaunchDate = '2025-10-18T20:30:00-07:00';
+
+export const tickerData = [
+  {
+    id: 4,
+    text: 'Battle for Data Supremacy!',
+    emoji: '🚀',
+  },
+  {
+    id: 5,
+    text: 'Join us at TwitchCon',
+    emoji: '🪐',
+  },
+  {
+    id: 6,
+    text: 'Watch the Billionaire Space Launch',
+    emoji: '💰',
+  },
+];
+
+export const tickerDataAfterTwitchCon = [
+  {
+    id: 4,
+    text: 'Get Ready for Data War Digital',
+    emoji: '🚀',
+  },
+  {
+    id: 5,
+    text: 'TwitchCon Recap',
+    emoji: '🪐',
+  },
+  {
+    id: 6,
+    text: 'Watch the Billionaire Space Launch',
+    emoji: '💰',
+  },
+];

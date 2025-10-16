@@ -108,10 +108,12 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
           }}
           onSlideChange={handleSlideChange}
           className="section-to-move"
-          style={{ 
-            '--swiper-navigation-size': '0px', // Hide default navigation
-            'overflow': 'visible',
-          } as React.CSSProperties}
+          style={
+            {
+              '--swiper-navigation-size': '0px', // Hide default navigation
+              overflow: 'visible',
+            } as React.CSSProperties
+          }
         >
           {cards.map(({ cardTitle, cardImgSrc, cardImgAlt, cardDesc }, index) => (
             <SwiperSlide key={index}>
@@ -124,7 +126,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
                   />
                   <div className="mt-4">
                     <h4 className="text-lg-custom font-bold">{cardTitle}</h4>
-                    <p className="text-sm-custom">{cardDesc}</p>
+                    <p className="text-sm-custom mt-2">{cardDesc}</p>
                   </div>
                 </div>
               </article>

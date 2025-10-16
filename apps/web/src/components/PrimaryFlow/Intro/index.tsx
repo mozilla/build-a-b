@@ -9,6 +9,7 @@ import { useCallback, type FC } from 'react';
 import { usePrimaryFlowContext } from '../PrimaryFlowContext';
 import { floatingImages } from './constants';
 import Scrim from '@/components/Scrim';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 export interface IntroProps {
   title: string;
@@ -43,7 +44,14 @@ const Intro: FC<IntroProps> = ({
       .catch(() => {
         reset();
       });
+
+    trackEvent({ action: 'click_create_random_avatar' });
   }, [setUserChoices, setAvatarData, reset]);
+
+  const generateCustomAvatar = useCallback(() => {
+    setActiveGroup('origin-story');
+    trackEvent({ action: 'click_start_custom_avatar' });
+  }, [setActiveGroup]);
 
   return (
     <div className="relative p-4 flex flex-col items-center min-h-screen overflow-hidden landscape:flex-row landscape:gap-32 landscape:pl-30 landscape:pr-8 landscape:pt-24 landscape:pb-40 landscape:h-full landscape:min-h-0 landscape:items-stretch landscape:justify-start">
@@ -81,16 +89,16 @@ const Intro: FC<IntroProps> = ({
           <div className="flex flex-col items-center w-full gap-6 landscape:items-start landscape:gap-0">
             <Button
               autoFocus
-              onPress={() => setActiveGroup('origin-story')}
+              onPress={generateCustomAvatar}
               type="button"
-              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent active:text-charcoal active:bg-accent transition-colors duration-300 rotate-[1.195deg] landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-6"
             >
               {createAvatarCtaText}
             </Button>
             <Button
               onPress={generateRandomAvatar}
               type="button"
-              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
+              className="border-[0.125rem] border-accent font-bold text-sm text-accent rounded-full w-[18.625rem] h-10 cursor-pointer hover:text-charcoal bg-charcoal/30 hover:bg-accent active:text-charcoal active:bg-accent transition-colors duration-300 rotate-[-3.801deg] landscape:mt-6 landscape:text-regular-custom landscape:h-12 landscape:w-[24rem] landscape:ml-16"
             >
               {randomAvatarCtaText}
             </Button>

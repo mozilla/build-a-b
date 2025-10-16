@@ -12,6 +12,7 @@ type CarouselProps = {
   containerClassName?: string;
   swiperOptions?: Partial<SwiperOptions>;
   withArrowNavigation?: boolean;
+  onSlideChange?: (activeIndex: number) => void;
 };
 
 const Carousel: FC<CarouselProps> = ({
@@ -20,12 +21,14 @@ const Carousel: FC<CarouselProps> = ({
   containerClassName,
   swiperOptions = {},
   withArrowNavigation,
+  onSlideChange,
 }) => {
+  const hasMultiple = slides.length > 1;
+
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [Navigation, A11y],
       centeredSlides: true,
-      loop: true,
       navigation: {
         prevEl: '.swiper-button-prev',
         nextEl: '.swiper-button-next',
@@ -34,14 +37,31 @@ const Carousel: FC<CarouselProps> = ({
     [],
   );
 
-  const mergedOptions = useMemo(
-    () => ({ ...defaultOptions, ...swiperOptions }),
-    [defaultOptions, swiperOptions],
-  );
+  const mergedOptions = useMemo(() => {
+    const base = { ...defaultOptions, ...swiperOptions, watchOverflow: true };
+
+    return {
+      ...base,
+      navigation: hasMultiple && withArrowNavigation ? base.navigation : undefined,
+      allowTouchMove: hasMultiple,
+    } as Partial<SwiperOptions>;
+  }, [defaultOptions, swiperOptions, hasMultiple, withArrowNavigation]);
+
+  if (!hasMultiple) {
+    return (
+      <div className={`relative overflow-visible mx-auto ${containerClassName ?? ''}`}>
+        {slides[0] ?? null}
+      </div>
+    );
+  }
 
   return (
     <div className="relative overflow-visible">
-      <Swiper {...mergedOptions} className={containerClassName}>
+      <Swiper
+        {...mergedOptions}
+        className={containerClassName}
+        onSlideChange={(swiper) => onSlideChange?.(swiper.activeIndex)}
+      >
         {slides.map((slide, index) => (
           <SwiperSlide
             key={index}

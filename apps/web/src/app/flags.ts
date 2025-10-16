@@ -10,20 +10,44 @@ const flags = {
       return process.env.FLAG_SHOW_AVATAR_PLAYPEN_BUTTONS === 'true';
     },
   }),
-  showAvatarBentoV2: flag({
-    key: 'avatar-bento-v2',
-    description: 'Shows the restructured AvatarBento component',
-    defaultValue: false,
-    decide() {
-      return process.env.FLAG_AVATAR_BENTO_V2 === 'true';
-    },
-  }),
   showDataWar: flag({
     key: 'show-data-war',
     description: 'Shows the DataWar page and related functionality',
     defaultValue: false,
     decide() {
       return process.env.FLAG_SHOW_DATA_WAR === 'true';
+    },
+  }),
+  showSocialFeed: flag({
+    key: 'show-social-feed',
+    description: 'Shows the social feed',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_SOCIAL_FEED === 'true';
+    },
+  }),
+  showPhase2aFeatures: flag({
+    key: 'show-phase-2a-features',
+    description: 'Display phase 2A changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE === '2a';
+    },
+  }),
+  showPhase2bFeatures: flag({
+    key: 'show-phase-2b-features',
+    description: 'Display phase 2B changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE === '2b';
+    },
+  }),
+  showPhase2cFeatures: flag({
+    key: 'show-phase-2c-features',
+    description: 'Display phase 2C changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE === '2c';
     },
   }),
 } as const;

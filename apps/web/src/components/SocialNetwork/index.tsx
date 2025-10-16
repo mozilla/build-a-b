@@ -1,20 +1,21 @@
 import { FC } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import LinkButton from '../LinkButton';
+import { TrackableEvent } from '@/utils/helpers/track-event';
+import SocialIcon from '../SocialIcon';
 
 export interface SocialNetworkProps {
   socials: SocialNetworkItem[];
   isInModal: boolean;
+  trackableEvent?: TrackableEvent;
 }
 
 export type SocialNetworkItem = {
-    href: string;
-    title: string;
-    alt: string;
-    src: string;
+  type: 'tiktok' | 'instagram' | 'threads' | 'youtube';
+  href: string;
+  title: string;
 };
 
-const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
+const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal, trackableEvent }) => {
   const navClass = isInModal
     ? 'social-network flex content-center'
     : 'social-network hidden landscape:flex content-center';
@@ -22,33 +23,27 @@ const SocialNetwork: FC<SocialNetworkProps> = ({ socials, isInModal }) => {
   return (
     <nav className={navClass} aria-label="Social media links">
       <ul className="flex flex-row content-center justify-center items-center gap-x-4">
-        {socials.map(({ href, title, alt, src }) => (
+        {socials.map(({ href, title, type }) => (
           <li key={href}>
-            <Link
+            <LinkButton
               href={href}
               target="_blank"
               title={title}
               aria-label={title}
-              className="relative inline-flex
-                         items-center justify-center
-                         rounded-full overflow-hidden 
+              className="relative inline-flex items-center justify-center
+                        rounded-full overflow-hidden
+                         text-accent
                          transition-transform duration-300
-                         hover:-rotate-30 group"
+                         hover:-rotate-30 active:-rotate-30
+                         after:content-[''] after:absolute after:inset-0
+                         after:bg-gradient-to-br after:from-transparent after:to-secondary-blue
+                         after:opacity-0 hover:after:opacity-70 active:after:opacity-70
+                         after:transition-opacity after:duration-300"
+              trackableEvent={trackableEvent}
+              trackablePlatform={type}
             >
-              <Image
-                src={src}
-                alt={alt}
-                width={42}
-                height={42}
-                className="w-[2.625rem] h-[2.625rem]"
-              />
-              <span
-                className="absolute inset-0
-                           bg-gradient-to-br from-transparent to-secondary-blue
-                           opacity-0 group-hover:opacity-70
-                           transition-opacity duration-300"
-              />
-            </Link>
+              <SocialIcon type={type} className="w-[2.625rem] h-[2.625rem]" />
+            </LinkButton>
           </li>
         ))}
       </ul>

@@ -77,6 +77,7 @@ export type AvatarData = {
   bio: string;
   uuid: string;
   selfies: Selfie[];
+  selfieAvailability: SelfieAvailabilityData;
 };
 
 export type DatabaseAvatarResponse = Pick<
@@ -97,45 +98,23 @@ export type Selfie = Pick<
 
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
 
-export type DatabaseStandingAvatarResponse = {
-  avatar_id: string;
-  user_id: string;
-  asset_standing: string;
+export type DatabaseSelfieResponse = {
+  id: number;
+  asset: string;
+  created_at: string;
 };
 
-export type SelfieInitResponse = {
-  /**
-   * Job ID. Used to poll the job status.
-   */
-  job_id: string;
-  /**
-   * Message with additional information
-   */
-  message: string;
-  /**
-   * The image sent to the API.
-   */
-  input_path: string;
-  /**
-   * Status. If the response is successful this will be 'received'.
-   */
-  status: string;
+export type DatabaseAvailableSelfiesResponse = {
+  selfies_available: number;
+  next_at: string;
 };
 
-export type SelfieStatusResponse = {
-  /**
-   * Image storage temporal path.
-   */
-  input_image_path: string;
-  /**
-   * Generated selfie url
-   */
-  selfie_image_url: string;
-  /**
-   * Job status. When the image is generated this value will be 'completed'.
-   */
-  status: string;
+export type SelfieAvailabilityData = {
+  selfies_available: number;
+  next_at: Date | null;
 };
+
+export type SelfieAvailabilityState = 'COMING_SOON' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
 
 export type StatusEndpointBaseResponse = {
   status: string;
