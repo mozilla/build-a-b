@@ -5,6 +5,7 @@ import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import CountDownHorizontal from './countdown-horizontal';
 import Livestream from './livestream';
 import { rocketLaunchDate } from '@/utils/constants';
+import LaunchRecording from './launch-recording';
 
 // Switch to livestream this many minutes before launch
 const LIVESTREAM_SWITCH_THRESHOLD_MINUTES = 30;
@@ -13,6 +14,7 @@ export interface CountDownProps {
   className?: string;
   cta?: ReactNode;
   isLaunchCompleted: boolean;
+  isPhase4?: boolean;
   mode?: 'home' | 'twitchcon';
 }
 
@@ -20,6 +22,7 @@ const CountDown: FC<CountDownProps> = ({
   className,
   cta,
   isLaunchCompleted,
+  isPhase4 = false,
   mode = 'twitchcon',
 }) => {
   const target = useMemo(() => new Date(rocketLaunchDate), []);
@@ -53,6 +56,15 @@ const CountDown: FC<CountDownProps> = ({
           cta={cta}
           isLaunchCompleted={isLaunchCompleted}
         />
+      </section>
+    );
+  }
+
+  // If this is phase 2C, display launch recording
+  if (isPhase4) {
+    return (
+      <section className={clsx('mb-4 landscape:mb-8', className)}>
+        <LaunchRecording />
       </section>
     );
   }

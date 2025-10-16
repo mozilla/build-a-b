@@ -50,6 +50,14 @@ const flags = {
       return process.env.FLAG_SHOW_PHASE === '2c';
     },
   }),
+  showPhase4Features: flag({
+    key: 'show-phase-4-features',
+    description: 'Display phase 4 changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE === '4';
+    },
+  }),
 } as const;
 
 /**
