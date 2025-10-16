@@ -42,8 +42,8 @@ export default async function Page() {
               </p>
               <div>
                 <LinkButton
-                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/datawar-full-game.pdf"
-                  title="Get your own cards game"
+                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                  title="Get your own game cards"
                   target="_blank"
                   className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
