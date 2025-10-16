@@ -414,6 +414,7 @@ export default async function Page() {
                   href="/datawar"
                   title="Learn more about Data War"
                   className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
+                  trackableEvent="click_go_to_datawar"
                 >
                   Check out Data War
                 </LinkButton>
