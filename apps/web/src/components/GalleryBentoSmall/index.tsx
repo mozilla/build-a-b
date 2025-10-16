@@ -3,6 +3,7 @@
 import { FC } from 'react';
 import Bento, { BentoProps } from '../Bento';
 import { useVaultContext } from '../Vault/VaultContext';
+import { trackEvent } from '@/utils/helpers/track-event';
 
 interface GalleryBentoSmallProps extends BentoProps {
   isActive?: boolean;
@@ -14,6 +15,7 @@ const GalleryBentoSmall: FC<GalleryBentoSmallProps> = ({ image, isActive, curren
   const onOpenVault = () => {
     setVaultInitialImage(currentIndex);
     setShowVault(true);
+    trackEvent({ action: 'click_view_selfie' });
   };
 
   return (
