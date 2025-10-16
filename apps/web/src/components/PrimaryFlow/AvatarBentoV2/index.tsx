@@ -24,7 +24,10 @@ export interface AvatarBentoV2Props extends BentoProps, BrowserBentoProps {
    * Static content to display in the BaB flow init screen.
    */
   primaryFlowData?: GetStartedProps | null;
-  // imageProps?: ImageProps;
+  /**
+   * Phase 2c
+   */
+  isLaunchCompleted?: boolean;
 }
 
 function hasAvatar(data?: AvatarData | null): data is AvatarData {
@@ -36,6 +39,7 @@ const AvatarBentoV2: FC<AvatarBentoV2Props> = async ({
   primaryFlowData,
   imageSrcLandscape,
   imageSrcPortrait,
+  isLaunchCompleted,
   ...bentoProps
 }) => {
   const hasGeneratedAvatar = hasAvatar(avatar);
@@ -69,7 +73,7 @@ const AvatarBentoV2: FC<AvatarBentoV2Props> = async ({
       {showPlaypenButtons && (
         <>
           <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-2 landscape:row-span-1 w-full landscape:h-full">
-            <BentoPlaypenSelfie avatarData={avatar} />
+            <BentoPlaypenSelfie avatarData={avatar} isLaunchCompleted={isLaunchCompleted} />
           </div>
         </>
       )}

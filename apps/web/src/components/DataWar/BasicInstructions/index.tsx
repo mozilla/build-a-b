@@ -1,7 +1,6 @@
 import Bento from '@/components/Bento';
 import Image from 'next/image';
 import ListItemCard from '@/components/DataWar/ListItemCard';
-import PoweredBy from '@/components/PoweredBy';
 
 const BasicInstructions = () => {
   return (
@@ -27,7 +26,6 @@ const BasicInstructions = () => {
               <br />
               <span className="font-bold text-lg-custom">5-15 </span>min
             </div>
-            <PoweredBy />
           </div>
         </div>
 

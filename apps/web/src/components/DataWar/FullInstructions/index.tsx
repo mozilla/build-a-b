@@ -37,10 +37,15 @@ const FullInstructions = () => {
           imageAlt="Setup Image"
           addAnimation={false}
         >
-          <h3 className="text-title-3 mb-4 mt-4">Set aside the One Way Ticket to Space</h3>
+          <h3 className="text-title-3 mb-4 mt-4">
+            Set aside the <em>One Way Ticket to Space</em>
+          </h3>
           <p>
-            Keep it face up. This is the Win Card and can only be purchased with 3 Launch Stacks + 1
-            Billionaire, or a full deck of cards.
+            Keep it face up. This is the Win Card and can only be purchased with{' '}
+            <strong>
+              <em>3 Launch Stacks + 1 Billionaire,</em>
+            </strong>{' '}
+            or a full deck of cards.
           </p>
           <h3 className="text-title-3 mb-4 mt-4">Shuffle remaining cards and deal</h3>
           <p>
@@ -82,40 +87,55 @@ const FullInstructions = () => {
           </p>
           <p className="mt-3">
             <strong>
-              If a <i>Tracker</i> card is played...
+              If a <em>Tracker</em> card is played...
             </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
-              Play another card and add the Tracker value to your total as instructed on the
-              card.{' '}
+              Play another card and add the{' '}
+              <strong>
+                <em>Tracker</em>
+              </strong>{' '}
+              value to your total as instructed on the card.{' '}
             </li>
           </ul>
           <p>
             <strong>
-              If a <i>Blocker</i> card is played (expansion only)...
+              If a <em>Blocker</em> card is played (expansion only)...
             </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
-              Play another card and subtract the <i>Blocker</i> value from all opponent plays.{' '}
+              Play another card and subtract the{' '}
+              <strong>
+                <em>Blocker</em>
+              </strong>{' '}
+              value from all opponent plays.{' '}
             </li>
           </ul>
           <p>
             <strong>
-              If a <i>Data Grab</i> is played...it&apos;s scramble time!
+              If a <em>Data Grab</em> is played...it&apos;s scramble time!
             </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li>
               All players reach in and grab as many cards as they can{' '}
               <strong>from the play area only,</strong> leaving other players&apos; decks and
-              collected Billionaires and Launch Stacks alone.
+              collected{' '}
+              <strong>
+                <em>Billionaires</em>
+              </strong>{' '}
+              and{' '}
+              <strong>
+                <em>Launch Stacks</em>
+              </strong>{' '}
+              alone.
             </li>
           </ul>
           <p>
             <strong>
-              If a <i>Launch Stack</i> or <i>Billionaire</i> card is played...
+              If a <em>Launch Stack</em> or <em>Billionaire</em> card is played...
             </strong>
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
@@ -135,40 +155,88 @@ const FullInstructions = () => {
         >
           <h3 className="text-title-3 mb-4 mt-4">
             Use the card value (6) for your play and follow instructions on the card if conditions
-            are met.{' '}
+            are met.
           </h3>
           <p>
-            Firewalls and Billionaire Moves are the OP opposing forces of the game. Each has a base
-            value of 6 and a special effect that MUST be performed if conditions are met.{' '}
+            <strong>
+              <em>Firewalls</em>
+            </strong>{' '}
+            and{' '}
+            <strong>
+              <em>Billionaire Moves</em>
+            </strong>{' '}
+            are the OP opposing forces of the game. Each has a base value of 6 and a special effect
+            that MUST be performed if conditions are met.{' '}
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li className="mb-2">
               <strong>Instant effects </strong>happen immediately. If multiple cards are played with
-              instant effects, perform the<strong> Firewall </strong>effect first.{' '}
+              instant effects, perform the{' '}
+              <strong>
+                <em>Firewall</em>
+              </strong>{' '}
+              effect first.
             </li>
             <li className="mb-2">
-              <strong>Forced Empathy </strong>only affects decks, not cards in the play area or
-              Launch Stacks and Billionaire cards that have been set aside, and must be performed
-              instantly, no matter what else is going on.
+              <strong>
+                <em>Forced Empathy</em>
+              </strong>{' '}
+              only affects decks, not cards in the play area or{' '}
+              <strong>
+                <em>Launch Stacks</em>
+              </strong>{' '}
+              and{' '}
+              <strong>
+                <em>Billionaire</em>
+              </strong>{' '}
+              cards that have been set aside, and must be performed instantly, no matter what else
+              is going on.
             </li>
             <li className="mb-2">
-              <strong>Hostile Takeover </strong>affects<strong> all opponents, </strong>even if
-              there&apos;s only one other player.
+              <strong>
+                <em>Hostile Takeover</em>
+              </strong>{' '}
+              affects<strong> all opponents, </strong>even if there&apos;s only one other player.
               <ul className="mb-2 list-[disc] ml-6">
                 <li>
                   Opponents lay 3 cards face down and 1 face up, and play their new value against
-                  the original 6 from Hostile takeover, going to War from there if needed.
+                  the original 6 from{' '}
+                  <strong>
+                    <em>Hostile takeover,</em>
+                  </strong>{' '}
+                  going to War from there if needed.
                 </li>
                 <li>
-                  Hostile Takeover “6” value also ignores any Trackers or Blockers previously laid
-                  by the same player.
+                  <strong>
+                    <em>Hostile Takeover</em>
+                  </strong>{' '}
+                  “6” value also ignores any{' '}
+                  <strong>
+                    <em>Trackers</em>
+                  </strong>{' '}
+                  or{' '}
+                  <strong>
+                    <em>Blockers</em>
+                  </strong>{' '}
+                  previously laid by the same player.
                 </li>
               </ul>
             </li>
             <li className="mb-2">
-              Firewall and Billionaire Move effects<strong> stack </strong>over the course of the
-              hand, including after War is played mid-hand, unless otherwise noted (as in
-              &quot;Hostile Takeover&quot;). Reconcile
+              <strong>
+                <em>Firewall</em>
+              </strong>{' '}
+              and{' '}
+              <strong>
+                <em>Billionaire Move</em>
+              </strong>{' '}
+              effects
+              <strong> stack </strong>over the course of the hand, including after War is played
+              mid-hand, unless otherwise noted (as in{' '}
+              <strong>
+                <em>&quot;Hostile Takeover&quot;</em>
+              </strong>
+              ). Reconcile
               <strong> all effects in the play area </strong>at the end of the hand.
             </li>
           </ul>
@@ -181,20 +249,39 @@ const FullInstructions = () => {
           imageAlt="Billionaires Image"
           addAnimation={false}
         >
-          <h3 className="text-title-3 mb-4 mt-4">Collect and use Billionaires</h3>
+          <h3 className="text-title-3 mb-4 mt-4">
+            Collect and use <em>Billionaires</em>
+          </h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li className="mb-2">
-              Set them aside with your Launch Stacks and pay attention to their special powers,
-              which can be used while in the possession of a player.
+              Set them aside with your{' '}
+              <strong>
+                <em>Launch Stacks</em>
+              </strong>{' '}
+              and pay attention to their special powers, which can be used while in the possession
+              of a player.
             </li>
             <li className="mb-2">
-              Billionaire powers take effect instantly, and require the Billionaire to be added to
-              the bottom of the player&apos;s deck after use, so be strategic about when you use
-              them! (You still need one Billionaire to win.)
+              <strong>
+                <em>Billionaire</em>
+              </strong>{' '}
+              powers take effect instantly, and require the{' '}
+              <strong>
+                <em>Billionaire</em>
+              </strong>{' '}
+              to be <strong>added to the bottom of the player&apos;s deck</strong> after use, so be
+              strategic about when you use them! (You still need one{' '}
+              <strong>
+                <em>Billionaire</em>
+              </strong>{' '}
+              to win.)
             </li>
             <li className="mb-2">
-              Each player can have as many Billionaires as they can collect until they use their
-              powers or win the game.
+              Each player can have as many{' '}
+              <strong>
+                <em>Billionaires</em>
+              </strong>{' '}
+              as they can collect until they use their powers or win the game.
             </li>
           </ul>
         </SimpleItemCard>
@@ -209,8 +296,11 @@ const FullInstructions = () => {
           <h3 className="text-title-3 mb-4 mt-4">Win Conditions</h3>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li className="mb-2">
-              <strong>Collect 3 Launch Stacks + 1 Billionaire </strong>and trade them for your
-              <strong> One Way Ticket to Space!</strong>
+              Collect <em>3 Launch Stacks + 1 Billionaire</em> and trade them for your{' '}
+              <strong>
+                <em>One Way Ticket to Space</em>
+              </strong>
+              !
             </li>
             <li className="mb-2">
               <strong>Collect all cards in the deck?! </strong>(rare, but can be done). Remember,
@@ -223,23 +313,40 @@ const FullInstructions = () => {
           </p>
           <ul className="mt-2 mb-2 list-[circle] ml-6">
             <li className="mb-2">
-              If someone lays a<strong> Data Grab, </strong>grab your way back in the game!
+              If someone lays a{' '}
+              <strong>
+                <em>Data Grab,</em>
+              </strong>{' '}
+              grab your way back in the game!
             </li>
             <li className="mb-2">
-              If someone plays<strong> Forced Empathy, </strong>you&apos;ll get a new deck and the
-              sorry sucker to your right will be out.
+              If someone plays{' '}
+              <strong>
+                <em>Forced Empathy,</em>
+              </strong>{' '}
+              you&apos;ll get a new deck and the sorry sucker to your right will be out.
             </li>
             <li className="mb-2">
-              Is your last card a<strong> Temper Tantrum? </strong>Congrats! You get 2 cards from
-              everyone if you lose the hand.
+              Is your last card a{' '}
+              <strong>
+                <em>Temper Tantrum?</em>
+              </strong>{' '}
+              Congrats! You get 2 cards from everyone if you lose the hand.
             </li>
           </ul>
           <h3 className="text-title-3 mb-4 mt-4">Redistributing Launch Stacks & Billionaires</h3>
           <p>
-            If a player is eliminated by running out of cards while in possession of
-            <strong> Launch Stack </strong>and/or<strong> Billionaire cards, </strong>the eliminated
-            player plays one of them into the play area per turn, like a forced liquidation! Winners
-            add them to their collection, and might be on a fast path to blast off (winning)!
+            If a player is eliminated by running out of cards while in possession of{' '}
+            <strong>
+              <em>Launch Stack</em>
+            </strong>{' '}
+            and/or{' '}
+            <strong>
+              <em>Billionaire cards,</em>
+            </strong>{' '}
+            the eliminated player plays one of them into the play area per turn, like a forced
+            liquidation! Winners add them to their collection, and might be on a fast path to blast
+            off (winning)!
           </p>
         </SimpleItemCard>
       </div>
