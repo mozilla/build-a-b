@@ -31,6 +31,10 @@ export interface BrowserBentoProps {
    * Whether the component should display a flip icon.
    */
   flips?: boolean;
+  /**
+   * An optional classname to replace the body bg color.
+   */
+  bodyBg?: string;
 }
 
 const BrowserBento: FC<BrowserBentoProps> = ({
@@ -40,6 +44,7 @@ const BrowserBento: FC<BrowserBentoProps> = ({
   gradient = false,
   flips = false,
   className,
+  bodyBg,
   children,
 }) => {
   return (
@@ -74,7 +79,7 @@ const BrowserBento: FC<BrowserBentoProps> = ({
         id="browser-bento-body"
         className={`relative flex flex-col grow justify-center items-start flex-1 self-stretch 
                       rounded-b-[0.407rem] overflow-hidden w-full
-                      ${inverse || white ? 'bg-common-ash' : 'bg-gradient-to-r from-secondary-blue to-secondary-purple'}
+                      ${bodyBg || (inverse || white ? 'bg-common-ash' : 'bg-gradient-to-r from-secondary-blue to-secondary-purple')}
                     `}
       >
         {children}

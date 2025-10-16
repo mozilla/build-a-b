@@ -11,6 +11,7 @@ import { FC } from 'react';
 
 interface PlaypenPopupProps extends ModalProps {
   title: string;
+  bodyClass?: string;
 }
 
 const microcopy = {
@@ -24,6 +25,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
   children,
   title,
   isOpen,
+  bodyClass = '',
   onOpenChange,
   ...modalProps
 }) => {
@@ -73,7 +75,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                 onPress={onClose}
                 isIconOnly
                 variant="light"
-                className="absolute top-4 right-4 landscape:top-6 landscape:right-6 z-50 w-10 h-10 hover:opacity-70 transition-opacity"
+                className="absolute top-4 right-4 landscape:top-6 landscape:right-6 z-50 w-10 h-10 hover:opacity-70 active:opacity-70 transition-opacity"
                 aria-label="Close modal"
               >
                 <div className="flex items-center justify-center w-full h-full">
@@ -87,7 +89,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                 </div>
               </Button>
               <div className="relative z-20 flex flex-col h-full">
-                <ModalBody className="overflow-y-auto flex-1 p-[2.5rem]">{children}</ModalBody>
+                <ModalBody className={`overflow-y-auto flex-1 ${bodyClass}`}>{children}</ModalBody>
               </div>
             </>
           )}

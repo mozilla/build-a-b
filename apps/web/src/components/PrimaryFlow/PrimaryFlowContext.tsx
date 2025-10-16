@@ -1,9 +1,17 @@
 'use client';
 
-import { ChoiceGroup, type AvatarData, type ChoiceConfig } from '@/types';
+import {
+  ChoiceGroup,
+  type AvatarData,
+  type ChoiceConfig,
+  type SelfieAvailabilityState,
+} from '@/types';
 import {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type FC,
@@ -28,9 +36,9 @@ interface PrimaryFlowContextValue {
   setShowConfirmation: Dispatch<SetStateAction<ChoiceGroup | null>>;
   avatarData: AvatarData | null;
   setAvatarData: Dispatch<SetStateAction<AvatarData | null>>;
-  showVault: boolean;
-  setShowVault: Dispatch<SetStateAction<boolean>>;
   reset: () => void;
+  selfieAvailabilityState: SelfieAvailabilityState;
+  setSelfieAvailabilityState: Dispatch<SetStateAction<SelfieAvailabilityState>>;
 }
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
@@ -41,37 +49,72 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
 }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
-  const [showVault, setShowVault] = useState(false);
   const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
+  const [selfieAvailabilityState, setSelfieAvailabilityState] =
+    useState<SelfieAvailabilityState>('COMING_SOON');
   const [userChoices, setUserChoices] =
     useState<Record<ChoiceGroup, ChoiceConfig | null>>(initialChoices);
 
-  const reset = () => {
+  useEffect(() => {
+    const now = Date.now();
+
+    if (!avatarData) {
+      setSelfieAvailabilityState('AVAILABLE');
+      return;
+    }
+
+    const { selfies_available, next_at } = avatarData.selfieAvailability;
+
+    if (next_at && next_at.getTime() >= now) {
+      setSelfieAvailabilityState('COOL_DOWN_PERIOD');
+      return;
+    }
+
+    if (selfies_available < 1) {
+      setSelfieAvailabilityState('COMING_SOON');
+      return;
+    }
+
+    setSelfieAvailabilityState('AVAILABLE');
+  }, [avatarData]);
+
+  const reset = useCallback(() => {
     setUserChoices(initialChoices);
     setShowConfirmation(null);
     setActiveGroup(null);
     setAvatarData(null);
-  };
+  }, [setUserChoices, setShowConfirmation, setActiveGroup, setAvatarData]);
 
-  return (
-    <PrimaryFlowContext
-      value={{
-        activeGroup,
-        setActiveGroup,
-        userChoices,
-        setUserChoices,
-        showConfirmation,
-        setShowConfirmation,
-        avatarData,
-        setAvatarData,
-        showVault,
-        setShowVault,
-        reset,
-      }}
-    >
-      {children}
-    </PrimaryFlowContext>
+  const value = useMemo(
+    () => ({
+      activeGroup,
+      setActiveGroup,
+      userChoices,
+      setUserChoices,
+      showConfirmation,
+      setShowConfirmation,
+      avatarData,
+      setAvatarData,
+      reset,
+      selfieAvailabilityState,
+      setSelfieAvailabilityState,
+    }),
+    [
+      activeGroup,
+      setActiveGroup,
+      userChoices,
+      setUserChoices,
+      showConfirmation,
+      setShowConfirmation,
+      avatarData,
+      setAvatarData,
+      reset,
+      selfieAvailabilityState,
+      setSelfieAvailabilityState,
+    ],
   );
+
+  return <PrimaryFlowContext value={value}>{children}</PrimaryFlowContext>;
 };
 
 export const usePrimaryFlowContext = () => {

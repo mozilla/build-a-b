@@ -1,5 +1,6 @@
 'use client';
 
+import { TrackableEvent, trackEvent } from '@/utils/helpers/track-event';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FC, useState } from 'react';
@@ -9,6 +10,7 @@ export interface HeaderMenuProps {
     href: string;
     label: string;
     title: string;
+    trackableEvent: string;
   }[];
   isHorizontal: boolean;
   isInModal: boolean;
@@ -32,13 +34,14 @@ const HeaderMenu: FC<HeaderMenuProps> = ({ links, isHorizontal, isInModal, onLin
     <div className={mainClass}>
       <nav aria-label="Main Navigation" className={classNav}>
         <ul className={classMenu}>
-          {links.map(({ href, label, title }) => {
+          {links.map(({ href, label, title, trackableEvent }) => {
             const isClicked = clickedLink === href;
             const handleClick = () => {
               if (isInModal) {
                 setClickedLink(href);
                 onLinkClick?.();
               }
+              trackEvent({ action: `${trackableEvent}_header` as TrackableEvent });
             };
 
             return (

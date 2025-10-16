@@ -1,6 +1,5 @@
 import { evaluateFlag } from '@/app/flags';
 import Bento, { type BentoProps } from '@/components/Bento';
-import BentoPlaypenComingSoon from '@/components/BentoPlaypenComingSoon';
 import BentoPlaypenSelfie from '@/components/BentoPlaypenSelfie';
 import type { AvatarData } from '@/types';
 import Image from 'next/image';
@@ -98,11 +97,8 @@ const AvatarBento: FC<AvatarBentoProps> = async ({
       </div>
       {hasGeneratedAvatar && showPlaypenButtons && (
         <>
-          <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
+          <div className="portrait:mb-4 portrait:h-[11.375rem] landscape:col-span-2 landscape:row-span-1 w-full landscape:h-full">
             <BentoPlaypenSelfie />
-          </div>
-          <div className="portrait:h-[11.375rem] landscape:col-span-1 landscape:row-span-1 w-full landscape:h-full">
-            <BentoPlaypenComingSoon />
           </div>
         </>
       )}

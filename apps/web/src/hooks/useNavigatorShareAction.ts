@@ -1,14 +1,15 @@
 'use client';
 
 import type { AvatarData } from '@/types';
+import { trackEvent } from '@/utils/helpers/track-event';
 import { useCallback } from 'react';
 
 const AVATAR_FILE_TYPE = 'png';
 
 const microcopy = {
-  shareTitle: 'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff',
+  shareTitle: 'Just built my very own Billionaire… next stop, outer space. #BillionaireBlastOff',
   shareText:
-    'Just built my very own billionaire… next stop, outer space. #BillionaireBlastOff \nMake yours here https://billionaireblastoff.firefox.com/',
+    'Just built my very own Billionaire… next stop, outer space. #BillionaireBlastOff \nMake yours here https://billionaireblastoff.firefox.com/',
 } as const;
 
 export interface UseNavigatorShareActionOptions {
@@ -30,6 +31,8 @@ export const useNavigatorShareAction = ({
   avatar,
 }: UseNavigatorShareActionOptions): UseNavigatorShareActionReturn => {
   const handleNavigatorShare = useCallback(async (): Promise<void> => {
+    trackEvent({ action: 'click_share_avatar' });
+
     try {
       if (!avatar?.instragramAsset || !avatar?.name) return;
 

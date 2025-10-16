@@ -37,7 +37,7 @@ const PostAvatarView: FC<PostAvatarViewProps> = ({
       imageClassName="object-cover"
       priority
     >
-      <div className="w-full h-full flex items-center landscape:justify-center gap-x-[2.375rem] portrait:p-4 portrait:flex-col">
+      <div className="w-full h-full flex items-center landscape:justify-center gap-x-[2.375rem] p-4 portrait:flex-col">
         <Image
           src="/assets/images/grain-main.webp"
           alt=""

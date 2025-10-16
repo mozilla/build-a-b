@@ -1,30 +1,41 @@
 export const dynamic = 'force-dynamic';
 
+import Bento from '@/components/Bento';
+import CardsSection from '@/components/CardsSection';
 import CountDown from '@/components/CountDown';
 import Hero from '@/components/Hero';
-import Image from 'next/image';
-import Link from 'next/link';
 import IconCard from '@/components/IconCard';
-import CardsSection from '@/components/CardsSection';
-import Window from '@/components/Window';
-import Bento from '@/components/Bento';
 import ImageGallery from '@/components/ImageGallery';
-import ClientPageWrapper from '@/utils/page.client';
-import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
+import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
-import { avatarBentoData } from '@/utils/constants';
+import SocialFeed from '@/components/SocialFeed';
+import Window from '@/components/Window';
+import { avatarBentoData, COOKIE_NAME } from '@/utils/constants';
+import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
+import { Metadata } from 'next';
+import Image from 'next/image';
+import { Suspense } from 'react';
+import { evaluateFlag } from '@/app/flags';
+import { cookies } from 'next/headers';
+import { getUserAvatar } from '@/utils/actions/get-user-avatar';
+
+/**
+ * SocialEmbed will give you the entire script, but what we really need
+ * is the ID and source. Please do not modify these unless you use
+ * a different SocialEmbed account.
+ */
+const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
+const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
   description:
-    'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+    'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
   openGraph: {
     siteName: 'Billionaire Blast Off Powered by Firefox',
     title: 'Firefox Billionaire Blast Off lands at TwitchCon',
     description:
-      'Make a billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
+      'Make a Billionaire. Beat them at their own game. Send them into Space. Find us on the floor or follow along online.',
     images: [
       {
         url: '/assets/images/opengraph/twitchcon.jpg',
@@ -40,33 +51,87 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const [isAnyPhase2, isLaunchCompleted] = await Promise.all([
+    evaluatePhase2Flag('a'),
+    evaluatePhase2Flag('c'),
+  ]);
+
   const imagesForGallery = [
     {
       alt: 'Rocket blueprint',
-      src: '/assets/images/gallery/1.webp',
+      src: '/assets/images/galleries/twitchcon/1.webp',
       isVideo: false,
     },
     {
       alt: 'Launch planning',
-      src: '/assets/images/gallery/2.webp',
+      src: '/assets/images/galleries/twitchcon/2.webp',
       isVideo: false,
     },
     {
       alt: 'Rocket mockup',
-      src: '/assets/images/gallery/3.webp',
+      src: '/assets/images/galleries/twitchcon/3.webp',
       isVideo: false,
     },
     {
       alt: 'Launch simulation',
-      src: '/assets/images/gallery/4.webp',
+      src: '/assets/images/galleries/twitchcon/4.webp',
       isVideo: false,
     },
   ];
 
-  const avatarData = await getUserAvatar();
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get(COOKIE_NAME);
+  const userId = userCookie?.value;
+
+  const avatarData = userId ? await getUserAvatar(userId) : null;
+
+  const holoboxSection = (
+    <section
+      className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
+    >
+      <Bento
+        image="/assets/images/doll.webp"
+        imageAlt="Billionaire in a box"
+        className={`landscape:w-[30%] aspect-[377/275] border-none ${isLaunchCompleted ? 'order-2' : 'order-1'}`}
+      />
+      <Bento
+        className={`border-none h-full landscape:flex-1 landscape:h-auto ${isLaunchCompleted ? 'order-1' : 'order-2'}`}
+      >
+        <Window className="bg-common-ash">
+          <div className="p-4 landscape:p-12 flex flex-col gap-4">
+            <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
+            <p className="text-body-regular text-charcoal">
+              Use our super futuristic hologram kiosk to build a Billionaire and bust a move.
+              Can&apos;t make it to the Holobox at TwitchCon? You can still create a Billionaire and
+              join the party right here!
+            </p>
+            {isAnyPhase2 && avatarData && (
+              <LinkButton
+                href="/"
+                title="Generate a selfie"
+                className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
+              >
+                Take a Space Selfie
+              </LinkButton>
+            )}
+            {isAnyPhase2 && !avatarData && avatarBentoData?.primaryFlowData && (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText={!avatarData ? 'Build a Billionaire' : 'Take a Space Selfie'}
+                  triggerClassNames="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
+                  trackableEvent="click_build_billionaire_footer"
+                />
+              </Suspense>
+            )}
+          </div>
+        </Window>
+      </Bento>
+    </section>
+  );
 
   return (
-    <ClientPageWrapper avatarData={avatarData}>
+    <>
       <Hero
         image="/assets/images/launch.webp"
         imageSrcPortrait="/assets/images/launch-mobile.webp"
@@ -78,22 +143,42 @@ export default async function Page() {
                         landscape:bg-gradient-to-r"
         >
           <div className="h-full flex flex-col gap-6 justify-end landscape:justify-center landscape:max-w-1/2">
-            <h6 className="text-nav-item">October 17-19, 2025</h6>
-            <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
-              Billionaire Blast Off lands at TwitchCon
-            </h1>
-            <p className="text-body-small">
-              Make a billionaire. Beat them at their own game. Send them into Space. Find us on the
-              floor or follow along online.
-            </p>
-            <Link
-              href="https://www.twitchcon.com/san-diego-2025/tickets/"
-              className="secondary-button landscape:w-fit"
-              title="Get your event tickets"
-              target="_blank"
-            >
-              Get Tickets
-            </Link>
+            {!isLaunchCompleted && (
+              <>
+                <h6 className="text-nav-item">October 17-19, 2025</h6>
+                <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
+                  Billionaire Blast Off lands at TwitchCon
+                </h1>
+                <p className="text-body-small">
+                  Make a Billionaire. Beat them at their own game. Send them into Space. Find us on
+                  the floor or follow along online.
+                </p>
+                {!isAnyPhase2 && (
+                  <LinkButton
+                    href="https://www.twitchcon.com/san-diego-2025/tickets/"
+                    className="secondary-button landscape:w-fit"
+                    title="Get your event tickets"
+                    target="_blank"
+                    trackableEvent="click_get_twitchcon_tickets"
+                  >
+                    Get Tickets
+                  </LinkButton>
+                )}
+              </>
+            )}
+            {isLaunchCompleted && (
+              <>
+                <h6 className="text-nav-item">THANK YOU, SAN DIEGO!</h6>
+                <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom">
+                  Billionaire Blast Off TwitchCon recap
+                </h1>
+                <p className="text-body-small">
+                  We brought the chaos, the cards, holographic dancing Billionaires, and a rocket
+                  countdown. It was a legitimate blast. Did you miss us at TwitchCon? We missed you!
+                  Catch up on all of the TwitchCon action right here!
+                </p>
+              </>
+            )}
           </div>
         </div>
       </Hero>
@@ -146,65 +231,76 @@ export default async function Page() {
         </p>
       </CardsSection>
 
-      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
-        <Bento
-          image="/assets/images/doll.webp"
-          imageAlt="Billionaire in a box"
-          className="landscape:w-[30%] aspect-[377/275] border-none"
-        />
-        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
-          <Window className="bg-common-ash">
-            <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
-              <p className="text-body-regular text-charcoal">
-                Use our super futuristic hologram kiosk to build a Billionaire and make them bust a
-                move.
-              </p>
-            </div>
-          </Window>
-        </Bento>
-      </section>
+      {!isLaunchCompleted && holoboxSection}
 
-      <CardsSection
-        className="bg-[url(/assets/images/yellow-grid.webp)] bg-no-repeat bg-center bg-cover flex-warp"
-        cards={[
-          <IconCard
-            key="1"
-            icon="/assets/images/icons/deck.webp"
-            image="/assets/images/hall.webp"
-            className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
-            iconEffect
-          >
-            <h3 className="text-title-3">Complete your deck</h3>
-            <p className="text-body-regular">
-              Everyone gets an exclusive expansion in the swag bag. Play at our tables for a chance
-              to score the full set.
-            </p>
-          </IconCard>,
-          <IconCard
-            key="2"
-            icon="/assets/images/icons/hand.webp"
-            image="/assets/images/pile.webp"
-            className="aspect-[163/128] landscape:aspect-[139/64]"
-            wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
-            iconEffect
-          >
-            <h3 className="text-title-3">Stay and Play</h3>
-            <p className="text-body-regular">
-              Play a few rounds, float some ideas, chat with creators and develop some lifelong
-              friendships.
-            </p>
-          </IconCard>,
-        ]}
-      >
-        <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
-        <p className="text-body-regular text-charcoal">
-          Data War is the chaotic-casual card game where players compete to send egomaniacal,
-          tantrum-prone little Billionaires on a one-way ticket to space. Created by Firefox, and
-          only available at TwitchCon.
-        </p>
-      </CardsSection>
+      {!isLaunchCompleted && (
+        <CardsSection
+          className="bg-[url(/assets/images/yellow-grid.webp)] bg-no-repeat bg-center bg-cover flex-warp"
+          cards={[
+            <IconCard
+              key="1"
+              icon="/assets/images/icons/deck.webp"
+              image="/assets/images/hall.webp"
+              className="aspect-[163/128] landscape:aspect-[139/64]"
+              wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
+              iconEffect
+            >
+              <h3 className="text-title-3">Complete your deck</h3>
+              <p className="text-body-regular">
+                Everyone gets an exclusive expansion in the swag bag. Play at our tables for a
+                chance to score the full set.
+              </p>
+            </IconCard>,
+            <IconCard
+              key="2"
+              icon="/assets/images/icons/hand.webp"
+              image="/assets/images/pile.webp"
+              className="aspect-[163/128] landscape:aspect-[139/64]"
+              wrapperClassName="bg-gradient-to-t from-black from-[25%] landscape:from-[10%] to-transparent"
+              iconEffect
+            >
+              <h3 className="text-title-3">Stay and Play</h3>
+              <p className="text-body-regular">
+                Play a few rounds, float some ideas, chat with creators and develop some lifelong
+                friendships.
+              </p>
+            </IconCard>,
+          ]}
+          postContent={
+            isAnyPhase2 && (
+              <div className="flex flex-col landscape:flex-row justify-center items-center p-4 landscape:p-8 mt-4 gap-4 rounded-xl border-charcoal border-2 text-charcoal">
+                <figure className="relative w-15 h-15">
+                  <Image src="/assets/images/cards.webp" alt="Cards" sizes="10wv" fill />
+                </figure>
+                <div className="flex-1">
+                  <h3 className="text-title-3 mb-2">Go down the rabbit hole</h3>
+                  <p className="text-body-regular">
+                    Everything you ever wanted to know (or didn&apos;t know you wanted to know)
+                    about Data War, the new physical card game made by Firefox.
+                  </p>
+                </div>
+
+                <div>
+                  <LinkButton
+                    href="/datawar"
+                    title="Learn more about Data War"
+                    className="secondary-button border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
+                  >
+                    Jump In
+                  </LinkButton>
+                </div>
+              </div>
+            )
+          }
+        >
+          <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
+          <p className="text-body-regular text-charcoal">
+            Data War is the chaotic-casual card game where players compete to send egomaniacal,
+            tantrum-prone little Billionaires on a one way ticket to space. Created by Firefox, and
+            only available at TwitchCon.
+          </p>
+        </CardsSection>
+      )}
 
       <ImageGallery images={imagesForGallery} />
 
@@ -246,7 +342,7 @@ export default async function Page() {
             </figure>
             <div className="flex-1">
               <h3 className="text-title-3 mb-2">
-                You don&apos;t need a one-way ticket to space to join
+                You don&apos;t need a one way ticket to space to join
               </h3>
               <p className="text-body-regular">
                 But you do need Block Party tickets to join us live. Luckily, they&apos;re right
@@ -254,14 +350,15 @@ export default async function Page() {
               </p>
             </div>
             <div>
-              <Link
+              <LinkButton
                 href="https://www.twitchcon.com/san-diego-2025/tickets/"
                 title="Buy your ticket"
-                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
+                className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal active:bg-common-ash active:text-charcoal"
                 target="_blank"
+                trackableEvent="click_get_twitchcon_tickets"
               >
                 Get Tickets
-              </Link>
+              </LinkButton>
             </div>
           </div>
         }
@@ -272,19 +369,61 @@ export default async function Page() {
           Billionaires off in style. (Or stream along right here.)
         </p>
       </CardsSection>
-
+      {isAnyPhase2 && evaluateFlag('showSocialFeed') && (
+        <SocialFeed refId={FEED_REF_ID} src={FEED_SRC} />
+      )}
       <CountDown
-        targetDate="2025-10-18T10:20:30-07:00"
+        isLaunchCompleted={isLaunchCompleted}
         cta={
-          <Suspense fallback={<div>Loading...</div>}>
-            <GetStarted
-              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-              ctaText="Build a Billionaire"
-              triggerClassNames="secondary-button"
-            />
-          </Suspense>
+          isAnyPhase2 ? (
+            <LinkButton href="/" className="secondary-button flex">
+              Watch the Launch!
+            </LinkButton>
+          ) : (
+            <Suspense fallback={<div>Loading...</div>}>
+              <GetStarted
+                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                ctaText="Build a Billionaire"
+                triggerClassNames="secondary-button"
+                trackableEvent="click_build_billionaire_countdown"
+              />
+            </Suspense>
+          )
         }
       />
-    </ClientPageWrapper>
+      {isLaunchCompleted && (
+        <section
+          className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
+        >
+          <Bento
+            image="/assets/images/avatar-cards.webp"
+            imageAlt="Cards and Billionaires"
+            className={`landscape:w-[30%] aspect-[377/275] border-none`}
+          />
+          <Bento className={`border-none h-full landscape:flex-1 landscape:h-auto`}>
+            <Window className="bg-common-ash">
+              <div className="p-4 landscape:p-12 flex flex-col gap-4">
+                <h2 className="text-title-1 text-charcoal">Cards down. Billionaires up.</h2>
+                <p className="text-body-regular text-charcoal">
+                  At TwitchCon we launched Data War, the chaotic-casual card game where players
+                  compete to send egomaniacal, tantrum-prone little Billionaires on a one way ticket
+                  to space. If you couldn&apos;t join us, you can still download a deck and stay
+                  tuned for the digital version, dropping in November!
+                </p>
+                <LinkButton
+                  href="/datawar"
+                  title="Learn more about Data War"
+                  className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
+                  trackableEvent="click_go_to_datawar"
+                >
+                  Check out Data War
+                </LinkButton>
+              </div>
+            </Window>
+          </Bento>
+        </section>
+      )}
+      {isLaunchCompleted && holoboxSection}
+    </>
   );
 }
