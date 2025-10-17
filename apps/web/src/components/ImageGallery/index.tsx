@@ -6,8 +6,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import Image from 'next/image';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
