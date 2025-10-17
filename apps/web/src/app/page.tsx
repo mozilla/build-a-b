@@ -26,7 +26,7 @@ import LaunchRecording from '@/components/LaunchRecording';
 import Livestream from '@/components/Livestream';
 import type { FC } from 'react';
 
-const OrgangeCard: FC<{ isLaunchCompleted?: boolean }> = ({ isLaunchCompleted }) => {
+const OrangeCard: FC<{ isLaunchCompleted?: boolean }> = ({ isLaunchCompleted }) => {
   return (
     <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
       <Image
@@ -203,10 +203,10 @@ export default async function Home({
             className="h-full"
             disabled={isLaunchCompleted}
             effect="flip"
-            back={<OrgangeCard />}
+            back={<OrangeCard />}
           >
             {isLaunchCompleted ? (
-              <OrgangeCard isLaunchCompleted />
+              <OrangeCard isLaunchCompleted />
             ) : (
               <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
                 <Image
