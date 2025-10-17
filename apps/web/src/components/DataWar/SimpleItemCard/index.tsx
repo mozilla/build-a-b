@@ -41,7 +41,7 @@ const SimpleItemCard: FC<SimpleItemCardProps> = ({
       setSectionStartY(Math.max(0, absTop - TOP_PX));
     };
     computeSectionStart();
-    window.addEventListener('resize', computeSectionStart);
+    window.addEventListener('resize', computeSectionStart, { passive: true });
     return () => window.removeEventListener('resize', computeSectionStart);
   }, []);
 
@@ -61,7 +61,7 @@ const SimpleItemCard: FC<SimpleItemCardProps> = ({
     const ro = new ResizeObserver(measure);
     if (asideRef.current) ro.observe(asideRef.current);
     if (contentRef.current) ro.observe(contentRef.current);
-    window.addEventListener('resize', measure);
+    window.addEventListener('resize', measure, { passive: true });
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', measure);

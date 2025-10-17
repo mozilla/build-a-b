@@ -37,7 +37,7 @@ const CardGallery: FC<CardGalleryProps> = ({ cards, visibleCount = 5 }) => {
     };
 
     handleResize(); // Set initial value
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, [visibleCount]);
 

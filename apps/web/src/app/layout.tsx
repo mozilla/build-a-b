@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import localFont from 'next/font/local';
+import Image from 'next/image';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import Container from '@/components/Container';
@@ -166,6 +167,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </Script>
       </head>
       <body className="bg-background text-foreground">
+        <Image
+          src="/assets/images/bg.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="fixed inset-0 object-cover object-top -z-10"
+          priority
+          quality={85}
+        />
         <Suspense>
           <AnalyticsListener />
         </Suspense>
