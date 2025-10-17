@@ -106,7 +106,7 @@ export default async function Home({
 
   return (
     <>
-      {isPhase2A && <CountDown isLaunchCompleted={isLaunchCompleted} />}
+      {isPhase2A && <CountDown isPhase2B={isPhase2B} isPhase2C={isPhase2C} />}
       {isPhase2B && <Livestream />}
       {isPhase2C && <LaunchRecording />}
 
@@ -394,7 +394,8 @@ export default async function Home({
           <div className="portrait:order-13 landscape:col-span-12">
             <CountDown
               className="landscape:mb-0!"
-              isLaunchCompleted={isLaunchCompleted}
+              isPhase2B={isPhase2B}
+              isPhase2C={isPhase2C}
               cta={
                 <LinkButton
                   href="/twitchcon"

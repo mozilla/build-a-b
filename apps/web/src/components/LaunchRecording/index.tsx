@@ -34,7 +34,7 @@ const LaunchRecording = () => {
   const youtubePlayer = (
     <iframe
       className="w-full h-full"
-      src="https://www.youtube.com/embed/-Mz8xJW4CNE?si=jJlbWqskMlMnpPtg"
+      src="https://www.youtube.com/embed/eqUxVAsA80k?playsinline=1&rel=0"
       title="YouTube video player"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
