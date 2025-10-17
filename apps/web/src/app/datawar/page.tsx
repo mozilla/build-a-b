@@ -9,8 +9,9 @@ import LinkButton from '@/components/LinkButton';
 import PhysicalDeckButton from '@/components/DataWar/PhysicalDeckButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialIcon from '@/components/SocialIcon';
+import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
-import { avatarBentoData } from '@/utils/constants';
+import { avatarBentoData, FEED_REF_ID, FEED_SRC } from '@/utils/constants';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -19,11 +20,14 @@ import { socials } from '@/utils/constants';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
-  const [shouldDisplayLaunchCta, isDataWarEnabled, isLaunchCompleted] = await Promise.all([
-    evaluatePhase2Flag('a'),
-    evaluateFlag('showDataWar'),
-    evaluatePhase2Flag('c'),
-  ]);
+  const [shouldDisplayLaunchCta, isPhase2B, isLaunchCompleted, isDataWarEnabled, showSocialFeed] =
+    await Promise.all([
+      evaluatePhase2Flag('a'),
+      evaluatePhase2Flag('b'),
+      evaluatePhase2Flag('c'),
+      evaluateFlag('showDataWar'),
+      evaluateFlag('showSocialFeed'),
+    ]);
 
   if (!isDataWarEnabled) {
     notFound();
@@ -206,6 +210,12 @@ export default async function Page() {
         </section>
       )}
 
+      {isLaunchCompleted && (
+        <h2 className="text-mobile-title-2 landscape:text-5xl-custom font-extrabold my-4 landscape:mb-8 landscape:mt-6">
+          Ways to play
+        </h2>
+      )}
+
       <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
         <Bento
           image="/assets/images/shark-billionaire.webp"
@@ -278,6 +288,36 @@ export default async function Page() {
             className="landscape:w-[30%] aspect-square border-none"
           />
         </section>
+      )}
+
+      {isLaunchCompleted && (
+        <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+          <Bento
+            image="/assets/images/cards-on-table.webp"
+            imageAlt="Cards on table"
+            className="landscape:w-[30%] aspect-square border-none"
+          />
+          <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
+            <Window className="bg-common-ash">
+              <div className="p-4 landscape:p-12 flex flex-col gap-4">
+                <h2 className="text-title-1 text-charcoal">Want more Data War?</h2>
+                <p className="text-body-regular text-charcoal">
+                  Want the OG real-deal TwitchCon physical card deck? Let us know! You might be the
+                  reason it drops. Follow <strong>@firefox</strong> for release news.
+                </p>
+                <PhysicalDeckButton />
+              </div>
+            </Window>
+          </Bento>
+        </section>
+      )}
+
+      {(isPhase2B || isLaunchCompleted) && showSocialFeed && (
+        <SocialFeed
+          refId={FEED_REF_ID}
+          src={FEED_SRC}
+          title={isLaunchCompleted ? 'TwitchCon highlights' : 'TwitchCon behind the scenes'}
+        />
       )}
 
       <CountDown
