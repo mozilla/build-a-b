@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { FC, ReactNode } from 'react';
 import Bento from '../Bento';
 import RocketCountdown from './rocket-countdown';
-import { rocketLaunchDate } from '@/utils/constants';
 
 export interface CountDownProps {
   className?: string;
@@ -36,7 +35,7 @@ const CountDown: FC<CountDownProps> = ({ className, cta, isLaunchCompleted }) =>
             </p>
             <div className="hidden landscape:block">{cta}</div>
           </div>
-          <RocketCountdown targetDate={rocketLaunchDate} isLaunchCompleted={isLaunchCompleted} />
+          <RocketCountdown isLaunchCompleted={isLaunchCompleted} />
           <div className="landscape:hidden w-full">{cta}</div>
         </div>
       </Bento>
