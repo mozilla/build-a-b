@@ -53,7 +53,8 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       selfieAvailability: {
         selfies_available:
           avatar.selfies.length === MAX_SELFIES ||
-          typeof availableSelfies?.selfies_available !== 'number'
+          typeof availableSelfies?.selfies_available !== 'number' ||
+          !availableSelfies.next_at
             ? 0
             : availableSelfies?.selfies_available,
         next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
