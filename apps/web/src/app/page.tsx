@@ -24,6 +24,46 @@ import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
 import LaunchRecording from '@/components/LaunchRecording';
 import Livestream from '@/components/Livestream';
+import type { FC } from 'react';
+
+const OrgangeCard: FC<{ isLaunchCompleted?: boolean }> = ({ isLaunchCompleted }) => {
+  return (
+    <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+      <Image
+        src="/assets/images/icons/flip.svg"
+        alt="Flip card"
+        width={24}
+        height={24}
+        className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
+      />
+      <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
+        <h2 className="text-title-1 mb-2 text-[2rem]">
+          #Billionaire
+          <br className="landscape:hidden" />
+          BlastOff
+        </h2>
+        <p className="text-regular-custom">
+          {!isLaunchCompleted
+            ? 'With Billionaires permanently off-planet, we can finally browse in peace, indulge our curiosities, and open what we want.'
+            : 'The Billionaires are in space. The coast is clear. Open What You Want.'}
+        </p>
+      </div>
+      <LinkButton
+        href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
+        target="_blank"
+        trackableEvent="click_firefox_owyw_logo"
+      >
+        <Image
+          src="/assets/images/firefox-open.webp"
+          width={120}
+          height={43}
+          alt=""
+          className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
+        />
+      </LinkButton>
+    </div>
+  );
+};
 
 export default async function Home({
   params,
@@ -161,60 +201,31 @@ export default async function Home({
           {/* BBOOWYW Bento */}
           <BentoDual
             className="h-full"
+            disabled={isLaunchCompleted}
             effect="flip"
-            back={
-              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+            back={<OrgangeCard />}
+          >
+            {isLaunchCompleted ? (
+              <OrgangeCard isLaunchCompleted />
+            ) : (
+              <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
                 <Image
                   src="/assets/images/icons/flip.svg"
                   alt="Flip card"
                   width={24}
                   height={24}
-                  className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
+                  className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.2rem] right-[0.2rem]"
                 />
-                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
-                  <h2 className="text-title-1 mb-2 text-[2rem]">
-                    #Billionaire
-                    <br className="landscape:hidden" />
-                    BlastOff
-                  </h2>
-                  <p className="text-regular-custom">
-                    With Billionaires permanently off-planet, we can finally browse in peace,
-                    indulge our curiosities, and open what we want.
-                  </p>
-                </div>
-                <LinkButton
-                  href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
-                  target="_blank"
-                  trackableEvent="click_firefox_owyw_logo"
-                >
-                  <Image
-                    src="/assets/images/firefox-open.webp"
-                    width={120}
-                    height={43}
-                    alt=""
-                    className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
-                  />
-                </LinkButton>
+                <h4 className="text-title-1 mb-3">
+                  #Billionaire
+                  <br className="landscape:hidden" />
+                  BlastOff
+                </h4>
+                <p className="text-body-small">
+                  Billionaires go to space on rockets fueled by your data. We know a better way.
+                </p>
               </div>
-            }
-          >
-            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
-              <Image
-                src="/assets/images/icons/flip.svg"
-                alt="Flip card"
-                width={24}
-                height={24}
-                className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.2rem] right-[0.2rem]"
-              />
-              <h4 className="text-title-1 mb-3">
-                #Billionaire
-                <br className="landscape:hidden" />
-                BlastOff
-              </h4>
-              <p className="text-body-small">
-                Billionaires go to space on rockets fueled by your data. We know a better way.
-              </p>
-            </div>
+            )}
           </BentoDual>
         </div>
         <div
