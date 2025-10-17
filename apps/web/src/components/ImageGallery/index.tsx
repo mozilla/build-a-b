@@ -179,7 +179,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
           src="/assets/images/icons/left-button.webp"
           width={44}
           height={44}
-          className="object-cover w-8 h-8 landscape:w-11 landscape:h-11"
+          className="object-cover w-11 h-11"
           alt="Previous"
         />
       </button>
@@ -194,7 +194,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
           src="/assets/images/icons/right-button.webp"
           width={44}
           height={44}
-          className="object-cover w-8 h-8 landscape:w-11 landscape:h-11"
+          className="object-cover w-11 h-11"
           alt="Next"
         />
       </button>
