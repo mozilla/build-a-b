@@ -102,6 +102,7 @@ export type DatabaseSelfieResponse = {
   id: number;
   asset: string;
   created_at: string;
+  n_index: number;
 };
 
 export type DatabaseAvailableSelfiesResponse = {
