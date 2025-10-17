@@ -10,7 +10,7 @@ import LinkButton from '@/components/LinkButton';
 import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
-import { avatarBentoData, COOKIE_NAME } from '@/utils/constants';
+import { avatarBentoData, COOKIE_NAME, FEED_REF_ID, FEED_SRC } from '@/utils/constants';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { Metadata } from 'next';
 import Image from 'next/image';
@@ -18,14 +18,6 @@ import { Suspense } from 'react';
 import { evaluateFlag } from '@/app/flags';
 import { cookies } from 'next/headers';
 import { getUserAvatar } from '@/utils/actions/get-user-avatar';
-
-/**
- * SocialEmbed will give you the entire script, but what we really need
- * is the ID and source. Please do not modify these unless you use
- * a different SocialEmbed account.
- */
-const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
-const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -129,6 +121,28 @@ export default async function Page() {
         </Window>
       </Bento>
     </section>
+  );
+
+  const countDown = (
+    <CountDown
+      isLaunchCompleted={isLaunchCompleted}
+      cta={
+        isAnyPhase2 ? (
+          <LinkButton href="/" className="secondary-button flex">
+            Watch the Launch!
+          </LinkButton>
+        ) : (
+          <Suspense fallback={<div>Loading...</div>}>
+            <GetStarted
+              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+              ctaText="Build a Billionaire"
+              triggerClassNames="secondary-button"
+              trackableEvent="click_build_billionaire_countdown"
+            />
+          </Suspense>
+        )
+      }
+    />
   );
 
   return (
@@ -379,6 +393,8 @@ export default async function Page() {
         </>
       )}
 
+      {isLaunchCompleted && countDown}
+
       {isAnyPhase2 && showSocialFeed && (
         <SocialFeed
           refId={FEED_REF_ID}
@@ -386,25 +402,9 @@ export default async function Page() {
           title={isLaunchCompleted ? 'TwitchCon highlights' : 'TwitchCon behind the scenes'}
         />
       )}
-      <CountDown
-        isLaunchCompleted={isLaunchCompleted}
-        cta={
-          isAnyPhase2 ? (
-            <LinkButton href="/" className="secondary-button flex">
-              Watch the Launch!
-            </LinkButton>
-          ) : (
-            <Suspense fallback={<div>Loading...</div>}>
-              <GetStarted
-                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-                ctaText="Build a Billionaire"
-                triggerClassNames="secondary-button"
-                trackableEvent="click_build_billionaire_countdown"
-              />
-            </Suspense>
-          )
-        }
-      />
+
+      {!isLaunchCompleted && countDown}
+
       {isLaunchCompleted && (
         <section
           className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
