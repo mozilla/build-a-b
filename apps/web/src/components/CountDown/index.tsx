@@ -31,7 +31,7 @@ const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C })
             </h2>
             <p className="text-body-regular">
               {isPhase2C
-                ? 'You know? Watching something as it happens isn’t for everyone. Way to honor your time. (We recorded it if you want.)'
+                ? `Even if you didn’t make it IRL or online for the launch, we've stashed the footage in a super secret place, on our home page, for everyone to see.`
                 : `All the Billionaires, all the gameplay, all the satire — it all leads to this. A real rocket, built with Sent Into Space, carrying the absurd creations of a community that refused to play by Big Tech's rules.`}
             </p>
             <div className="hidden landscape:block">{cta}</div>
