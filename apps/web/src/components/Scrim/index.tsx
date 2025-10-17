@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import Image from 'next/image';
 import { FC, PropsWithChildren } from 'react';
 
 interface ScrimProps extends PropsWithChildren {
@@ -7,13 +8,16 @@ interface ScrimProps extends PropsWithChildren {
 
 const Scrim: FC<ScrimProps> = ({ className, children }) => {
   return (
-    <div
-      className={clsx(
-        "bg-[url('/assets/images/scrim.webp')] bg-cover bg-no-repeat bg-center",
-        className,
-      )}
-    >
-      {children}
+    <div className={clsx('relative', className)}>
+      <Image
+        src="/assets/images/scrim.webp"
+        alt=""
+        fill
+        sizes="100vw"
+        className="absolute inset-0 object-cover"
+        aria-hidden
+      />
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };
