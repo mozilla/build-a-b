@@ -98,10 +98,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
   }
 
   return (
-    <section
-      className="relative"
-      //className="mb-4 landscape:mb-8 flex flex-row flex-wrap justify-between gap-y-4 landscape:gap-8"
-    >
+    <section className="relative">
       <button
         className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition absolute top-[50%] z-2 -left-2 -translate-y-4 landscape:-left-5 landscape:-translate-y-6"
         aria-label="Previous"
