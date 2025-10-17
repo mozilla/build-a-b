@@ -43,8 +43,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [isAnyPhase2, isLaunchCompleted, showSocialFeed] = await Promise.all([
+  const [isAnyPhase2, isPhase2B, isPhase2C, isLaunchCompleted, showSocialFeed] = await Promise.all([
     evaluatePhase2Flag('a'),
+    evaluateFlag('showPhase2bFeatures'),
+    evaluateFlag('showPhase2cFeatures'),
     evaluatePhase2Flag('c'),
     evaluateFlag('showSocialFeed'),
   ]);
@@ -125,7 +127,8 @@ export default async function Page() {
 
   const countDown = (
     <CountDown
-      isLaunchCompleted={isLaunchCompleted}
+      isPhase2B={isPhase2B}
+      isPhase2C={isPhase2C}
       cta={
         isAnyPhase2 ? (
           <LinkButton href="/" className="secondary-button flex">

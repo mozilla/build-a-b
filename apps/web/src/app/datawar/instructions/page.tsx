@@ -14,10 +14,11 @@ import { Suspense } from 'react';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
-  const [shouldDisplayLaunchCta, isDataWarEnabled, isLaunchCompleted] = await Promise.all([
+  const [shouldDisplayLaunchCta, isPhase2B, isDataWarEnabled, isPhase2C] = await Promise.all([
     evaluatePhase2Flag('a'),
+    evaluateFlag('showPhase2bFeatures'),
     evaluateFlag('showDataWar'),
-    evaluatePhase2Flag('c'),
+    evaluateFlag('showPhase2cFeatures'),
   ]);
 
   if (!isDataWarEnabled) {
@@ -67,7 +68,8 @@ export default async function Page() {
         />
       </section>
       <CountDown
-        isLaunchCompleted={isLaunchCompleted}
+        isPhase2B={isPhase2B}
+        isPhase2C={isPhase2C}
         cta={
           shouldDisplayLaunchCta ? (
             <LinkButton href="/" className="secondary-button flex">
