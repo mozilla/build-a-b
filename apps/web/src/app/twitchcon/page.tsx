@@ -131,6 +131,28 @@ export default async function Page() {
     </section>
   );
 
+  const countDown = (
+    <CountDown
+      isLaunchCompleted={isLaunchCompleted}
+      cta={
+        isAnyPhase2 ? (
+          <LinkButton href="/" className="secondary-button flex">
+            Watch the Launch!
+          </LinkButton>
+        ) : (
+          <Suspense fallback={<div>Loading...</div>}>
+            <GetStarted
+              {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+              ctaText="Build a Billionaire"
+              triggerClassNames="secondary-button"
+              trackableEvent="click_build_billionaire_countdown"
+            />
+          </Suspense>
+        )
+      }
+    />
+  );
+
   return (
     <>
       <Hero
@@ -379,6 +401,8 @@ export default async function Page() {
         </>
       )}
 
+      {isLaunchCompleted && countDown}
+
       {isAnyPhase2 && showSocialFeed && (
         <SocialFeed
           refId={FEED_REF_ID}
@@ -386,25 +410,9 @@ export default async function Page() {
           title={isLaunchCompleted ? 'TwitchCon highlights' : 'TwitchCon behind the scenes'}
         />
       )}
-      <CountDown
-        isLaunchCompleted={isLaunchCompleted}
-        cta={
-          isAnyPhase2 ? (
-            <LinkButton href="/" className="secondary-button flex">
-              Watch the Launch!
-            </LinkButton>
-          ) : (
-            <Suspense fallback={<div>Loading...</div>}>
-              <GetStarted
-                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-                ctaText="Build a Billionaire"
-                triggerClassNames="secondary-button"
-                trackableEvent="click_build_billionaire_countdown"
-              />
-            </Suspense>
-          )
-        }
-      />
+
+      {!isLaunchCompleted && countDown}
+
       {isLaunchCompleted && (
         <section
           className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
