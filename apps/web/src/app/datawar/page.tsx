@@ -20,14 +20,21 @@ import { socials } from '@/utils/constants';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
-  const [shouldDisplayLaunchCta, isPhase2B, isLaunchCompleted, isDataWarEnabled, showSocialFeed] =
-    await Promise.all([
-      evaluatePhase2Flag('a'),
-      evaluatePhase2Flag('b'),
-      evaluatePhase2Flag('c'),
-      evaluateFlag('showDataWar'),
-      evaluateFlag('showSocialFeed'),
-    ]);
+  const [
+    shouldDisplayLaunchCta,
+    isPhase2B,
+    isLaunchCompleted,
+    isDataWarEnabled,
+    showSocialFeed,
+    isPhase2C,
+  ] = await Promise.all([
+    evaluatePhase2Flag('a'),
+    evaluateFlag('showPhase2bFeatures'),
+    evaluatePhase2Flag('c'),
+    evaluateFlag('showDataWar'),
+    evaluateFlag('showSocialFeed'),
+    evaluateFlag('showPhase2cFeatures'),
+  ]);
 
   if (!isDataWarEnabled) {
     notFound();
@@ -321,7 +328,8 @@ export default async function Page() {
       )}
 
       <CountDown
-        isLaunchCompleted={isLaunchCompleted}
+        isPhase2B={isPhase2B}
+        isPhase2C={isPhase2C}
         cta={
           shouldDisplayLaunchCta ? (
             <LinkButton href="/" className="secondary-button flex">
