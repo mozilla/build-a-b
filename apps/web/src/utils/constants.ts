@@ -50,7 +50,7 @@ export const socials: SocialNetworkItem[] = [
   },
 ];
 
-export const rocketLaunchDate = '2025-10-18T20:30:00-07:00';
+export const fallbackRocketLaunchDate = '2025-10-18T20:30:00-07:00';
 
 export const tickerData = [
   {
