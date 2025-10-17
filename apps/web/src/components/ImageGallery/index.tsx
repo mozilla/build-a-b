@@ -128,7 +128,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
             type="button"
             aria-label="Play video"
             onClick={() => handlePlay(index)}
-            className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/50 transition"
+            className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/50 transition cursor-pointer"
           >
             <Image
               src="/assets/images/play.svg"
