@@ -87,3 +87,11 @@ export const tickerDataAfterTwitchCon = [
     emoji: '💰',
   },
 ];
+
+/**
+ * SocialEmbed will give you the entire script, but what we really need
+ * is the ID and source. Please do not modify these unless you use
+ * a different SocialEmbed account.
+ */
+export const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
+export const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
