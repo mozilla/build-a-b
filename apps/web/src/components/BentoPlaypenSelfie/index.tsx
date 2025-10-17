@@ -85,7 +85,7 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
       >
         {!isLaunchCompleted && (
           <Image
-            className="absolute top-[-1.5rem] left-[-1.5rem]"
+            className="absolute top-[-1.5rem] left-[-1.5rem] w-[6.3125rem] h-[3.8rem]"
             alt=""
             src="/assets/images/ribbon.webp"
             width={117}
