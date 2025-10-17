@@ -11,8 +11,6 @@ export interface CountDownProps {
 }
 
 const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C }) => {
-  console.log({ isPhase2B });
-  console.log({ isPhase2C });
   return (
     <section className={clsx('mb-4 landscape:mb-8', className)}>
       <Bento image="/assets/images/space.webp">
