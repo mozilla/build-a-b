@@ -3,13 +3,15 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import PoweredBy from '../PoweredBy';
+import { fallbackRocketLaunchDate } from '@/utils/constants';
 
 export interface RocketCountdownProps {
-  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
   isLaunchCompleted: boolean;
 }
 
-const RocketCountdown: FC<RocketCountdownProps> = ({ targetDate, isLaunchCompleted }) => {
+const RocketCountdown: FC<RocketCountdownProps> = ({ isLaunchCompleted }) => {
+  const targetDate = process.env.NEXT_PUBLIC_ROCKET_LAUNCH_DATE || fallbackRocketLaunchDate;
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
