@@ -52,6 +52,37 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
     swiperRef.current?.slideNext();
   };
 
+  const videoRefs = useRef<HTMLVideoElement[]>([]);
+  const [playingStates, setPlayingStates] = useState<boolean[]>(Array(images.length).fill(false));
+
+  const handlePlay = (index: number) => {
+    const videoEl = videoRefs.current[index];
+    if (!videoEl) return;
+
+    if (playingStates[index]) {
+      // If this video is currently playing → pause it
+      videoEl.pause();
+      setPlayingStates((prev) => {
+        const updated = [...prev];
+        updated[index] = false;
+        return updated;
+      });
+    } else {
+      // Before playing this one → pause all other videos
+      videoRefs.current.forEach((v, i) => {
+        if (v && i !== index) {
+          v.pause();
+        }
+      });
+
+      // Update playing states (only this index is true)
+      setPlayingStates((prev) => prev.map((_, i) => i === index));
+
+      // Play the selected video
+      videoEl.play();
+    }
+  };
+
   const items = images.map(({ alt, src, isVideo, videoThumbnail }, index) => {
     const img = (
       <Bento
@@ -63,20 +94,61 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
 
     const video = (
       <div
-        className={`overflow-hidden ${images.length <= 4 ? 'w-[10.5rem]' : 'w-full'} landscape:w-[19rem] border-none aspect-square relative mx-auto`}
+        className={`relative overflow-hidden ${
+          images.length <= 4 ? 'w-[10.5rem]' : 'w-full'
+        } landscape:w-[19rem] border-none aspect-square mx-auto`}
       >
+        {/* Video element */}
         <video
+          ref={(el) => {
+            if (el) videoRefs.current[index] = el;
+          }}
           src={src}
           poster={videoThumbnail}
           muted
           loop
           playsInline
-          controls
           preload="metadata"
           className="absolute inset-0 w-full h-full object-cover rounded-[0.75rem]"
+          onEnded={() => {
+            // When the video finishes, reset its playing state
+            setPlayingStates((prev) => {
+              const updated = [...prev];
+              updated[index] = false;
+              return updated;
+            });
+          }}
         >
           Your browser does not support HTML5 video.
         </video>
+
+        {/* Play overlay — visible only when the video is NOT playing */}
+        {!playingStates[index] && (
+          <button
+            type="button"
+            aria-label="Play video"
+            onClick={() => handlePlay(index)}
+            className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/50 transition"
+          >
+            <Image
+              src="/assets/images/play.svg"
+              alt="Play video"
+              width={64}
+              height={64}
+              className="w-12 h-12 landscape:w-16 landscape:h-16 transition-transform hover:scale-110"
+            />
+          </button>
+        )}
+
+        {/* Invisible button overlay — clickable area to pause the video */}
+        {playingStates[index] && (
+          <button
+            type="button"
+            aria-label="Pause video"
+            onClick={() => handlePlay(index)}
+            className="absolute inset-0 z-10"
+          />
+        )}
       </div>
     );
 
