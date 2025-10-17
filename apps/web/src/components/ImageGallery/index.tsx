@@ -98,7 +98,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
   return (
     <section className="relative">
       <button
-        className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition absolute top-[50%] z-2 -left-2 -translate-y-4 landscape:-left-5 landscape:-translate-y-6"
+        className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition absolute top-[50%] z-2 -left-2 -translate-y-4 landscape:-left-5 landscape:-translate-y-6 cursor-pointer"
         aria-label="Previous"
         disabled={!canPrev}
         onClick={handlePrev}
@@ -113,7 +113,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
       </button>
 
       <button
-        className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition absolute top-[50%] z-2 -right-2 -translate-y-4 landscape:-right-5 landscape:-translate-y-6"
+        className="disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition absolute top-[50%] z-2 -right-2 -translate-y-4 landscape:-right-5 landscape:-translate-y-6 cursor-pointer"
         aria-label="Next"
         disabled={!canNext}
         onClick={handleNext}
