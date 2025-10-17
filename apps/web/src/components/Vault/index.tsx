@@ -6,7 +6,7 @@ import { COOKIE_NAME } from '@/utils/constants';
 import { setCookie } from '@/utils/helpers/cookies';
 import { trackEvent } from '@/utils/helpers/track-event';
 import Image from 'next/image';
-import { useMemo, useState, type FC } from 'react';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import PlaypenPopup from '../PlaypenPopup';
 import PlaypenSave from '../PlaypenPopup/PlaypenSave';
 import Carousel from '../PrimaryFlow/Carousel';
@@ -22,11 +22,12 @@ interface VaultProps {
 const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
   const [showBookmarkScreen, setShowBookmarkScreen] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const resolution = useWindowSize();
   const { avatarData } = usePrimaryFlowContext();
   const swiperOptions = useMemo(
     () => ({
-      spaceBetween: resolution === 'landscape' ? -400 : -10,
+      spaceBetween: resolution === 'landscape' ? -300 : -80,
       slidesPerView: resolution === 'landscape' ? 3 : 1,
       watchSlidesProgress: true,
       speed: 800,
@@ -66,6 +67,13 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     return [...avatarData.selfies.slice(validIndex), ...avatarData.selfies.slice(0, validIndex)];
   }, [avatarData?.selfies, initialImage]);
 
+  // Reset loading state when vault opens or selfies change
+  useEffect(() => {
+    if (isOpen) {
+      setLoadedImages({});
+    }
+  }, [isOpen, sortedSelfies.length]);
+
   // Create avatar data with the current selfie's asset for sharing
   const avatarWithCurrentSelfie = useMemo(() => {
     if (!avatarData || !sortedSelfies[activeSlideIndex]) return avatarData;
@@ -77,7 +85,12 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
   }, [avatarData, sortedSelfies, activeSlideIndex]);
 
   return (
-    <PlaypenPopup title="Your Billionaire vault" isOpen={isOpen} onOpenChange={onOpenChange}>
+    <PlaypenPopup
+      title="Your Billionaire vault"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      bodyClass="justify-center portrait:p-0 portrait:min-h-[100dvh]"
+    >
       {showBookmarkScreen ? (
         <PlaypenSave action={action} V2 />
       ) : (
@@ -95,26 +108,60 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
               withArrowNavigation={resolution === 'landscape'}
               onSlideChange={setActiveSlideIndex}
               slides={
-                sortedSelfies.map(({ asset }, i) => (
-                  <div key={i} className="flex justify-center items-center">
-                    <Image
-                      src={asset ?? ''}
-                      width={300}
-                      height={300}
-                      className="rounded-xl max-w-[18.75rem] landscape:hidden"
-                      alt=""
-                      priority
-                    />
-                    <Image
-                      src={asset ?? ''}
-                      width={466}
-                      height={466}
-                      className="rounded-xl hidden w-auto max-w-[29.125rem] landscape:block"
-                      alt=""
-                      priority
-                    />
-                  </div>
-                )) || []
+                sortedSelfies.map(({ asset }, i) => {
+                  const mobileKey = `${i}-mobile`;
+                  const landscapeKey = `${i}-landscape`;
+                  const isMobileLoaded = loadedImages[mobileKey];
+                  const isLandscapeLoaded = loadedImages[landscapeKey];
+
+                  return (
+                    <div
+                      key={i}
+                      className="flex justify-center items-center landscape:min-h-[29.125rem] relative"
+                    >
+                      {/* Mobile shimmer - only show if mobile image not loaded */}
+                      {!isMobileLoaded && (
+                        <div className="absolute inset-0 bg-white overflow-hidden rounded-xl w-[18.75rem] h-[18.75rem] landscape:hidden mx-auto">
+                          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-gray-400 to-transparent animate-shimmer w-full h-full"></div>
+                        </div>
+                      )}
+                      {/* Landscape shimmer - only show if landscape image not loaded */}
+                      {!isLandscapeLoaded && (
+                        <div className="hidden landscape:block absolute inset-0 bg-white overflow-hidden rounded-xl w-[29.125rem] h-[29.125rem] mx-auto">
+                          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-gray-400 to-transparent animate-shimmer w-full h-full"></div>
+                        </div>
+                      )}
+                      {/* Mobile Image */}
+                      <Image
+                        src={asset ?? ''}
+                        width={290}
+                        height={290}
+                        className={`rounded-xl max-w-[18.75rem] landscape:hidden transition-opacity duration-500 ${
+                          isMobileLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        alt=""
+                        priority
+                        onLoad={() =>
+                          setLoadedImages((prev) => ({ ...prev, [mobileKey]: true }))
+                        }
+                      />
+                      {/* Landscape Image */}
+                      <Image
+                        src={asset ?? ''}
+                        width={466}
+                        height={466}
+                        className={`rounded-xl hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
+                          isLandscapeLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        alt=""
+                        priority
+                        onLoad={() =>
+                          setLoadedImages((prev) => ({ ...prev, [landscapeKey]: true }))
+                        }
+                      />
+                    </div>
+                  );
+                }) || []
               }
             />
           </div>

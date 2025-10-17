@@ -6,6 +6,7 @@ import {
   type ChoiceConfig,
   type SelfieAvailabilityState,
 } from '@/types';
+import { MAX_SELFIES } from '@/utils/constants';
 import {
   createContext,
   useCallback,
@@ -65,12 +66,12 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
 
     const { selfies_available, next_at } = avatarData.selfieAvailability;
 
-    if (next_at && next_at.getTime() >= now) {
+    if (selfies_available && next_at && next_at.getTime() >= now) {
       setSelfieAvailabilityState('COOL_DOWN_PERIOD');
       return;
     }
 
-    if (selfies_available < 1) {
+    if (avatarData.selfies.length === MAX_SELFIES || selfies_available < 1) {
       setSelfieAvailabilityState('COMING_SOON');
       return;
     }
