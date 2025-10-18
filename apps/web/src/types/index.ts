@@ -99,10 +99,10 @@ export type Selfie = Pick<
 export type DatabaseUserResponse = Database['public']['Tables']['users']['Row'];
 
 export type DatabaseSelfieResponse = {
-  id: number;
+  avatar_id: number;
   asset: string;
+  id: number;
   created_at: string;
-  n_index: number;
 };
 
 export type DatabaseAvailableSelfiesResponse = {
@@ -115,7 +115,11 @@ export type SelfieAvailabilityData = {
   next_at: Date | null;
 };
 
-export type SelfieAvailabilityState = 'COMING_SOON' | 'COOL_DOWN_PERIOD' | 'AVAILABLE';
+export type SelfieAvailabilityState =
+  | 'COMING_SOON'
+  | 'COOL_DOWN_PERIOD'
+  | 'AVAILABLE'
+  | 'EASTER_EGG';
 
 export type StatusEndpointBaseResponse = {
   status: string;
