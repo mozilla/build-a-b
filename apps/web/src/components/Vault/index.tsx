@@ -90,6 +90,12 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     return sortedSelfies[activeSlideIndex]?.id === -1;
   }, [activeSlideIndex, sortedSelfies]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setActiveSlideIndex(0);
+    }
+  }, [isOpen]);
+
   return (
     <PlaypenPopup
       title="Your Billionaire vault"
@@ -107,8 +113,8 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
           </h3>
           {isEasterEgg ? (
             <p className="text-center max-w-[39.0625rem]">
-              This isn&apos;t just any Easter Egg - it&apos;s a real card from Data War, our upcoming physical
-              and digital card game, rolling out at TwitchCon.
+              This isn&apos;t just any Easter Egg - it&apos;s a real card from Data War, our
+              upcoming physical and digital card game, rolling out at TwitchCon.
             </p>
           ) : (
             <p className="text-center max-w-[39.0625rem]">
