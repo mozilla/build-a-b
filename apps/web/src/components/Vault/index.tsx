@@ -136,7 +136,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                         src={asset ?? ''}
                         width={290}
                         height={290}
-                        className={`rounded-xl max-w-[18.75rem] landscape:hidden transition-opacity duration-500 ${
+                        className={`rounded-xl w-[18.125rem] h-[18.125rem] max-w-[18.75rem] landscape:hidden transition-opacity duration-500 ${
                           isMobileLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
@@ -150,7 +150,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                         src={asset ?? ''}
                         width={466}
                         height={466}
-                        className={`rounded-xl hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
+                        className={`rounded-xl w-[29.125rem] h-[29.125rem] hiddenmax-w-[29.125rem] landscape:block transition-opacity duration-500 ${
                           isLandscapeLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
