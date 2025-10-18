@@ -29,8 +29,6 @@ export async function storeEasterEgg(): Promise<Selfie | null> {
       .rpc('store_easter_egg', { p_uuid: uuid, p_easter_egg_id: randomCardId })
       .maybeSingle<EasterEggResponse>();
 
-    console.log('Easter egg response:', getEasterEggResponse);
-
     if (!getEasterEggResponse.data) {
       console.log('No easter egg available for this user.');
       return null;
