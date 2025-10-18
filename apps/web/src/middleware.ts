@@ -6,9 +6,18 @@ export function middleware(request: NextRequest) {
   // Takes user to profile page /a/uuid if cookie is present
   const cookie = request.cookies.get(COOKIE_NAME);
   const hasSearchParam = request.nextUrl.searchParams.has('s');
+  const uuid = request.nextUrl.pathname.includes('/a/')
+    ? request.nextUrl.pathname.replace('/a/', '')
+    : null;
 
   if (cookie && !hasSearchParam && request.nextUrl.pathname === '/') {
     return NextResponse.redirect(new URL(`/a/${cookie.value}`, request.url));
+  }
+
+  if (uuid && cookie?.value !== uuid) {
+    const response = NextResponse.next();
+    response.cookies.set(COOKIE_NAME, uuid);
+    return response;
   }
 
   return NextResponse.next();
