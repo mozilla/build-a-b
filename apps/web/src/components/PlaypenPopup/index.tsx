@@ -46,12 +46,12 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
         classNames={{
           wrapper:
             'p-0 landscape:p-4 z-[999] [--scale-enter:100%] [--scale-exit:103%] [--slide-enter:0px] [--slide-exit:0px]',
-          base: 'w-full h-full z-[1000] overflow-hidden landscape:w-[61.4375rem] landscape:h-auto landscape:rounded-[0.75rem]',
+          base: 'w-full h-full z-[1000] overflow-hidden landscape:w-[61.4375rem] landscape:h-auto landscape:rounded-[0.75rem] portrait:min-h-[100dvh] landscape:max-h-[95vh]',
           backdrop: 'bg-black/80 z-[998] w-screen h-screen fixed inset-0',
         }}
         {...modalProps}
       >
-        <ModalContent className="relative w-full h-full relative overflow-hidden shadow-2xl">
+        <ModalContent className="relative w-full h-full shadow-2xl flex flex-col">
           {(onClose) => (
             <>
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-secondary-blue to-secondary-purple">
@@ -88,9 +88,7 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                   />
                 </div>
               </Button>
-              <div className="relative z-20 flex flex-col h-full">
-                <ModalBody className={`overflow-y-auto flex-1 ${bodyClass}`}>{children}</ModalBody>
-              </div>
+              <ModalBody className={`relative z-20 overflow-y-auto flex-1 ${bodyClass}`}>{children}</ModalBody>
             </>
           )}
         </ModalContent>
