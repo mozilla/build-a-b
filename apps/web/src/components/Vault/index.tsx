@@ -89,12 +89,13 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
       title="Your Billionaire vault"
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      bodyClass="justify-center portrait:p-0 portrait:min-h-[100dvh]"
+      bodyClass="portrait:p-0"
+      scrollBehavior="inside"
     >
       {showBookmarkScreen ? (
         <PlaypenSave action={action} V2 />
       ) : (
-        <div className="w-full flex flex-col items-center justify-center my-6">
+        <div className="w-full flex flex-col items-center portrait:py-12 landscape:my-6">
           <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
           <p className="text-center max-w-[39.0625rem]">
             This is your gallery of everything you and your Billionaire have done together. Every
@@ -136,26 +137,28 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                         src={asset ?? ''}
                         width={290}
                         height={290}
-                        className={`rounded-xl max-w-[18.75rem] landscape:hidden transition-opacity duration-500 ${
+                        className={`rounded-xl w-full! max-w-[18.75rem] landscape:hidden transition-opacity duration-500 ${
                           isMobileLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
                         priority
-                        onLoad={() =>
-                          setLoadedImages((prev) => ({ ...prev, [mobileKey]: true }))
-                        }
+                        onLoad={() => setLoadedImages((prev) => ({ ...prev, [mobileKey]: true }))}
+                        onError={() => setLoadedImages((prev) => ({ ...prev, [mobileKey]: true }))}
                       />
                       {/* Landscape Image */}
                       <Image
                         src={asset ?? ''}
                         width={466}
                         height={466}
-                        className={`rounded-xl hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
+                        className={`rounded-xl w-full! hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
                           isLandscapeLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
                         priority
                         onLoad={() =>
+                          setLoadedImages((prev) => ({ ...prev, [landscapeKey]: true }))
+                        }
+                        onError={() =>
                           setLoadedImages((prev) => ({ ...prev, [landscapeKey]: true }))
                         }
                       />
