@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node count-images.js",
+    "prebuild": "node count-images.js",
     "dev": "next dev --turbopack",
     "dev:https": "next dev --turbopack --experimental-https",
     "build": "next build",

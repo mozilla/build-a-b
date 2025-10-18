@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "prepare": "husky install",
+    "predev": "node apps/web/count-images.js",
+    "prebuild": "node apps/web/count-images.js",
     "dev": "pnpm --parallel dev",
     "dev:web": "pnpm --filter ./apps/web dev",
     "dev:studio": "pnpm --filter ./apps/studio dev",
