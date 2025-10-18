@@ -165,7 +165,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                         src={asset ?? ''}
                         width={466}
                         height={466}
-                        className={`rounded-xl w-[18.125rem] h-[18.125rem] hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
+                        className={`rounded-xl w-[29.125rem] h-[29.125rem] hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
                           isLandscapeLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
