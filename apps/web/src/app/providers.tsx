@@ -4,10 +4,15 @@ import { PrimaryContextProvider } from '@/components/PrimaryFlow/PrimaryFlowCont
 import { VaultContextProvider } from '@/components/Vault/VaultContext';
 import { HeroUIProvider } from '@heroui/react';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode;
+  isEasterEggEnabled: boolean;
+}
+
+export function Providers({ children, isEasterEggEnabled }: ProvidersProps) {
   return (
     <HeroUIProvider>
-      <PrimaryContextProvider initialData={null}>
+      <PrimaryContextProvider initialData={null} isEasterEggEnabled={isEasterEggEnabled}>
         <VaultContextProvider>{children}</VaultContextProvider>
       </PrimaryContextProvider>
     </HeroUIProvider>

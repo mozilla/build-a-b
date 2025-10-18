@@ -120,6 +120,8 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Check if DataWar feature is enabled
   const isDataWarEnabled = await evaluateFlag('showDataWar');
+  // Check if Easter Egg feature is enabled
+  const isEasterEggEnabled = await evaluateFlag('showEasterEgg');
 
   // Create navigation links conditionally
   const baseLinks = [
@@ -169,7 +171,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Suspense>
           <AnalyticsListener />
         </Suspense>
-        <Providers>
+        <Providers isEasterEggEnabled={isEasterEggEnabled}>
           <Container>
             <Header
               links={navigationData.links}
