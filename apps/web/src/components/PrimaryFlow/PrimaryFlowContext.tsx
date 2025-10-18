@@ -66,12 +66,28 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
 
     const { selfies_available, next_at } = avatarData.selfieAvailability;
 
-    if (selfies_available && next_at && next_at.getTime() >= now) {
+    // If user reached selfies limit + easter egg, show coming soon
+    if (avatarData.selfies.length === MAX_SELFIES + 1) {
+      setSelfieAvailabilityState('COMING_SOON');
+      return;
+    }
+
+    // Check cooldown period BEFORE checking for easter egg availability
+    if (
+      (selfies_available && next_at && next_at.getTime() >= now) ||
+      (avatarData.selfies.length === MAX_SELFIES && next_at && next_at.getTime() >= now)
+    ) {
       setSelfieAvailabilityState('COOL_DOWN_PERIOD');
       return;
     }
 
-    if (avatarData.selfies.length === MAX_SELFIES || selfies_available < 1) {
+    // If user has exactly 4 selfies and cooldown is done, show easter egg
+    if (avatarData.selfies.length === MAX_SELFIES) {
+      setSelfieAvailabilityState('EASTER_EGG');
+      return;
+    }
+
+    if (selfies_available < 1) {
       setSelfieAvailabilityState('COMING_SOON');
       return;
     }
