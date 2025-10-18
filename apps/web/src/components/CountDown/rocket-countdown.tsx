@@ -1,13 +1,18 @@
+'use client';
+
 import { FC, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import PoweredBy from '../PoweredBy';
+import { fallbackRocketLaunchDate } from '@/utils/constants';
 
 export interface RocketCountdownProps {
-  targetDate: string; // Format "2025-10-10T23:59:59-05:00"
-  isLaunchCompleted: boolean;
+  isPhase2B: boolean;
+  isPhase2C: boolean;
 }
 
-const RocketCountdown: FC<RocketCountdownProps> = ({ targetDate, isLaunchCompleted }) => {
+const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C }) => {
+  const targetDate = process.env.NEXT_PUBLIC_ROCKET_LAUNCH_DATE || fallbackRocketLaunchDate;
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -45,7 +50,7 @@ const RocketCountdown: FC<RocketCountdownProps> = ({ targetDate, isLaunchComplet
 
   return (
     <div className="w-full flex flex-col items-end relative">
-      {isLaunchCompleted && (
+      {isPhase2C && (
         <Image
           src="/assets/images/intro-modal/10.webp"
           alt={`Floating character 10`}
@@ -56,13 +61,11 @@ const RocketCountdown: FC<RocketCountdownProps> = ({ targetDate, isLaunchComplet
         />
       )}
       <div className="relative w-[calc(100%-2rem)] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6 landscape:w-fit">
-        {isLaunchReady && isLaunchCompleted && (
-          <p className="title-4 font-extrabold text-center">#BillionaireBlastOff</p>
-        )}
-        {isLaunchReady && !isLaunchCompleted && (
+        {(isPhase2B || (isLaunchReady && !isPhase2B && !isPhase2C)) && (
           <p className="title-4 font-extrabold text-center">Watch the Launch!</p>
         )}
-        {!isLaunchReady && (
+        {isPhase2C && <p className="title-4 font-extrabold text-center">#BillionaireBlastOff</p>}
+        {!isLaunchReady && !isPhase2B && !isPhase2C && (
           <dl className="flex justify-center gap-7 text-center" aria-live="polite">
             <div
               className="flex flex-col-reverse relative

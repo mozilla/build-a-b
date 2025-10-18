@@ -2,6 +2,7 @@
 
 import { AvatarData } from '@/types';
 import { generateAvatarSelfie } from '@/utils/actions/generate-avatar-selfie';
+import { storeEasterEgg } from '@/utils/actions/store-easter-egg';
 import { Button } from '@heroui/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,6 +11,7 @@ import Bento from '../Bento';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
 import { useVaultContext } from '../Vault/VaultContext';
+import { MAX_SELFIES } from '@/utils/constants';
 
 interface BentoPlaypenSelfieProps {
   avatarData?: AvatarData;
@@ -20,7 +22,7 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
   const router = useRouter();
   const { selfieAvailabilityState, setAvatarData, setSelfieAvailabilityState } =
     usePrimaryFlowContext();
-  const { setShowVault } = useVaultContext();
+  const { setShowVault, setVaultInitialImage } = useVaultContext();
   const [isGeneratingSelfie, setIsGeneratingSelfie] = useState(false);
   const [timerRole, setTimerRole] = useState<'timer' | 'alert'>('timer');
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -43,7 +45,9 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
       if (distance <= 0) {
         setTimeRemaining('00:00:00');
         setTimerRole('alert');
-        setSelfieAvailabilityState('AVAILABLE');
+        setSelfieAvailabilityState(
+          avatarData.selfies.length === MAX_SELFIES ? 'EASTER_EGG' : 'AVAILABLE',
+        );
         return;
       }
 
@@ -63,6 +67,7 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
   }, [
     selfieAvailabilityState,
     avatarData?.selfieAvailability?.next_at,
+    avatarData?.selfies?.length,
     setSelfieAvailabilityState,
   ]);
 
@@ -85,7 +90,7 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
       >
         {!isLaunchCompleted && (
           <Image
-            className="absolute top-[-1.5rem] left-[-1.5rem]"
+            className="absolute top-[-1.5rem] left-[-1.5rem] w-[6.3125rem] h-[3.8rem]"
             alt=""
             src="/assets/images/ribbon.webp"
             width={117}
@@ -102,15 +107,28 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
         />
         {!isGeneratingSelfie ? (
           <>
-            {selfieAvailabilityState === 'AVAILABLE' && (
+            {(selfieAvailabilityState === 'AVAILABLE' ||
+              selfieAvailabilityState === 'EASTER_EGG') && (
               <Button
                 onPress={async () => {
                   try {
                     setIsGeneratingSelfie(true);
-                    const selfie = await generateAvatarSelfie();
+
+                    const selfie =
+                      selfieAvailabilityState === 'EASTER_EGG'
+                        ? await storeEasterEgg()
+                        : await generateAvatarSelfie();
                     if (!selfie) return;
 
                     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+                    // Calculate the index of the newly generated selfie
+                    // Current selfies count (before refresh)
+                    const currentSelfiesCount = avatarData?.selfies?.length || 0;
+
+                    // Set vault to show the newly generated selfie first
+                    // New selfie will be at the end (index = currentSelfiesCount)
+                    setVaultInitialImage(currentSelfiesCount);
 
                     // Background refresh of the server component tree
                     startTransition(() => router.refresh());

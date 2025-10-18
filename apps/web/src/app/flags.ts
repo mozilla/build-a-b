@@ -50,6 +50,22 @@ const flags = {
       return process.env.FLAG_SHOW_PHASE === '2c';
     },
   }),
+  showPhase4Features: flag({
+    key: 'show-phase-4-features',
+    description: 'Display phase 4 changes',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_SHOW_PHASE === '4';
+    },
+  }),
+  showEasterEgg: flag({
+    key: 'show-easter-egg',
+    description: 'Enable easter egg selfie generation',
+    defaultValue: false,
+    decide() {
+      return process.env.FLAG_EASTER_EGG === 'true';
+    },
+  }),
 } as const;
 
 /**

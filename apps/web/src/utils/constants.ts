@@ -6,6 +6,7 @@ export const COOKIE_NAME = 'user_id';
 export const ID_HISTORY_COOKIE = 'id_history';
 export const DEFAULT_AVATAR_WIDTH = 500;
 export const DEFAULT_AVATAR_HEIGHT = 1200;
+export const MAX_SELFIES = 4;
 
 export const avatarBentoData: AvatarBentoProps = {
   primaryFlowData: {
@@ -49,7 +50,7 @@ export const socials: SocialNetworkItem[] = [
   },
 ];
 
-export const rocketLaunchDate = '2025-10-18T20:30:00-07:00';
+export const fallbackRocketLaunchDate = '2025-10-18T20:30:00-07:00';
 
 export const tickerData = [
   {
@@ -86,3 +87,11 @@ export const tickerDataAfterTwitchCon = [
     emoji: '💰',
   },
 ];
+
+/**
+ * SocialEmbed will give you the entire script, but what we really need
+ * is the ID and source. Please do not modify these unless you use
+ * a different SocialEmbed account.
+ */
+export const FEED_REF_ID = '7081eee2ff9921836e51a9a40ec1e5775a5b4834';
+export const FEED_SRC = 'https://embedsocial.com/cdn/ht.js';
