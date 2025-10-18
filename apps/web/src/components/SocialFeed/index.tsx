@@ -7,9 +7,10 @@ import SocialNetwork from '../SocialNetwork';
 type SocialFeedProps = {
   refId: string;
   src: string;
+  title: string;
 };
 
-const SocialFeed: FC<SocialFeedProps> = ({ refId, src }) => {
+const SocialFeed: FC<SocialFeedProps> = ({ refId, src, title }) => {
   return (
     <>
       <Script id="EmbedSocialHashtagScript" src={src} />
@@ -22,7 +23,7 @@ const SocialFeed: FC<SocialFeedProps> = ({ refId, src }) => {
       >
         <div className="p-8 w-full">
           {/** Heading */}
-          <h3 className="title-2 font-extrabold mb-4">TwitchCon behind the scenes</h3>
+          <h3 className="title-2 font-extrabold mb-4">{title}</h3>
           <p>
             From the heart of TwitchCon straight to your joyscrolling thumbs. Follow for all the
             updates, gameplay, space launch chatter, and more.

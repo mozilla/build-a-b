@@ -22,6 +22,48 @@ import VaultWrapper from '@/components/Vault/VaultWrapper';
 import Window from '@/components/Window';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
+import LaunchRecording from '@/components/LaunchRecording';
+import Livestream from '@/components/Livestream';
+import type { FC } from 'react';
+
+const OrangeCard: FC<{ isLaunchCompleted?: boolean }> = ({ isLaunchCompleted }) => {
+  return (
+    <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+      <Image
+        src="/assets/images/icons/flip.svg"
+        alt="Flip card"
+        width={24}
+        height={24}
+        className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
+      />
+      <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
+        <h2 className="text-title-1 mb-2 text-[2rem]">
+          #Billionaire
+          <br className="landscape:hidden" />
+          BlastOff
+        </h2>
+        <p className="text-regular-custom">
+          {!isLaunchCompleted
+            ? 'With Billionaires permanently off-planet, we can finally browse in peace, indulge our curiosities, and open what we want.'
+            : 'The Billionaires are in space. The coast is clear. Open What You Want.'}
+        </p>
+      </div>
+      <LinkButton
+        href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
+        target="_blank"
+        trackableEvent="click_firefox_owyw_logo"
+      >
+        <Image
+          src="/assets/images/firefox-open.webp"
+          width={120}
+          height={43}
+          alt=""
+          className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
+        />
+      </LinkButton>
+    </div>
+  );
+};
 
 export default async function Home({
   params,
@@ -30,9 +72,19 @@ export default async function Home({
   params: Promise<{ id?: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [showPlaypenButtons, isAtLeastPhase2ALive, isLaunchCompleted] = await Promise.all([
+  const [
+    showPlaypenButtons,
+    isAtLeastPhase2ALive,
+    isPhase2A,
+    isPhase2B,
+    isPhase2C,
+    isLaunchCompleted,
+  ] = await Promise.all([
     evaluateFlag('showAvatarPlaypenButtons'),
     evaluatePhase2Flag('a'),
+    evaluateFlag('showPhase2aFeatures'),
+    evaluateFlag('showPhase2bFeatures'),
+    evaluateFlag('showPhase2cFeatures'),
     evaluatePhase2Flag('c'),
   ]);
 
@@ -54,7 +106,9 @@ export default async function Home({
 
   return (
     <>
-      {isAtLeastPhase2ALive && <CountDown isLaunchCompleted={isLaunchCompleted} mode="home" />}
+      {isPhase2A && <CountDown isPhase2B={isPhase2B} isPhase2C={isPhase2C} />}
+      {isPhase2B && <Livestream />}
+      {isPhase2C && <LaunchRecording />}
 
       <Ticker items={isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData} />
 
@@ -67,99 +121,111 @@ export default async function Home({
           />
         </div>
         <div className="portrait:mb-4 portrait:w-full h-[32rem] landscape:h-full landscape:col-span-5 landscape:row-span-3 landscape:col-start-8 landscape:row-start-1">
-          <BentoDual
-            className="flex w-full h-full"
-            back={
-              <Window flip>
-                <div className="p-4 landscape:p-8">
-                  <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4">
-                    We&apos;re sending these Billionaires off-world, offline.
-                  </h3>
-                  <p>
-                    On October 18th, a rocket of our own design will carry these little Billionaire
-                    creations to the stratosphere, while we celebrate an internet free from their
-                    Billionaire antics at the TwitchCon Block Party!
-                  </p>
-                  <p className="mt-4">
-                    Build your own Billionaire to get in on the joke and follow{' '}
-                    <strong>@firefox</strong> for updates leading up to the launch!
-                  </p>
-                </div>
-              </Window>
-            }
-            effect="flip"
-            image="/assets/images/rocket.webp"
-            priority
-          >
-            <Scrim className="h-65 bg-contain!">
-              <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
-                Let&apos;s send these Billionaires to actual, for real-real space.
-              </h1>
-              <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
-                Join us during TwitchCon to watch us blast our little Billionaire creations into
-                space on a rocket of our own design.
-              </p>
-            </Scrim>
-          </BentoDual>
+          {!isLaunchCompleted && (
+            <BentoDual
+              className="flex w-full h-full"
+              back={
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4">
+                      We&apos;re sending these Billionaires off-world, offline.
+                    </h3>
+                    <p>
+                      On October 18th, a rocket of our own design will carry these little
+                      Billionaire creations to the stratosphere, while we celebrate an internet free
+                      from their Billionaire antics at the TwitchCon Block Party!
+                    </p>
+                    <p className="mt-4">
+                      Build your own Billionaire to get in on the joke and follow{' '}
+                      <strong>@firefox</strong> for updates leading up to the launch!
+                    </p>
+                  </div>
+                </Window>
+              }
+              effect="flip"
+              image="/assets/images/rocket.webp"
+              priority
+            >
+              <Scrim className="h-65 bg-contain!">
+                <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-12 ml-4 landscape:ml-8">
+                  Let&apos;s send these Billionaires to actual, for real-real space.
+                </h1>
+                <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
+                  Join us during TwitchCon to watch us blast our little Billionaire creations into
+                  space on a rocket of our own design.
+                </p>
+              </Scrim>
+            </BentoDual>
+          )}
+          {isLaunchCompleted && (
+            <BentoDual
+              className="flex w-full h-full"
+              back={
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4">
+                      Two launches in one
+                    </h3>
+                    <p>
+                      We launched a new card game, Data War, and we launched Billionaires into
+                      space. Couldn&apos;t join us IRL at TwitchCon? Quell your FOMO right here.
+                    </p>
+                    <LinkButton
+                      href="/twitchcon"
+                      title="Go to TwitchCon page"
+                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent active:bg-accent"
+                      trackableEvent="click_twitchcon_details_cta"
+                    >
+                      Twitchcon Recap
+                    </LinkButton>
+                  </div>
+                </Window>
+              }
+              effect="flip"
+              image="/assets/images/recap-twitchcon.webp"
+              priority
+            >
+              <div className="h-full bg-gradient-to-b from-black to-[50%] to-transparent">
+                <p className="text-nav-item pb-2 pt-12 ml-4 landscape:ml-8">RECAP</p>
+                <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-4 ml-4 landscape:ml-8">
+                  TwitchCon was a blast!
+                </h1>
+                <p className="text-regular-custom landscape:text-lg-custom mt-4 ml-4 landscape:ml-8 mr-[4rem] landscape:mr-[5.375rem]">
+                  Thanks for everything, San Diego.
+                </p>
+              </div>
+            </BentoDual>
+          )}
         </div>
         <div className="h-[15.625rem] portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 landscape:row-start-4">
           {/* BBOOWYW Bento */}
           <BentoDual
             className="h-full"
+            disabled={isLaunchCompleted}
             effect="flip"
-            back={
-              <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
+            back={<OrangeCard />}
+          >
+            {isLaunchCompleted ? (
+              <OrangeCard isLaunchCompleted />
+            ) : (
+              <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
                 <Image
                   src="/assets/images/icons/flip.svg"
                   alt="Flip card"
                   width={24}
                   height={24}
-                  className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
+                  className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.2rem] right-[0.2rem]"
                 />
-                <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
-                  <h2 className="text-title-1 mb-2 text-[2rem]">
-                    #Billionaire
-                    <br className="landscape:hidden" />
-                    BlastOff
-                  </h2>
-                  <p className="text-regular-custom">
-                    With Billionaires permanently off-planet, we can finally browse in peace,
-                    indulge our curiosities, and open what we want.
-                  </p>
-                </div>
-                <LinkButton
-                  href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
-                  target="_blank"
-                  trackableEvent="click_firefox_owyw_logo"
-                >
-                  <Image
-                    src="/assets/images/firefox-open.webp"
-                    width={120}
-                    height={43}
-                    alt=""
-                    className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
-                  />
-                </LinkButton>
+                <h4 className="text-title-1 mb-3">
+                  #Billionaire
+                  <br className="landscape:hidden" />
+                  BlastOff
+                </h4>
+                <p className="text-body-small">
+                  Billionaires go to space on rockets fueled by your data. We know a better way.
+                </p>
               </div>
-            }
-          >
-            <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
-              <Image
-                src="/assets/images/icons/flip.svg"
-                alt="Flip card"
-                width={24}
-                height={24}
-                className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.2rem] right-[0.2rem]"
-              />
-              <h4 className="text-title-1 mb-3">
-                #Billionaire
-                <br className="landscape:hidden" />
-                BlastOff
-              </h4>
-              <p className="text-body-small">
-                Billionaires go to space on rockets fueled by your data. We know a better way.
-              </p>
-            </div>
+            )}
           </BentoDual>
         </div>
         <div
@@ -328,7 +394,8 @@ export default async function Home({
           <div className="portrait:order-13 landscape:col-span-12">
             <CountDown
               className="landscape:mb-0!"
-              isLaunchCompleted={isLaunchCompleted}
+              isPhase2B={isPhase2B}
+              isPhase2C={isPhase2C}
               cta={
                 <LinkButton
                   href="/twitchcon"

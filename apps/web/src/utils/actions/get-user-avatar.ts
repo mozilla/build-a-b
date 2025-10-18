@@ -2,16 +2,17 @@
 
 import type { AvatarData, DatabaseAvailableSelfiesResponse, DatabaseAvatarResponse } from '@/types';
 import { cookies } from 'next/headers';
-import { COOKIE_NAME } from '../constants';
+import { COOKIE_NAME, MAX_SELFIES } from '../constants';
 import { buildImageUrl } from '../helpers/images';
 import { createClient } from '../supabase/server';
-import { sortSelfies } from '../helpers/order-by-date';
 
 export async function getUserAvatar(userUuid?: string): Promise<AvatarData | null> {
   try {
     const [supabase, cookieStore] = await Promise.all([createClient(), cookies()]);
 
     const userAssociationId = userUuid || cookieStore.get(COOKIE_NAME)?.value || '';
+
+    console.log(userAssociationId);
 
     if (!userAssociationId) {
       throw new Error("Can't retrieve avatar information.");
@@ -49,9 +50,13 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       bio: avatar.character_story || '',
       name: `${avatar.first_name} ${avatar.last_name}`,
       uuid: userAssociationId,
-      selfies: avatar.selfies.sort(sortSelfies()),
+      selfies: avatar.selfies,
       selfieAvailability: {
-        selfies_available: availableSelfies?.selfies_available || 0,
+        selfies_available:
+          avatar.selfies.length === MAX_SELFIES ||
+          typeof availableSelfies?.selfies_available !== 'number'
+            ? 0
+            : availableSelfies?.selfies_available,
         next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
       },
     };

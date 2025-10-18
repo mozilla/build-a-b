@@ -6,6 +6,7 @@ import {
   type ChoiceConfig,
   type SelfieAvailabilityState,
 } from '@/types';
+import { MAX_SELFIES } from '@/utils/constants';
 import {
   createContext,
   useCallback,
@@ -43,10 +44,9 @@ interface PrimaryFlowContextValue {
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
 
-export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarData | null }>> = ({
-  children,
-  initialData,
-}) => {
+export const PrimaryContextProvider: FC<
+  PropsWithChildren<{ initialData: AvatarData | null; isEasterEggEnabled: boolean }>
+> = ({ children, initialData, isEasterEggEnabled }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
   const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
@@ -65,8 +65,24 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
 
     const { selfies_available, next_at } = avatarData.selfieAvailability;
 
-    if (next_at && next_at.getTime() >= now) {
+    // If user reached selfies limit + easter egg, show coming soon
+    if (avatarData.selfies.length === MAX_SELFIES + 1) {
+      setSelfieAvailabilityState('COMING_SOON');
+      return;
+    }
+
+    // Check cooldown period BEFORE checking for easter egg availability
+    if (
+      (selfies_available && next_at && next_at.getTime() >= now) ||
+      (avatarData.selfies.length === MAX_SELFIES && next_at && next_at.getTime() >= now)
+    ) {
       setSelfieAvailabilityState('COOL_DOWN_PERIOD');
+      return;
+    }
+
+    // If user has exactly 4 selfies and cooldown is done, show easter egg (if feature flag is enabled)
+    if (avatarData.selfies.length === MAX_SELFIES && isEasterEggEnabled) {
+      setSelfieAvailabilityState('EASTER_EGG');
       return;
     }
 
@@ -76,7 +92,7 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
     }
 
     setSelfieAvailabilityState('AVAILABLE');
-  }, [avatarData]);
+  }, [avatarData, isEasterEggEnabled]);
 
   const reset = useCallback(() => {
     setUserChoices(initialChoices);
