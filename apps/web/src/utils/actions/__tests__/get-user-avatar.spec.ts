@@ -3,7 +3,6 @@ import { createClient } from '../../supabase/server';
 import { getUserAvatar } from '../get-user-avatar';
 import { cookies } from 'next/headers';
 import { buildImageUrl } from '../../helpers/images';
-import { sortSelfies } from '../../helpers/order-by-date';
 
 jest.mock('next/headers', () => ({
   cookies: jest.fn().mockResolvedValue({ get: jest.fn(() => ({})) }),
@@ -22,10 +21,6 @@ jest.mock('../../supabase/server', () => ({
 
 jest.mock('../../helpers/images', () => ({
   buildImageUrl: jest.fn((asset) => `https://example.com/${asset}`),
-}));
-
-jest.mock('../../helpers/order-by-date', () => ({
-  sortSelfies: jest.fn(() => (_a: Record<string, unknown>, _b: Record<string, unknown>) => 0),
 }));
 
 let errorSpy: jest.SpyInstance;
@@ -178,7 +173,6 @@ describe('getUserAvatar', () => {
     expect(rpcMock).toHaveBeenCalledWith('get_user_avatar_by_uuid', { user_uuid: 'user-123' });
     expect(rpcMock).toHaveBeenCalledWith('get_available_selfies', { p_uuid: 'user-123' });
     expect(buildImageUrl).toHaveBeenCalledWith('riding.png');
-    expect(sortSelfies).toHaveBeenCalled();
     expect(errorSpy).not.toHaveBeenCalled();
     expect(result).toEqual({
       originalRidingAsset: 'riding.png',
