@@ -11,6 +11,7 @@ import Bento from '../Bento';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ProgressBar from '../ProgressBar';
 import { useVaultContext } from '../Vault/VaultContext';
+import { MAX_SELFIES } from '@/utils/constants';
 
 interface BentoPlaypenSelfieProps {
   avatarData?: AvatarData;
@@ -44,7 +45,9 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
       if (distance <= 0) {
         setTimeRemaining('00:00:00');
         setTimerRole('alert');
-        setSelfieAvailabilityState('AVAILABLE');
+        setSelfieAvailabilityState(
+          avatarData.selfies.length === MAX_SELFIES ? 'EASTER_EGG' : 'AVAILABLE',
+        );
         return;
       }
 
@@ -64,6 +67,7 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
   }, [
     selfieAvailabilityState,
     avatarData?.selfieAvailability?.next_at,
+    avatarData?.selfies?.length,
     setSelfieAvailabilityState,
   ]);
 

@@ -25,6 +25,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const resolution = useWindowSize();
   const { avatarData } = usePrimaryFlowContext();
+
   const swiperOptions = useMemo(
     () => ({
       spaceBetween: resolution === 'landscape' ? -300 : -80,
@@ -84,6 +85,11 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     };
   }, [avatarData, sortedSelfies, activeSlideIndex]);
 
+  const isEasterEgg = useMemo(() => {
+    if (!sortedSelfies) return null;
+    return sortedSelfies[activeSlideIndex]?.id === -1;
+  }, [activeSlideIndex, sortedSelfies]);
+
   return (
     <PlaypenPopup
       title="Your Billionaire vault"
@@ -96,12 +102,21 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
         <PlaypenSave action={action} V2 />
       ) : (
         <div className="w-full flex flex-col items-center portrait:py-12 landscape:my-6">
-          <h3 className="text-title-3 text-center">Your Billionaire Vault</h3>
-          <p className="text-center max-w-[39.0625rem]">
-            This is your gallery of everything you and your Billionaire have done together. Every
-            selfie, every successful launch into space. You&apos;re always welcome back to
-            reminisce.
-          </p>
+          <h3 className="text-title-3 text-center">
+            {isEasterEgg ? 'You just unlocked a data card!' : 'Your Billionaire Vault'}
+          </h3>
+          {isEasterEgg ? (
+            <p className="text-center max-w-[39.0625rem]">
+              This isn&apos;t just any Easter Egg - it&apos;s a real card from Data War, our upcoming physical
+              and digital card game, rolling out at TwitchCon.
+            </p>
+          ) : (
+            <p className="text-center max-w-[39.0625rem]">
+              This is your gallery of everything you and your Billionaire have done together. Every
+              selfie, every successful launch into space. You&apos;re always welcome back to
+              reminisce.
+            </p>
+          )}
           <div className="w-full my-6">
             <Carousel
               containerClassName="w-full max-w-[44rem]"
@@ -150,7 +165,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
                         src={asset ?? ''}
                         width={466}
                         height={466}
-                        className={`rounded-xl w-[29.125rem] h-[29.125rem] hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
+                        className={`rounded-xl w-[18.125rem] h-[18.125rem] hidden w-auto max-w-[29.125rem] landscape:block transition-opacity duration-500 ${
                           isLandscapeLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                         alt=""
