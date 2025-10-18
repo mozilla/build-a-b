@@ -44,10 +44,9 @@ interface PrimaryFlowContextValue {
 
 export const PrimaryFlowContext = createContext<PrimaryFlowContextValue | undefined>(undefined);
 
-export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarData | null }>> = ({
-  children,
-  initialData,
-}) => {
+export const PrimaryContextProvider: FC<
+  PropsWithChildren<{ initialData: AvatarData | null; isEasterEggEnabled: boolean }>
+> = ({ children, initialData, isEasterEggEnabled }) => {
   const [activeGroup, setActiveGroup] = useState<ChoiceGroup | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<ChoiceGroup | null>(null);
   const [avatarData, setAvatarData] = useState<AvatarData | null>(initialData);
@@ -81,8 +80,8 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
       return;
     }
 
-    // If user has exactly 4 selfies and cooldown is done, show easter egg
-    if (avatarData.selfies.length === MAX_SELFIES) {
+    // If user has exactly 4 selfies and cooldown is done, show easter egg (if feature flag is enabled)
+    if (avatarData.selfies.length === MAX_SELFIES && isEasterEggEnabled) {
       setSelfieAvailabilityState('EASTER_EGG');
       return;
     }
@@ -93,7 +92,7 @@ export const PrimaryContextProvider: FC<PropsWithChildren<{ initialData: AvatarD
     }
 
     setSelfieAvailabilityState('AVAILABLE');
-  }, [avatarData]);
+  }, [avatarData, isEasterEggEnabled]);
 
   const reset = useCallback(() => {
     setUserChoices(initialChoices);
