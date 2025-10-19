@@ -32,7 +32,7 @@ Open http://localhost:3333 in your browser to access the Studio.
 
 ## Configuration
 The project configuration lives in [`sanity.config.ts`](packages/studio/sanity.config.ts:1), including:
-- **projectId** (`qvqrpwsj`)  
+- **projectId** (`<your-project-id>`)  
 - **dataset** (`production`)  
 - Studio **title** and **name**  
 - Enabled **plugins**
