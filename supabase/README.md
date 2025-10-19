@@ -446,7 +446,7 @@ To pull the database schema (tables, functions, policies, etc.) from your remote
 
 2. **Link to your remote project** (one time only):
    ```bash
-   supabase link --project-ref oqqutatvbdlpumixjiwg
+   supabase link --project-ref <your-project-ref>
    ```
 
 3. **Pull the schema**:

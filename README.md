@@ -25,7 +25,6 @@ This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off
 ## Project Overview
 
 **Project name**: Mozilla Billionaire Blast-Off  
-**Owners**: Platform / Project Owner (fill in CODEOWNERS)  
 **Slack/Comms**: #platform or project channel  
 **Live URLs**: preview via Vercel; production via Vercel/AWS (per project)
 
@@ -76,7 +75,7 @@ For more in-depth information, please see the following documents:
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/your-org/build-a-b.git](https://github.com/your-org/build-a-b.git)
+    git clone [git@github.com:mozilla/build-a-b.git](git@github.com:mozilla/build-a-b.git)
     cd build-a-b
     ```
 2.  Install dependencies:
