@@ -61,20 +61,6 @@ export default async function Page() {
       src: '/assets/images/galleries/datawar/4.webp',
       isVideo: false,
     },
-    ...(isLaunchCompleted
-      ? [
-          {
-            alt: 'Sample video 1',
-            src: '/assets/videos/sample.mp4',
-            isVideo: true,
-          },
-          {
-            alt: 'Sample video 2',
-            src: '/assets/videos/sample.mp4',
-            isVideo: true,
-          },
-        ]
-      : []),
   ];
 
   return (
