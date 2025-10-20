@@ -201,6 +201,8 @@ export default async function Page() {
         </div>
       </Hero>
 
+      {isLaunchCompleted && <ImageGallery images={imagesForGallery} />}
+
       {!isLaunchCompleted && (
         <CardsSection
           image="/assets/images/mixed-blue-grid.webp"
