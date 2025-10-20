@@ -64,11 +64,3 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
 
 -   Rotate long-lived secrets periodically and after any suspected exposure.
 -   Integrate basic monitoring/alerts for deploy failures and build-time errors (Sentry/Datadog or provider tooling).
-
-## Quick links
-
--   Studio package: [`apps/studio`](https://www.google.com/search?q=apps/studio:1)
--   Web app: [`apps/web`](https://www.google.com/search?q=apps/web:1)
--   Env example: [`.env.example`](https://www.google.com/search?q=.env.example:1)
-
-
