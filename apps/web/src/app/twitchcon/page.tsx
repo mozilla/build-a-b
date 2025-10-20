@@ -72,6 +72,20 @@ export default async function Page() {
       src: '/assets/images/galleries/twitchcon/4.webp',
       isVideo: false,
     },
+    ...(isLaunchCompleted
+      ? [
+          {
+            alt: 'Sample video 1',
+            src: '/assets/videos/sample.mp4',
+            isVideo: true,
+          },
+          {
+            alt: 'Sample video 2',
+            src: '/assets/videos/sample.mp4',
+            isVideo: true,
+          },
+        ]
+      : []),
   ];
 
   const cookieStore = await cookies();
@@ -200,6 +214,8 @@ export default async function Page() {
           </div>
         </div>
       </Hero>
+
+      {isLaunchCompleted && <ImageGallery images={imagesForGallery} />}
 
       {!isLaunchCompleted && (
         <CardsSection
