@@ -4,7 +4,7 @@ import { COOKIE_NAME } from '@/utils/constants';
 
 export function middleware(request: NextRequest) {
   // Handle /game route - rewrite to static game assets
-  if (request.nextUrl.pathname.startsWith('/game')) {
+  if (request.nextUrl.pathname.startsWith('/game') && process.env.FLAG_SHOW_GAME === 'true') {
     const path =
       request.nextUrl.pathname === '/game'
         ? '/assets/game/index.html'
