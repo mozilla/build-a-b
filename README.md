@@ -194,7 +194,7 @@ The `apps/game` Vite application is automatically integrated into the Next.js bu
 2. The game is built with Vite using base path `/assets/game/` (configured in `vite.config.ts`)
 3. Build output from `apps/game/dist/` is copied to `apps/web/public/assets/game/`
 4. Next.js serves the game as static files
-5. Next.js rewrite rules (in `next.config.ts`) make the game accessible at `/game`
+5. Next.js middleware (in `apps/web/src/middleware.ts`) rewrites `/game` requests to `/assets/game/index.html`
 
 **Accessing the Game:**
 - Local dev: `http://localhost:5173` (separate Vite server)

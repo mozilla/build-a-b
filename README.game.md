@@ -203,6 +203,7 @@ The game is rendered at the `/game` route of the main Mozilla "Billionaire Blast
 - **Architecture**: Separate Vite/React SPA embedded within the Next.js application
 - **Isolation**: Runs as an independent React application (separate from Next.js React instance)
 - **Serving**: Static files served from Next.js public directory at `/assets/game/`
+- **Routing**: Next.js middleware (in `apps/web/src/middleware.ts`) handles URL rewrites from `/game` to `/assets/game/index.html`
 
 ### Development Environment
 
