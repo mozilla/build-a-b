@@ -122,7 +122,7 @@ This ensures assets load correctly when served from the Next.js public directory
 The game is served as a static SPA from within the Next.js application:
 
 1. **Static Files**: Game build output lives in `apps/web/public/assets/game/`
-2. **Routing**: Next.js rewrites in `apps/web/next.config.ts` map `/game` → `/assets/game/index.html`
+2. **Routing**: Next.js middleware (in `apps/web/src/middleware.ts`) rewrites `/game` → `/assets/game/index.html`
 3. **Assets**: All game assets (images, JS, CSS) are prefixed with `/assets/game/` in production
 
 ### File Structure
