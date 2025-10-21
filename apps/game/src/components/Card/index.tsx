@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import type { CardProps } from './types';
-import CardBack from '../../assets/card-back.webp';
+import CardBack from '../../assets/cards/card-back.webp';
 
 export const Card: FC<CardProps> = ({
   cardFrontSrc,
