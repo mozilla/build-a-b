@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  rewrites: async () => [
+    {
+      source: '/game',
+      destination: '/assets/game/index.html',
+    },
+    {
+      source: '/game/:path*',
+      destination: '/assets/game/:path*',
+    },
+  ],
 };
 
 export default nextConfig;

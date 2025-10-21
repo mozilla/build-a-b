@@ -103,7 +103,8 @@ build-a-b/
 ├─ apps/
 │  ├─ web/             # Next.js application (frontend)
 │  │  └─ .env.example  # Web-level .env is required for build
-│  └─ studio/          # Sanity CMS Studio (content backend)
+│  ├─ studio/          # Sanity CMS Studio (content backend)
+│  └─ game/            # Vite/React SPA (embedded game)
 ├─ packages/           # shared packages (ui, config, utils)
 ├─ .env.example
 ├─ package.json
@@ -123,6 +124,12 @@ build-a-b/
 
 -   Sanity Studio configured; schemas live in `apps/studio/schemaTypes`.
 
+### [`apps/game`](apps/game:1)
+
+-   Vite/React SPA built with Rolldown for performance.
+-   Automatically builds and embeds into the Next.js app at `/assets/game/` during the build process.
+-   Accessible via the `/game` route in the deployed Next.js application.
+
 ---
 
 ## Available Scripts
@@ -131,7 +138,7 @@ Root scripts:
 
 ```bash
 pnpm dev      # Start web and studio (local)
-pnpm build    # Build all packages
+pnpm build    # Build all packages (game builds automatically during web prebuild)
 pnpm start    # Start web in production
 pnpm lint
 pnpm format
@@ -142,7 +149,7 @@ Web package:
 
 ```bash
 pnpm --filter web dev
-pnpm --filter web build
+pnpm --filter web build    # Automatically builds game app first via prebuild hook
 pnpm --filter web start
 pnpm --filter web lint
 ```
@@ -155,6 +162,13 @@ pnpm --filter studio build
 pnpm --filter studio deploy
 ```
 
+Game package:
+
+```bash
+pnpm --filter game dev      # Run game in dev mode at http://localhost:5173
+pnpm --filter game build    # Build game (happens automatically during web build)
+```
+
 ---
 
 ## Architecture & Technologies
@@ -164,6 +178,29 @@ pnpm --filter studio deploy
 -   Styling: Tailwind v4, HeroUI component wrappers
 -   CMS: Sanity (GROQ, next-sanity)
 -   Feature flags: Vercel Flags SDK
+-   Game: Vite/React SPA with Rolldown (embedded via build process)
+
+### Game Build Integration
+
+The `apps/game` Vite application is automatically integrated into the Next.js build process:
+
+**Local Development:**
+- Run `pnpm --filter game dev` to develop the game independently at `http://localhost:5173`
+- Game uses base path `/` for local development
+- Game is NOT automatically available in the Next.js dev server (run separately)
+
+**Production Build:**
+1. When `pnpm build` or `pnpm --filter web build` runs, the web app's `prebuild` hook executes first
+2. The game is built with Vite using base path `/assets/game/` (configured in `vite.config.ts`)
+3. Build output from `apps/game/dist/` is copied to `apps/web/public/assets/game/`
+4. Next.js serves the game as static files
+5. Next.js rewrite rules (in `next.config.ts`) make the game accessible at `/game`
+
+**Accessing the Game:**
+- Local dev: `http://localhost:5173` (separate Vite server)
+- Production/deployed: `https://yourdomain.com/game` (served by Next.js)
+
+All asset URLs (images, JS, CSS) are automatically prefixed with `/assets/game/` in production builds.
 
 ---
 
