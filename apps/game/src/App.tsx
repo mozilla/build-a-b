@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from './components/Card';
 import type { CardState } from './components/Card/types';
-import CommonCard from './assets/common-1.webp';
+import CommonCard from './assets/cards/common-1.webp';
 
 /**
  * This is the main container of the application.
