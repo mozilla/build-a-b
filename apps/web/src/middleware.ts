@@ -3,12 +3,14 @@ import type { NextRequest } from 'next/server';
 import { COOKIE_NAME } from '@/utils/constants';
 
 export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
   // Handle /game route - rewrite to static game assets
-  if (request.nextUrl.pathname.startsWith('/game') && process.env.FLAG_SHOW_GAME === 'true') {
+
+  if (pathname.startsWith('/datawar/game') && process.env.FLAG_SHOW_GAME === 'true') {
     const path =
-      request.nextUrl.pathname === '/game'
+      pathname === '/datawar/game'
         ? '/assets/game/index.html'
-        : request.nextUrl.pathname.replace('/game', '/assets/game');
+        : pathname.replace('/datawar/game', '/assets/game');
 
     return NextResponse.rewrite(new URL(path, request.url));
   }
@@ -16,11 +18,9 @@ export function middleware(request: NextRequest) {
   // Takes user to profile page /a/uuid if cookie is present
   const cookie = request.cookies.get(COOKIE_NAME);
   const hasSearchParam = request.nextUrl.searchParams.has('s');
-  const uuid = request.nextUrl.pathname.includes('/a/')
-    ? request.nextUrl.pathname.replace('/a/', '')
-    : null;
+  const uuid = pathname.includes('/a/') ? pathname.replace('/a/', '') : null;
 
-  if (cookie && !hasSearchParam && request.nextUrl.pathname === '/') {
+  if (cookie && !hasSearchParam && pathname === '/') {
     return NextResponse.redirect(new URL(`/a/${cookie.value}`, request.url));
   }
 
@@ -35,5 +35,5 @@ export function middleware(request: NextRequest) {
 
 // Paths where this middleware is applied
 export const config = {
-  matcher: ['/', '/a/:path*', '/game/:path*'],
+  matcher: ['/', '/a/:path*', '/datawar/:path*'],
 };

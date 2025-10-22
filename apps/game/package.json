@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@redux-devtools/extension": "^3.3.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@xstate/react": "^6.0.0",
     "framer-motion": "^11.18.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "xstate": "^5.23.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
