@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "predev": "node count-images.js",
-    "prebuild": "node count-images.js",
+    "prebuild": "node count-images.js && cd ../.. && pnpm --filter game build && cd apps/web && mkdir -p public/assets/game && cp -r ../game/dist/* public/assets/game/",
     "dev": "next dev --turbopack",
     "dev:https": "next dev --turbopack --experimental-https",
     "build": "next build",

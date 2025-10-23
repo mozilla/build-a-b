@@ -1,0 +1,284 @@
+/* Tailwind import */
+@import 'tailwindcss';
+@import './typography.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-charcoal: #333336;
+  --color-foreground: #11181c;
+  --color-common-ash: #f8f6f4;
+  --color-common-teal: #329971;
+  --color-secondary-blue: #00a6f9;
+  --color-secondary-purple: #754fe0;
+  --color-secondary-gray: #d4d4d8;
+  --color-accent: #53ffbc;
+  --color-dark-charcoal: #07070f;
+  --font-sharp-sans: 'Sharp Sans', sans-serif;
+  --font-size-xs10: 0.714rem;
+}
+
+/* Theming overrides */
+@theme inline {
+  --container-width-landscape: 82.0625rem;
+  --container-width-portrait: 22.375rem;
+}
+
+/* Limit Portrait scaling to devices under 1024px */
+@custom-variant landscape {
+  @media (orientation: landscape), (min-width: 1024px) {
+    @slot;
+  }
+}
+
+@custom-variant portrait {
+  @media (orientation: portrait) and (max-width: 1023.98px) {
+    @slot;
+  }
+}
+
+@layer components {
+  .site-container {
+    @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
+    @variant landscape {
+      @apply max-w-[var(--container-width-landscape)] py-20;
+    }
+  }
+
+  .site-footer {
+    @apply relative p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-[0.125rem] border-common-ash rounded-xl;
+  }
+
+  .primary-button {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 bg-accent border-accent text-charcoal font-bold hover:bg-transparent hover:text-accent transition-colors duration-300 cursor-pointer;
+  }
+
+  .secondary-button {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
+  }
+}
+
+body {
+  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp-sans text-common-ash font-semibold;
+}
+
+@keyframes ticker-horizontal-infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.25rem);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0) rotate(25.48deg);
+  }
+  50% {
+    transform: translateY(-8rem) rotate(25.48deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-scroll-without-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-scroll-with-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+/* Pause on hover */
+.animate-scroll-with-pause:hover {
+  animation-play-state: paused;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Header Animation Keyframes */
+@keyframes flier-1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  5.555% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+  100% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+}
+
+@keyframes flier-2 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  4.166% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+  100% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+}
+
+@keyframes flier-3 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  26.388% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+  100% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+}
+
+@keyframes floater-1 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(-11rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-2 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(2.9375rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-3 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  8.333% {
+    transform: translateY(4.4375rem) rotate(11.444deg);
+  }
+  91.666% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes float-tilt {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3rem) rotate(20deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2.5rem) rotate(-15deg);
+  }
+}
+
+@utility animate-float-tilt {
+  animation: float-tilt 6s ease-in-out infinite;
+}
+
+@keyframes float-tilt-left {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2rem, -1.5rem) rotate(-18deg);
+  }
+  50% {
+    transform: translate(0, 0.5rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(-1.5rem, -2rem) rotate(-12deg);
+  }
+}
+
+@utility animate-float-tilt-left {
+  animation: float-tilt-left 7s ease-in-out infinite;
+}
+
+@keyframes float-tilt-right {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(2rem, -1.5rem) rotate(22deg);
+  }
+  50% {
+    transform: translate(0.5rem, 1rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(1.5rem, -2rem) rotate(15deg);
+  }
+}
+
+@utility animate-float-tilt-right {
+  animation: float-tilt-right 7s ease-in-out infinite;
+}
+
+@keyframes float-tilt-2 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotate(22.618deg);
+  }
+  50% {
+    transform: translateX(-1rem) translateY(-3.625rem) rotate(-12.849deg);
+  }
+}
+
+@keyframes float-slide-1 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(20rem) translateY(1.5rem);
+  }
+}
