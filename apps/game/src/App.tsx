@@ -1,5 +1,6 @@
-import { GameProvider } from './providers/GameProvider';
+import { ScreenRenderer } from '@/components';
 import { Game } from './components/Game';
+import { GameProvider } from './providers/GameProvider';
 
 /**
  * This is the main container of the application.
@@ -7,7 +8,10 @@ import { Game } from './components/Game';
 function App() {
   return (
     <GameProvider>
-      <Game />
+      <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
+        <Game />
+        <ScreenRenderer />
+      </div>
     </GameProvider>
   );
 }

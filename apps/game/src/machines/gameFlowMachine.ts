@@ -36,6 +36,35 @@ export type GameFlowEvent =
   | { type: 'RESET_GAME' }
   | { type: 'QUIT_GAME' };
 
+export type EventType = GameFlowEvent['type'];
+/**
+ * Events that occur during non-gameplay phases (setup and intro screens)
+ * These events fire before actual card gameplay begins
+ */
+export const NON_GAMEPLAY_EVENT_TYPES = [
+  'START_GAME',
+  'SELECT_BILLIONAIRE',
+  'SELECT_BACKGROUND',
+  'SHOW_GUIDE',
+  'SKIP_INSTRUCTIONS',
+  'SHOW_MISSION',
+  'START_PLAYING',
+  'SKIP_GUIDE',
+  'VS_ANIMATION_COMPLETE',
+] as const;
+
+/**
+ * Type union of all non-gameplay event types
+ */
+export type NonGameplayEventType = (typeof NON_GAMEPLAY_EVENT_TYPES)[number];
+export type GameplayEventType = Exclude<EventType, NonGameplayEventType>;
+
+/**
+ * Type union of events that occur during non-gameplay phases
+ */
+export type NonGameplayEvent = Extract<GameFlowEvent, { type: NonGameplayEventType }>;
+export type GameplayEvent = Exclude<GameFlowEvent, NonGameplayEvent>;
+
 export const gameFlowMachine = createMachine(
   {
     id: 'dataWarGame',
