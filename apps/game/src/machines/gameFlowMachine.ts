@@ -16,6 +16,9 @@ export type GameFlowEvent =
   | { type: 'SELECT_BILLIONAIRE'; billionaire: string }
   | { type: 'SELECT_BACKGROUND'; background: string }
   | { type: 'SHOW_GUIDE' }
+  | { type: 'SKIP_INSTRUCTIONS' }
+  | { type: 'SHOW_MISSION' }
+  | { type: 'START_PLAYING' }
   | { type: 'SKIP_GUIDE' }
   | { type: 'VS_ANIMATION_COMPLETE' }
   | { type: 'REVEAL_CARDS' }
@@ -58,7 +61,7 @@ export const gameFlowMachine = createMachine(
 
       select_billionaire: {
         entry: assign({
-          tooltipMessage: "Whose little face is going to space?",
+          tooltipMessage: 'Whose little face is going to space?',
         }),
         on: {
           SELECT_BILLIONAIRE: 'select_background',
@@ -70,14 +73,36 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: 'Which one do you want to play on?',
         }),
         on: {
-          SELECT_BACKGROUND: 'quick_start_guide',
+          SELECT_BACKGROUND: 'intro',
+        },
+      },
+
+      intro: {
+        entry: assign({
+          tooltipMessage: 'How do I play?',
+        }),
+        on: {
+          SHOW_GUIDE: 'quick_start_guide',
+          SKIP_INSTRUCTIONS: 'vs_animation',
         },
       },
 
       quick_start_guide: {
+        entry: assign({
+          tooltipMessage: 'Quick Launch Guide',
+        }),
         on: {
-          SKIP_GUIDE: 'vs_animation',
-          SHOW_GUIDE: 'quick_start_guide',
+          SHOW_MISSION: 'your_mission',
+          SKIP_GUIDE: 'your_mission',
+        },
+      },
+
+      your_mission: {
+        entry: assign({
+          tooltipMessage: 'Your mission: (should you choose to accept it)',
+        }),
+        on: {
+          START_PLAYING: 'vs_animation',
         },
       },
 
@@ -222,5 +247,5 @@ export const gameFlowMachine = createMachine(
         return false;
       },
     },
-  }
+  },
 );
