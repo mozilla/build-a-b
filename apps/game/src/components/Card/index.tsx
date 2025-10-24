@@ -40,7 +40,7 @@ export const Card: FC<CardProps> = ({
       style={{ perspective: '1000px' }}
     >
       <motion.div
-        className="relative w-full h-full [transform-style:preserve-3d]"
+        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible"
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}
@@ -50,17 +50,13 @@ export const Card: FC<CardProps> = ({
         }}
       >
         {/* Back face */}
-        <div className="absolute w-full h-full backface-hidden">
-          <img src={CardBack} alt="Card back" className="w-full h-full object-cover rounded-lg" />
+        <div className="absolute w-full h-full backface-hidden overflow-visible">
+          <img src={CardBack} alt="Card back" className="w-full h-full object-contain" />
         </div>
 
         {/* Front face */}
-        <div className="absolute w-full h-full backface-hidden [transform:rotateY(180deg)]">
-          <img
-            src={cardFrontSrc}
-            alt="Card front"
-            className="w-full h-full object-cover rounded-lg"
-          />
+        <div className="absolute w-full h-full backface-hidden overflow-visible [transform:rotateY(180deg)]">
+          <img src={cardFrontSrc} alt="Card front" className="w-full h-full object-contain" />
         </div>
       </motion.div>
     </motion.div>
