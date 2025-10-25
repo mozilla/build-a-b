@@ -6,8 +6,15 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type { Card, Player, SpecialEffect } from '../types';
-import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deckBuilder';
-import { DEFAULT_GAME_CONFIG } from '../config/gameConfig';
+import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deck-builder';
+import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import {
+  compareCards,
+  applyTrackerModifier,
+  applyBlockerModifier,
+  isEffectBlocked,
+  shouldTriggerDataWar,
+} from '../utils/card-comparison';
 
 interface GameStore {
   // Player State
@@ -34,21 +41,21 @@ interface GameStore {
   showTooltip: boolean;
 
   // Actions - Game Logic
-  initializeGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy
-  ) => void;
+  initializeGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
   playCard: (playerId: 'player' | 'cpu') => void;
   collectCards: (winnerId: 'player' | 'cpu', cards: Card[]) => void;
   addLaunchStack: (playerId: 'player' | 'cpu') => void;
   swapDecks: () => void;
-  stealCards: (
-    from: 'player' | 'cpu',
-    to: 'player' | 'cpu',
-    count: number
-  ) => void;
+  stealCards: (from: 'player' | 'cpu', to: 'player' | 'cpu', count: number) => void;
   checkWinCondition: () => boolean;
   setActivePlayer: (playerId: 'player' | 'cpu') => void;
+
+  // Actions - Turn Resolution
+  resolveTurn: () => 'player' | 'cpu' | 'tie';
+  applyTrackerEffect: (playerId: 'player' | 'cpu', trackerCard: Card) => void;
+  applyBlockerEffect: (playerId: 'player' | 'cpu', blockerCard: Card) => void;
+  checkForDataWar: () => boolean;
+  handleCardEffect: (card: Card, playedBy: 'player' | 'cpu') => void;
 
   // Actions - Special Effects
   addPendingEffect: (effect: SpecialEffect) => void;
@@ -64,10 +71,7 @@ interface GameStore {
   toggleAudio: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
-  resetGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy
-  ) => void;
+  resetGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
 }
 
 const createInitialPlayer = (id: 'player' | 'cpu'): Player => ({
@@ -75,6 +79,7 @@ const createInitialPlayer = (id: 'player' | 'cpu'): Player => ({
   name: id === 'player' ? 'Player' : 'CPU',
   deck: [],
   playedCard: null,
+  playedCardsInHand: [],
   currentTurnValue: 0,
   launchStackCount: 0,
 });
@@ -106,7 +111,8 @@ export const useGameStore = create<GameStore>()(
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
-          cpuStrategy
+          cpuStrategy,
+          false, // Random decks for normal gameplay
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -130,6 +136,7 @@ export const useGameStore = create<GameStore>()(
           [playerId]: {
             ...playerState,
             playedCard: card,
+            playedCardsInHand: [...playerState.playedCardsInHand, { card, isFaceDown: false }], // Add face-up to stack
             deck: remainingDeck,
             currentTurnValue: card.value,
           },
@@ -144,18 +151,20 @@ export const useGameStore = create<GameStore>()(
             ...winner,
             deck: [...winner.deck, ...cards], // Add to bottom of deck
             playedCard: null,
+            playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
           },
           cardsInPlay: [],
         });
 
-        // Also clear the loser's played card
+        // Also clear the loser's played card and hand stack
         const loserId = winnerId === 'player' ? 'cpu' : 'player';
         const loser = get()[loserId];
         set({
           [loserId]: {
             ...loser,
             playedCard: null,
+            playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
           },
         });
@@ -236,6 +245,126 @@ export const useGameStore = create<GameStore>()(
         set({ activePlayer: playerId });
       },
 
+      // Turn Resolution Actions
+      resolveTurn: () => {
+        const { player, cpu } = get();
+
+        // Compare current turn values (already modified by trackers/blockers)
+        const result = compareCards(player, cpu);
+
+        if (result.isTie) {
+          return 'tie';
+        }
+
+        // Winner collects all cards in play
+        const { cardsInPlay } = get();
+        if (result.winner !== 'tie') {
+          get().collectCards(result.winner, cardsInPlay);
+        }
+
+        return result.winner;
+      },
+
+      applyTrackerEffect: (playerId, trackerCard) => {
+        const player = get()[playerId];
+
+        // Check if effect is blocked by Tracker Smacker
+        if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
+          console.log(`Tracker effect blocked by Tracker Smacker`);
+          return;
+        }
+
+        // Apply tracker modifier (add tracker value to turn total)
+        const newValue = applyTrackerModifier(player.currentTurnValue, trackerCard);
+
+        set({
+          [playerId]: {
+            ...player,
+            currentTurnValue: newValue,
+          },
+        });
+      },
+
+      applyBlockerEffect: (playerId, blockerCard) => {
+        // Blocker affects the opponent
+        const opponentId = playerId === 'player' ? 'cpu' : 'player';
+        const opponent = get()[opponentId];
+
+        // Check if effect is blocked by Tracker Smacker
+        if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
+          console.log(`Blocker effect blocked by Tracker Smacker`);
+          return;
+        }
+
+        // Apply blocker modifier (subtract from opponent's turn value)
+        const newValue = applyBlockerModifier(opponent.currentTurnValue, blockerCard);
+
+        set({
+          [opponentId]: {
+            ...opponent,
+            currentTurnValue: newValue,
+          },
+        });
+      },
+
+      checkForDataWar: () => {
+        const { player, cpu } = get();
+
+        if (!player.playedCard || !cpu.playedCard) {
+          return false;
+        }
+
+        return shouldTriggerDataWar(
+          player.playedCard,
+          cpu.playedCard,
+          player.currentTurnValue,
+          cpu.currentTurnValue,
+        );
+      },
+
+      handleCardEffect: (card, playedBy) => {
+        // Handle special card effects
+        if (!card.isSpecial || !card.specialType) {
+          return;
+        }
+
+        // Create special effect
+        const effect: SpecialEffect = {
+          type: card.specialType,
+          playedBy,
+          card,
+          isInstant: ['forced_empathy', 'tracker_smacker', 'hostile_takeover'].includes(
+            card.specialType,
+          ),
+        };
+
+        // If instant effect, we'll handle it immediately in the machine
+        // Otherwise, add to pending effects queue
+        if (!effect.isInstant) {
+          get().addPendingEffect(effect);
+        }
+
+        // Handle specific effects
+        switch (card.specialType) {
+          case 'tracker':
+            get().applyTrackerEffect(playedBy, card);
+            break;
+          case 'blocker':
+            get().applyBlockerEffect(playedBy, card);
+            break;
+          case 'launch_stack':
+            get().addLaunchStack(playedBy);
+            break;
+          case 'tracker_smacker':
+            get().setTrackerSmackerActive(playedBy);
+            break;
+          case 'forced_empathy':
+            get().swapDecks();
+            break;
+          // Other effects will be handled when processing pending effects
+        }
+      },
+
       // Special Effects Actions
       addPendingEffect: (effect) => {
         set({ pendingEffects: [...get().pendingEffects, effect] });
@@ -299,7 +428,8 @@ export const useGameStore = create<GameStore>()(
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
-          cpuStrategy
+          cpuStrategy,
+          false, // Normal random decks for reset
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -317,8 +447,8 @@ export const useGameStore = create<GameStore>()(
         });
       },
     }),
-    { name: 'DataWarGame' }
-  )
+    { name: 'DataWarGame' },
+  ),
 );
 
 // Selector hooks for better performance

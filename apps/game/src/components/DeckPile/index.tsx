@@ -5,7 +5,7 @@
 import { type FC } from 'react';
 import type { DeckPileProps } from './types';
 import { Card } from '../Card';
-import { CARD_BACK_IMAGE } from '../../config/gameConfig';
+import { CARD_BACK_IMAGE } from '../../config/game-config';
 
 export const DeckPile: FC<DeckPileProps> = ({ cardCount, owner, onClick }) => {
   const isPlayer = owner === 'player';
