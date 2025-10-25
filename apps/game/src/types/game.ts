@@ -14,18 +14,27 @@ export type GamePhase =
   | 'ready' // Ready to start turn (tap deck prompt)
   | 'revealing' // Cards being revealed
   | 'comparing' // Values being compared
-  | 'data_war' // Data War animation (tie scenario)
-  | 'special_effect' // Special card effect is triggering
+  | 'data_war.animating' // Data War: showing "DATA WAR!" animation
+  | 'data_war.reveal_face_down' // Data War: tap to reveal 3 face-down cards
+  | 'data_war.reveal_face_up' // Data War: tap to reveal final card
+  | 'special_effect.showing' // Special effect: displaying effect to player
+  | 'special_effect.processing' // Special effect: brief delay before resolving
   | 'resolving' // Winner taking cards
   | 'game_over'; // Victory screen with share options
 
 export type WinCondition = 'all_cards' | 'launch_stacks' | null;
 
+export interface PlayedCardState {
+  card: Card;
+  isFaceDown: boolean; // True for Data War face-down cards
+}
+
 export interface Player {
   id: 'player' | 'cpu';
   name: string;
   deck: Card[]; // Cards currently in player's possession
-  playedCard: Card | null; // Card currently played this turn
+  playedCard: Card | null; // Latest card played this turn (for backwards compatibility)
+  playedCardsInHand: PlayedCardState[]; // All cards played in current hand (for stacking display)
   currentTurnValue: number; // Calculated value for current turn (base + modifiers)
   launchStackCount: number; // Number of launch stacks collected (0-3)
   billionaireCharacter?: string; // Selected billionaire (player only)
