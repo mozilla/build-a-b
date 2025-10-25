@@ -291,3 +291,42 @@ body {
     transform: translateX(20rem) translateY(1.5rem);
   }
 }
+
+/* Card animations for game - cards slide from deck position to center */
+@keyframes slide-from-top {
+  0% {
+    transform: translateY(-180px) translateZ(30px) scale(0.68);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-120px) translateZ(20px) scale(0.75);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-from-bottom {
+  0% {
+    transform: translateY(180px) translateZ(30px) scale(0.68);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(120px) translateZ(20px) scale(0.75);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@utility animate-slide-from-top {
+  animation: slide-from-top 0.5s ease-out forwards;
+}
+
+@utility animate-slide-from-bottom {
+  animation: slide-from-bottom 0.5s ease-out forwards;
+}

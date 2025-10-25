@@ -4,6 +4,7 @@
  */
 
 import { assign, createMachine } from 'xstate';
+import { useGameStore } from '../stores/game-store';
 
 export interface GameFlowContext {
   currentTurn: number;
@@ -13,6 +14,7 @@ export interface GameFlowContext {
 
 export type GameFlowEvent =
   | { type: 'START_GAME' }
+  | { type: 'SKIP_TO_GAME' } // Skip setup and go directly to ready state
   | { type: 'SELECT_BILLIONAIRE'; billionaire: string }
   | { type: 'SELECT_BACKGROUND'; background: string }
   | { type: 'SHOW_GUIDE' }
@@ -85,6 +87,7 @@ export const gameFlowMachine = createMachine(
         }),
         on: {
           START_GAME: 'select_billionaire',
+          SKIP_TO_GAME: 'ready', // Allow skipping directly to ready for testing
         },
       },
 
@@ -272,8 +275,9 @@ export const gameFlowMachine = createMachine(
   {
     guards: {
       hasWinCondition: () => {
-        // Will be implemented to check Zustand store
-        return false;
+        // Check Zustand store for win condition
+        const state = useGameStore.getState();
+        return state.winner !== null && state.winCondition !== null;
       },
     },
   },
