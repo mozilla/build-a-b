@@ -32,11 +32,10 @@ export const Card: FC<CardProps> = ({
         y: currentPosition.y,
         width: isFrontVisible ? '7.8125rem' : '5.375rem',
         height: isFrontVisible ? '10.9375rem' : '7.5rem',
+        maxWidth: isFrontVisible ? '125px' : '86px',
+        maxHeight: isFrontVisible ? '175px' : '120px',
       }}
-      transition={{
-        duration: 0.7,
-        ease: 'easeInOut',
-      }}
+      transition={{ duration: 0.7, ease: 'easeInOut' }}
       style={{ perspective: '1000px' }}
     >
       <motion.div
@@ -44,10 +43,7 @@ export const Card: FC<CardProps> = ({
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}
-        transition={{
-          duration: 0.7,
-          ease: 'easeInOut',
-        }}
+        transition={{ duration: 0.7, ease: 'easeInOut' }}
       >
         {/* Back face */}
         <div className="absolute w-full h-full backface-hidden overflow-visible">
