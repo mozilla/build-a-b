@@ -1,15 +1,18 @@
+import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { Welcome } from '@/components/Screens/Welcome';
 import { AnimatePresence } from 'framer-motion';
-import type { FC } from 'react';
+import type { FC, HTMLAttributes } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
-export interface BaseScreenProps {
+import { ScreenBackground } from './Background';
+
+export interface BaseScreenProps extends HTMLAttributes<HTMLDivElement> {
   send?: ReturnType<typeof useGameMachine>['send'];
 }
 
 // Screen registry mapping state machine phases to components
 const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   welcome: Welcome,
-  // select_billionaire: Welcome, // Placeholder until implemented
+  select_billionaire: SelectBillionaire,
   // select_background: Welcome, // Placeholder until implemented
   // intro: Welcome, // Placeholder until implemented
   // quick_start_guide: Welcome, // Placeholder until implemented
@@ -46,9 +49,13 @@ export const ScreenRenderer: FC = () => {
 
   // Pass send function and other common props to all screens
   return (
-    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] bg-black flex items-center justify-center">
+    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center">
       <AnimatePresence>
-        <ScreenComponent send={send} />
+        <ScreenBackground />
+        <ScreenComponent
+          send={send}
+          className="flex flex-col items-center justify-center relative w-full h-full"
+        />
       </AnimatePresence>
     </div>
   );

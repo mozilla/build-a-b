@@ -4,35 +4,51 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
+import { Text } from '@/components/Text';
 
-export const Welcome: FC<BaseScreenProps> = ({ send }) => {
+import { cn } from '@/utils/cn';
+import { welcomeMicrocopy } from './microcopy';
+
+export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
   const handleStartGame = () => {
     send?.({ type: 'START_GAME' });
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center">
+    <div className={cn(className)} {...props}>
       {/* Decorative floating billionaires background - simplified for now */}
       <div className="absolute inset-0 overflow-hidden opacity-30">
         {/* Background decorative elements would go here */}
       </div>
 
       {/* Main content container */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-4 px-9 py-8 max-w-[390px]">
+      <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-9 py-8">
+        <div className="">
+          <Icon name="blastoff" />
+        </div>
+
         {/* Title */}
-        <h1 className="title-2 text-common-ash text-center w-full">Battle for Data Supremacy!</h1>
+        <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
+          {welcomeMicrocopy.title}
+        </Text>
 
         {/* Description */}
-        <p className="body-large text-common-ash text-center max-w-[266px]">
-          This is the digital version of <span className="font-bold italic">Data War</span>, a game
-          of Billionaire brinksmanship where space is the place, data is the currency, and chaos
-          reigns.
-        </p>
+        <Text
+          variant="body-large-semibold"
+          align="center"
+          className="text-common-ash max-w-[266px]"
+        >
+          {welcomeMicrocopy.description.prefix}
+          <Text as="span" variant="body-large-semibold" italic weight="bold">
+            {welcomeMicrocopy.description.gameTitle}
+          </Text>
+          {welcomeMicrocopy.description.suffix}
+        </Text>
 
         {/* CTA Button */}
         <div className="mt-4">
           <Button onClick={handleStartGame} variant="primary">
-            Start Playing
+            {welcomeMicrocopy.cta}
           </Button>
         </div>
       </div>
