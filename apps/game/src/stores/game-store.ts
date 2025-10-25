@@ -24,6 +24,7 @@ interface GameStore {
   // Game State
   cardsInPlay: Card[];
   activePlayer: 'player' | 'cpu';
+  anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
   pendingEffects: SpecialEffect[];
   trackerSmackerActive: 'player' | 'cpu' | null;
   winner: 'player' | 'cpu' | null;
@@ -49,6 +50,7 @@ interface GameStore {
   stealCards: (from: 'player' | 'cpu', to: 'player' | 'cpu', count: number) => void;
   checkWinCondition: () => boolean;
   setActivePlayer: (playerId: 'player' | 'cpu') => void;
+  setAnotherPlayMode: (enabled: boolean) => void;
 
   // Actions - Turn Resolution
   resolveTurn: () => 'player' | 'cpu' | 'tie';
@@ -92,6 +94,7 @@ export const useGameStore = create<GameStore>()(
       cpu: createInitialPlayer('cpu'),
       cardsInPlay: [],
       activePlayer: 'player',
+      anotherPlayMode: false,
       pendingEffects: [],
       trackerSmackerActive: null,
       winner: null,
@@ -121,6 +124,7 @@ export const useGameStore = create<GameStore>()(
           winner: null,
           winCondition: null,
           activePlayer: 'player',
+          anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
         });
@@ -132,13 +136,19 @@ export const useGameStore = create<GameStore>()(
 
         if (!card) return; // No cards left
 
+        // In "another play" mode, ADD to existing value
+        // In normal mode, SET the value
+        const newTurnValue = get().anotherPlayMode
+          ? playerState.currentTurnValue + card.value
+          : card.value;
+
         set({
           [playerId]: {
             ...playerState,
             playedCard: card,
             playedCardsInHand: [...playerState.playedCardsInHand, { card, isFaceDown: false }], // Add face-up to stack
             deck: remainingDeck,
-            currentTurnValue: card.value,
+            currentTurnValue: newTurnValue,
           },
           cardsInPlay: [...get().cardsInPlay, card],
         });
@@ -245,6 +255,10 @@ export const useGameStore = create<GameStore>()(
         set({ activePlayer: playerId });
       },
 
+      setAnotherPlayMode: (enabled) => {
+        set({ anotherPlayMode: enabled });
+      },
+
       // Turn Resolution Actions
       resolveTurn: () => {
         const { player, cpu } = get();
@@ -347,7 +361,12 @@ export const useGameStore = create<GameStore>()(
         // Handle specific effects
         switch (card.specialType) {
           case 'tracker':
-            get().applyTrackerEffect(playedBy, card);
+            // Tracker value is already added by playCard
+            // The "another play" trigger is handled in handleResolveTurn
+            // Check if effect is blocked by Tracker Smacker
+            if (!isEffectBlocked(get().trackerSmackerActive, playedBy)) {
+              // Tracker effect is allowed (will trigger another play)
+            }
             break;
           case 'blocker':
             get().applyBlockerEffect(playedBy, card);
@@ -436,6 +455,7 @@ export const useGameStore = create<GameStore>()(
           cpu: { ...createInitialPlayer('cpu'), deck: cpuDeck },
           cardsInPlay: [],
           activePlayer: 'player',
+          anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
           winner: null,
