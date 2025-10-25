@@ -8,6 +8,8 @@ import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../stores/game-store';
 import { Board } from '../Board';
 import { Card } from '../Card';
+import { TurnValue } from '../TurnValue';
+import BackgroundImage from '../../assets/backgrounds/color_savannah.webp';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 
 export function Game() {
@@ -81,110 +83,134 @@ export function Game() {
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
       <Board bgSrc={backgroundImage}>
         <div className="flex flex-col justify-between items-center flex-1">
-          {/* CPU Deck (top) */}
-          <DeckPile
-            cardCount={cpu.deck.length}
-            owner="cpu"
-            onClick={canClickCpuDeck ? handleDeckClick : undefined}
-          />
+          <div className="grid grid-cols-3 place-items-center w-full">
+            <div />
+            {/* CPU Deck (top) */}
+            <DeckPile
+              cardCount={cpu.deck.length}
+              owner="cpu"
+              onClick={canClickCpuDeck ? handleDeckClick : undefined}
+            />
+
+            {/* CPU Turn Value */}
+            <TurnValue
+              value={cpu.currentTurnValue}
+              state={cpu.playedCard?.specialType === 'tracker' ? 'tracker' : 'normal'}
+            />
+          </div>
 
           {/* Play Area - Center of board */}
           <div className="flex flex-col items-center justify-around flex-1 relative mb-4">
             {/* CPU Played Card Area */}
-            <div className="h-[10.9375rem] flex items-center justify-center relative">
-              {cpu.playedCardsInHand.map((playedCardState, index) => {
-                const isTopCard = index === cpu.playedCardsInHand.length - 1;
-                // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
-                const rotations = [
-                  '-rotate-3',
-                  'rotate-2',
-                  '-rotate-1',
-                  'rotate-3',
-                  'rotate-1',
-                  '-rotate-2',
-                ];
-                const rotationClass = isTopCard
-                  ? 'rotate-0'
-                  : rotations[
-                      (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
-                    ];
+            <div className="flex items-center justify-center gap-6">
+              {/* CPU Cards */}
+              <div className="h-[10.9375rem] w-[8.125rem] flex items-center justify-center relative">
+                {cpu.playedCardsInHand.map((playedCardState, index) => {
+                  const isTopCard = index === cpu.playedCardsInHand.length - 1;
+                  // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
+                  const rotations = [
+                    '-rotate-3',
+                    'rotate-2',
+                    '-rotate-1',
+                    'rotate-3',
+                    'rotate-1',
+                    '-rotate-2',
+                  ];
+                  const rotationClass = isTopCard
+                    ? 'rotate-0'
+                    : rotations[
+                        (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
+                      ];
 
-                // Delay rotation for previous cards when new card lands
-                const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
+                  // Delay rotation for previous cards when new card lands
+                  const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
 
-                // Show card back for face-down cards, card front for face-up
-                const cardImage = playedCardState.isFaceDown
-                  ? CARD_BACK_IMAGE
-                  : playedCardState.card.imageUrl;
+                  // Show card back for face-down cards, card front for face-up
+                  const cardImage = playedCardState.isFaceDown
+                    ? CARD_BACK_IMAGE
+                    : playedCardState.card.imageUrl;
 
-                return (
-                  <div
-                    key={`${playedCardState.card.id}-${index}`}
-                    className={`absolute ${
-                      isTopCard ? 'animate-slide-from-top' : ''
-                    } ${rotationClass}`}
-                    style={{
-                      zIndex: index,
-                      transition: `transform 600ms ease-out ${rotationDelay}ms`,
-                    }}
-                  >
-                    <Card cardFrontSrc={cardImage} state="flipped" />
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={`${playedCardState.card.id}-${index}`}
+                      className={`absolute ${
+                        isTopCard ? 'animate-slide-from-top' : ''
+                      } ${rotationClass}`}
+                      style={{
+                        zIndex: index,
+                        transition: `transform 600ms ease-out ${rotationDelay}ms`,
+                      }}
+                    >
+                      <Card cardFrontSrc={cardImage} state="flipped" />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Player Played Card Area */}
-            <div className="h-[10.9375rem] flex items-center justify-center relative">
-              {player.playedCardsInHand.map((playedCardState, index) => {
-                const isTopCard = index === player.playedCardsInHand.length - 1;
-                // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
-                const rotations = [
-                  '-rotate-3',
-                  'rotate-2',
-                  '-rotate-1',
-                  'rotate-3',
-                  'rotate-1',
-                  '-rotate-2',
-                ];
-                const rotationClass = isTopCard
-                  ? 'rotate-0'
-                  : rotations[
-                      (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
-                    ];
+            <div className="flex items-center justify-center gap-6">
+              {/* Player Cards */}
+              <div className="h-[10.9375rem] w-[8.125rem] flex items-center justify-center relative">
+                {player.playedCardsInHand.map((playedCardState, index) => {
+                  const isTopCard = index === player.playedCardsInHand.length - 1;
+                  // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
+                  const rotations = [
+                    '-rotate-3',
+                    'rotate-2',
+                    '-rotate-1',
+                    'rotate-3',
+                    'rotate-1',
+                    '-rotate-2',
+                  ];
+                  const rotationClass = isTopCard
+                    ? 'rotate-0'
+                    : rotations[
+                        (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
+                      ];
 
-                // Delay rotation for previous cards when new card lands
-                const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
+                  // Delay rotation for previous cards when new card lands
+                  const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
 
-                // Show card back for face-down cards, card front for face-up
-                const cardImage = playedCardState.isFaceDown
-                  ? CARD_BACK_IMAGE
-                  : playedCardState.card.imageUrl;
+                  // Show card back for face-down cards, card front for face-up
+                  const cardImage = playedCardState.isFaceDown
+                    ? CARD_BACK_IMAGE
+                    : playedCardState.card.imageUrl;
 
-                return (
-                  <div
-                    key={`${playedCardState.card.id}-${index}`}
-                    className={`absolute ${
-                      isTopCard ? 'animate-slide-from-bottom' : ''
-                    } ${rotationClass}`}
-                    style={{
-                      zIndex: index,
-                      transition: `transform 600ms ease-out ${rotationDelay}ms`,
-                    }}
-                  >
-                    <Card cardFrontSrc={cardImage} state="flipped" />
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={`${playedCardState.card.id}-${index}`}
+                      className={`absolute ${
+                        isTopCard ? 'animate-slide-from-bottom' : ''
+                      } ${rotationClass}`}
+                      style={{
+                        zIndex: index,
+                        transition: `transform 600ms ease-out ${rotationDelay}ms`,
+                      }}
+                    >
+                      <Card cardFrontSrc={cardImage} state="flipped" />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Player Deck (bottom) */}
-          <DeckPile
-            cardCount={player.deck.length}
-            owner="player"
-            onClick={canClickPlayerDeck ? handleDeckClick : undefined}
-          />
+          <div className="grid grid-cols-3 place-items-center w-full">
+            <div />
+            {/* Player Deck (bottom) */}
+            <DeckPile
+              cardCount={player.deck.length}
+              owner="player"
+              onClick={canClickPlayerDeck ? handleDeckClick : undefined}
+            />
+
+            {/* Player Turn Value */}
+            <TurnValue
+              value={player.currentTurnValue}
+              state={player.playedCard?.specialType === 'tracker' ? 'tracker' : 'normal'}
+            />
+          </div>
         </div>
 
         {/* Game Over Overlay */}
