@@ -95,7 +95,13 @@ export function Game() {
             {/* CPU Turn Value */}
             <TurnValue
               value={cpu.currentTurnValue}
-              state={cpu.playedCard?.specialType === 'tracker' ? 'tracker' : 'normal'}
+              state={
+                cpu.playedCard?.specialType === 'tracker'
+                  ? 'tracker'
+                  : player.playedCard?.specialType === 'blocker'
+                  ? 'blocker'
+                  : 'normal'
+              }
             />
           </div>
 
@@ -208,7 +214,13 @@ export function Game() {
             {/* Player Turn Value */}
             <TurnValue
               value={player.currentTurnValue}
-              state={player.playedCard?.specialType === 'tracker' ? 'tracker' : 'normal'}
+              state={
+                player.playedCard?.specialType === 'tracker'
+                  ? 'tracker'
+                  : cpu.playedCard?.specialType === 'blocker'
+                  ? 'blocker'
+                  : 'normal'
+              }
             />
           </div>
         </div>
