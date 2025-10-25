@@ -13,7 +13,8 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-  "@redux-devtools/extension": "^3.3.0",
+    "@heroui/react": "^2.8.2",
+    "@redux-devtools/extension": "^3.3.0",
     "@tailwindcss/vite": "^4.1.14",
     "@xstate/react": "^6.0.0",
     "clsx": "^2.1.1",
