@@ -7,11 +7,12 @@ import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../stores/game-store';
 import { Board } from '../Board';
-import { Card } from '../Card';
-import { TurnValue } from '../TurnValue';
-import BackgroundImage from '../../assets/backgrounds/color_savannah.webp';
-import { CARD_BACK_IMAGE } from '../../config/game-config';
+import { PlayedCards } from '../PlayedCards';
+import { PlayerDeck } from '../PlayerDeck';
 
+/**
+ * Game Component - Main game container
+ */
 export function Game() {
   const {
     phase,
@@ -35,9 +36,9 @@ export function Game() {
   // Default to first background if not found
   const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
 
-  // Skip to game on mount (temporary - will implement full setup flow later)
   useEffect(() => {
     switch (phase) {
+      // Skip to game on mount (temporary - will implement full setup flow later)
       case 'welcome':
         send({ type: 'SKIP_TO_GAME' });
         break;
@@ -72,8 +73,19 @@ export function Game() {
   // During ready phase, only active player can tap
   // During data war, only player deck is clickable (one click reveals both)
   const canClickPlayerDeck = (phase === 'ready' && activePlayer === 'player') || isDataWarPhase;
-
   const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
+  const cpuTurnState =
+    cpu.playedCard?.specialType === 'tracker'
+      ? 'tracker'
+      : player.playedCard?.specialType === 'blocker'
+      ? 'blocker'
+      : 'normal';
+  const playerTurnState =
+    player.playedCard?.specialType === 'tracker'
+      ? 'tracker'
+      : cpu.playedCard?.specialType === 'blocker'
+      ? 'blocker'
+      : 'normal';
 
   const handleDeckClick = () => {
     tapDeck();
@@ -82,147 +94,37 @@ export function Game() {
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
       <Board bgSrc={backgroundImage}>
-        <div className="flex flex-col justify-between items-center flex-1">
-          <div className="grid grid-cols-3 place-items-center w-full">
-            <div />
-            {/* CPU Deck (top) */}
-            <DeckPile
-              cardCount={cpu.deck.length}
-              owner="cpu"
-              onClick={canClickCpuDeck ? handleDeckClick : undefined}
-            />
-
-            {/* CPU Turn Value */}
-            <TurnValue
-              value={cpu.currentTurnValue}
-              state={
-                cpu.playedCard?.specialType === 'tracker'
-                  ? 'tracker'
-                  : player.playedCard?.specialType === 'blocker'
-                  ? 'blocker'
-                  : 'normal'
-              }
-            />
-          </div>
+        <div className="flex flex-col justify-between items-center flex-1 max-w-[25rem] max-h-[54rem]">
+          <PlayerDeck
+            deckLength={cpu.deck.length}
+            handleDeckClick={canClickCpuDeck ? handleDeckClick : undefined}
+            turnValue={cpu.currentTurnValue}
+            turnValueState={cpuTurnState}
+            owner="cpu"
+          />
 
           {/* Play Area - Center of board */}
           <div className="flex flex-col items-center justify-around flex-1 relative mb-4">
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* CPU Cards */}
-              <div className="h-[10.9375rem] w-[8.125rem] flex items-center justify-center relative">
-                {cpu.playedCardsInHand.map((playedCardState, index) => {
-                  const isTopCard = index === cpu.playedCardsInHand.length - 1;
-                  // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
-                  const rotations = [
-                    '-rotate-3',
-                    'rotate-2',
-                    '-rotate-1',
-                    'rotate-3',
-                    'rotate-1',
-                    '-rotate-2',
-                  ];
-                  const rotationClass = isTopCard
-                    ? 'rotate-0'
-                    : rotations[
-                        (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
-                      ];
-
-                  // Delay rotation for previous cards when new card lands
-                  const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
-
-                  // Show card back for face-down cards, card front for face-up
-                  const cardImage = playedCardState.isFaceDown
-                    ? CARD_BACK_IMAGE
-                    : playedCardState.card.imageUrl;
-
-                  return (
-                    <div
-                      key={`${playedCardState.card.id}-${index}`}
-                      className={`absolute ${
-                        isTopCard ? 'animate-slide-from-top' : ''
-                      } ${rotationClass}`}
-                      style={{
-                        zIndex: index,
-                        transition: `transform 600ms ease-out ${rotationDelay}ms`,
-                      }}
-                    >
-                      <Card cardFrontSrc={cardImage} state="flipped" />
-                    </div>
-                  );
-                })}
-              </div>
+              <PlayedCards cards={cpu.playedCardsInHand} />
             </div>
 
             {/* Player Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* Player Cards */}
-              <div className="h-[10.9375rem] w-[8.125rem] flex items-center justify-center relative">
-                {player.playedCardsInHand.map((playedCardState, index) => {
-                  const isTopCard = index === player.playedCardsInHand.length - 1;
-                  // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
-                  const rotations = [
-                    '-rotate-3',
-                    'rotate-2',
-                    '-rotate-1',
-                    'rotate-3',
-                    'rotate-1',
-                    '-rotate-2',
-                  ];
-                  const rotationClass = isTopCard
-                    ? 'rotate-0'
-                    : rotations[
-                        (playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length
-                      ];
-
-                  // Delay rotation for previous cards when new card lands
-                  const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
-
-                  // Show card back for face-down cards, card front for face-up
-                  const cardImage = playedCardState.isFaceDown
-                    ? CARD_BACK_IMAGE
-                    : playedCardState.card.imageUrl;
-
-                  return (
-                    <div
-                      key={`${playedCardState.card.id}-${index}`}
-                      className={`absolute ${
-                        isTopCard ? 'animate-slide-from-bottom' : ''
-                      } ${rotationClass}`}
-                      style={{
-                        zIndex: index,
-                        transition: `transform 600ms ease-out ${rotationDelay}ms`,
-                      }}
-                    >
-                      <Card cardFrontSrc={cardImage} state="flipped" />
-                    </div>
-                  );
-                })}
-              </div>
+              <PlayedCards cards={player.playedCardsInHand} />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 place-items-center w-full">
-            <div />
-            {/* Player Deck (bottom) */}
-            <DeckPile
-              cardCount={player.deck.length}
-              owner="player"
-              onClick={canClickPlayerDeck ? handleDeckClick : undefined}
-            />
-
-            {/* Player Turn Value */}
-            <TurnValue
-              value={player.currentTurnValue}
-              state={
-                player.playedCard?.specialType === 'tracker'
-                  ? 'tracker'
-                  : cpu.playedCard?.specialType === 'blocker'
-                  ? 'blocker'
-                  : 'normal'
-              }
-            />
-          </div>
+          <PlayerDeck
+            deckLength={player.deck.length}
+            handleDeckClick={canClickPlayerDeck ? handleDeckClick : undefined}
+            turnValue={player.currentTurnValue}
+            turnValueState={playerTurnState}
+            owner="player"
+          />
         </div>
 
         {/* Game Over Overlay */}
