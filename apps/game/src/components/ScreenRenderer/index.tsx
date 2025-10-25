@@ -1,3 +1,4 @@
+import { SelectBackground } from '@/components/Screens/SelectBackground';
 import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { Welcome } from '@/components/Screens/Welcome';
 import { AnimatePresence } from 'framer-motion';
@@ -13,7 +14,7 @@ export interface BaseScreenProps extends HTMLAttributes<HTMLDivElement> {
 const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   welcome: Welcome,
   select_billionaire: SelectBillionaire,
-  // select_background: Welcome, // Placeholder until implemented
+  select_background: SelectBackground,
   // intro: Welcome, // Placeholder until implemented
   // quick_start_guide: Welcome, // Placeholder until implemented
   // your_mission: Welcome, // Placeholder until implemented
