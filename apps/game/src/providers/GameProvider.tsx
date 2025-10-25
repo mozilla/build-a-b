@@ -5,7 +5,7 @@
  */
 
 import { type PropsWithChildren, useEffect } from 'react';
-import { useGameStore } from '../stores/gameStore';
+import { useGameStore } from '../stores/game-store';
 
 export function GameProvider({ children }: PropsWithChildren) {
   const initializeGame = useGameStore((state) => state.initializeGame);
