@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "husky install",
     "predev": "node apps/web/count-images.js",
-    "prebuild": "node apps/web/count-images.js && pnpm build:game && cp -r apps/game/dist/* apps/web/public/assets/game/",
+    "prebuild": "node apps/web/count-images.js && pnpm build:game && mkdir -p apps/web/public/assets/game && cp -r apps/game/dist/* apps/web/public/assets/game/",
     "dev": "pnpm --parallel dev",
     "dev:web": "pnpm --filter ./apps/web dev",
     "dev:studio": "pnpm --filter ./apps/studio dev",

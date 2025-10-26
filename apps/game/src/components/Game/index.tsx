@@ -2,14 +2,21 @@
  * Game Component - Main game container
  */
 
+import { BACKGROUNDS } from '@/components/Screens/SelectBackground/backgrounds';
+import { useGameStore } from '@/stores/gameStore';
 import { useGame } from '../../hooks/use-game';
 import { Board } from '../Board';
-import { DeckPile } from '../DeckPile';
 import { Card } from '../Card';
-import BackgroundImage from '../../assets/backgrounds/color_savannah.webp';
+import { DeckPile } from '../DeckPile';
 
 export function Game() {
   const { player, cpu, playCard } = useGame();
+  const { selectedBackground } = useGameStore();
+
+  // Find the selected background from the BACKGROUNDS array
+  const background = BACKGROUNDS.find((bg) => bg.id === selectedBackground);
+  // Default to first background if not found
+  const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
 
   const handlePlayerDeckClick = () => {
     playCard('player');
@@ -21,7 +28,7 @@ export function Game() {
 
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
-      <Board bgSrc={BackgroundImage}>
+      <Board bgSrc={backgroundImage}>
         <div className="flex flex-col justify-between items-center flex-1">
           {/* CPU Deck (top) */}
           <DeckPile cardCount={cpu.deck.length} owner="cpu" onClick={handleCpuDeckClick} />

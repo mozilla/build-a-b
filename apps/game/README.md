@@ -20,10 +20,12 @@ A mobile-first card game based on the classic "War" card game, themed around bil
 ## Game Summary
 
 Data War is a variation of the traditional "War" card game where players compete against a CPU opponent to either:
+
 1. **Collect all ~74 cards** (traditional win), or
 2. **Collect 3 launch stacks** to send a billionaire to space
 
 ### Quick Rules
+
 - Each turn, both player and CPU reveal a card
 - Higher card value (1-5) wins both cards
 - Special "tracker cards" trigger unique effects:
@@ -33,6 +35,7 @@ Data War is a variation of the traditional "War" card game where players compete
   - **Launch Stack**: Collect 3 to win the game
 
 ### Key Features
+
 - Character and background selection
 - Quick-start guide and in-game instructions
 - Mobile-first design (phone screen on desktop)
@@ -44,6 +47,7 @@ Data War is a variation of the traditional "War" card game where players compete
 For detailed information about game mechanics, components, and design:
 
 📋 **[README.game.md](../../README.game.md)** - Comprehensive game design document covering:
+
 - Detailed game rules and mechanics
 - Card types and special effects
 - Win conditions
@@ -69,6 +73,7 @@ pnpm dev
 ```
 
 This starts the Vite dev server at `http://localhost:5173` with:
+
 - Hot Module Replacement (HMR)
 - React Fast Refresh with React Compiler enabled
 - Base path set to `/` for local development
@@ -131,6 +136,9 @@ The game is served as a static SPA from within the Next.js application:
 apps/game/
 ├── dist/              # Build output (gitignored)
 ├── public/            # Static assets
+│   ├── assets/
+│   │   └── fonts/     # Symlink to web/public/assets/fonts
+│   └── README.md      # Documentation for public assets
 ├── src/
 │   ├── App.tsx        # Main app component
 │   └── main.tsx       # Entry point
@@ -140,13 +148,25 @@ apps/game/
 └── package.json       # Dependencies and scripts
 ```
 
+### Font Loading Strategy
+
+The game shares font files with the web app to avoid duplication:
+
+- **Development**: Fonts accessed via symlink at `public/assets/fonts` → `../../web/public/assets/fonts`
+- **Production**: Game served from `/assets/game/`, fonts from `/assets/fonts/` (both under web app)
+- **CSS**: Font URLs use `/assets/fonts/` (absolute paths work in both environments)
+
+See `public/README.md` for details on recreating the symlink if needed.
+
 ### Accessing the Game
 
 **Local Development:**
+
 - Game dev server: `http://localhost:5173`
 - Not available in Next.js dev server (run separately)
 
 **Production/Deployed:**
+
 - Accessed via: `https://yourdomain.com/game`
 - Served by Next.js as static files
 - Complete isolation from Next.js React instance
