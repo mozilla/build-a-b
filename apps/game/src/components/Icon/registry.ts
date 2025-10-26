@@ -3,6 +3,7 @@ import CloseIcon from '@/assets/icons/close.svg?react';
 import LogoWordmark from '@/assets/icons/logo-wordmark.svg?react';
 import FirefoxIcon from '@/assets/icons/logo.svg?react';
 import MenuIcon from '@/assets/icons/menu.svg?react';
+import type { FC, SVGProps } from 'react';
 
 export const iconName = [
   'blastoff',
@@ -21,4 +22,4 @@ export const iconRegistry = {
   firefoxLogo: FirefoxIcon,
   logoWordmark: LogoWordmark,
   blastoff: Blastoff,
-} satisfies Record<IconName, React.FC<React.SVGProps<SVGSVGElement>>>;
+} satisfies Record<IconName, FC<SVGProps<SVGSVGElement>>>;
