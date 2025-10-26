@@ -3,6 +3,11 @@ import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
 import type { PlayedCardsProps } from './types';
 
+const ANIMATION_DELAYS = {
+  CARD_ROTATION: 500,
+  CARD_SLIDE: 300,
+} as const;
+
 export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
   return (
     <div className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative">
@@ -22,7 +27,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
           : rotations[(playedCardState.card.id.charCodeAt(0) + index * 7) % rotations.length];
 
         // Delay rotation for previous cards when new card lands
-        const rotationDelay = isTopCard ? 0 : 500; // Rotate after new card's animation
+        const rotationDelay = isTopCard ? 0 : ANIMATION_DELAYS.CARD_ROTATION; // Rotate after new card's animation
 
         // Show card back for face-down cards, card front for face-up
         const cardImage = playedCardState.isFaceDown

@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import type { GamePhase } from '../types';
 
-interface UseCPUPlayerOptions {
+interface useCpuPlayerOptions {
   enabled?: boolean; // Whether CPU automation is enabled (default: true)
   delay?: number; // Delay in ms before CPU plays (default: 1000ms)
 }
@@ -19,11 +19,11 @@ interface UseCPUPlayerOptions {
  * @param onCPUTurn - Callback to execute when CPU should play
  * @param options - Configuration options
  */
-export function useCPUPlayer(
+export function useCpuPlayer(
   currentPhase: GamePhase,
   activePlayer: 'player' | 'cpu',
   onCPUTurn: () => void,
-  options: UseCPUPlayerOptions = {}
+  options: useCpuPlayerOptions = {}
 ) {
   const { enabled = true, delay = 1000 } = options;
 

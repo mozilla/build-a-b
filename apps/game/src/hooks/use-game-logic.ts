@@ -7,7 +7,7 @@ import { useActorRef, useSelector } from '@xstate/react';
 import { createBrowserInspector } from '@statelyai/inspect';
 import { gameFlowMachine } from '../machines/game-flow-machine';
 import { useGameStore } from '../stores/game-store';
-import { useCPUPlayer } from './use-cpu-player';
+import { useCpuPlayer } from './use-cpu-player';
 import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
 
@@ -26,7 +26,7 @@ const inspector = import.meta.env.DEV
  * - useSelector: Subscribes to specific state slices for optimal performance
  */
 export function useGameLogic() {
-  // Create actor ref with inspector (modern XState v5 pattern)
+  // Create actor ref with inspector
   const actorRef = useActorRef(gameFlowMachine, {
     inspect: inspector?.inspect,
   });
@@ -49,6 +49,11 @@ export function useGameLogic() {
     setActivePlayer,
     setAnotherPlayMode,
   } = useGameStore();
+
+  const checkIfBlocked = (playerId: 'player' | 'cpu') => {
+    const trackerSmackerActive = useGameStore.getState().trackerSmackerActive;
+    return isEffectBlocked(trackerSmackerActive, playerId);
+  };
 
   /**
    * Handles revealing cards
@@ -148,8 +153,7 @@ export function useGameLogic() {
       const activePlayerState = store.activePlayer === 'player' ? p : c;
       if (activePlayerState.playedCard && shouldTriggerAnotherPlay(activePlayerState.playedCard)) {
         // Check if Tracker Smacker is blocking this effect
-        const trackerSmackerActive = useGameStore.getState().trackerSmackerActive;
-        const isBlocked = isEffectBlocked(trackerSmackerActive, store.activePlayer);
+        const isBlocked = checkIfBlocked(store.activePlayer);
 
         if (!isBlocked) {
           nextPlayer = store.activePlayer;
@@ -159,16 +163,14 @@ export function useGameLogic() {
       // Normal mode - check both players (prioritize player's card)
       if (p.playedCard && shouldTriggerAnotherPlay(p.playedCard)) {
         // Check if Tracker Smacker is blocking this effect
-        const trackerSmackerActive = useGameStore.getState().trackerSmackerActive;
-        const isBlocked = isEffectBlocked(trackerSmackerActive, 'player');
+        const isBlocked = checkIfBlocked('player');
 
         if (!isBlocked) {
           nextPlayer = 'player';
         }
       } else if (c.playedCard && shouldTriggerAnotherPlay(c.playedCard)) {
         // Check if Tracker Smacker is blocking this effect
-        const trackerSmackerActive = useGameStore.getState().trackerSmackerActive;
-        const isBlocked = isEffectBlocked(trackerSmackerActive, 'cpu');
+        const isBlocked = checkIfBlocked('cpu');
 
         if (!isBlocked) {
           nextPlayer = 'cpu';
@@ -177,8 +179,35 @@ export function useGameLogic() {
     }
 
     if (nextPlayer) {
-      // A card triggered another play - DON'T resolve yet
-      // Enable "another play" mode and set the player who will play again
+      // Check if the player who would play again actually has cards
+      const nextPlayerState = useGameStore.getState()[nextPlayer];
+
+      if (nextPlayerState.deck.length === 0) {
+        // Player has no cards left - resolve the turn instead of triggering another play
+        resolveTurn();
+
+        // Check if game is over
+        const hasWon = checkWinCondition();
+        if (hasWon) {
+          actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+          return;
+        }
+
+        // Disable "another play" mode
+        setAnotherPlayMode(false);
+
+        // Alternate players for next normal turn
+        setActivePlayer(activePlayer === 'player' ? 'cpu' : 'player');
+
+        // Clear Tracker Smacker at the end of the turn
+        setTrackerSmackerActive(null);
+
+        // Move back to ready phase for next turn
+        actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+        return;
+      }
+
+      // Player has cards - enable "another play" mode and set the player who will play again
       setActivePlayer(nextPlayer);
       setAnotherPlayMode(true);
 
@@ -319,7 +348,7 @@ export function useGameLogic() {
   };
 
   // CPU automation - calls tapDeck when it's CPU's turn
-  useCPUPlayer(phase, activePlayer, tapDeck);
+  useCpuPlayer(phase, activePlayer, tapDeck);
 
   return {
     // State
