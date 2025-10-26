@@ -120,7 +120,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
         </div>
 
         {/* Next Button */}
-        <div className="w-full flex justify-center pb-8  px-[2.25rem]">
+        <div className="w-full flex justify-center pb-8 px-[2.25rem]">
           <Button onClick={handleNext} variant="primary" className="min-w-[15.5rem]">
             {selectBackgroundMicrocopy.ctaButton}
           </Button>
