@@ -24,6 +24,7 @@ export type TextVariant =
   | 'label-uppercase' // Extrabold, 8px, uppercase - Small labels
   | 'label-medium' // Medium, 12px - Labels
   | 'label-semibold' // Semibold, 12px - Labels
+  | 'label-extrabold' // Extrabold, 12px - Labels
   // Special
   | 'display-large' // Extrabold Italic, 76px - Large display text (Data War)
   | 'display-medium' // Extrabold, 60px - Medium display text
