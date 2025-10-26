@@ -7,20 +7,17 @@ import { Text } from '@/components/Text';
 import { useGameStore } from '@/stores/gameStore';
 import { cn } from '@/utils/cn';
 
-import { BILLIONAIRES } from './billionaires';
+import { BILLIONAIRES, type Billionaire } from '@/config/billionaires';
 import { Drawer } from './Drawer';
 import { selectBillionaireMicrocopy } from './microcopy';
-import type { BillionaireOption } from './types';
 
 export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...props }) => {
   const { selectedBillionaire, selectBillionaire } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBillionaire);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedBillionaireData, setSelectedBillionaireData] = useState<BillionaireOption | null>(
-    null,
-  );
+  const [selectedBillionaireData, setSelectedBillionaireData] = useState<Billionaire | null>(null);
 
-  const handleBillionaireClick = (billionaire: BillionaireOption) => {
+  const handleBillionaireClick = (billionaire: Billionaire) => {
     setLocalSelection(billionaire.id);
     setSelectedBillionaireData(billionaire);
     setIsDrawerOpen(true);
