@@ -7,7 +7,6 @@ The Game component is the main container for card gameplay, responsible for rend
 This component handles the **gameplay layer** of the application:
 
 - Displays the `Board` component with gameplay background
-- Contains the `DataWar` component for card game logic
 - Dynamically updates background based on user selection
 
 ## Background System
@@ -105,5 +104,4 @@ To add a new selectable background:
 ## Related Components
 
 - **Board** (`components/Board`) - Renders the game board with background via `bgSrc` prop
-- **DataWar** (`components/DataWar`) - Contains the actual card game logic
 - **ScreenRenderer** (`components/ScreenRenderer`) - Handles intro/setup screens
