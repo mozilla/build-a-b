@@ -31,9 +31,8 @@ export const BackgroundCard: FC<BackgroundCardProps> = ({
         className={cn(
           'w-full h-full rounded-[1rem] border-[0.156rem] border-common-ash overflow-hidden',
           'transition-all duration-300',
-          isSelected
-            ? 'border-accent border-[0.173rem] rounded-[1.125rem] shadow-[0_0_1.25rem_rgba(83,255,188,0.5)]'
-            : 'opacity-70',
+          isSelected &&
+            'border-accent border-[0.173rem] rounded-[1.125rem] shadow-[0_0_1.25rem_rgba(83,255,188,0.5)]',
         )}
         style={{
           transform: 'rotate(352deg)',

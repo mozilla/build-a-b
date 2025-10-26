@@ -4,23 +4,8 @@ import type { FC } from 'react';
 import type { BackgroundConfig } from './types';
 
 // Import background images
-import chazBg from '@/assets/backgrounds/color_chaz.webp';
-import chloeBg from '@/assets/backgrounds/color_chloe2.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
-import poindexterBg from '@/assets/backgrounds/color_poindexter.webp';
-import prudenceBg from '@/assets/backgrounds/color_prudence.webp';
-import savannahBg from '@/assets/backgrounds/color_savannah.webp';
-import walterBg from '@/assets/backgrounds/color_walter.webp';
-
-// Map billionaire names to their background images
-const BILLIONAIRE_BACKGROUNDS: Record<string, string> = {
-  chaz: chazBg,
-  chloe: chloeBg,
-  savannah: savannahBg,
-  walter: walterBg,
-  poindexter: poindexterBg,
-  prudence: prudenceBg,
-};
+import { BILLIONAIRE_BACKGROUNDS } from '@/config/backgrounds';
 
 // Map game states to background configurations
 const STATE_BACKGROUND_CONFIG: Record<string, BackgroundConfig> = {
@@ -53,15 +38,12 @@ export const ScreenBackground: FC = () => {
   const config = STATE_BACKGROUND_CONFIG[phaseKey];
 
   // Don't render background during gameplay - Game component handles it
-  if (!config) {
-    return null;
-  }
+  if (!config) return null;
 
   // Determine which background image to use
   let backgroundImage = nightSkyBg;
-
   if (config.variant === 'billionaire' && selectedBillionaire) {
-    backgroundImage = BILLIONAIRE_BACKGROUNDS[selectedBillionaire.toLowerCase()] || nightSkyBg;
+    backgroundImage = BILLIONAIRE_BACKGROUNDS[selectedBillionaire] || nightSkyBg;
   }
 
   return (

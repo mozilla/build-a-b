@@ -1,4 +1,5 @@
 import { Icon } from '@/components/Icon';
+import Text from '@/components/Text';
 import { type FC } from 'react';
 import type { PoweredByFirefoxProps } from './types';
 
@@ -10,7 +11,9 @@ export const PoweredByFirefox: FC<PoweredByFirefoxProps> = ({ className = '' }) 
       rel="noopener noreferrer"
       className={`flex items-center justify-end gap-1.5 cursor-pointer ${className}`}
     >
-      <p className="font-medium body-large text-common-ash text-right">Powered by</p>
+      <Text className="whitespace-pre" variant="body-large" weight="medium" color="text-common-ash">
+        Powered by
+      </Text>
       <div className="h-8 w-24">
         <Icon name="logoWordmark" />
       </div>
