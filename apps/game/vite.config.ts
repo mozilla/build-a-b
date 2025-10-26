@@ -32,7 +32,6 @@ export default defineConfig(({ command }) => ({
       '@': path.resolve(__dirname, './src'),
       '@/components': path.resolve(__dirname, './src/components'),
       '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/screens': path.resolve(__dirname, './src/screens'),
       '@/styles': path.resolve(__dirname, './src/styles'),
       '@/utils': path.resolve(__dirname, './src/utils'),
     },

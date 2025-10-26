@@ -1,5 +1,3 @@
-import type { BillionaireOption } from './types';
-
 // Import billionaire character images
 import chazImg from '@/assets/characters/chaz.webp';
 import chloeImg from '@/assets/characters/chloe.webp';
@@ -8,7 +6,14 @@ import prudenceImg from '@/assets/characters/prudence.webp';
 import savannahImg from '@/assets/characters/savannah.webp';
 import walterImg from '@/assets/characters/walter.webp';
 
-export const BILLIONAIRES: BillionaireOption[] = [
+export interface Billionaire {
+  id: string;
+  name: string;
+  imageSrc: string;
+  description?: string;
+}
+
+export const BILLIONAIRES: Billionaire[] = [
   {
     id: 'chaz',
     name: 'Chaz Brogan',
