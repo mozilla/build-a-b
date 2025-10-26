@@ -3,16 +3,16 @@
  */
 
 import { BACKGROUNDS } from '@/components/Screens/SelectBackground/backgrounds';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { BILLIONAIRES } from '@/config/billionaires';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../stores/game-store';
 import { Board } from '../Board';
+import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
-import { BILLIONAIRES } from '@/config/billionaires';
-import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { OpenWhatYouWantAnimation } from '../SpecialCardAnimation/OpenWhatYouWantAnimation';
-import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 
 /**
  * Game Component - Main game container
@@ -39,8 +39,11 @@ export function Game() {
 
   // Find the selected background from the BACKGROUNDS array
   const background = BACKGROUNDS.find((bg) => bg.id === selectedBackground);
-  // Default to first background if not found
-  const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
+  // Default to the selected Billionaire's background or the first background if not found
+  const backgroundImage =
+    background?.imageSrc ||
+    BACKGROUNDS.find((background) => background.id === selectedBillionaire)?.imageSrc ||
+    BACKGROUNDS[0].imageSrc;
 
   useEffect(() => {
     switch (phase) {
