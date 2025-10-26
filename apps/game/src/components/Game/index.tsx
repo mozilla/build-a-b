@@ -9,6 +9,7 @@ import { useGameStore } from '../../stores/game-store';
 import { Board } from '../Board';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
+import { BILLIONAIRES } from '@/config/billionaires';
 
 /**
  * Game Component - Main game container
@@ -30,6 +31,7 @@ export function Game() {
   const winner = useGameStore((state) => state.winner);
   const winCondition = useGameStore((state) => state.winCondition);
   const selectedBackground = useGameStore((state) => state.selectedBackground);
+  const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
 
   // Find the selected background from the BACKGROUNDS array
   const background = BACKGROUNDS.find((bg) => bg.id === selectedBackground);
@@ -101,6 +103,7 @@ export function Game() {
             turnValue={cpu.currentTurnValue}
             turnValueState={cpuTurnState}
             owner="cpu"
+            billionaireId={BILLIONAIRES.find((b) => b.id === 'chaz')!.id}
           />
 
           {/* Play Area - Center of board */}
@@ -124,6 +127,7 @@ export function Game() {
             turnValue={player.currentTurnValue}
             turnValueState={playerTurnState}
             owner="player"
+            billionaireId={selectedBillionaire}
           />
         </div>
 

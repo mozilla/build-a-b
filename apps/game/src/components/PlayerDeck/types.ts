@@ -7,4 +7,5 @@ export type PlayerDeckProps = {
   turnValueState: TurnValueState;
   owner: 'player' | 'cpu';
   tooltipContent?: string;
+  billionaireId: string;
 };

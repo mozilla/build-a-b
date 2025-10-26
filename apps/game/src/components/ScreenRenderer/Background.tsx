@@ -1,5 +1,5 @@
 import { useGameMachine } from '@/hooks/use-game-machine';
-import { useGameStore } from '@/stores/gameStore';
+import { useGameStore } from '@/stores/game-store';
 import type { FC } from 'react';
 import type { BackgroundConfig } from './types';
 
