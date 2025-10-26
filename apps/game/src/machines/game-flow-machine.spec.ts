@@ -42,12 +42,20 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       expect(actor.getSnapshot().value).toBe('select_background');
 
-      // Select Background -> Quick Start Guide
+      // Select Background -> Intro
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
+      expect(actor.getSnapshot().value).toBe('intro');
+
+      // Intro -> Quick Start Guide
+      actor.send({ type: 'SHOW_GUIDE' });
       expect(actor.getSnapshot().value).toBe('quick_start_guide');
 
-      // Quick Start Guide -> VS Animation
+      // Quick Start Guide -> Your Mission
       actor.send({ type: 'SKIP_GUIDE' });
+      expect(actor.getSnapshot().value).toBe('your_mission');
+
+      // Your Mission -> VS Animation
+      actor.send({ type: 'START_PLAYING' });
       expect(actor.getSnapshot().value).toBe('vs_animation');
 
       actor.stop();
@@ -61,7 +69,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro and go straight to vs_animation
 
       expect(actor.getSnapshot().value).toBe('vs_animation');
 
@@ -83,7 +91,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
 
       expect(actor.getSnapshot().value).toBe('ready');
@@ -103,7 +111,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
 
@@ -123,7 +131,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' }); // Skip auto-transition
@@ -142,7 +150,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -161,7 +169,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -183,7 +191,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -204,7 +212,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -229,7 +237,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -252,7 +260,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -281,7 +289,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -300,7 +308,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_GUIDE' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });

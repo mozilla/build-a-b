@@ -134,7 +134,15 @@ export const useGameStore = create<GameStore>()(
         const playerState = get()[playerId];
         const [card, ...remainingDeck] = playerState.deck;
 
-        if (!card) return; // No cards left
+        if (!card) {
+          // This shouldn't happen - win condition should have caught it before calling playCard
+          if (import.meta.env.DEV) {
+            console.error(
+              `[BUG] playCard called for ${playerId} with empty deck - win condition should have prevented this`,
+            );
+          }
+          return;
+        }
 
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
@@ -159,7 +167,7 @@ export const useGameStore = create<GameStore>()(
         set({
           [winnerId]: {
             ...winner,
-            deck: [...winner.deck, ...cards], // Add to bottom of deck
+            deck: [...winner.deck, ...(cards || [])], // Add to bottom of deck
             playedCard: null,
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,

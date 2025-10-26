@@ -3,6 +3,7 @@
  * Determines winners, handles ties, and manages card value calculations
  */
 
+import { blockerValues } from '@/config/blockers';
 import type { Card, Player } from '../types';
 
 /**
@@ -164,7 +165,11 @@ export function applyBlockerModifier(opponentValue: number, blockerCard: Card): 
 
   // Blocker-1 has typeId 'blocker-1' (subtract 1)
   // Blocker-2 has typeId 'blocker-2' (subtract 2)
-  const blockerValue = blockerCard.typeId.includes('blocker-1') ? 1 : 2;
+  const blockerValue = blockerValues[blockerCard.typeId] ?? 0;
+
+  if (blockerValue === 0 && import.meta.env.DEV) {
+    console.warn(`Unknown blocker typeId: ${blockerCard.typeId}`);
+  }
 
   // Subtract from opponent, but don't go below 0
   return Math.max(0, opponentValue - blockerValue);
@@ -180,7 +185,7 @@ export function applyBlockerModifier(opponentValue: number, blockerCard: Card): 
  */
 export function isEffectBlocked(
   trackerSmackerActive: 'player' | 'cpu' | null,
-  cardPlayedBy: 'player' | 'cpu'
+  cardPlayedBy: 'player' | 'cpu',
 ): boolean {
   if (!trackerSmackerActive) return false;
 
@@ -203,13 +208,10 @@ export function shouldTriggerDataWar(
   playerCard: Card,
   cpuCard: Card,
   playerValue: number,
-  cpuValue: number
+  cpuValue: number,
 ): boolean {
   // Hostile Takeover always triggers Data War
-  if (
-    playerCard.specialType === 'hostile_takeover' ||
-    cpuCard.specialType === 'hostile_takeover'
-  ) {
+  if (playerCard.specialType === 'hostile_takeover' || cpuCard.specialType === 'hostile_takeover') {
     return true;
   }
 
