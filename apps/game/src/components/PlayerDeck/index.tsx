@@ -1,12 +1,12 @@
-import { BILLIONAIRES } from '@/config/billionaires';
+import { Text } from '@/components';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { useGameStore, usePlayer } from '@/stores/game-store';
+import { getBillionaireById } from '@/utils/selectors';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState, type FC } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { DeckPile } from '../DeckPile';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
-import { useGameStore, usePlayer } from '@/stores/game-store';
-import { Text } from '@/components';
-import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
@@ -17,7 +17,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   tooltipContent,
   billionaireId,
 }) => {
-  const currentBillionaire = BILLIONAIRES.find((b) => b.id === billionaireId);
+  const currentBillionaire = getBillionaireById(billionaireId);
   const player = usePlayer();
   const cpu = useGameStore((state) => state.cpu);
 
@@ -95,7 +95,9 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
                       ease: 'easeInOut',
                     }}
                   >
-                    <Text variant='body-medium' className="text-black font-bold">Win!</Text>
+                    <Text variant="body-medium" className="text-black font-bold">
+                      Win!
+                    </Text>
                   </motion.span>
                 </div>
               </motion.div>

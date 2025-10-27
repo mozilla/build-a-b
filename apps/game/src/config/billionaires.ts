@@ -13,6 +13,8 @@ export interface Billionaire {
   description?: string;
 }
 
+export const DEFAULT_BILLIONAIRE_ID = 'chaz';
+
 export const BILLIONAIRES: Billionaire[] = [
   {
     id: 'chaz',
