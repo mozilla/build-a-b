@@ -10,6 +10,8 @@ import { Board } from '../Board';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { BILLIONAIRES } from '@/config/billionaires';
+import { OpenWhatYouWantAnimation } from '../SpecialCardAnimation/OpenWhatYouWantAnimation';
+import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 
 /**
  * Game Component - Main game container
@@ -20,9 +22,10 @@ export function Game() {
     player,
     cpu,
     activePlayer,
+    tooltipMessage,
     tapDeck,
+    handlePreReveal,
     handleRevealCards,
-    handleCompareTurn,
     handleResolveTurn,
     resetGame,
     send,
@@ -39,16 +42,36 @@ export function Game() {
   const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
 
   useEffect(() => {
+    console.log("PHASE", phase);
+    console.log("[Game Component] player.playedCardsInHand.length:", player.playedCardsInHand.length);
+    console.log("[Game Component] cpu.playedCardsInHand.length:", cpu.playedCardsInHand.length);
     switch (phase) {
       // Skip to game on mount (temporary - will implement full setup flow later)
-      case 'welcome':
+      case 'intro':
         send({ type: 'SKIP_TO_GAME' });
+        break;
+      case 'pre_reveal.processing':
+        handlePreReveal();
+        break;
+      case 'pre_reveal.animating':
+        // Animation plays automatically via state machine 'after' transition
+        break;
+      case 'pre_reveal.awaiting_interaction':
+        // Hide animation, show tooltip (handled by state machine entry action)
+        useGameStore.getState().setShowOpenWhatYouWantAnimation(false);
+        break;
+      case 'pre_reveal.selecting':
+        // Show modal for card selection
+        useGameStore.getState().setShowOpenWhatYouWantModal(true);
         break;
       case 'revealing':
         handleRevealCards();
         break;
       case 'comparing':
-        handleCompareTurn();
+        console.log("[Game Component - comparing phase] player.playedCardsInHand:", player.playedCardsInHand);
+        console.log("[Game Component - comparing phase] cpu.playedCardsInHand:", cpu.playedCardsInHand);
+        // Don't call handleCompareTurn - let the state machine auto-transition after 1500ms delay
+        // This gives players time to see the cards before they're collected
         break;
       case 'resolving':
         handleResolveTurn();
@@ -56,7 +79,8 @@ export function Game() {
       default:
         break;
     }
-  }, [phase, send, handleRevealCards, handleCompareTurn, handleResolveTurn]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, send]);
 
   useEffect(() => {
     // Handle special effect phase - auto-dismiss after a brief delay
@@ -74,7 +98,11 @@ export function Game() {
 
   // During ready phase, only active player can tap
   // During data war, only player deck is clickable (one click reveals both)
-  const canClickPlayerDeck = (phase === 'ready' && activePlayer === 'player') || isDataWarPhase;
+  // During pre_reveal.awaiting_interaction, player can tap to see modal
+  const canClickPlayerDeck =
+    (phase === 'ready' && activePlayer === 'player') ||
+    phase === 'pre_reveal.awaiting_interaction' ||
+    isDataWarPhase;
   const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
   const cpuTurnState =
     cpu.playedCard?.specialType === 'tracker'
@@ -128,6 +156,7 @@ export function Game() {
             turnValueState={playerTurnState}
             owner="player"
             billionaireId={selectedBillionaire}
+            tooltipContent={tooltipMessage}
           />
         </div>
 
@@ -152,6 +181,12 @@ export function Game() {
             </div>
           </div>
         )}
+
+        {/* Open What You Want Animation */}
+        <OpenWhatYouWantAnimation />
+
+        {/* Open What You Want Modal */}
+        <OpenWhatYouWantModal />
       </Board>
     </div>
   );

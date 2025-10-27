@@ -5,7 +5,8 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { Card, Player, SpecialEffect } from '../types';
+import { useShallow } from 'zustand/shallow';
+import type { Card, Player, PlayerType, PreRevealEffect, SpecialEffect } from '../types';
 import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deck-builder';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
 import {
@@ -23,12 +24,19 @@ interface GameStore {
 
   // Game State
   cardsInPlay: Card[];
-  activePlayer: 'player' | 'cpu';
+  activePlayer: PlayerType;
   anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
   pendingEffects: SpecialEffect[];
-  trackerSmackerActive: 'player' | 'cpu' | null;
-  winner: 'player' | 'cpu' | null;
+  preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
+  trackerSmackerActive: PlayerType | null;
+  winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+
+  // Open What You Want State
+  openWhatYouWantActive: PlayerType | null;
+  openWhatYouWantCards: Card[]; // Top 3 cards for selection
+  showOpenWhatYouWantModal: boolean;
+  showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
 
   // UI State
   selectedBillionaire: string;
@@ -36,47 +44,62 @@ interface GameStore {
   isPaused: boolean;
   showMenu: boolean;
   showHandViewer: boolean;
-  handViewerPlayer: 'player' | 'cpu';
+  handViewerPlayer: PlayerType;
   showInstructions: boolean;
   audioEnabled: boolean;
   showTooltip: boolean;
 
   // Actions - Game Logic
   initializeGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
-  playCard: (playerId: 'player' | 'cpu') => void;
-  collectCards: (winnerId: 'player' | 'cpu', cards: Card[]) => void;
-  addLaunchStack: (playerId: 'player' | 'cpu') => void;
+  playCard: (playerId: PlayerType) => void;
+  collectCards: (winnerId: PlayerType, cards: Card[]) => void;
+  addLaunchStack: (playerId: PlayerType) => void;
   swapDecks: () => void;
-  stealCards: (from: 'player' | 'cpu', to: 'player' | 'cpu', count: number) => void;
+  stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
   checkWinCondition: () => boolean;
-  setActivePlayer: (playerId: 'player' | 'cpu') => void;
+  setActivePlayer: (playerId: PlayerType) => void;
   setAnotherPlayMode: (enabled: boolean) => void;
 
   // Actions - Turn Resolution
-  resolveTurn: () => 'player' | 'cpu' | 'tie';
-  applyTrackerEffect: (playerId: 'player' | 'cpu', trackerCard: Card) => void;
-  applyBlockerEffect: (playerId: 'player' | 'cpu', blockerCard: Card) => void;
+  resolveTurn: () => PlayerType | 'tie';
+  collectCardsAfterEffects: (winner: PlayerType | 'tie') => void;
+  applyTrackerEffect: (playerId: PlayerType, trackerCard: Card) => void;
+  applyBlockerEffect: (playerId: PlayerType, blockerCard: Card) => void;
   checkForDataWar: () => boolean;
-  handleCardEffect: (card: Card, playedBy: 'player' | 'cpu') => void;
+  handleCardEffect: (card: Card, playedBy: PlayerType) => void;
 
   // Actions - Special Effects
   addPendingEffect: (effect: SpecialEffect) => void;
   clearPendingEffects: () => void;
-  setTrackerSmackerActive: (playerId: 'player' | 'cpu' | null) => void;
+  processPendingEffects: (winner: PlayerType | 'tie') => void;
+  addPreRevealEffect: (effect: PreRevealEffect) => void;
+  clearPreRevealEffects: () => void;
+  hasPreRevealEffects: () => boolean;
+  setTrackerSmackerActive: (playerId: PlayerType | null) => void;
+  stealLaunchStack: (from: PlayerType, to: PlayerType) => void;
+  removeLaunchStacks: (playerId: PlayerType, count: number) => void;
+  reorderTopCards: (playerId: PlayerType, cards: Card[]) => void;
+
+  // Open What You Want Actions
+  setOpenWhatYouWantActive: (playerId: PlayerType | null) => void;
+  prepareOpenWhatYouWantCards: (playerId: PlayerType) => void;
+  playSelectedCardFromOWYW: (selectedCard: Card) => void;
+  setShowOpenWhatYouWantModal: (show: boolean) => void;
+  setShowOpenWhatYouWantAnimation: (show: boolean) => void;
 
   // Actions - UI
   selectBillionaire: (billionaire: string) => void;
   selectBackground: (background: string) => void;
   togglePause: () => void;
   toggleMenu: () => void;
-  toggleHandViewer: (player?: 'player' | 'cpu') => void;
+  toggleHandViewer: (player?: PlayerType) => void;
   toggleAudio: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
   resetGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
 }
 
-const createInitialPlayer = (id: 'player' | 'cpu'): Player => ({
+const createInitialPlayer = (id: PlayerType): Player => ({
   id,
   name: id === 'player' ? 'Player' : 'CPU',
   deck: [],
@@ -96,9 +119,14 @@ export const useGameStore = create<GameStore>()(
       activePlayer: 'player',
       anotherPlayMode: false,
       pendingEffects: [],
+      preRevealEffects: [],
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      openWhatYouWantActive: null,
+      openWhatYouWantCards: [],
+      showOpenWhatYouWantModal: false,
+      showOpenWhatYouWantAnimation: false,
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -150,19 +178,30 @@ export const useGameStore = create<GameStore>()(
           ? playerState.currentTurnValue + card.value
           : card.value;
 
+        const newPlayedCardsInHand = [...playerState.playedCardsInHand, { card, isFaceDown: false }];
+        console.log(`[playCard] ${playerId} - Adding card to playedCardsInHand:`, card.typeId);
+        console.log(`[playCard] ${playerId} - playedCardsInHand length BEFORE:`, playerState.playedCardsInHand.length);
+        console.log(`[playCard] ${playerId} - playedCardsInHand length AFTER:`, newPlayedCardsInHand.length);
+
         set({
           [playerId]: {
             ...playerState,
             playedCard: card,
-            playedCardsInHand: [...playerState.playedCardsInHand, { card, isFaceDown: false }], // Add face-up to stack
+            playedCardsInHand: newPlayedCardsInHand,
             deck: remainingDeck,
             currentTurnValue: newTurnValue,
           },
           cardsInPlay: [...get().cardsInPlay, card],
         });
+
+        console.log(`[playCard] ${playerId} - State updated, verifying:`, get()[playerId].playedCardsInHand.length);
       },
 
       collectCards: (winnerId, cards) => {
+        console.log(`[collectCards] Winner: ${winnerId}, collecting ${cards?.length || 0} cards`);
+        console.log(`[collectCards] BEFORE - player.playedCardsInHand:`, get().player.playedCardsInHand.length);
+        console.log(`[collectCards] BEFORE - cpu.playedCardsInHand:`, get().cpu.playedCardsInHand.length);
+
         const winner = get()[winnerId];
         set({
           [winnerId]: {
@@ -186,6 +225,9 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: 0,
           },
         });
+
+        console.log(`[collectCards] AFTER - player.playedCardsInHand:`, get().player.playedCardsInHand.length);
+        console.log(`[collectCards] AFTER - cpu.playedCardsInHand:`, get().cpu.playedCardsInHand.length);
       },
 
       addLaunchStack: (playerId) => {
@@ -274,17 +316,21 @@ export const useGameStore = create<GameStore>()(
         // Compare current turn values (already modified by trackers/blockers)
         const result = compareCards(player, cpu);
 
-        if (result.isTie) {
-          return 'tie';
-        }
-
-        // Winner collects all cards in play
-        const { cardsInPlay } = get();
-        if (result.winner !== 'tie') {
-          get().collectCards(result.winner, cardsInPlay);
-        }
-
+        // Return winner WITHOUT collecting cards yet
+        // Cards will be collected after processing pending effects
         return result.winner;
+      },
+
+      collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie') => {
+        if (winner === 'tie') {
+          return;
+        }
+
+        // Collect remaining cards in play after effects have been processed
+        const { cardsInPlay } = get();
+        if (cardsInPlay.length > 0) {
+          get().collectCards(winner, cardsInPlay);
+        }
       },
 
       applyTrackerEffect: (playerId, trackerCard) => {
@@ -401,8 +447,216 @@ export const useGameStore = create<GameStore>()(
         set({ pendingEffects: [] });
       },
 
+      addPreRevealEffect: (effect) => {
+        set({ preRevealEffects: [...get().preRevealEffects, effect] });
+      },
+
+      clearPreRevealEffects: () => {
+        set({ preRevealEffects: [] });
+      },
+
+      hasPreRevealEffects: () => {
+        return get().preRevealEffects.length > 0;
+      },
+
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
+      },
+
+      processPendingEffects: (winner) => {
+        const { pendingEffects } = get();
+
+        // Process each pending effect
+        for (const effect of pendingEffects) {
+          // Check if effect is blocked by Tracker Smacker
+          if (
+            isEffectBlocked(get().trackerSmackerActive, effect.playedBy) &&
+            (effect.type === 'tracker' ||
+              effect.type === 'leveraged_buyout' ||
+              effect.type === 'patent_theft' ||
+              effect.type === 'temper_tantrum')
+          ) {
+            console.log(`${effect.type} effect blocked by Tracker Smacker`);
+            continue;
+          }
+
+          switch (effect.type) {
+            case 'open_what_you_want':
+              // Mark that OWYW is active for this player's next turn
+              get().setOpenWhatYouWantActive(effect.playedBy);
+
+              // Queue pre-reveal effect for next turn (animation + modal)
+              // Only player requires interaction (tap to see cards)
+              get().addPreRevealEffect({
+                type: 'owyw',
+                playerId: effect.playedBy,
+                requiresInteraction: effect.playedBy === 'player', // Only player needs to tap
+              });
+              break;
+
+            case 'mandatory_recall':
+              // If the player who played this card won, opponents shuffle Launch Stacks back
+              if (winner === effect.playedBy) {
+                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                get().removeLaunchStacks(opponentId, get()[opponentId].launchStackCount);
+              }
+              break;
+
+            case 'temper_tantrum':
+              // If the player who played this card LOST, steal 2 cards from winner's win pile
+              if (winner !== 'tie' && winner !== effect.playedBy) {
+                // Steal from the cards that were just won (cardsInPlay)
+                const cardsToSteal = get().cardsInPlay.slice(0, 2);
+                if (cardsToSteal.length > 0) {
+                  // Add stolen cards to loser's deck
+                  const loser = get()[effect.playedBy];
+                  set({
+                    [effect.playedBy]: {
+                      ...loser,
+                      deck: [...loser.deck, ...cardsToSteal],
+                    },
+                    cardsInPlay: get().cardsInPlay.slice(2), // Remove stolen cards
+                  });
+                }
+              }
+              break;
+
+            case 'patent_theft':
+              // If the player who played this card won, steal 1 Launch Stack from opponent
+              if (winner === effect.playedBy) {
+                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                if (get()[opponentId].launchStackCount > 0) {
+                  get().stealLaunchStack(opponentId, effect.playedBy);
+                }
+              }
+              break;
+
+            case 'leveraged_buyout':
+              // If the player who played this card won, take 2 cards from top of opponent's deck
+              if (winner === effect.playedBy) {
+                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                get().stealCards(opponentId, effect.playedBy, 2);
+              }
+              break;
+
+            case 'data_grab': {
+              // Digital adaptation: Randomly distribute cards in play between both players
+              const { cardsInPlay } = get();
+              const shuffledCards = [...cardsInPlay].sort(() => Math.random() - 0.5);
+              const playerCards: Card[] = [];
+              const cpuCards: Card[] = [];
+
+              shuffledCards.forEach((card, index) => {
+                if (index % 2 === 0) {
+                  playerCards.push(card);
+                } else {
+                  cpuCards.push(card);
+                }
+              });
+
+              const player = get().player;
+              const cpu = get().cpu;
+              set({
+                player: { ...player, deck: [...player.deck, ...playerCards] },
+                cpu: { ...cpu, deck: [...cpu.deck, ...cpuCards] },
+                cardsInPlay: [], // All cards grabbed
+              });
+              break;
+            }
+          }
+        }
+
+        // Clear pending effects after processing
+        get().clearPendingEffects();
+      },
+
+      stealLaunchStack: (from, to) => {
+        const fromPlayer = get()[from];
+        const toPlayer = get()[to];
+
+        if (fromPlayer.launchStackCount > 0) {
+          set({
+            [from]: { ...fromPlayer, launchStackCount: fromPlayer.launchStackCount - 1 },
+            [to]: { ...toPlayer, launchStackCount: toPlayer.launchStackCount + 1 },
+          });
+        }
+      },
+
+      removeLaunchStacks: (playerId, count) => {
+        const player = get()[playerId];
+        set({
+          [playerId]: {
+            ...player,
+            launchStackCount: Math.max(0, player.launchStackCount - count),
+          },
+        });
+      },
+
+      reorderTopCards: (playerId, cards) => {
+        const player = get()[playerId];
+        const remainingDeck = player.deck.slice(cards.length);
+        set({
+          [playerId]: {
+            ...player,
+            deck: [...cards, ...remainingDeck],
+          },
+        });
+      },
+
+      // Open What You Want Actions
+      setOpenWhatYouWantActive: (playerId) => {
+        console.log('[OWYW Store] Setting openWhatYouWantActive to:', playerId);
+        set({ openWhatYouWantActive: playerId });
+      },
+
+      prepareOpenWhatYouWantCards: (playerId) => {
+        const player = get()[playerId];
+        // Get top 3 cards from player's deck
+        const top3Cards = player.deck.slice(0, 3);
+        set({ openWhatYouWantCards: top3Cards });
+      },
+
+      playSelectedCardFromOWYW: (selectedCard) => {
+        const playerId = get().openWhatYouWantActive;
+        if (!playerId) return;
+
+        const player = get()[playerId];
+        const { openWhatYouWantCards } = get();
+
+        // Remove selected card from deck
+        const deckWithoutTop3 = player.deck.slice(3);
+
+        // Get the 2 unselected cards and shuffle them
+        const unselectedCards = openWhatYouWantCards.filter((c) => c.id !== selectedCard.id);
+        const shuffledUnselected = [...unselectedCards].sort(() => Math.random() - 0.5);
+
+        // Put unselected cards at the back of the deck
+        const newDeck = [selectedCard, ...deckWithoutTop3, ...shuffledUnselected];
+
+        // Update player state with reordered deck
+        set({
+          [playerId]: {
+            ...player,
+            deck: newDeck,
+          },
+        });
+
+        // Clear OWYW cards and modal
+        set({
+          openWhatYouWantCards: [],
+          showOpenWhatYouWantModal: false,
+        });
+
+        // Note: The selected card is now at the top of the deck
+        // It will be played during the normal revealing phase
+      },
+
+      setShowOpenWhatYouWantModal: (show) => {
+        set({ showOpenWhatYouWantModal: show });
+      },
+
+      setShowOpenWhatYouWantAnimation: (show) => {
+        set({ showOpenWhatYouWantAnimation: show });
       },
 
       // UI Actions
@@ -493,3 +747,12 @@ export const useUIState = () =>
     audioEnabled: state.audioEnabled,
     showTooltip: state.showTooltip,
   }));
+export const useOpenWhatYouWantState = () =>
+  useGameStore(
+    useShallow((state) => ({
+      isActive: state.openWhatYouWantActive,
+      cards: state.openWhatYouWantCards,
+      showModal: state.showOpenWhatYouWantModal,
+      showAnimation: state.showOpenWhatYouWantAnimation,
+    })),
+  );

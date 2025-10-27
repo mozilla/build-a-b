@@ -54,7 +54,8 @@ export type DeckOrderStrategy =
   | 'special-first' // All special cards at top
   | 'common-first' // Common cards at top
   | 'high-value-first' // Sort by value (5→1)
-  | 'low-value-first'; // Sort by value (1→5)
+  | 'low-value-first' // Sort by value (1→5)
+  | 'owyw-first'; // OWYW (Open What You Want) cards at top
 
 /**
  * Shuffles a deck using the Fisher-Yates algorithm
@@ -176,6 +177,13 @@ export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
 
     case 'low-value-first':
       return ordered.sort((a, b) => a.value - b.value);
+
+    case 'owyw-first':
+      return ordered.sort((a, b) => {
+        const aIsOWYW = a.specialType === 'open_what_you_want' ? 1 : 0;
+        const bIsOWYW = b.specialType === 'open_what_you_want' ? 1 : 0;
+        return bIsOWYW - aIsOWYW;
+      });
 
     default:
       return ordered;

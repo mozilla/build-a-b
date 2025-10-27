@@ -2,11 +2,12 @@
  * DeckPile - Displays a deck of cards with card back and counter
  */
 
-import { Tooltip } from '@heroui/tooltip';
 import { type FC } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
+import { Tooltip } from '../Tooltip';
 import type { DeckPileProps } from './types';
+import Text from '../Text';
 
 export const DeckPile: FC<DeckPileProps> = ({
   cardCount,
@@ -14,11 +15,19 @@ export const DeckPile: FC<DeckPileProps> = ({
   onClick,
   showTooltip = false,
   tooltipContent,
+  activeIndicator = false,
 }) => {
   const isPlayer = owner === 'player';
 
   return (
-    <Tooltip content={tooltipContent} isOpen={showTooltip}>
+    <Tooltip
+      content={
+        <Text variant="body-small" color="text-accent" weight='medium'>
+          {tooltipContent}
+        </Text>
+      }
+      isOpen={showTooltip}
+    >
       <div className="flex flex-col items-center gap-2">
         {/* Counter for CPU (top) */}
         {!isPlayer && <div className="text-white text-sm font-medium">{cardCount} Cards left</div>}
@@ -32,7 +41,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className="relative">
+            <div className={`relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
               {/* Back cards for stacking effect - offset to top-left */}
               <div className="absolute -translate-x-2 -translate-y-2 pointer-events-none">
                 <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />

@@ -3,38 +3,32 @@
  * Connects XState machine to Zustand store for complete game management
  */
 
-import { useActorRef, useSelector } from '@xstate/react';
-import { createBrowserInspector } from '@statelyai/inspect';
-import { gameFlowMachine } from '../machines/game-flow-machine';
+import { useSelector } from '@xstate/react';
+import { useRef } from 'react';
+import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../stores/game-store';
 import { useCpuPlayer } from './use-cpu-player';
 import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
 
-// XState Inspector - only enabled in development
-const inspector = import.meta.env.DEV
-  ? createBrowserInspector({
-      autoStart: true, // Auto-open inspector popup
-    })
-  : undefined;
-
 /**
  * Main game logic hook that orchestrates the entire game
  * Combines state machine (flow) with Zustand store (data)
  *
- * - useActorRef: Creates and manages the actor lifecycle
- * - useSelector: Subscribes to specific state slices for optimal performance
+ * Uses shared machine instance from GameMachineContext
  */
 export function useGameLogic() {
-  // Create actor ref with inspector
-  const actorRef = useActorRef(gameFlowMachine, {
-    inspect: inspector?.inspect,
-  });
+  // Get actor ref from shared context
+  const actorRef = GameMachineContext.useActorRef();
 
   // Subscribe to state value (phase) - more performant than subscribing to entire state
   const stateValue = useSelector(actorRef, (snapshot) => snapshot.value);
   const phase = getGamePhase(stateValue);
   const context = useSelector(actorRef, (snapshot) => snapshot.context);
+  const tooltipMessage = useSelector(actorRef, (snapshot) => snapshot.context.tooltipMessage);
+
+  // Guard to prevent handlePreReveal from running multiple times
+  const preRevealProcessedRef = useRef(false);
 
   // Get Zustand store actions
   const {
@@ -43,16 +37,110 @@ export function useGameLogic() {
     activePlayer,
     playCard,
     resolveTurn,
+    collectCardsAfterEffects,
     checkForDataWar,
     checkWinCondition,
     handleCardEffect,
     setActivePlayer,
     setAnotherPlayMode,
+    processPendingEffects,
   } = useGameStore();
 
   const checkIfBlocked = (playerId: 'player' | 'cpu') => {
     const trackerSmackerActive = useGameStore.getState().trackerSmackerActive;
     return isEffectBlocked(trackerSmackerActive, playerId);
+  };
+
+  /**
+   * Handles pre-reveal phase - executes effects that need to happen before cards are revealed
+   * Currently handles:
+   * - OWYW (Open What You Want): Shows animation + modal for card selection
+   *
+   * Effects can be:
+   * - Non-interactive: Execute immediately and transition to ready
+   * - Interactive: Show animation, wait for user tap, then show selection UI
+   */
+  const handlePreReveal = () => {
+    // Guard: Only process once per pre_reveal phase entry
+    if (preRevealProcessedRef.current) {
+      console.log('[Pre-Reveal] Already processed, skipping');
+      return;
+    }
+
+    preRevealProcessedRef.current = true;
+    console.log('[Pre-Reveal] Processing pre-reveal effects');
+
+    const { preRevealEffects } = useGameStore.getState();
+
+    // If no effects, immediately transition to ready
+    if (preRevealEffects.length === 0) {
+      console.log('[Pre-Reveal] No effects, transitioning to ready');
+      actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
+      return;
+    }
+
+    console.log('[Pre-Reveal] Found', preRevealEffects.length, 'effects');
+
+    // Process each effect
+    for (const effect of preRevealEffects) {
+      if (effect.type === 'owyw') {
+        console.log('[Pre-Reveal] Processing OWYW effect for', effect.playerId, 'requiresInteraction:', effect.requiresInteraction);
+        if (effect.requiresInteraction) {
+          // Transition to animating sub-state for player
+          actorRef.send({ type: 'START_OWYW_ANIMATION' });
+        }
+
+        handleOWYWEffect(effect.playerId, effect.requiresInteraction);
+      }
+    }
+
+    // Note: Effects are cleared when consumed:
+    // - For CPU: in handleOWYWEffect after auto-select
+    // - For Player: in modal after card selection
+  };
+
+  /**
+   * Handles OWYW (Open What You Want) effect
+   * - For CPU (non-interactive): Auto-selects random card and transitions immediately
+   * - For Player (interactive): Shows animation → waits for tap → shows modal
+   */
+  const handleOWYWEffect = (playerId: 'player' | 'cpu', requiresInteraction: boolean) => {
+    const {
+      prepareOpenWhatYouWantCards,
+      playSelectedCardFromOWYW,
+      setShowOpenWhatYouWantAnimation,
+      clearPreRevealEffects,
+    } = useGameStore.getState();
+
+    console.log('[OWYW Effect] Processing OWYW for', playerId, 'requiresInteraction:', requiresInteraction);
+
+    // Prepare the top 3 cards
+    prepareOpenWhatYouWantCards(playerId);
+
+    if (!requiresInteraction) {
+      // CPU: Auto-select random card and move to ready immediately
+      console.log('[OWYW Effect] CPU path - auto-selecting');
+      const topCards = useGameStore.getState().openWhatYouWantCards;
+      if (topCards.length > 0) {
+        const randomCard = topCards[Math.floor(Math.random() * topCards.length)];
+        playSelectedCardFromOWYW(randomCard);
+      }
+
+      // Clear OWYW active state
+      useGameStore.getState().setOpenWhatYouWantActive(null);
+
+      // Clear pre-reveal effects (CPU flow is complete)
+      clearPreRevealEffects();
+      console.log('[OWYW Effect] Effects cleared for CPU');
+
+      // Transition to ready (no animation/modal for CPU)
+      actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
+    } else {
+      // Player: Just show animation, DON'T clear effects yet
+      // Effects will be cleared when modal confirms
+      console.log('[OWYW Effect] Player path - showing animation');
+      setShowOpenWhatYouWantAnimation(true);
+    }
   };
 
   /**
@@ -63,8 +151,15 @@ export function useGameLogic() {
   const handleRevealCards = () => {
     const store = useGameStore.getState();
 
+    console.log('[Reveal Cards] Starting reveal phase');
+    console.log('[Reveal Cards] Another play mode:', store.anotherPlayMode);
+    console.log('[Reveal Cards] Active player:', store.activePlayer);
+    console.log('[Reveal Cards] Player deck size:', store.player.deck.length);
+    console.log('[Reveal Cards] CPU deck size:', store.cpu.deck.length);
+
     if (store.anotherPlayMode) {
       // "Another play" mode - only active player plays
+      console.log('[Reveal Cards] Another play mode - only', store.activePlayer, 'plays');
       playCard(store.activePlayer);
 
       // Get the played card
@@ -76,11 +171,15 @@ export function useGameLogic() {
       }
     } else {
       // Normal turn - both players play
+      console.log('[Reveal Cards] Normal turn - both players play');
       playCard('player');
       playCard('cpu');
 
       // Get the played cards
       const { player: p, cpu: c } = useGameStore.getState();
+
+      console.log('[Reveal Cards] Player played:', p.playedCard?.typeId);
+      console.log('[Reveal Cards] CPU played:', c.playedCard?.typeId);
 
       // Handle special effects for both cards
       if (p.playedCard) {
@@ -184,7 +283,13 @@ export function useGameLogic() {
 
       if (nextPlayerState.deck.length === 0) {
         // Player has no cards left - resolve the turn instead of triggering another play
-        resolveTurn();
+        const winner = resolveTurn();
+
+        // Process pending special effects now that we know the winner
+        processPendingEffects(winner);
+
+        // Collect remaining cards after effects have been processed
+        collectCardsAfterEffects(winner);
 
         // Check if game is over
         const hasWon = checkWinCondition();
@@ -197,12 +302,13 @@ export function useGameLogic() {
         setAnotherPlayMode(false);
 
         // Alternate players for next normal turn
-        setActivePlayer(activePlayer === 'player' ? 'cpu' : 'player');
+        const nextPlayer = activePlayer === 'player' ? 'cpu' : 'player';
+        setActivePlayer(nextPlayer);
 
         // Clear Tracker Smacker at the end of the turn
         setTrackerSmackerActive(null);
 
-        // Move back to ready phase for next turn
+        // Move to next turn (will go through pre_reveal if there are effects)
         actorRef.send({ type: 'CHECK_WIN_CONDITION' });
         return;
       }
@@ -215,7 +321,13 @@ export function useGameLogic() {
       actorRef.send({ type: 'CHECK_WIN_CONDITION' });
     } else {
       // No more "another play" triggers - resolve the turn now
-      resolveTurn();
+      const winner = resolveTurn();
+
+      // Process pending special effects now that we know the winner
+      processPendingEffects(winner);
+
+      // Collect remaining cards after effects have been processed
+      collectCardsAfterEffects(winner);
 
       // Check if game is over
       const hasWon = checkWinCondition();
@@ -228,12 +340,13 @@ export function useGameLogic() {
       setAnotherPlayMode(false);
 
       // Alternate players for next normal turn
-      setActivePlayer(activePlayer === 'player' ? 'cpu' : 'player');
+      const nextPlayer = activePlayer === 'player' ? 'cpu' : 'player';
+      setActivePlayer(nextPlayer);
 
       // Clear Tracker Smacker at the end of the turn (not during "another play")
       setTrackerSmackerActive(null);
 
-      // Move back to ready phase for next turn
+      // Move to next turn (will go through pre_reveal if there are effects)
       actorRef.send({ type: 'CHECK_WIN_CONDITION' });
     }
   };
@@ -274,6 +387,9 @@ export function useGameLogic() {
   const tapDeck = () => {
     if (phase === 'ready') {
       actorRef.send({ type: 'REVEAL_CARDS' });
+    } else if (phase === 'pre_reveal.awaiting_interaction') {
+      // Player taps to see OWYW modal
+      actorRef.send({ type: 'TAP_DECK' });
     } else if (phase === 'data_war.reveal_face_down') {
       // Add 3 face-down cards from each player to cardsInPlay
       handleDataWarFaceDown();
@@ -347,6 +463,11 @@ export function useGameLogic() {
     actorRef.send({ type: 'RESET_GAME' });
   };
 
+  // Reset pre-reveal guard when leaving pre_reveal phase
+  if (!phase.startsWith('pre_reveal')) {
+    preRevealProcessedRef.current = false;
+  }
+
   // CPU automation - calls tapDeck when it's CPU's turn
   useCpuPlayer(phase, activePlayer, tapDeck);
 
@@ -357,6 +478,7 @@ export function useGameLogic() {
     player,
     cpu,
     activePlayer,
+    tooltipMessage,
 
     // Actions
     startGame,
@@ -364,6 +486,7 @@ export function useGameLogic() {
     selectBackground,
     skipGuide,
     tapDeck,
+    handlePreReveal,
     handleRevealCards,
     handleCompareTurn,
     handleResolveTurn,

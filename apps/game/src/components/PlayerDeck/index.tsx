@@ -36,6 +36,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         onClick={handleDeckClick}
         showTooltip={!!tooltipContent}
         tooltipContent={tooltipContent}
+        activeIndicator={!!tooltipContent && owner === 'player'}
       />
       {/** Turn points */}
       <TurnValue value={turnValue} state={turnValueState} />
