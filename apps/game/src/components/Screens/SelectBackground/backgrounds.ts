@@ -11,6 +11,8 @@ import prudenceBg from '@/assets/backgrounds/color_prudence.webp';
 import savannahBg from '@/assets/backgrounds/color_savannah.webp';
 import walterBg from '@/assets/backgrounds/color_walter.webp';
 
+export const DEFAULT_BOARD_BACKGROUND = savannahBg;
+
 export const BACKGROUNDS: BackgroundOption[] = [
   {
     id: 'chaz',

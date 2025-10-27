@@ -1,9 +1,11 @@
+import { Intro } from '@/components/Screens/Intro';
+import { QuickStart } from '@/components/Screens/QuickStart';
 import { SelectBackground } from '@/components/Screens/SelectBackground';
 import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { Welcome } from '@/components/Screens/Welcome';
+import { useGameLogic } from '@/hooks/use-game-logic';
 import { AnimatePresence } from 'framer-motion';
 import type { FC, HTMLAttributes } from 'react';
-import { useGameLogic } from '@/hooks/use-game-logic';
 import { ScreenBackground } from './Background';
 
 export interface BaseScreenProps extends HTMLAttributes<HTMLDivElement> {
@@ -15,8 +17,8 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   welcome: Welcome,
   select_billionaire: SelectBillionaire,
   select_background: SelectBackground,
-  // intro: Welcome, // Placeholder until implemented
-  // quick_start_guide: Welcome, // Placeholder until implemented
+  intro: Intro,
+  quick_start_guide: QuickStart,
   // your_mission: Welcome, // Placeholder until implemented
   // vs_animation: Welcome, // Placeholder until implemented
   // ready: Welcome,
@@ -41,20 +43,15 @@ export const ScreenRenderer: FC = () => {
   if (!ScreenComponent) {
     // console.warn(`No screen component found for phase: ${phaseKey}`);
     return null;
-    // return (
-    //   <div className="flex items-center justify-center h-full text-common-ash">
-    //     <p>Unknown phase: {phaseKey}</p>
-    //   </div>
-    // );
   }
 
   // Pass send function and other common props to all screens
   return (
     <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center">
       <AnimatePresence>
-        <ScreenBackground key="screen-background" />
+        <ScreenBackground key="background" phaseKey={phaseKey} />
         <ScreenComponent
-          key={phaseKey}
+          key="component"
           send={send}
           className="flex flex-col items-center justify-center relative w-full h-full"
         />

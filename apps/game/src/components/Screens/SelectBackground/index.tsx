@@ -1,6 +1,7 @@
 import { type FC, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/Button';
+import { Carousel } from '@/components/Carousel';
 import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
@@ -99,13 +100,9 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
 
         {/* Backgrounds Carousel */}
         <div className="w-full relative py-8">
-          <div
-            ref={scrollContainerRef}
-            className="hide-scrollbar flex items-center gap-4 overflow-x-auto snap-x snap-mandatory py-8 px-[calc(50%-5.625rem)]"
-            style={{
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-            }}
+          <Carousel
+            containerRef={scrollContainerRef}
+            scrollerAttributes={{ className: 'px-[calc(50%-5.625rem)] gap-4' }}
           >
             {BACKGROUNDS.map((background) => (
               <BackgroundCard
@@ -116,7 +113,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
                 onClick={() => handleBackgroundSelect(background.id)}
               />
             ))}
-          </div>
+          </Carousel>
         </div>
 
         {/* Next Button */}
