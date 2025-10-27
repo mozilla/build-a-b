@@ -36,7 +36,10 @@ export type GameFlowEvent =
   | { type: 'WIN' }
   | { type: 'CONTINUE' }
   | { type: 'RESET_GAME' }
-  | { type: 'QUIT_GAME' };
+  | { type: 'QUIT_GAME' }
+  | { type: 'START_OWYW_ANIMATION' } // Start OWYW animation (transition to animating sub-state)
+  | { type: 'CARD_SELECTED' } // Player confirmed card selection from OWYW modal
+  | { type: 'PRE_REVEAL_COMPLETE' }; // All pre-reveal effects processed
 
 export type EventType = GameFlowEvent['type'];
 /**
@@ -82,9 +85,6 @@ export const gameFlowMachine = createMachine(
     },
     states: {
       welcome: {
-        entry: assign({
-          tooltipMessage: 'Welcome to Data War!',
-        }),
         on: {
           START_GAME: 'select_billionaire',
           SKIP_TO_GAME: 'ready', // Allow skipping directly to ready for testing
@@ -92,18 +92,12 @@ export const gameFlowMachine = createMachine(
       },
 
       select_billionaire: {
-        entry: assign({
-          tooltipMessage: 'Whose little face is going to space?',
-        }),
         on: {
           SELECT_BILLIONAIRE: 'select_background',
         },
       },
 
       select_background: {
-        entry: assign({
-          tooltipMessage: 'Which one do you want to play on?',
-        }),
         on: {
           SELECT_BACKGROUND: 'intro',
         },
@@ -116,6 +110,7 @@ export const gameFlowMachine = createMachine(
         on: {
           SHOW_GUIDE: 'quick_start_guide',
           SKIP_INSTRUCTIONS: 'vs_animation',
+          SKIP_TO_GAME: 'ready', // Allow skipping directly to ready for testing
         },
       },
 
@@ -163,15 +158,23 @@ export const gameFlowMachine = createMachine(
         entry: assign({
           tooltipMessage: '',
         }),
-        after: {
-          1000: 'comparing', // Wait for flip animations
-        },
         on: {
           CARDS_REVEALED: 'comparing',
         },
       },
 
       comparing: {
+        entry: assign({
+          tooltipMessage: '', // Clear any previous tooltips
+        }),
+        // Give players time to see the revealed cards before resolving
+        after: {
+          1500: [
+            { target: 'data_war', guard: 'isDataWar' },
+            { target: 'special_effect', guard: 'hasSpecialEffects' },
+            { target: 'resolving' },
+          ],
+        },
         on: {
           TIE: 'data_war',
           SPECIAL_EFFECT: 'special_effect',
@@ -219,7 +222,7 @@ export const gameFlowMachine = createMachine(
         states: {
           showing: {
             entry: assign({
-              tooltipMessage: 'Special card effect!',
+              tooltipMessage: '',
             }),
             on: {
               DISMISS_EFFECT: 'processing',
@@ -244,9 +247,59 @@ export const gameFlowMachine = createMachine(
               guard: 'hasWinCondition',
             },
             {
-              target: 'ready',
+              target: 'pre_reveal',
             },
           ],
+        },
+      },
+
+      pre_reveal: {
+        initial: 'processing',
+        states: {
+          // Automatically process non-interactive effects
+          processing: {
+            entry: assign({
+              tooltipMessage: '',
+            }),
+            on: {
+              START_OWYW_ANIMATION: 'animating',
+            },
+            // This state will be exited immediately by handlePreReveal logic
+            // If no effects or all effects are non-interactive, transitions to parent
+          },
+
+          // Animation plays (for OWYW)
+          animating: {
+            entry: assign({
+              tooltipMessage: '',
+            }),
+            after: {
+              2000: 'awaiting_interaction',
+            },
+          },
+
+          // Wait for user to tap deck before showing selection
+          awaiting_interaction: {
+            entry: assign({
+              tooltipMessage: 'Tap to see top 3 cards',
+            }),
+            on: {
+              TAP_DECK: 'selecting',
+            },
+          },
+
+          // User is selecting from modal
+          selecting: {
+            entry: assign({
+              tooltipMessage: '',
+            }),
+            on: {
+              CARD_SELECTED: '#dataWarGame.revealing',
+            },
+          },
+        },
+        on: {
+          PRE_REVEAL_COMPLETE: 'ready',
         },
       },
 
@@ -278,6 +331,16 @@ export const gameFlowMachine = createMachine(
         // Check Zustand store for win condition
         const state = useGameStore.getState();
         return state.winner !== null && state.winCondition !== null;
+      },
+      isDataWar: () => {
+        // Check if the current turn is a tie (Data War)
+        const state = useGameStore.getState();
+        return state.checkForDataWar();
+      },
+      hasSpecialEffects: () => {
+        // Check if there are pending special effects to show
+        const state = useGameStore.getState();
+        return state.pendingEffects.length > 0;
       },
     },
   },

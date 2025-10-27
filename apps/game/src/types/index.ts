@@ -8,6 +8,8 @@ export type {
   GamePhase,
   GameState,
   Player,
+  PlayerType,
+  PreRevealEffect,
   SpecialEffect,
   WinCondition,
 } from './game';
