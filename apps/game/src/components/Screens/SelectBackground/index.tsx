@@ -4,7 +4,7 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-import { useGameStore } from '@/stores/gameStore';
+import { useGameStore } from '@/stores/game-store';
 import { cn } from '@/utils/cn';
 
 import { BackgroundCard } from './BackgroundCard';

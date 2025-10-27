@@ -11,37 +11,40 @@ This document outlines the technical implementation plan for the Data War card g
 ### 1.1 Card Entity
 
 ```typescript
-type CardValue = 1 | 2 | 3 | 4 | 5;
+type CardValue = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 type SpecialCardType =
   // Instant effects (trigger immediately)
-  | 'forced_empathy'      // Firewall: Swap decks instantly
-  | 'tracker_smacker'     // Firewall: Block opponent effects for turn
-  | 'hostile_takeover'    // Move: Instant war against value 6
+  | 'forced_empathy'      // Firewall: Pass decks one position to the right
+  | 'tracker_smacker'     // Firewall: Negate opponent Trackers & Moves for turn
+  | 'hostile_takeover'    // Move: Instant war against this 6 (ignores Trackers/Blockers/ties)
   // Non-instant effects (queued until end of hand)
-  | 'tracker'             // Play again + add value to turn total
-  | 'blocker'             // Subtract value from opponent turn
-  | 'open_what_you_want'  // Firewall: Look at top 3, select one to play
-  | 'mandatory_recall'    // Firewall: Steal 2 cards
-  | 'temper_tantrum'      // Move: Steal 2 cards
-  | 'patent_theft'        // Move: Steal 2 cards
-  | 'leveraged_buyout'    // Move: Steal 2 cards
-  | 'launch_stack';       // Collect 3 to win
+  | 'tracker'             // Triggers another play + adds point value to turn total
+  | 'blocker'             // Triggers another play + subtracts points from opponent (card has 0 value)
+  | 'open_what_you_want'  // Firewall: Look at top 3, arrange them in any order
+  | 'mandatory_recall'    // Firewall: If win, opponents shuffle Launch Stacks back into decks
+  | 'temper_tantrum'      // Move: If LOSE, steal 2 cards from winner's win pile
+  | 'patent_theft'        // Move: If win, steal 1 Launch Stack from opponent
+  | 'leveraged_buyout'    // Move: If win, take 2 cards from top of opponent decks
+  | 'launch_stack'        // Collect 3 to win (triggers another play)
+  | 'data_grab';          // Everyone grabs cards from play area (physical mechanic)
 
 interface Card {
-  id: string;                          // Unique identifier (e.g., "card-1", "card-2")
-  value: CardValue;                    // Base value 1-5
-  isSpecial: boolean;                  // Is this a tracker card?
+  id: string;                          // Unique identifier (e.g., "CD-1-01", "TR-1-01")
+  value: CardValue;                    // Base value 0-6
+  isSpecial: boolean;                  // Does this card have special effects?
   specialType?: SpecialCardType;       // Type of special effect (if applicable)
+  triggersAnotherPlay?: boolean;       // Does this card trigger another play?
   imageUrl: string;                    // Path to card front image
 }
 ```
 
 **Notes:**
 - Each card needs a unique ID for React key props and tracking
-- ~74 total cards in the game (mostly common cards, some special cards)
-- Special cards still have a base value 1-5 for comparison
+- 66 total cards in the game (40 common cards, 26 special cards)
+- Special cards have values ranging 0-6 for comparison
 - Card back image will be shared across all cards (can be a constant)
+- 15 cards trigger another play (6 Trackers + 4 Blockers + 5 Launch Stacks)
 
 ### 1.2 Player Entity
 
@@ -140,76 +143,77 @@ interface GameConfig {
 interface CardType {
   id: string;                      // Unique identifier (e.g., "common-1", "ls-ai-platform")
   imageUrl: string;                // Path to card image
-  value: CardValue;                // Base value 1-5
+  value: CardValue;                // Base value 0-6
   isSpecial: boolean;
   specialType?: SpecialCardType;
+  triggersAnotherPlay?: boolean;   // Does this card trigger another play?
   count: number;                   // How many copies of this card in the deck
 }
 
 // Default configuration - easily modifiable
 const DEFAULT_GAME_CONFIG: GameConfig = {
-  cardsPerPlayer: 32,  // Total deck = 64 cards (32 per player)
+  cardsPerPlayer: 33,  // Total deck = 66 cards (33 per player)
   launchStacksToWin: 3,
   deckComposition: [
-    // Common cards (5 unique) - repeated to fill 64 total cards
+    // Common cards (5 unique) - 8 copies each = 40 total
     { id: 'common-1', imageUrl: '/assets/cards/common-1.webp', value: 1, isSpecial: false, count: 8 },
     { id: 'common-2', imageUrl: '/assets/cards/common-2.webp', value: 2, isSpecial: false, count: 8 },
     { id: 'common-3', imageUrl: '/assets/cards/common-3.webp', value: 3, isSpecial: false, count: 8 },
     { id: 'common-4', imageUrl: '/assets/cards/common-4.webp', value: 4, isSpecial: false, count: 8 },
-    { id: 'common-5', imageUrl: '/assets/cards/common-5.webp', value: 5, isSpecial: false, count: 5 },
+    { id: 'common-5', imageUrl: '/assets/cards/common-5.webp', value: 5, isSpecial: false, count: 8 },
 
-    // Launch Stack cards (5 unique) - 1 of each
-    { id: 'ls-ai-platform', imageUrl: '/assets/cards/ls-ai-platform.webp', value: 3, isSpecial: true, specialType: 'launch_stack', count: 1 },
-    { id: 'ls-energy-grid', imageUrl: '/assets/cards/ls-energy-grid.webp', value: 3, isSpecial: true, specialType: 'launch_stack', count: 1 },
-    { id: 'ls-government', imageUrl: '/assets/cards/ls-government.webp', value: 3, isSpecial: true, specialType: 'launch_stack', count: 1 },
-    { id: 'ls-newspaper', imageUrl: '/assets/cards/ls-newspaper.webp', value: 3, isSpecial: true, specialType: 'launch_stack', count: 1 },
-    { id: 'ls-rocket-company', imageUrl: '/assets/cards/ls-rocket-company.webp', value: 3, isSpecial: true, specialType: 'launch_stack', count: 1 },
+    // Launch Stack cards (5 unique) - 1 of each, value 0, triggers another play
+    { id: 'ls-ai-platform', imageUrl: '/assets/cards/ls-ai-platform.webp', value: 0, isSpecial: true, specialType: 'launch_stack', triggersAnotherPlay: true, count: 1 },
+    { id: 'ls-energy-grid', imageUrl: '/assets/cards/ls-energy-grid.webp', value: 0, isSpecial: true, specialType: 'launch_stack', triggersAnotherPlay: true, count: 1 },
+    { id: 'ls-government', imageUrl: '/assets/cards/ls-government.webp', value: 0, isSpecial: true, specialType: 'launch_stack', triggersAnotherPlay: true, count: 1 },
+    { id: 'ls-newspaper', imageUrl: '/assets/cards/ls-newspaper.webp', value: 0, isSpecial: true, specialType: 'launch_stack', triggersAnotherPlay: true, count: 1 },
+    { id: 'ls-rocket-company', imageUrl: '/assets/cards/ls-rocket-company.webp', value: 0, isSpecial: true, specialType: 'launch_stack', triggersAnotherPlay: true, count: 1 },
 
-    // Firewall cards (4 unique) - 1 of each
-    { id: 'firewall-empathy', imageUrl: '/assets/cards/firewall-empathy.webp', value: 4, isSpecial: true, specialType: 'forced_empathy', count: 1 },
-    { id: 'firewall-open', imageUrl: '/assets/cards/firewall-open.webp', value: 3, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'firewall-recall', imageUrl: '/assets/cards/firewall-recall.webp', value: 3, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'firewall-smacker', imageUrl: '/assets/cards/firewall-smacker.webp', value: 4, isSpecial: true, specialType: 'TBD', count: 1 },
+    // Firewall cards (4 unique) - 1 of each, value 6
+    { id: 'firewall-empathy', imageUrl: '/assets/cards/firewall-empathy.webp', value: 6, isSpecial: true, specialType: 'forced_empathy', count: 1 },
+    { id: 'firewall-open', imageUrl: '/assets/cards/firewall-open.webp', value: 6, isSpecial: true, specialType: 'open_what_you_want', count: 1 },
+    { id: 'firewall-recall', imageUrl: '/assets/cards/firewall-recall.webp', value: 6, isSpecial: true, specialType: 'mandatory_recall', count: 1 },
+    { id: 'firewall-smacker', imageUrl: '/assets/cards/firewall-smacker.webp', value: 6, isSpecial: true, specialType: 'tracker_smacker', count: 1 },
 
-    // Move cards (4 unique) - 1 of each
-    { id: 'move-buyout', imageUrl: '/assets/cards/move-buyout.webp', value: 4, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'move-takeover', imageUrl: '/assets/cards/move-takeover.webp', value: 5, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'move-tantrum', imageUrl: '/assets/cards/move-tantrum.webp', value: 2, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'move-theft', imageUrl: '/assets/cards/move-theft.webp', value: 3, isSpecial: true, specialType: 'TBD', count: 1 },
+    // Move cards (4 unique) - 1 of each, value 6
+    { id: 'move-buyout', imageUrl: '/assets/cards/move-buyout.webp', value: 6, isSpecial: true, specialType: 'leveraged_buyout', count: 1 },
+    { id: 'move-takeover', imageUrl: '/assets/cards/move-takeover.webp', value: 6, isSpecial: true, specialType: 'hostile_takeover', count: 1 },
+    { id: 'move-tantrum', imageUrl: '/assets/cards/move-tantrum.webp', value: 6, isSpecial: true, specialType: 'temper_tantrum', count: 1 },
+    { id: 'move-theft', imageUrl: '/assets/cards/move-theft.webp', value: 6, isSpecial: true, specialType: 'patent_theft', count: 1 },
 
-    // Tracker cards (3 unique) - 1 of each
-    { id: 'tracker-1', imageUrl: '/assets/cards/tracker-1.webp', value: 2, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'tracker-2', imageUrl: '/assets/cards/tracker-2.webp', value: 3, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'tracker-3', imageUrl: '/assets/cards/tracker-3.webp', value: 4, isSpecial: true, specialType: 'TBD', count: 1 },
+    // Tracker cards (3 unique) - 2 copies each, triggers another play
+    { id: 'tracker-1', imageUrl: '/assets/cards/tracker-1.webp', value: 1, isSpecial: true, specialType: 'tracker', triggersAnotherPlay: true, count: 2 },
+    { id: 'tracker-2', imageUrl: '/assets/cards/tracker-2.webp', value: 2, isSpecial: true, specialType: 'tracker', triggersAnotherPlay: true, count: 2 },
+    { id: 'tracker-3', imageUrl: '/assets/cards/tracker-3.webp', value: 3, isSpecial: true, specialType: 'tracker', triggersAnotherPlay: true, count: 2 },
 
-    // Blocker cards (2 unique) - 1 of each
-    { id: 'blocker-1', imageUrl: '/assets/cards/blocker-1.webp', value: 2, isSpecial: true, specialType: 'point_subtraction', count: 1 },
-    { id: 'blocker-2', imageUrl: '/assets/cards/blocker-2.webp', value: 3, isSpecial: true, specialType: 'point_subtraction', count: 1 },
+    // Blocker cards (2 unique) - 2 copies each, value 0, triggers another play
+    { id: 'blocker-1', imageUrl: '/assets/cards/blocker-1.webp', value: 0, isSpecial: true, specialType: 'blocker', triggersAnotherPlay: true, count: 2 },
+    { id: 'blocker-2', imageUrl: '/assets/cards/blocker-2.webp', value: 0, isSpecial: true, specialType: 'blocker', triggersAnotherPlay: true, count: 2 },
 
-    // Other special cards (2 unique) - 1 of each
-    { id: 'data-grab', imageUrl: '/assets/cards/data-grab.webp', value: 4, isSpecial: true, specialType: 'TBD', count: 1 },
-    { id: 'win', imageUrl: '/assets/cards/win.webp', value: 5, isSpecial: true, specialType: 'TBD', count: 1 },
+    // Data Grab cards (3 copies) - physical mechanic, skip for MVP or adapt for digital
+    { id: 'data-grab', imageUrl: '/assets/cards/data-grab.webp', value: 0, isSpecial: true, specialType: 'data_grab', count: 3 },
   ],
 };
 ```
 
 **Deck Composition Calculation:**
-- Common cards: 8+8+8+8+5 = **37 cards**
+- Common cards: 8+8+8+8+8 = **40 cards**
 - Launch stack cards: 5×1 = **5 cards**
 - Firewall cards: 4×1 = **4 cards**
 - Move cards: 4×1 = **4 cards**
-- Tracker cards: 3×1 = **3 cards**
-- Blocker cards: 2×1 = **2 cards**
-- Other special: 2×1 = **2 cards**
-- **Total: 37 + 5 + 4 + 4 + 3 + 2 + 2 = 64 cards ✓**
-- Each player gets: **32 cards**
+- Tracker cards: 3×2 = **6 cards**
+- Blocker cards: 2×2 = **4 cards**
+- Data Grab: 3×1 = **3 cards**
+- **Total: 40 + 5 + 4 + 4 + 6 + 4 + 3 = 66 cards ✓**
+- Each player gets: **33 cards**
 
 **Notes:**
 - **Flexible Configuration**: Change `cardsPerPlayer` to easily adjust deck size
 - **Easy to Update**: Modify `count` property on any card type to adjust deck composition
 - **Future-Proof**: Add new card types or change special effects by updating the config
 - **Testing-Friendly**: Can create test configs with fewer cards
-- Values for special cards are placeholders and need design team confirmation
+- **Source of Truth**: All values and effects confirmed from CARDS.md documentation
+- **Cards that trigger another play**: Trackers (6), Blockers (4), Launch Stacks (5) = 15 total
 
 ---
 
@@ -624,37 +628,45 @@ When cards have equal value:
 
 ## 4. Special Effects Implementation
 
-### 4.1 Play Again
+### 4.1 Tracker (Play Again + Add Points)
 
 ```typescript
-function applyPlayAgain(state: GameState): GameState {
+function applyTracker(state: GameState, playerId: 'player' | 'cpu', trackerValue: 1 | 2 | 3): GameState {
+  // Tracker adds its point value to the turn total and triggers another play
   return {
     ...state,
-    phase: 'ready', // Immediately return to ready state
-    activePlayer: state.activePlayer, // Same player goes again
-    // Clear played cards but keep winner's cards
+    [playerId]: {
+      ...state[playerId],
+      currentTurnValue: state[playerId].currentTurnValue + trackerValue,
+    },
+    phase: 'ready', // Trigger another play for this player
+    activePlayer: playerId, // Same player goes again
   };
 }
 ```
 
-### 4.2 Point Subtraction
+### 4.2 Blocker (Point Subtraction)
 
 ```typescript
-function applyPointSubtraction(state: GameState, target: 'player' | 'cpu'): GameState {
+function applyBlocker(state: GameState, blockerValue: 1 | 2, target: 'player' | 'cpu'): GameState {
+  // Blocker cards have 0 value themselves and subtract from opponent
   return {
     ...state,
     [target]: {
       ...state[target],
-      currentTurnValue: Math.max(0, state[target].currentTurnValue - 1),
+      currentTurnValue: Math.max(0, state[target].currentTurnValue - blockerValue),
     },
+    // Blocker also triggers another play for the player who played it
   };
 }
 ```
 
-### 4.3 Forced Empathy
+### 4.3 Forced Empathy (Deck Swap)
 
 ```typescript
 function applyForcedEmpathy(state: GameState): GameState {
+  // In multiplayer: "pass decks one position to the right"
+  // In 1v1: swap decks between player and CPU
   return {
     ...state,
     player: {
@@ -702,8 +714,8 @@ function checkWinConditions(state: GameState): GameState {
   const playerCards = state.player.deck.length;
   const cpuCards = state.cpu.deck.length;
 
-  // Check all cards collected
-  if (playerCards >= 74) {
+  // Check all cards collected (66 total cards)
+  if (playerCards >= 66) {
     return {
       ...state,
       phase: 'game_over',
@@ -712,7 +724,7 @@ function checkWinConditions(state: GameState): GameState {
     };
   }
 
-  if (cpuCards >= 74) {
+  if (cpuCards >= 66) {
     return {
       ...state,
       phase: 'game_over',
@@ -722,6 +734,7 @@ function checkWinConditions(state: GameState): GameState {
   }
 
   // Check launch stacks (already handled in applyLaunchStack)
+  // Need 3 different Launch Stacks to win
 
   return state;
 }
@@ -1104,58 +1117,84 @@ From the original README's 4 effects, we now understand:
 #### Firewall Cards (Chaotic-Good, Conditional)
 
 1. **Firewall: Forced Empathy** (`firewall-empathy.webp`)
-   - Effect: "Immediately trade decks with your opponent"
+   - Value: 6
+   - Effect: "All players immediately pass their decks one position to the right (instant)"
    - Animation: Card stacks swap positions
+   - Note: For 1v1, this means swap decks with opponent
 
 2. **Firewall: Open What You Want** (`firewall-open.webp`)
-   - Effect: "Look at the top 3 cards in your deck and select one to play"
-   - Animation: Show 3 cards, player selects one
+   - Value: 6
+   - Effect: "On your next play, look at the top 3 cards of your deck and arrange them in any order (exclude face-down War cards)"
+   - Animation: Show 3 cards, player arranges them
+   - Note: Gives control and knowledge, not immediate play
 
 3. **Firewall: Mandatory Recall** (`firewall-recall.webp`)
-   - Effect: "Steal two cards from your opponent"
-   - Animation: Two cards fly from opponent to player
+   - Value: 6
+   - Effect: "If you win this hand, all opponents shuffle Launch Stacks back into their decks"
+   - Animation: Launch Stack icons return to deck
+   - Note: Major disruption to opponent win condition
 
 4. **Firewall: Tracker Smacker** (`firewall-smacker.webp`)
-   - Effect: "Block all opponent effects for remainder of turn"
+   - Value: 6
+   - Effect: "Negate all opponent Tracker and Billionaire Move effects for the remainder of this turn (instant)"
    - Animation: Defensive shield/block indicator
 
 #### Billionaire Moves (Chaotic-Evil, Mandatory)
 
 5. **Billionaire Moves: Hostile Takeover** (`move-takeover.webp`)
-   - Effect: "Instant war against the Hostile Takeover 6"
+   - Value: 6
+   - Effect: "All opponents instantly go to WAR against this 6; winner takes all. Ignores Trackers, Blockers, and ties on original play"
    - Animation: Immediate Data War sequence triggered
+   - Note: High risk, high reward aggressive play
 
 6. **Billionaire Moves: Temper Tantrum** (`move-tantrum.webp`)
-   - Effect: "Steal two cards from your opponent"
-   - Animation: Two cards fly from opponent to player
+   - Value: 6
+   - Effect: "If you LOSE this hand, steal 2 cards from the winner's win pile before they collect them"
+   - Animation: Two cards fly from winner back to loser
+   - Note: Bad loser behavior - punishes the winner
 
 7. **Billionaire Moves: Patent Theft** (`move-theft.webp`)
-   - Effect: "Steal two cards from your opponent"
-   - Animation: Two cards fly from opponent to player
+   - Value: 6
+   - Effect: "If you win this hand, steal 1 Launch Stack card from any opponent"
+   - Animation: Launch Stack flies from opponent to player
+   - Note: Directly attacks opponent win condition
 
 8. **Billionaire Moves: Leveraged Buyout** (`move-buyout.webp`)
-   - Effect: "Steal two cards from your opponent"
-   - Animation: Two cards fly from opponent to player
+   - Value: 6
+   - Effect: "If you win this hand, take 2 cards from the top of all opponent decks and add them to yours"
+   - Animation: Two cards fly from opponent deck to player
+   - Note: Weakens opponent while strengthening yourself
 
 #### Tracker Cards
 
 9. **Trackers** (`tracker-1.webp`, `tracker-2.webp`, `tracker-3.webp`)
-   - Effect: "Play Again" - triggers additional card flip for that player
-   - Value: Adds to turn total
+   - Value: 1, 2, 3 respectively (2 copies each)
+   - Effect: Triggers another play + adds the tracker's point value to turn total
+   - Special Action Details:
+     - Tracker-1 (value 1): "Add 1 point to the value of your play"
+     - Tracker-2 (value 2): "Add 2 points to the value of your play"
+     - Tracker-3 (value 3): "Add 3 points to the value of your play"
    - Animation: Additional card flip sequence, Turn Value updates dynamically
 
 #### Blocker Cards
 
 10. **Blockers** (`blocker-1.webp`, `blocker-2.webp`)
-    - Effect: Subtract blocker value from opponent's turn value
-    - Animation: Turn value decreases
+    - Value: 0 (these cards have no point value themselves)
+    - Count: 2 copies each
+    - Effect: Triggers another play + subtracts from opponent's turn value
+    - Special Action Details:
+      - Blocker-1: "Subtract 1 point from the value of all opponent plays (this card has no value)"
+      - Blocker-2: "Subtract 2 points from the value of all opponent plays (this card has no value)"
+    - Animation: Opponent turn value decreases, player plays another card
 
 #### Launch Stack Cards
 
 11. **Launch Stacks** (5 types: ai-platform, energy-grid, government, newspaper, rocket-company)
-    - Effect: Collect 3 to win the game
+    - Value: 0 (no point value)
+    - Count: 1 of each (5 total)
+    - Effect: Collect 3 different Launch Stacks to win the game + triggers another play
     - Animation: Rocket icon flies into launch stack indicator around avatar
-    - No point value (doesn't participate in comparison)
+    - Note: Automatically loses the hand comparison but collects toward win condition
 
 ### Special Card Interaction Levels & Timing
 
@@ -1315,40 +1354,53 @@ From the original README's 4 effects, we now understand:
 - **Effect Queue**: Non-instant effects trigger sequentially at end of hand in play order
 - **Multiple Special Cards**: Yes, both can play in same turn, resolved in play order
 
+### ✅ Confirmed from CARDS.md:
+
+1. **Tracker Values**: ✓ Confirmed
+   - tracker-1 = value 1 (2 copies)
+   - tracker-2 = value 2 (2 copies)
+   - tracker-3 = value 3 (2 copies)
+
+2. **Blocker Values**: ✓ Confirmed
+   - blocker-1 = value 0, subtracts 1 from opponent (2 copies)
+   - blocker-2 = value 0, subtracts 2 from opponent (2 copies)
+
+3. **Launch Stack Values**: ✓ Confirmed
+   - All Launch Stacks = value 0 (auto-lose hand)
+   - Trigger another play
+   - Collect 3 different ones to win
+
+4. **Open What You Want**: ✓ Confirmed
+   - "Look at top 3 and arrange them in any order"
+   - Doesn't play immediately, just reorders
+
+5. **Hostile Takeover**: ✓ Confirmed
+   - "Instant war against this 6"
+   - "Ignores Trackers, Blockers, and ties on original play"
+
+6. **Tracker Smacker Duration**: ✓ Confirmed
+   - "Negate all opponent Tracker and Billionaire Move effects for the remainder of this turn"
+   - Entire turn (could be multiple hands)
+
 ### ❓ Still Need Answers:
 
-1. **Tracker Values**: What are the specific numeric values for tracker-1, tracker-2, tracker-3?
-   - Assumption for MVP: tracker-1 = value 2, tracker-2 = value 3, tracker-3 = value 4
-
-2. **Blocker Values**: What are the specific numeric values for blocker-1, blocker-2?
-   - Assumption for MVP: blocker-1 = value 2, blocker-2 = value 3
-
-3. **Card Reordering**: Do won cards go to bottom of deck, top of deck, or shuffled back in?
+1. **Card Reordering**: Do won cards go to bottom of deck, top of deck, or shuffled back in?
    - Assumption for MVP: Bottom of deck (traditional War rules)
 
-4. **Steal Card Mechanics**:
-   - When you "steal two cards," from where? (top of opponent's deck? random?)
-   - Assumption for MVP: From top of opponent's deck
+2. **Leveraged Buyout**: "Take 2 cards from the top of all opponent decks"
+   - In 1v1: Take 2 from top of opponent's deck
 
-5. **Open What You Want**:
-   - After selecting a card from top 3, what happens to the other 2?
-   - Does selected card play immediately or replace the current card?
-   - Assumption for MVP: Other 2 go back on top, selected card plays immediately
+3. **Temper Tantrum**: "Steal 2 cards from winner's win pile before they collect them"
+   - Does this take from the cards about to be won, or from previously won cards?
+   - Assumption for MVP: From the cards about to be collected in current hand
 
-6. **Hostile Takeover**: "Instant war against the Hostile Takeover 6"
-   - Assumption for MVP: Triggers Data War (3 down, 1 up) immediately with Hostile Takeover as player's face-up card
+4. **Data Grab Card**: "Everyone grabs as many cards from the play area as possible"
+   - Physical dexterity mechanic - how to implement digitally?
+   - Assumption for MVP: Skip this card or replace with "random distribution of cards in play"
 
-7. **Data Grab Card**: Effect not specified in animations - skip for MVP or implement?
-   - Assumption for MVP: Skip this card (or make it a simple effect like "draw 2 cards")
-
-8. **Win Card**: The "win.webp" card - displayed when someone wins or playable?
-   - Assumption for MVP: Victory screen card, not playable
-
-9. **Launch Stack Values**: Do Launch Stack cards have values for comparison or auto-lose?
-   - Assumption for MVP: No value, automatically lose the hand but collect the stack
-
-10. **Tracker Smacker Duration**: Does it block effects for just the current hand or the entire turn?
-    - From text: "remainder of turn" - so entire turn (could be multiple hands if Play Again triggered)
+5. **Multiplayer vs 1v1**: CARDS.md mentions "all opponents" and passing decks "to the right"
+   - For MVP: Adapt all "all opponents" effects to work in 1v1 (player vs CPU)
+   - Forced Empathy: "pass decks right" = swap decks in 1v1
 
 ---
 

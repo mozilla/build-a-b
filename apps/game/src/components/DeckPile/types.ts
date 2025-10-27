@@ -6,4 +6,6 @@ export interface DeckPileProps {
   cardCount: number;
   owner: 'player' | 'cpu';
   onClick?: () => void;
+  showTooltip?: boolean;
+  tooltipContent?: string;
 }
