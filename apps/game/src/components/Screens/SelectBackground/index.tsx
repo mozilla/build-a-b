@@ -125,8 +125,8 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
       </div>
 
       {/* Close/Menu Icon - positioned at top right */}
-      <div className="absolute top-5 right-4">
-        <Icon name="close" />
+      <div className="absolute top-5 right-5">
+        <Icon name="pause" />
       </div>
     </div>
   );

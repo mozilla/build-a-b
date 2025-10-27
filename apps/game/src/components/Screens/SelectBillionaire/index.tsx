@@ -76,8 +76,8 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
       </div>
 
       {/* Close/Menu Icon - positioned at top right */}
-      <div className="absolute top-5 right-4">
-        <Icon name="close" />
+      <div className="absolute top-5 right-5">
+        <Icon name="pause" />
       </div>
 
       {/* Drawer Modal */}

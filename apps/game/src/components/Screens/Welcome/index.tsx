@@ -23,9 +23,7 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
 
       {/* Main content container - centered with flex-grow */}
       <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-9 py-8 flex-grow">
-        <div className="">
-          <Icon name="blastoff" />
-        </div>
+        <Icon name="blastoff" />
 
         {/* Title */}
         <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">

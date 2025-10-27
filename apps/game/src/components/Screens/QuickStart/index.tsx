@@ -25,10 +25,10 @@ export const QuickStart: FC<BaseScreenProps> = ({ send, className, ...props }) =
       <div className="absolute top-5 right-5 z-20">
         <button
           onClick={handleSkip}
-          className="w-[2.125rem] h-[2.125rem] flex items-center justify-center"
+          className="flex items-center justify-center"
           aria-label="Skip guide"
         >
-          <Icon name="close" />
+          <Icon name="pause" />
         </button>
       </div>
 
