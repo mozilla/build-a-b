@@ -36,7 +36,6 @@ import Blocker1 from '../assets/cards/blocker-1.webp';
 import Blocker2 from '../assets/cards/blocker-2.webp';
 
 import DataGrab from '../assets/cards/data-grab.webp';
-import Win from '../assets/cards/win.webp';
 
 export interface GameConfig {
   cardsPerPlayer: number; // Cards each player starts with
@@ -46,41 +45,40 @@ export interface GameConfig {
 
 /**
  * Default game configuration
- * Total: 64 cards (32 per player)
+ * Total: 66 cards (33 per player)
  */
 export const DEFAULT_GAME_CONFIG: GameConfig = {
-  cardsPerPlayer: 32,
+  cardsPerPlayer: 33,
   launchStacksToWin: 3,
   deckComposition: [
-    // Common cards (5 unique types) - repeated to fill 64 total cards
-    // Total: 44 common cards (to make 64 total with 20 special cards)
+    // Common cards (5 unique types) - 8 copies each = 40 total
     {
       typeId: 'common-1',
       imageUrl: Common1,
       value: 1,
       isSpecial: false,
-      count: 9,
+      count: 8,
     },
     {
       typeId: 'common-2',
       imageUrl: Common2,
       value: 2,
       isSpecial: false,
-      count: 9,
+      count: 8,
     },
     {
       typeId: 'common-3',
       imageUrl: Common3,
       value: 3,
       isSpecial: false,
-      count: 9,
+      count: 8,
     },
     {
       typeId: 'common-4',
       imageUrl: Common4,
       value: 4,
       isSpecial: false,
-      count: 9,
+      count: 8,
     },
     {
       typeId: 'common-5',
@@ -91,45 +89,50 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
     },
 
     // Launch Stack cards (5 unique) - 1 of each = 5 cards
-    // Value 0 means they don't participate in comparison (auto-lose hand but collect stack)
+    // Value 0 (auto-lose hand but collect stack), triggers another play
     {
       typeId: 'ls-ai-platform',
       imageUrl: LsAiPlatform,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'launch_stack',
+      triggersAnotherPlay: true,
       count: 1,
     },
     {
       typeId: 'ls-energy-grid',
       imageUrl: LsEnergyGrid,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'launch_stack',
+      triggersAnotherPlay: true,
       count: 1,
     },
     {
       typeId: 'ls-government',
       imageUrl: LsGovernment,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'launch_stack',
+      triggersAnotherPlay: true,
       count: 1,
     },
     {
       typeId: 'ls-newspaper',
       imageUrl: LsNewspaper,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'launch_stack',
+      triggersAnotherPlay: true,
       count: 1,
     },
     {
       typeId: 'ls-rocket-company',
       imageUrl: LsRocketCompany,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'launch_stack',
+      triggersAnotherPlay: true,
       count: 1,
     },
 
@@ -169,7 +172,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
     },
 
     // Move cards (4 unique) - 1 of each = 4 cards
-    // Value 6 (same as firewalls)
+    // All value 6 (same as firewalls)
     {
       typeId: 'move-buyout',
       imageUrl: MoveBuyout,
@@ -189,7 +192,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
     {
       typeId: 'move-tantrum',
       imageUrl: MoveTantrum,
-      value: 2,
+      value: 6,
       isSpecial: true,
       specialType: 'temper_tantrum',
       count: 1,
@@ -197,74 +200,72 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
     {
       typeId: 'move-theft',
       imageUrl: MoveTheft,
-      value: 3,
+      value: 6,
       isSpecial: true,
       specialType: 'patent_theft',
       count: 1,
     },
 
-    // Tracker cards (3 unique) - 1 of each = 3 cards
-    // Values: 2, 3, 4 (MVP assumption)
+    // Tracker cards (3 unique) - 2 copies each = 6 cards
+    // Values: 1, 2, 3 (confirmed from CARDS.md), triggers another play
     {
       typeId: 'tracker-1',
       imageUrl: Tracker1,
-      value: 2,
+      value: 1,
       isSpecial: true,
       specialType: 'tracker',
-      count: 1,
+      triggersAnotherPlay: true,
+      count: 2,
     },
     {
       typeId: 'tracker-2',
       imageUrl: Tracker2,
-      value: 3,
+      value: 2,
       isSpecial: true,
       specialType: 'tracker',
-      count: 1,
+      triggersAnotherPlay: true,
+      count: 2,
     },
     {
       typeId: 'tracker-3',
       imageUrl: Tracker3,
-      value: 4,
+      value: 3,
       isSpecial: true,
       specialType: 'tracker',
-      count: 1,
+      triggersAnotherPlay: true,
+      count: 2,
     },
 
-    // Blocker cards (2 unique) - 1 of each = 2 cards
-    // Values: 2, 3 (MVP assumption)
+    // Blocker cards (2 unique) - 2 copies each = 4 cards
+    // Value 0 (confirmed from CARDS.md), triggers another play
     {
       typeId: 'blocker-1',
       imageUrl: Blocker1,
-      value: 2,
+      value: 0,
       isSpecial: true,
       specialType: 'blocker',
-      count: 1,
+      triggersAnotherPlay: true,
+      count: 2,
     },
     {
       typeId: 'blocker-2',
       imageUrl: Blocker2,
-      value: 3,
+      value: 0,
       isSpecial: true,
       specialType: 'blocker',
-      count: 1,
+      triggersAnotherPlay: true,
+      count: 2,
     },
 
-    // Other special cards (2 unique) - 1 of each = 2 cards
-    // Data Grab: Skipped until we have clear definition (placeholder with value 4)
-    // Win card: Victory screen card, not playable (placeholder with value 5)
+    // Data Grab cards - 3 copies
+    // Value 0, physical mechanic (skip for MVP or adapt for digital)
     {
       typeId: 'data-grab',
       imageUrl: DataGrab,
-      value: 4,
-      isSpecial: false, // Not implementing special effect for now
-      count: 1,
-    },
-    {
-      typeId: 'win',
-      imageUrl: Win,
-      value: 5,
-      isSpecial: false, // Victory card, not playable
-      count: 1,
+      value: 0,
+      isSpecial: true,
+      specialType: 'data_grab',
+      count: 3,
     },
   ],
 };

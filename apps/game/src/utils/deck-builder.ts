@@ -3,7 +3,7 @@
  */
 
 import type { Card } from '../types';
-import type { GameConfig } from '../config/gameConfig';
+import type { GameConfig } from '../config/game-config';
 
 /**
  * Generates a unique ID for a card instance
@@ -32,6 +32,7 @@ export function createDeck(config: GameConfig): Card[] {
         value: cardType.value,
         isSpecial: cardType.isSpecial,
         specialType: cardType.specialType,
+        triggersAnotherPlay: cardType.triggersAnotherPlay,
       };
       deck.push(card);
     }
@@ -208,16 +209,33 @@ export function dealCards(
  * @param config - Game configuration
  * @param playerStrategy - Ordering strategy for player's deck (default: 'random')
  * @param cpuStrategy - Ordering strategy for CPU's deck (default: 'random')
+ * @param mirrorDecks - If true, both decks will have identical cards in identical order
  * @returns Object with playerDeck and cpuDeck ready for gameplay
  */
 export function initializeGameDeck(
   config: GameConfig,
   playerStrategy: DeckOrderStrategy = 'random',
-  cpuStrategy: DeckOrderStrategy = 'random'
+  cpuStrategy: DeckOrderStrategy = 'random',
+  mirrorDecks: boolean = false
 ): {
   playerDeck: Card[];
   cpuDeck: Card[];
 } {
+  if (mirrorDecks) {
+    // Create a single deck and give identical copies to both players
+    const deck = createDeck(config);
+    const shuffled = shuffleDeck(deck);
+    const { playerDeck } = dealCards(shuffled, config.cardsPerPlayer);
+
+    // Apply the same ordering strategy to both decks
+    const orderedDeck = orderDeck(playerDeck, playerStrategy);
+
+    return {
+      playerDeck: orderedDeck,
+      cpuDeck: [...orderedDeck], // Clone the deck for CPU
+    };
+  }
+
   const deck = createDeck(config);
   const shuffled = shuffleDeck(deck);
   const { playerDeck, cpuDeck } = dealCards(shuffled, config.cardsPerPlayer);
