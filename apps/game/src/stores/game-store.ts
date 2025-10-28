@@ -28,6 +28,7 @@ interface GameStore {
   anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
   pendingEffects: SpecialEffect[];
   preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
+  preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
@@ -80,6 +81,7 @@ interface GameStore {
   addPreRevealEffect: (effect: PreRevealEffect) => void;
   clearPreRevealEffects: () => void;
   hasPreRevealEffects: () => boolean;
+  setPreRevealProcessed: (processed: boolean) => void;
   setTrackerSmackerActive: (playerId: PlayerType | null) => void;
   stealLaunchStack: (from: PlayerType, to: PlayerType) => void;
   removeLaunchStacks: (playerId: PlayerType, count: number) => void;
@@ -130,6 +132,7 @@ export const useGameStore = create<GameStore>()(
       anotherPlayMode: false,
       pendingEffects: [],
       preRevealEffects: [],
+      preRevealProcessed: false,
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
@@ -464,6 +467,10 @@ export const useGameStore = create<GameStore>()(
         return get().preRevealEffects.length > 0;
       },
 
+      setPreRevealProcessed: (processed) => {
+        set({ preRevealProcessed: processed });
+      },
+
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
       },
@@ -728,6 +735,8 @@ export const useGameStore = create<GameStore>()(
           activePlayer: 'player',
           anotherPlayMode: false,
           pendingEffects: [],
+          preRevealEffects: [],
+          preRevealProcessed: false,
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,

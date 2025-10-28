@@ -5,6 +5,7 @@
 
 import { assign, createMachine } from 'xstate';
 import { useGameStore } from '../stores/game-store';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 export interface GameFlowContext {
   currentTurn: number;
@@ -138,7 +139,7 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: 'Get ready for battle!',
         }),
         after: {
-          2000: 'ready', // Auto-transition after 2s animation
+          [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'ready', // Auto-transition after animation
         },
         on: {
           VS_ANIMATION_COMPLETE: 'ready',
@@ -169,7 +170,7 @@ export const gameFlowMachine = createMachine(
         }),
         // Give players time to see the revealed cards before resolving
         after: {
-          1500: [
+          [ANIMATION_DURATIONS.CARD_COMPARISON]: [
             { target: 'data_war', guard: 'isDataWar' },
             { target: 'special_effect', guard: 'hasSpecialEffects' },
             { target: 'resolving' },
@@ -190,7 +191,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: 'DATA WAR!',
             }),
             after: {
-              2000: 'reveal_face_down',
+              [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'reveal_face_down',
             },
           },
           reveal_face_down: {
@@ -262,7 +263,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: '',
             }),
             after: {
-              1200: [
+              [ANIMATION_DURATIONS.WIN_ANIMATION]: [
                 { target: 'animating', guard: 'hasPreRevealEffects' },
                 { target: '#dataWarGame.ready' },
               ],
@@ -279,7 +280,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: '',
             }),
             after: {
-              2000: 'awaiting_interaction',
+              [ANIMATION_DURATIONS.OWYW_ANIMATION]: 'awaiting_interaction',
             },
           },
 

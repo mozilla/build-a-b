@@ -5,7 +5,7 @@
 
 import { Tooltip as HeroUITooltip } from '@heroui/tooltip';
 import { type FC } from 'react';
-import type { TooltipProps } from './types';
+import type { ArrowDirection, TooltipPlacement, TooltipProps } from './types';
 
 export const Tooltip: FC<TooltipProps> = ({
   arrowDirection = 'bottom',
@@ -17,11 +17,11 @@ export const Tooltip: FC<TooltipProps> = ({
   // Map arrow direction to HeroUI placement
   // Arrow direction is opposite to tooltip placement
   // e.g., if arrow points up, tooltip is positioned below
-  const placementMap = {
-    top: 'bottom' as const,
-    bottom: 'top' as const,
-    left: 'right' as const,
-    right: 'left' as const,
+  const placementMap: Record<ArrowDirection, TooltipPlacement> = {
+    top: 'bottom',
+    bottom: 'top',
+    left: 'right',
+    right: 'left',
   };
   const placement = placementMap[arrowDirection];
 

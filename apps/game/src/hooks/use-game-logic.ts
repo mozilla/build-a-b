@@ -4,7 +4,7 @@
  */
 
 import { useSelector } from '@xstate/react';
-import { useRef } from 'react';
+import { useEffect } from 'react';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../stores/game-store';
 import { useCpuPlayer } from './use-cpu-player';
@@ -26,9 +26,6 @@ export function useGameLogic() {
   const phase = getGamePhase(stateValue);
   const context = useSelector(actorRef, (snapshot) => snapshot.context);
   const tooltipMessage = useSelector(actorRef, (snapshot) => snapshot.context.tooltipMessage);
-
-  // Guard to prevent handlePreReveal from running multiple times
-  const preRevealProcessedRef = useRef(false);
 
   // Get Zustand store actions
   const {
@@ -61,14 +58,15 @@ export function useGameLogic() {
    * - Interactive: Show animation, wait for user tap, then show selection UI
    */
   const handlePreReveal = () => {
+    const { preRevealProcessed, setPreRevealProcessed, preRevealEffects } =
+      useGameStore.getState();
+
     // Guard: Only process once per pre_reveal phase entry
-    if (preRevealProcessedRef.current) {
+    if (preRevealProcessed) {
       return;
     }
 
-    preRevealProcessedRef.current = true;
-
-    const { preRevealEffects } = useGameStore.getState();
+    setPreRevealProcessed(true);
 
     // If no effects, immediately transition to ready
     if (preRevealEffects.length === 0) {
@@ -442,9 +440,14 @@ export function useGameLogic() {
   };
 
   // Reset pre-reveal guard when leaving pre_reveal phase
-  if (!phase.startsWith('pre_reveal')) {
-    preRevealProcessedRef.current = false;
-  }
+  useEffect(() => {
+    if (!phase.startsWith('pre_reveal')) {
+      const { preRevealProcessed, setPreRevealProcessed } = useGameStore.getState();
+      if (preRevealProcessed) {
+        setPreRevealProcessed(false);
+      }
+    }
+  }, [phase]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
   useCpuPlayer(phase, activePlayer, tapDeck);

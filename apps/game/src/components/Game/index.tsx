@@ -10,6 +10,7 @@ import { Board } from '../Board';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { BILLIONAIRES } from '@/config/billionaires';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { OpenWhatYouWantAnimation } from '../SpecialCardAnimation/OpenWhatYouWantAnimation';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 
@@ -82,7 +83,7 @@ export function Game() {
     if (phase === 'special_effect.showing') {
       const timer = setTimeout(() => {
         send({ type: 'DISMISS_EFFECT' });
-      }, 2000);
+      }, ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
       return () => clearTimeout(timer);
     }
   }, [phase, send]);
