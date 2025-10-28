@@ -34,8 +34,6 @@ export function GameProvider({ children }: PropsWithChildren) {
     // initializeGame('owyw-first', 'common-first', false, true)
 
     // Keep adding scenarios here as needed to test different flows.
-
-    // OWYW test: Order full deck before dealing to guarantee OWYW cards go to player
     initializeGame('random', 'random', false, true);
   }, [initializeGame]);
 

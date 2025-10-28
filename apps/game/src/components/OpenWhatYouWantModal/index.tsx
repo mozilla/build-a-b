@@ -1,6 +1,6 @@
 import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
 import { useEffect, useMemo, useState } from 'react';
-import { A11y, Navigation } from 'swiper/modules';
+import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
@@ -9,7 +9,6 @@ import type { Card } from '../../types';
 import { Button, Text } from '@/components';
 
 import 'swiper/css';
-import 'swiper/css/navigation';
 import type { SwiperOptions } from 'swiper/types';
 import { capitalize } from '@/utils/capitalize';
 
@@ -17,16 +16,17 @@ export const OpenWhatYouWantModal = () => {
   const { send } = useGameMachineActor();
   const { cards, showModal, isActive } = useOpenWhatYouWantState();
   const playSelectedCardFromOWYW = useGameStore((state) => state.playSelectedCardFromOWYW);
+  const setOpenWhatYouWantActive = useGameStore((state) => state.setOpenWhatYouWantActive);
+  const clearPreRevealEffects = useGameStore((state) => state.clearPreRevealEffects);
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
-      modules: [Navigation, A11y],
+      modules: [A11y, Keyboard],
       centeredSlides: true,
-      allowTouchMove: true,
-      spaceBetween: -80,
+      spaceBetween: -80, // Negative spacing creates visual card overlap
       slidesPerView: 1,
-      navigation: {
-        prevEl: '.swiper-button-prev',
-        nextEl: '.swiper-button-next',
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true,
       },
     }),
     [],
@@ -47,13 +47,23 @@ export const OpenWhatYouWantModal = () => {
       playSelectedCardFromOWYW(selectedCard);
 
       // Clear OWYW active state AND pre-reveal effects (player flow is complete)
-      useGameStore.getState().setOpenWhatYouWantActive(null);
-      useGameStore.getState().clearPreRevealEffects();
+      setOpenWhatYouWantActive(null);
+      clearPreRevealEffects();
 
       // Transition from selecting sub-state to revealing state
       send({ type: 'CARD_SELECTED' });
       setSelectedCard(null);
     }
+  };
+
+  // Generate descriptive alt text for card images
+  const getCardAltText = (card: Card): string => {
+    // Special cards display their name below, so just use type + value
+    if (card.specialType) {
+      return `${capitalize(card.specialType)} card`;
+    }
+    // Regular cards need more description
+    return `Regular card with value ${card.value}`;
   };
 
   return (
@@ -93,7 +103,7 @@ export const OpenWhatYouWantModal = () => {
                       <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
                         <img
                           src={card.imageUrl}
-                          alt={`Card ${card.typeId}`}
+                          alt={getCardAltText(card)}
                           className="w-full h-full object-cover"
                         />
                       </div>
