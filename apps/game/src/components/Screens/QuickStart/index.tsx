@@ -2,11 +2,10 @@ import { type FC } from 'react';
 
 import { Button } from '@/components/Button';
 import { GuideStep } from '@/components/GuideStep';
-import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-
 import { cn } from '@/utils/cn';
+import { motion } from 'framer-motion';
 import { CardCarousel } from './CardCarousel';
 import { quickStartMicrocopy } from './microcopy';
 
@@ -15,23 +14,8 @@ export const QuickStart: FC<BaseScreenProps> = ({ send, className, ...props }) =
     send?.({ type: 'SHOW_MISSION' });
   };
 
-  const handleSkip = () => {
-    send?.({ type: 'SKIP_GUIDE' });
-  };
-
   return (
-    <div className={cn('relative flex flex-col min-h-full', className)} {...props}>
-      {/* Close/Skip button - top right */}
-      <div className="absolute top-5 right-5 z-20">
-        <button
-          onClick={handleSkip}
-          className="flex items-center justify-center"
-          aria-label="Skip guide"
-        >
-          <Icon name="pause" />
-        </button>
-      </div>
-
+    <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
       {/* Main content container - scrollable */}
       <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto">
         {/* Title Section */}
@@ -70,11 +54,11 @@ export const QuickStart: FC<BaseScreenProps> = ({ send, className, ...props }) =
         </div>
         {/* CTA Button */}
         <div className="relative z-10 flex justify-center pb-8 pt-4 w-full px-12">
-          <Button className="w-full mx-auto" onClick={handleContinue} variant="primary">
+          <Button className="w-full mx-auto" onPress={handleContinue} variant="primary">
             {quickStartMicrocopy.cta}
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

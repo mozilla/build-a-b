@@ -1,13 +1,13 @@
 import { type FC } from 'react';
 
 import { Button } from '@/components/Button';
-import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { useGameStore } from '@/stores/game-store';
 import { getBillionaireImage } from '@/utils/selectors';
 
 import { cn } from '@/utils/cn';
+import { motion } from 'framer-motion';
 import { introMicrocopy } from './microcopy';
 
 export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
@@ -26,18 +26,7 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
     getBillionaireImage(selectedBillionaire) || '/assets/characters/default.png';
 
   return (
-    <div className={cn('relative flex flex-col min-h-full', className)} {...props}>
-      {/* Close/Skip button - top right */}
-      <div className="absolute top-5 right-5 z-20">
-        <button
-          onClick={handleSkipInstructions}
-          className="flex items-center justify-center"
-          aria-label="Skip instructions"
-        >
-          <Icon name="pause" />
-        </button>
-      </div>
-
+    <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
       {/* Main content container */}
       <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8">
         {/* Billionaire Avatar - centered at top */}
@@ -68,11 +57,11 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
 
         {/* Action Buttons - stacked at bottom */}
         <div className="w-full flex flex-col items-center gap-4 pb-8 px-[4.5rem]">
-          <Button onClick={handleShowGuide} variant="primary" className="w-full max-w-[15.5rem]">
+          <Button onPress={handleShowGuide} variant="primary" className="w-full max-w-[15.5rem]">
             {introMicrocopy.quickStartButton}
           </Button>
           <Button
-            onClick={handleSkipInstructions}
+            onPress={handleSkipInstructions}
             variant="primary"
             className="w-full max-w-[15.5rem]"
           >
@@ -80,6 +69,6 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

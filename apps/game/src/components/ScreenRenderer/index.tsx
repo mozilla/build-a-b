@@ -1,15 +1,17 @@
+import { Icon } from '@/components/Icon';
 import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
 import { SelectBackground } from '@/components/Screens/SelectBackground';
 import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { Welcome } from '@/components/Screens/Welcome';
 import { useGameLogic } from '@/hooks/use-game-logic';
-import { AnimatePresence } from 'framer-motion';
-import type { FC, HTMLAttributes } from 'react';
+import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
+import type { FC } from 'react';
+import { useGameMachine } from '../../hooks/use-game-machine';
 import { ScreenBackground } from './Background';
 
-export interface BaseScreenProps extends HTMLAttributes<HTMLDivElement> {
-  send?: ReturnType<typeof useGameLogic>['send'];
+export interface BaseScreenProps extends HTMLMotionProps<'div'> {
+  send?: ReturnType<typeof useGameMachine>['send'];
 }
 
 // Screen registry mapping state machine phases to components
@@ -30,6 +32,14 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   // game_over: Welcome,
 };
 
+// Screens that should show the pause/close icon
+const SCREENS_WITH_CLOSE_ICON = [
+  'select_billionaire',
+  'select_background',
+  'intro',
+  'quick_start_guide',
+];
+
 export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
 
@@ -38,6 +48,7 @@ export const ScreenRenderer: FC = () => {
 
   // Get the component for the current phase
   const ScreenComponent = SCREEN_REGISTRY[phaseKey];
+  const showCloseIcon = SCREENS_WITH_CLOSE_ICON.includes(phaseKey);
 
   // Fallback if phase not found
   if (!ScreenComponent) {
@@ -55,6 +66,11 @@ export const ScreenRenderer: FC = () => {
           send={send}
           className="flex flex-col items-center justify-center relative w-full h-full"
         />
+        {showCloseIcon && (
+          <div className="absolute top-5 right-5 z-20">
+            <Icon name="pause" />
+          </div>
+        )}
       </AnimatePresence>
     </div>
   );

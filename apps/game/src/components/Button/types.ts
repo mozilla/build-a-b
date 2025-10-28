@@ -1,6 +1,5 @@
-import type { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
+import type { ButtonProps as HeroUIButtonProps } from '@heroui/react';
 
-export interface ButtonProps
-  extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
+export interface ButtonProps extends Omit<HeroUIButtonProps, 'variant'> {
   variant?: 'primary' | 'secondary';
 }
