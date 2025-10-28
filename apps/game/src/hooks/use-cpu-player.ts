@@ -36,16 +36,12 @@ export function useCpuPlayer(
       return;
     }
 
-    console.log('[CPU Player] Setting up CPU turn with delay:', delay);
-
     // Add realistic delay for better UX
     const timer = setTimeout(() => {
-      console.log('[CPU Player] Executing CPU turn');
       onCPUTurn();
     }, delay);
 
     return () => {
-      console.log('[CPU Player] Cleanup timer');
       clearTimeout(timer);
     };
   }, [enabled, activePlayer, currentPhase, delay, onCPUTurn]);

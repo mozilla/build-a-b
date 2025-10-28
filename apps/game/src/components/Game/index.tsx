@@ -42,9 +42,6 @@ export function Game() {
   const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
 
   useEffect(() => {
-    console.log("PHASE", phase);
-    console.log("[Game Component] player.playedCardsInHand.length:", player.playedCardsInHand.length);
-    console.log("[Game Component] cpu.playedCardsInHand.length:", cpu.playedCardsInHand.length);
     switch (phase) {
       // Skip to game on mount (temporary - will implement full setup flow later)
       case 'intro':
@@ -68,8 +65,6 @@ export function Game() {
         handleRevealCards();
         break;
       case 'comparing':
-        console.log("[Game Component - comparing phase] player.playedCardsInHand:", player.playedCardsInHand);
-        console.log("[Game Component - comparing phase] cpu.playedCardsInHand:", cpu.playedCardsInHand);
         // Don't call handleCompareTurn - let the state machine auto-transition after 1500ms delay
         // This gives players time to see the cards before they're collected
         break;

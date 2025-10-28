@@ -22,7 +22,7 @@ export const SpecialCardAnimation = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm ${className}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm ${className}`}
     >
       <div className={`flex flex-col items-center gap-4 ${animationClassName}`}>
         <Lottie

@@ -261,11 +261,16 @@ export const gameFlowMachine = createMachine(
             entry: assign({
               tooltipMessage: '',
             }),
+            after: {
+              1200: [
+                { target: 'animating', guard: 'hasPreRevealEffects' },
+                { target: '#dataWarGame.ready' },
+              ],
+            },
             on: {
               START_OWYW_ANIMATION: 'animating',
             },
-            // This state will be exited immediately by handlePreReveal logic
-            // If no effects or all effects are non-interactive, transitions to parent
+            // Wait 1.2s for win animation to complete before transitioning
           },
 
           // Animation plays (for OWYW)
@@ -341,6 +346,11 @@ export const gameFlowMachine = createMachine(
         // Check if there are pending special effects to show
         const state = useGameStore.getState();
         return state.pendingEffects.length > 0;
+      },
+      hasPreRevealEffects: () => {
+        // Check if there are pre-reveal effects to process (like OWYW)
+        const state = useGameStore.getState();
+        return state.hasPreRevealEffects();
       },
     },
   },

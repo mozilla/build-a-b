@@ -50,7 +50,12 @@ interface GameStore {
   showTooltip: boolean;
 
   // Actions - Game Logic
-  initializeGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
+  initializeGame: (
+    playerStrategy?: DeckOrderStrategy,
+    cpuStrategy?: DeckOrderStrategy,
+    mirrorDecks?: boolean,
+    orderBeforeDealing?: boolean,
+  ) => void;
   playCard: (playerId: PlayerType) => void;
   collectCards: (winnerId: PlayerType, cards: Card[]) => void;
   addLaunchStack: (playerId: PlayerType) => void;
@@ -96,7 +101,12 @@ interface GameStore {
   toggleAudio: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
-  resetGame: (playerStrategy?: DeckOrderStrategy, cpuStrategy?: DeckOrderStrategy) => void;
+  resetGame: (
+    playerStrategy?: DeckOrderStrategy,
+    cpuStrategy?: DeckOrderStrategy,
+    mirrorDecks?: boolean,
+    orderBeforeDealing?: boolean,
+  ) => void;
 }
 
 const createInitialPlayer = (id: PlayerType): Player => ({
@@ -138,12 +148,18 @@ export const useGameStore = create<GameStore>()(
       showTooltip: false,
 
       // Game Logic Actions
-      initializeGame: (playerStrategy = 'random', cpuStrategy = 'random') => {
+      initializeGame: (
+        playerStrategy = 'random',
+        cpuStrategy = 'random',
+        mirrorDecks = false,
+        orderBeforeDealing = false,
+      ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          false, // Random decks for normal gameplay
+          mirrorDecks,
+          orderBeforeDealing,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -178,10 +194,10 @@ export const useGameStore = create<GameStore>()(
           ? playerState.currentTurnValue + card.value
           : card.value;
 
-        const newPlayedCardsInHand = [...playerState.playedCardsInHand, { card, isFaceDown: false }];
-        console.log(`[playCard] ${playerId} - Adding card to playedCardsInHand:`, card.typeId);
-        console.log(`[playCard] ${playerId} - playedCardsInHand length BEFORE:`, playerState.playedCardsInHand.length);
-        console.log(`[playCard] ${playerId} - playedCardsInHand length AFTER:`, newPlayedCardsInHand.length);
+        const newPlayedCardsInHand = [
+          ...playerState.playedCardsInHand,
+          { card, isFaceDown: false },
+        ];
 
         set({
           [playerId]: {
@@ -193,15 +209,9 @@ export const useGameStore = create<GameStore>()(
           },
           cardsInPlay: [...get().cardsInPlay, card],
         });
-
-        console.log(`[playCard] ${playerId} - State updated, verifying:`, get()[playerId].playedCardsInHand.length);
       },
 
       collectCards: (winnerId, cards) => {
-        console.log(`[collectCards] Winner: ${winnerId}, collecting ${cards?.length || 0} cards`);
-        console.log(`[collectCards] BEFORE - player.playedCardsInHand:`, get().player.playedCardsInHand.length);
-        console.log(`[collectCards] BEFORE - cpu.playedCardsInHand:`, get().cpu.playedCardsInHand.length);
-
         const winner = get()[winnerId];
         set({
           [winnerId]: {
@@ -225,9 +235,6 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: 0,
           },
         });
-
-        console.log(`[collectCards] AFTER - player.playedCardsInHand:`, get().player.playedCardsInHand.length);
-        console.log(`[collectCards] AFTER - cpu.playedCardsInHand:`, get().cpu.playedCardsInHand.length);
       },
 
       addLaunchStack: (playerId) => {
@@ -338,7 +345,6 @@ export const useGameStore = create<GameStore>()(
 
         // Check if effect is blocked by Tracker Smacker
         if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
-          console.log(`Tracker effect blocked by Tracker Smacker`);
           return;
         }
 
@@ -360,7 +366,6 @@ export const useGameStore = create<GameStore>()(
 
         // Check if effect is blocked by Tracker Smacker
         if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
-          console.log(`Blocker effect blocked by Tracker Smacker`);
           return;
         }
 
@@ -476,7 +481,6 @@ export const useGameStore = create<GameStore>()(
               effect.type === 'patent_theft' ||
               effect.type === 'temper_tantrum')
           ) {
-            console.log(`${effect.type} effect blocked by Tracker Smacker`);
             continue;
           }
 
@@ -605,7 +609,6 @@ export const useGameStore = create<GameStore>()(
 
       // Open What You Want Actions
       setOpenWhatYouWantActive: (playerId) => {
-        console.log('[OWYW Store] Setting openWhatYouWantActive to:', playerId);
         set({ openWhatYouWantActive: playerId });
       },
 
@@ -705,12 +708,18 @@ export const useGameStore = create<GameStore>()(
         set({ showTooltip: show });
       },
 
-      resetGame: (playerStrategy = 'random', cpuStrategy = 'random') => {
+      resetGame: (
+        playerStrategy = 'random',
+        cpuStrategy = 'random',
+        mirrorDecks = false,
+        orderBeforeDealing = false,
+      ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          false, // Normal random decks for reset
+          mirrorDecks,
+          orderBeforeDealing,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
