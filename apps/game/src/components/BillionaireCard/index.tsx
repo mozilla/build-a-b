@@ -1,5 +1,6 @@
 import Text from '@/components/Text';
 import { cn } from '@/utils/cn';
+import { Button } from '@heroui/react';
 import { type FC } from 'react';
 import type { BillionaireCardProps } from './types';
 
@@ -7,17 +8,20 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
   name,
   imageSrc,
   isSelected = false,
-  onClick,
-  className = '',
+  onPress,
+  className,
+  ...cardProps
 }) => {
   return (
-    <button
-      onClick={onClick}
+    <Button
+      disableRipple
+      onPress={onPress}
       className={cn(
-        'flex flex-col items-center gap-2 cursor-pointer transition-all',
+        'flex flex-col items-center gap-2 cursor-pointer transition-transform-opacity',
         isSelected && 'scale-110 opacity-100',
         className,
       )}
+      {...cardProps}
     >
       <div
         className={cn(
@@ -30,6 +34,6 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
       <Text variant="label-extrabold" color="text-common-ash">
         {name}
       </Text>
-    </button>
+    </Button>
   );
 };

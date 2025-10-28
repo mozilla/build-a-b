@@ -7,6 +7,7 @@ import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 
 import { cn } from '@/utils/cn';
+import { motion } from 'framer-motion';
 import { welcomeMicrocopy } from './microcopy';
 
 export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
@@ -15,7 +16,13 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
   };
 
   return (
-    <div className={cn('relative flex flex-col min-h-full', className)} {...props}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className={cn('relative flex flex-col min-h-full', className)}
+      {...props}
+    >
       {/* Decorative floating billionaires background - simplified for now */}
       <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
         {/* Background decorative elements would go here */}
@@ -59,6 +66,6 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
       <div className="relative z-10 flex justify-center pb-16 pt-4">
         <PoweredByFirefox />
       </div>
-    </div>
+    </motion.div>
   );
 };

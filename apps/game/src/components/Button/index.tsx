@@ -1,5 +1,6 @@
 import { variantStyles } from '@/components/Text/styles';
 import { cn } from '@/utils/cn';
+import { Button as HeroButton } from '@heroui/react';
 import { type FC } from 'react';
 import type { ButtonProps } from './types';
 
@@ -17,17 +18,17 @@ const variantClasses = {
 
 export const Button: FC<ButtonProps> = ({
   children,
-  onClick,
   variant = 'primary',
   disabled = false,
   className = '',
+  ...props
 }) => {
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
 
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
+    <HeroButton
+      {...props}
+      isDisabled={disabled}
       className={cn(
         baseTypography,
         baseClasses,
@@ -37,6 +38,6 @@ export const Button: FC<ButtonProps> = ({
       )}
     >
       {children}
-    </button>
+    </HeroButton>
   );
 };
