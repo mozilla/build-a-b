@@ -30,9 +30,13 @@ export function GameProvider({ children }: PropsWithChildren) {
     // ====== TEST SCENARIO 2: BLOCKER CARDS ======
     // initializeGame('blocker-first', 'common-first');
 
+    // ====== TEST SCENARIO 3: OWYW FLOW ======
+    // initializeGame('owyw-first', 'common-first', false, true)
+
     // Keep adding scenarios here as needed to test different flows.
 
-    initializeGame('owyw-first', 'common-first');
+    // OWYW test: Order full deck before dealing to guarantee OWYW cards go to player
+    initializeGame('random', 'random', false, true);
   }, [initializeGame]);
 
   return (

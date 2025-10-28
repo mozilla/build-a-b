@@ -9,10 +9,6 @@ import { SpecialCardAnimation } from './index';
 export const OpenWhatYouWantAnimation = () => {
   const showAnimation = useGameStore((state) => state.showOpenWhatYouWantAnimation);
 
-  if (showAnimation) {
-    console.log('[OWYW Animation] Rendering animation');
-  }
-
   return (
     <SpecialCardAnimation
       show={showAnimation}

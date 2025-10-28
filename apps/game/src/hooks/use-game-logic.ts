@@ -63,34 +63,27 @@ export function useGameLogic() {
   const handlePreReveal = () => {
     // Guard: Only process once per pre_reveal phase entry
     if (preRevealProcessedRef.current) {
-      console.log('[Pre-Reveal] Already processed, skipping');
       return;
     }
 
     preRevealProcessedRef.current = true;
-    console.log('[Pre-Reveal] Processing pre-reveal effects');
 
     const { preRevealEffects } = useGameStore.getState();
 
     // If no effects, immediately transition to ready
     if (preRevealEffects.length === 0) {
-      console.log('[Pre-Reveal] No effects, transitioning to ready');
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
       return;
     }
 
-    console.log('[Pre-Reveal] Found', preRevealEffects.length, 'effects');
-
     // Process each effect
     for (const effect of preRevealEffects) {
       if (effect.type === 'owyw') {
-        console.log('[Pre-Reveal] Processing OWYW effect for', effect.playerId, 'requiresInteraction:', effect.requiresInteraction);
-        if (effect.requiresInteraction) {
-          // Transition to animating sub-state for player
-          actorRef.send({ type: 'START_OWYW_ANIMATION' });
-        }
-
+        // Prepare OWYW state (cards, modal state, etc.)
         handleOWYWEffect(effect.playerId, effect.requiresInteraction);
+
+        // Note: The state machine will automatically transition to 'animating' after 1200ms
+        // This delay allows the win animation to complete before OWYW animation starts
       }
     }
 
@@ -112,14 +105,12 @@ export function useGameLogic() {
       clearPreRevealEffects,
     } = useGameStore.getState();
 
-    console.log('[OWYW Effect] Processing OWYW for', playerId, 'requiresInteraction:', requiresInteraction);
 
     // Prepare the top 3 cards
     prepareOpenWhatYouWantCards(playerId);
 
     if (!requiresInteraction) {
       // CPU: Auto-select random card and move to ready immediately
-      console.log('[OWYW Effect] CPU path - auto-selecting');
       const topCards = useGameStore.getState().openWhatYouWantCards;
       if (topCards.length > 0) {
         const randomCard = topCards[Math.floor(Math.random() * topCards.length)];
@@ -131,14 +122,12 @@ export function useGameLogic() {
 
       // Clear pre-reveal effects (CPU flow is complete)
       clearPreRevealEffects();
-      console.log('[OWYW Effect] Effects cleared for CPU');
 
       // Transition to ready (no animation/modal for CPU)
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     } else {
       // Player: Just show animation, DON'T clear effects yet
       // Effects will be cleared when modal confirms
-      console.log('[OWYW Effect] Player path - showing animation');
       setShowOpenWhatYouWantAnimation(true);
     }
   };
@@ -151,15 +140,8 @@ export function useGameLogic() {
   const handleRevealCards = () => {
     const store = useGameStore.getState();
 
-    console.log('[Reveal Cards] Starting reveal phase');
-    console.log('[Reveal Cards] Another play mode:', store.anotherPlayMode);
-    console.log('[Reveal Cards] Active player:', store.activePlayer);
-    console.log('[Reveal Cards] Player deck size:', store.player.deck.length);
-    console.log('[Reveal Cards] CPU deck size:', store.cpu.deck.length);
-
     if (store.anotherPlayMode) {
       // "Another play" mode - only active player plays
-      console.log('[Reveal Cards] Another play mode - only', store.activePlayer, 'plays');
       playCard(store.activePlayer);
 
       // Get the played card
@@ -171,15 +153,11 @@ export function useGameLogic() {
       }
     } else {
       // Normal turn - both players play
-      console.log('[Reveal Cards] Normal turn - both players play');
       playCard('player');
       playCard('cpu');
 
       // Get the played cards
       const { player: p, cpu: c } = useGameStore.getState();
-
-      console.log('[Reveal Cards] Player played:', p.playedCard?.typeId);
-      console.log('[Reveal Cards] CPU played:', c.playedCard?.typeId);
 
       // Handle special effects for both cards
       if (p.playedCard) {

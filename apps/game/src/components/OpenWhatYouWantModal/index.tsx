@@ -1,123 +1,101 @@
-import { useState } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@heroui/react';
+import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
+import { useEffect, useMemo, useState } from 'react';
+import { A11y, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
-import type { Card } from '../../types';
-import { useGameStore, useOpenWhatYouWantState } from '../../stores/game-store';
+import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
+import { useGameStore, useOpenWhatYouWantState } from '../../stores/game-store';
+import type { Card } from '../../types';
+import { Button, Text } from '@/components';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
+import type { SwiperOptions } from 'swiper/types';
+import { capitalize } from '@/utils/capitalize';
 
 export const OpenWhatYouWantModal = () => {
   const { send } = useGameMachineActor();
   const { cards, showModal, isActive } = useOpenWhatYouWantState();
-  const setShowOpenWhatYouWantModal = useGameStore((state) => state.setShowOpenWhatYouWantModal);
   const playSelectedCardFromOWYW = useGameStore((state) => state.playSelectedCardFromOWYW);
-
+  const defaultOptions: Partial<SwiperOptions> = useMemo(
+    () => ({
+      modules: [Navigation, A11y],
+      centeredSlides: true,
+      allowTouchMove: true,
+      spaceBetween: -80,
+      slidesPerView: 1,
+      navigation: {
+        prevEl: '.swiper-button-prev',
+        nextEl: '.swiper-button-next',
+      },
+    }),
+    [],
+  );
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
-  const handleCardSelect = (card: Card, index: number) => {
-    setSelectedCard(card);
-    // Navigate to the selected slide
-    if (swiperInstance) {
-      swiperInstance.slideTo(index);
+  // Set the first card as selected when cards become available
+  useEffect(() => {
+    if (cards.length > 0 && !selectedCard) {
+      setSelectedCard(cards[0]);
     }
-  };
+  }, [cards, selectedCard]);
 
   const handleConfirm = () => {
     if (selectedCard && isActive) {
-      console.log('[OWYW Modal] Confirming selection:', selectedCard);
-
       // Reorder deck: selected card to top, unselected cards to bottom
       // This also closes the modal
       playSelectedCardFromOWYW(selectedCard);
-      console.log('[OWYW Modal] Deck reordered, selected card at top');
 
       // Clear OWYW active state AND pre-reveal effects (player flow is complete)
       useGameStore.getState().setOpenWhatYouWantActive(null);
       useGameStore.getState().clearPreRevealEffects();
-      console.log('[OWYW Modal] OWYW state and effects cleared');
 
       // Transition from selecting sub-state to revealing state
       send({ type: 'CARD_SELECTED' });
-      console.log('[OWYW Modal] Sent CARD_SELECTED event');
-
       setSelectedCard(null);
     }
-  };
-
-  const handleClose = () => {
-    setShowOpenWhatYouWantModal(false);
-    setSelectedCard(null);
   };
 
   return (
     <Modal
       isOpen={showModal}
-      onClose={handleClose}
       size="3xl"
       backdrop="blur"
       classNames={{
-        base: 'bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700',
-        header: 'border-b border-gray-700',
+        base: 'bg-[rgba(0,0,0,0.8)]',
         body: 'py-6',
-        footer: 'border-t border-gray-700',
       }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-white">Open What You Want</h2>
-          <p className="text-sm text-gray-400">
-            Choose one card from the top 3 cards of your deck
-          </p>
-        </ModalHeader>
-        <ModalBody>
+        <ModalBody className="flex flex-col items-center">
+          <div className="flex justify-between items-center">
+            <img src={OwywImage} width={160} height={160} />
+            <span className="text-body">
+              Look at the top 3 cards of your deck and select one to play:
+            </span>
+          </div>
           {cards.length > 0 ? (
             <div className="w-full">
               <Swiper
-                modules={[Navigation, Pagination, Autoplay]}
-                spaceBetween={20}
-                slidesPerView={1}
-                centeredSlides={true}
-                navigation
-                pagination={{ clickable: true }}
-                onSwiper={setSwiperInstance}
+                {...defaultOptions}
                 onSlideChange={(swiper) => {
                   const currentCard = cards[swiper.activeIndex];
-                  if (currentCard) {
-                    setSelectedCard(currentCard);
-                  }
+                  setSelectedCard(currentCard);
                 }}
                 className="w-full h-[400px]"
               >
-                {cards.map((card, index) => (
+                {cards.map((card) => (
                   <SwiperSlide key={card.id}>
                     <div
-                      className={`flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 ${
-                        selectedCard?.id === card.id ? 'scale-105' : 'scale-95'
-                      }`}
-                      onClick={() => handleCardSelect(card, index)}
+                      className={`flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 rotate-[-15deg]`}
+                      onClick={() => setSelectedCard(card)}
                     >
-                      <div className="relative w-64 h-80 rounded-lg overflow-hidden shadow-2xl">
+                      <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
                         <img
                           src={card.imageUrl}
                           alt={`Card ${card.typeId}`}
                           className="w-full h-full object-cover"
                         />
-                        {selectedCard?.id === card.id && (
-                          <div className="absolute inset-0 border-4 border-blue-500 rounded-lg pointer-events-none" />
-                        )}
-                      </div>
-                      <div className="mt-4 text-center">
-                        <p className="text-white font-semibold text-lg">
-                          {card.isSpecial ? card.specialType : `Value: ${card.value}`}
-                        </p>
-                        {card.isSpecial && (
-                          <p className="text-gray-400 text-sm">Special Card</p>
-                        )}
                       </div>
                     </div>
                   </SwiperSlide>
@@ -125,22 +103,26 @@ export const OpenWhatYouWantModal = () => {
               </Swiper>
             </div>
           ) : (
-            <div className="text-center text-gray-400 py-8">
-              No cards available
+            <div className="text-center text-gray-400 py-8">No cards available</div>
+          )}
+          {selectedCard?.specialType && (
+            <div className="mt-4 text-left max-w-[16rem]">
+              <Text variant="title-2">{capitalize(selectedCard.specialType)}</Text>
+              {selectedCard.specialActionDescription && (
+                <Text variant="title-3" className="font-bold mt-4">
+                  {selectedCard.specialActionDescription}
+                </Text>
+              )}
             </div>
           )}
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={handleClose}>
-            Cancel
-          </Button>
           <Button
-            color="primary"
-            onPress={handleConfirm}
-            isDisabled={!selectedCard}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="w-full max-w-[15.5rem] mx-auto mb-12"
+            onClick={handleConfirm}
+            variant="primary"
           >
-            Confirm Selection
+            Play this Card
           </Button>
         </ModalFooter>
       </ModalContent>
