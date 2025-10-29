@@ -34,7 +34,7 @@ export function GameProvider({ children }: PropsWithChildren) {
     // initializeGame('owyw-first', 'common-first', false, true)
 
     // Keep adding scenarios here as needed to test different flows.
-    initializeGame('random', 'random', false, true);
+    initializeGame('firewall-first', 'random', false, true);
   }, [initializeGame]);
 
   return (

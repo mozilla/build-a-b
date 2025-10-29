@@ -10,6 +10,7 @@ import { useGameStore } from '../stores/game-store';
 import { useCpuPlayer } from './use-cpu-player';
 import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 /**
  * Main game logic hook that orchestrates the entire game
@@ -148,7 +149,18 @@ export function useGameLogic() {
       // Handle special effects for the active player's card
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
+
+        // Check if Forced Empathy was played - if so, delay transition
+        if (activePlayerState.playedCard.specialType === 'forced_empathy') {
+          setTimeout(() => {
+            actorRef.send({ type: 'CARDS_REVEALED' });
+          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
+          return;
+        }
       }
+
+      // Transition to comparing phase (unless Forced Empathy delays it)
+      actorRef.send({ type: 'CARDS_REVEALED' });
     } else {
       // Normal turn - both players play
       playCard('player');
@@ -164,9 +176,22 @@ export function useGameLogic() {
       if (c.playedCard) {
         handleCardEffect(c.playedCard, 'cpu');
       }
+
+      // Check if Forced Empathy was played - if so, delay transition
+      const forcedEmpathyPlayed =
+        (p.playedCard?.specialType === 'forced_empathy') ||
+        (c.playedCard?.specialType === 'forced_empathy');
+
+      if (forcedEmpathyPlayed) {
+        // Wait for deck swap animation to complete before transitioning
+        setTimeout(() => {
+          actorRef.send({ type: 'CARDS_REVEALED' });
+        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
+        return;
+      }
     }
 
-    // Transition to comparing phase
+    // Transition to comparing phase (unless Forced Empathy delays it)
     actorRef.send({ type: 'CARDS_REVEALED' });
   };
 

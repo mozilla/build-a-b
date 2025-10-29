@@ -2,7 +2,8 @@
  * TurnValue - Displays the current turn value with curved text
  */
 
-import { type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import type { TurnValueProps } from './types';
 import TrackerCircle from '../../assets/icons/tracker-circle.svg';
 import BlockerCircle from '../../assets/icons/blocker-circle.svg';
@@ -21,9 +22,29 @@ export const TurnValue: FC<TurnValueProps> = ({ value, state = 'normal', classNa
   const circleSize = 'w-[3.75rem] h-[3.75rem]';
   const textSize = isTracker ? 'text-4xl' : 'text-3xl';
 
+  // Track value changes to trigger animation
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    // Skip animation if value is going back to zero
+    if (value === 0) {
+      return;
+    }
+    // Trigger animation when value changes
+    setAnimationKey((prev) => prev + 1);
+  }, [value]);
+
   return (
-    <div
+    <motion.div
+      key={animationKey}
       className={`relative ${containerSize} flex flex-col items-center justify-center ${className}`}
+      initial={{ scale: 1 }}
+      animate={{ scale: [1, 1.2, 1.2, 1] }}
+      transition={{
+        duration: 1.2,
+        times: [0, 0.3, 0.65, 1],
+        ease: 'easeInOut',
+      }}
     >
       {/* Turn Value text - positioned above circle */}
       <div className="w-[4.375rem] h-[1.5rem] -mb-3">
@@ -71,6 +92,6 @@ export const TurnValue: FC<TurnValueProps> = ({ value, state = 'normal', classNa
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
