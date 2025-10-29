@@ -1,0 +1,402 @@
+/* ============================= */
+/* Responsive Typography Setup   */
+/* ============================= */
+
+/* 
+  Define custom properties for font sizes based on viewport width.
+  4.10256410256vw: 16px / 390px * 100vw for portrait
+  1.11111111111vw: 16px / 1440px * 100vw for landscape
+*/
+:root {
+  --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
+  --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
+}
+
+html {
+  font-size: var(--font-size-portrait);
+  @variant landscape {
+    font-size: var(--font-size-landscape);
+  }
+}
+
+@layer base {
+  .text-xs10 {
+    font-size: var(--font-size-xs10);
+  }
+}
+
+/* Local font declarations */
+/* 
+  Font paths are relative to root:
+  - Development: served from /assets/fonts/ via symlink in game/public/assets/fonts
+  - Production: game is at /assets/game/, fonts at /assets/fonts/
+  Both resolve to /assets/fonts/ from the browser's perspective
+*/
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Light.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Light Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Light Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Medium.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Medium Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Medium Italic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Semibold.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Semibold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Semibold Italic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/SharpSansBold.woff') format('woff'),
+    url('/assets/fonts/SharpSansBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Bold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Bold Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Extrabold.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans ExtraBold Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans ExtraBold Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Thin.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sharp Sans';
+  src: url('/assets/fonts/Sharp Sans Thin Italic.woff') format('woff'),
+    url('/assets/fonts/Sharp Sans Thin Italic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================= */
+/* Custom Typography Utilities   */
+/* ============================= */
+
+/* Named after Figma text styles for clarity */
+
+/* Sharp Sans font utility */
+@utility font-sharp {
+  font-family: var(--font-sharp-sans);
+}
+
+/* DESKTOP (LANDSCAPE) FONT SIZES */
+
+/* text-6xl */
+@utility text-6xl-custom {
+  font-size: 3.75rem; /* 60px */
+  line-height: 3.75rem; /* 60px */
+}
+
+/* text-5xl */
+@utility text-5xl-custom {
+  font-size: 3rem; /* 48px */
+  line-height: 3rem; /* 48px */
+}
+
+/* text-4xl */
+@utility text-4xl-custom {
+  font-size: 2.25rem; /* 36px */
+  line-height: 2.5rem; /* 40px */
+}
+
+/* text-3xl */
+@utility text-3xl-custom {
+  font-size: 2.125rem; /* 34px */
+  line-height: 2.5rem; /* 40px */
+}
+
+/* text-2xl */
+@utility text-2xl-custom {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+}
+
+/* text-xl */
+@utility text-xl-custom {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
+}
+
+/* text-lg */
+@utility text-lg-custom {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.5rem; /* 24px */
+}
+
+/* text-reg */
+@utility text-regular-custom {
+  font-size: 1rem; /* 16px */
+  line-height: 1.5rem; /* 24px */
+}
+
+/* text-sm */
+@utility text-sm-custom {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+/* BBO/Label 14 */
+@utility label-14 {
+  font-size: 0.75rem; /* 12px */
+  letter-spacing: 0.06rem; /* 0.96px */
+  line-height: normal; /* explicitly normal */
+}
+
+/* Sharp Sans 19.2px */
+@utility text-sharp-19 {
+  font-size: 1.2rem; /* 19.2px */
+  letter-spacing: 0.096rem; /* 1.536px */
+  line-height: normal;
+}
+
+/* MOBILE (PORTRAIT) FONT SIZES */
+
+/* 📱 Mobile/Title/1 = text-4xl-custom */
+
+/* 📱 Mobile/Title/3 = text-2xl-custom */
+
+/* 📱 Mobile/Body Regular = text-regular-custom */
+
+/* 📱 Mobile/Body Small = text-sm-custom */
+
+/* 📱 Mobile/Meta 2 */
+@utility text-mobile-meta-2 {
+  font-size: 0.875rem; /* 14px */
+  line-height: normal;
+  letter-spacing: 0.07rem; /* 1.12px */
+}
+
+/* title-2 */
+@utility text-mobile-title-2 {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+}
+
+/* ============================= */
+/* Custom Typography Components  */
+/* ============================= */
+
+@layer components {
+  /* NEW TEXT STYLES */
+  .display-1 {
+    @apply text-6xl/15;
+    @variant landscape {
+      @apply text-8xl/20;
+    }
+  }
+
+  .display-2 {
+    @apply text-5xl/12;
+    @variant landscape {
+      @apply text-7xl/18;
+    }
+  }
+
+  .title-1 {
+    @apply text-4xl/10;
+    @variant landscape {
+      @apply text-6xl/15;
+    }
+  }
+
+  .title-2 {
+    @apply text-3xl/9;
+    @variant landscape {
+      @apply text-5xl/12;
+    }
+  }
+
+  .title-3 {
+    @apply text-2xl/8;
+    @variant landscape {
+      @apply text-4xl/10;
+    }
+  }
+
+  .title-4 {
+    @apply text-xl/7;
+    @variant landscape {
+      @apply text-2xl/8;
+    }
+  }
+
+  .title-5 {
+    @apply text-lg/6;
+    @variant landscape {
+      @apply text-lg/6;
+    }
+  }
+
+  .title-6 {
+    @apply text-base/6;
+    @variant landscape {
+      @apply text-base/6;
+    }
+  }
+
+  .label-1 {
+    @apply text-sm/5;
+    @variant landscape {
+      @apply text-sm/5;
+    }
+  }
+
+  .label-2 {
+    @apply text-xs/4;
+    @variant landscape {
+      @apply text-xs/4;
+    }
+  }
+
+  .body-large {
+    @apply text-lg/6 font-semibold;
+    @variant landscape {
+      @apply text-lg/6;
+    }
+  }
+
+  .body-regular {
+    @apply text-base/6 font-semibold;
+    @variant landscape {
+      @apply text-base/6;
+    }
+  }
+
+  .body-small {
+    @apply text-sm/5 font-semibold;
+    @variant landscape {
+      @apply text-sm/5;
+    }
+  }
+
+  /* OLD TEXT STYLES */
+
+  /* "#BillionaireBlastOff" */
+  .text-title-1 {
+    @apply text-4xl-custom font-sharp font-extrabold text-balance break-words;
+  }
+
+  /* "Unlimited power. Zero accountability. What could go wrong?" */
+  .text-title-3 {
+    @apply text-2xl-custom font-sharp font-extrabold;
+  }
+
+  /* "They go to space on rockets of your data. But there is another way." */
+  .text-body-regular {
+    @apply text-regular-custom font-sharp font-medium;
+    @variant landscape {
+      @apply text-xl-custom;
+    }
+  }
+
+  /* "Post content of your billionaire for a shot at sending them to actual, for-real-real space." */
+  .text-body-small {
+    @apply text-regular-custom font-sharp font-medium;
+    @variant landscape {
+      @apply text-lg-custom;
+    }
+  }
+
+  /* Ticker Content "Send Your Billionaire to Space" */
+  .text-ticker {
+    @apply text-mobile-meta-2 font-sharp font-bold uppercase;
+    @variant landscape {
+      @apply text-sharp-19;
+    }
+  }
+
+  /* Navigation Items "Home" "Twitchcon" "Space Launch" "Card Game" */
+  .text-nav-item {
+    @apply label-14 font-sharp font-bold uppercase;
+  }
+}
