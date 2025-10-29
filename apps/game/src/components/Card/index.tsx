@@ -1,0 +1,61 @@
+import type { FC } from 'react';
+import { motion } from 'framer-motion';
+import type { CardProps } from './types';
+import CardBack from '../../assets/cards/card-back.webp';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+
+export const Card: FC<CardProps> = ({
+  cardFrontSrc,
+  state = 'initial',
+  onBackClick,
+  onFrontClick,
+  positions,
+}) => {
+  const handleClick = () => {
+    if (state === 'initial') {
+      // Card is in initial state, showing back - call back click handler
+      onBackClick?.();
+    } else if (state === 'flipped' || state === 'final') {
+      // Card is flipped or in final state - call front click handler
+      onFrontClick?.();
+    }
+  };
+
+  const isFrontVisible = state === 'flipped' || state === 'final';
+  const currentPosition = positions?.[state] ?? { x: 0, y: 0 };
+
+  return (
+    <motion.div
+      className="cursor-pointer"
+      onClick={handleClick}
+      animate={{
+        x: currentPosition.x,
+        y: currentPosition.y,
+        width: isFrontVisible ? '7.8125rem' : '5.375rem',
+        height: isFrontVisible ? '10.9375rem' : '7.5rem',
+        maxWidth: isFrontVisible ? '125px' : '86px',
+        maxHeight: isFrontVisible ? '175px' : '120px',
+      }}
+      transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
+      style={{ perspective: '1000px' }}
+    >
+      <motion.div
+        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible"
+        animate={{
+          rotateY: isFrontVisible ? 180 : 0,
+        }}
+        transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
+      >
+        {/* Back face */}
+        <div className="absolute w-full h-full backface-hidden overflow-visible">
+          <img src={CardBack} alt="Card back" className="w-full h-full object-contain" />
+        </div>
+
+        {/* Front face */}
+        <div className="absolute w-full h-full backface-hidden overflow-visible [transform:rotateY(180deg)]">
+          <img src={cardFrontSrc} alt="Card front" className="w-full h-full object-contain" />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};

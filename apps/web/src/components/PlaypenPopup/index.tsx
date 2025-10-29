@@ -88,7 +88,9 @@ const PlaypenPopup: FC<PlaypenPopupProps> = ({
                   />
                 </div>
               </Button>
-              <ModalBody className={`relative z-20 overflow-y-auto flex-1 ${bodyClass}`}>{children}</ModalBody>
+              <ModalBody className={`relative z-20 overflow-y-auto flex-1 ${bodyClass}`}>
+                {children}
+              </ModalBody>
             </>
           )}
         </ModalContent>

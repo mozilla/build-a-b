@@ -9,7 +9,7 @@ try {
   const files = fs.readdirSync(cardsDir);
 
   // Count all files (excluding directories)
-  const fileCount = files.filter(file => {
+  const fileCount = files.filter((file) => {
     const filePath = path.join(cardsDir, file);
     return fs.statSync(filePath).isFile();
   }).length;
