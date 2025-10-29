@@ -8,6 +8,7 @@ import { useGameStore } from '@/stores/game-store';
 import { cn } from '@/utils/cn';
 
 import { BILLIONAIRES, type Billionaire } from '@/config/billionaires';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { Drawer } from './Drawer';
 import { selectBillionaireMicrocopy } from './microcopy';
 
@@ -37,7 +38,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
       // Transition to next screen after confirmation
       setTimeout(() => {
         send?.({ type: 'SELECT_BILLIONAIRE', billionaire: selectedBillionaireData.id });
-      }, 300);
+      }, ANIMATION_DURATIONS.UI_TRANSITION_DELAY);
     }
   };
 

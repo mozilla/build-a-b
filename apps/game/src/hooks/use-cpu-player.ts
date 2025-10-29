@@ -5,10 +5,11 @@
 
 import { useEffect } from 'react';
 import type { GamePhase } from '../types';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 interface useCpuPlayerOptions {
   enabled?: boolean; // Whether CPU automation is enabled (default: true)
-  delay?: number; // Delay in ms before CPU plays (default: 1000ms)
+  delay?: number; // Delay in ms before CPU plays (default: CPU_TURN_DELAY)
 }
 
 /**
@@ -25,7 +26,7 @@ export function useCpuPlayer(
   onCPUTurn: () => void,
   options: useCpuPlayerOptions = {}
 ) {
-  const { enabled = true, delay = 1000 } = options;
+  const { enabled = true, delay = ANIMATION_DURATIONS.CPU_TURN_DELAY } = options;
 
   useEffect(() => {
     // Only automate during regular ready phase when it's CPU's turn

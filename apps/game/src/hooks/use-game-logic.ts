@@ -277,9 +277,8 @@ export function useGameLogic() {
         // Disable "another play" mode
         setAnotherPlayMode(false);
 
-        // Alternate players for next normal turn
-        const nextPlayer = activePlayer === 'player' ? 'cpu' : 'player';
-        setActivePlayer(nextPlayer);
+        // Reset active player to default (player always initiates in normal mode)
+        setActivePlayer('player');
 
         // Clear Tracker Smacker at the end of the turn
         setTrackerSmackerActive(null);
@@ -315,9 +314,8 @@ export function useGameLogic() {
       // Disable "another play" mode
       setAnotherPlayMode(false);
 
-      // Alternate players for next normal turn
-      const nextPlayer = activePlayer === 'player' ? 'cpu' : 'player';
-      setActivePlayer(nextPlayer);
+      // Reset active player to default (player always initiates in normal mode)
+      setActivePlayer('player');
 
       // Clear Tracker Smacker at the end of the turn (not during "another play")
       setTrackerSmackerActive(null);
