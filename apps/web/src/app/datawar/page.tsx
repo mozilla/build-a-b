@@ -18,6 +18,8 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { socials } from '@/utils/constants';
 
+const DATAWAR_PDF_URL = process.env.NEXT_PUBLIC_DATAWAR_PDF_URL || '';
+
 export default async function Page() {
   // Check if DataWar feature is enabled
   const [
@@ -97,7 +99,7 @@ export default async function Page() {
                 How to Play
               </LinkButton>
               <LinkButton
-                href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                href={DATAWAR_PDF_URL}
                 title="Get your own game cards"
                 target="_blank"
                 className='secondary-button landscape:w-fit
@@ -190,7 +192,7 @@ export default async function Page() {
                 </p>
                 <div className="flex flex-col landscape:flex-row gap-4">
                   <LinkButton
-                    href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                    href={DATAWAR_PDF_URL}
                     title="Get your own game cards"
                     target="_blank"
                     className='secondary-button landscape:w-fit
@@ -273,7 +275,7 @@ export default async function Page() {
                 </p>
 
                 <LinkButton
-                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                  href={DATAWAR_PDF_URL}
                   title="Get your own game cards"
                   className='secondary-button landscape:w-fit
                            border-charcoal text-charcoal hover:border-charcoal
