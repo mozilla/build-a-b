@@ -334,3 +334,24 @@ body {
 @utility animate-slide-from-bottom {
   animation: slide-from-bottom 0.5s ease-out forwards;
 }
+
+/* Heartbeat animation for active deck indicator */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+  }
+  30% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  }
+  90% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+  }
+}
+
+@utility animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}

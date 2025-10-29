@@ -1,4 +1,3 @@
-import { useGameMachine } from '@/hooks/use-game-machine';
 import { useGameStore } from '@/stores/game-store';
 import type { FC } from 'react';
 import type { BackgroundConfig } from './types';
@@ -6,6 +5,7 @@ import type { BackgroundConfig } from './types';
 // Import background images
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { BILLIONAIRE_BACKGROUNDS } from '@/config/backgrounds';
+import { useGameLogic } from '@/hooks/use-game-logic';
 
 // Map game states to background configurations
 const STATE_BACKGROUND_CONFIG: Record<string, BackgroundConfig> = {
@@ -28,7 +28,7 @@ const STATE_BACKGROUND_CONFIG: Record<string, BackgroundConfig> = {
 };
 
 export const ScreenBackground: FC = () => {
-  const { currentPhase } = useGameMachine();
+  const { phase: currentPhase } = useGameLogic();
   const { selectedBillionaire } = useGameStore();
 
   // Convert state value to string

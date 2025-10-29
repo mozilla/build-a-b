@@ -3,11 +3,11 @@ import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { Welcome } from '@/components/Screens/Welcome';
 import { AnimatePresence } from 'framer-motion';
 import type { FC, HTMLAttributes } from 'react';
-import { useGameMachine } from '../../hooks/use-game-machine';
+import { useGameLogic } from '@/hooks/use-game-logic';
 import { ScreenBackground } from './Background';
 
 export interface BaseScreenProps extends HTMLAttributes<HTMLDivElement> {
-  send?: ReturnType<typeof useGameMachine>['send'];
+  send?: ReturnType<typeof useGameLogic>['send'];
 }
 
 // Screen registry mapping state machine phases to components
@@ -29,7 +29,7 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
 };
 
 export const ScreenRenderer: FC = () => {
-  const { currentPhase, send } = useGameMachine();
+  const { phase: currentPhase, send } = useGameLogic();
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -39,7 +39,7 @@ export const ScreenRenderer: FC = () => {
 
   // Fallback if phase not found
   if (!ScreenComponent) {
-    console.warn(`No screen component found for phase: ${phaseKey}`);
+    // console.warn(`No screen component found for phase: ${phaseKey}`);
     return null;
     // return (
     //   <div className="flex items-center justify-center h-full text-common-ash">
@@ -52,8 +52,9 @@ export const ScreenRenderer: FC = () => {
   return (
     <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center">
       <AnimatePresence>
-        <ScreenBackground />
+        <ScreenBackground key="screen-background" />
         <ScreenComponent
+          key={phaseKey}
           send={send}
           className="flex flex-col items-center justify-center relative w-full h-full"
         />

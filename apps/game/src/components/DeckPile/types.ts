@@ -8,4 +8,5 @@ export interface DeckPileProps {
   onClick?: () => void;
   showTooltip?: boolean;
   tooltipContent?: string;
+  activeIndicator?: boolean;
 }

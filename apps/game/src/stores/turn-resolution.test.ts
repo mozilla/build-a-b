@@ -59,7 +59,7 @@ describe('Turn Resolution', () => {
     });
 
     it('should collect cards for winner', () => {
-      const { initializeGame, playCard } = useGameStore.getState();
+      const { initializeGame, playCard, collectCardsAfterEffects } = useGameStore.getState();
       initializeGame('high-value-first', 'low-value-first');
 
       const initialPlayerDeck = useGameStore.getState().player.deck.length;
@@ -69,7 +69,8 @@ describe('Turn Resolution', () => {
 
       const cardsInPlayCount = useGameStore.getState().cardsInPlay.length;
 
-      useGameStore.getState().resolveTurn();
+      const winner = useGameStore.getState().resolveTurn();
+      collectCardsAfterEffects(winner);
 
       const state = useGameStore.getState();
       // Player should have won and collected both cards
