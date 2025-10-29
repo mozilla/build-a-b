@@ -40,14 +40,23 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Environment Variables
 
-Environment variables are managed at the monorepo root in `.env.example`. Key variables for the web app include:
+Environment variables are managed in `.env.local` and documented in `.env.example`. Key variables for the web app include:
 
 ```env
 NEXT_PUBLIC_SANITY_PROJECT_ID=...
 NEXT_PUBLIC_SANITY_DATASET=production
 DEPLOY_BUTTON_VISIBILITY_FLAG=boolean-value
 BETA_FEATURE_FLAG=boolean-value
+NEXT_PUBLIC_DATAWAR_PDF_URL=https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf
 ```
+
+To set up your environment variables:
+
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Update the values in `.env.local` as needed
 
 ## Scripts
 

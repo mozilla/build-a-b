@@ -23,6 +23,7 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
   - NEXT_PUBLIC_SANITY_PROJECT_ID
   - NEXT_PUBLIC_SANITY_DATASET
   - SANITY_WRITE_TOKEN
+  - NEXT_PUBLIC_DATAWAR_PDF_URL (DataWar game PDF download link)
 
 ## Local development
 
