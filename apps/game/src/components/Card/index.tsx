@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import type { CardProps } from './types';
 import CardBack from '../../assets/cards/card-back.webp';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 
 export const Card: FC<CardProps> = ({
   cardFrontSrc,
@@ -35,7 +36,7 @@ export const Card: FC<CardProps> = ({
         maxWidth: isFrontVisible ? '125px' : '86px',
         maxHeight: isFrontVisible ? '175px' : '120px',
       }}
-      transition={{ duration: 0.7, ease: 'easeInOut' }}
+      transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
       style={{ perspective: '1000px' }}
     >
       <motion.div
@@ -43,7 +44,7 @@ export const Card: FC<CardProps> = ({
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}
-        transition={{ duration: 0.7, ease: 'easeInOut' }}
+        transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
       >
         {/* Back face */}
         <div className="absolute w-full h-full backface-hidden overflow-visible">

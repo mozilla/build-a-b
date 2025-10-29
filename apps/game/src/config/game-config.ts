@@ -97,6 +97,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'launch_stack',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Collect 3 and you win the game.',
       count: 1,
     },
     {
@@ -106,6 +107,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'launch_stack',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Collect 3 and you win the game.',
       count: 1,
     },
     {
@@ -115,6 +117,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'launch_stack',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Collect 3 and you win the game.',
       count: 1,
     },
     {
@@ -124,6 +127,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'launch_stack',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Collect 3 and you win the game.',
       count: 1,
     },
     {
@@ -133,6 +137,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'launch_stack',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Collect 3 and you win the game.',
       count: 1,
     },
 
@@ -144,6 +149,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'forced_empathy',
+      specialActionDescription:
+        'All players immediately pass their decks one position to the right (instant).',
       count: 1,
     },
     {
@@ -152,6 +159,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'open_what_you_want',
+      specialActionDescription:
+        'On your next play, look at the top 3 cards of your deck and arrange them in any order (exclude face-down War cards).',
       count: 1,
     },
     {
@@ -160,6 +169,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'mandatory_recall',
+      specialActionDescription:
+        'If you win this hand, all opponents shuffle Launch Stacks back into their decks.',
       count: 1,
     },
     {
@@ -168,6 +179,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'tracker_smacker',
+      specialActionDescription:
+        'Negate all opponent Tracker and Billionaire Move effects for the remainder of this turn (instant).',
       count: 1,
     },
 
@@ -179,6 +192,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'leveraged_buyout',
+      specialActionDescription:
+        'If you win this hand, take 2 cards from the top of all opponent decks and add them to yours.',
       count: 1,
     },
     {
@@ -187,6 +202,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'hostile_takeover',
+      specialActionDescription:
+        'All opponents instantly go to WAR against this 6; winner takes all. Ignores Trackers, Blockers, and ties on original play.',
       count: 1,
     },
     {
@@ -195,6 +212,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'temper_tantrum',
+      specialActionDescription:
+        "If you lose this hand, steal 2 cards from the winner's win pile before they collect them.",
       count: 1,
     },
     {
@@ -203,6 +222,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 6,
       isSpecial: true,
       specialType: 'patent_theft',
+      specialActionDescription:
+        'If you win this hand, steal 1 Launch Stack card from any opponent.',
       count: 1,
     },
 
@@ -215,6 +236,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'tracker',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Add 1 point to the value of your play.',
       count: 2,
     },
     {
@@ -224,6 +246,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'tracker',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Add 2 points to the value of your play.',
       count: 2,
     },
     {
@@ -233,6 +256,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'tracker',
       triggersAnotherPlay: true,
+      specialActionDescription: 'Add 3 points to the value of your play.',
       count: 2,
     },
 
@@ -245,6 +269,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'blocker',
       triggersAnotherPlay: true,
+      specialActionDescription:
+        'Subtract 1 point from the value of all opponent plays (this card has no value).',
       count: 2,
     },
     {
@@ -254,6 +280,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       isSpecial: true,
       specialType: 'blocker',
       triggersAnotherPlay: true,
+      specialActionDescription:
+        'Subtract 2 points from the value of all opponent plays (this card has no value).',
       count: 2,
     },
 
@@ -265,6 +293,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 0,
       isSpecial: true,
       specialType: 'data_grab',
+      specialActionDescription:
+        'Everyone grabs as many cards from the play area as possible.',
       count: 3,
     },
   ],

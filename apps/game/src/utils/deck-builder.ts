@@ -25,14 +25,11 @@ export function createDeck(config: GameConfig): Card[] {
   for (const cardType of config.deckComposition) {
     // Create the specified number of copies for each card type
     for (let i = 0; i < cardType.count; i++) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { count, ...cardProperties } = cardType;
       const card: Card = {
         id: generateCardId(),
-        typeId: cardType.typeId,
-        imageUrl: cardType.imageUrl,
-        value: cardType.value,
-        isSpecial: cardType.isSpecial,
-        specialType: cardType.specialType,
-        triggersAnotherPlay: cardType.triggersAnotherPlay,
+        ...cardProperties,
       };
       deck.push(card);
     }
@@ -54,7 +51,8 @@ export type DeckOrderStrategy =
   | 'special-first' // All special cards at top
   | 'common-first' // Common cards at top
   | 'high-value-first' // Sort by value (5→1)
-  | 'low-value-first'; // Sort by value (1→5)
+  | 'low-value-first' // Sort by value (1→5)
+  | 'owyw-first'; // OWYW (Open What You Want) cards at top
 
 /**
  * Shuffles a deck using the Fisher-Yates algorithm
@@ -97,22 +95,16 @@ export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
       return ordered.sort((a, b) => {
         const aIsFirewall =
           a.specialType &&
-          [
-            'forced_empathy',
-            'tracker_smacker',
-            'open_what_you_want',
-            'mandatory_recall',
-          ].includes(a.specialType)
+          ['forced_empathy', 'tracker_smacker', 'open_what_you_want', 'mandatory_recall'].includes(
+            a.specialType,
+          )
             ? 1
             : 0;
         const bIsFirewall =
           b.specialType &&
-          [
-            'forced_empathy',
-            'tracker_smacker',
-            'open_what_you_want',
-            'mandatory_recall',
-          ].includes(b.specialType)
+          ['forced_empathy', 'tracker_smacker', 'open_what_you_want', 'mandatory_recall'].includes(
+            b.specialType,
+          )
             ? 1
             : 0;
         return bIsFirewall - aIsFirewall;
@@ -122,22 +114,16 @@ export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
       return ordered.sort((a, b) => {
         const aIsMove =
           a.specialType &&
-          [
-            'hostile_takeover',
-            'temper_tantrum',
-            'patent_theft',
-            'leveraged_buyout',
-          ].includes(a.specialType)
+          ['hostile_takeover', 'temper_tantrum', 'patent_theft', 'leveraged_buyout'].includes(
+            a.specialType,
+          )
             ? 1
             : 0;
         const bIsMove =
           b.specialType &&
-          [
-            'hostile_takeover',
-            'temper_tantrum',
-            'patent_theft',
-            'leveraged_buyout',
-          ].includes(b.specialType)
+          ['hostile_takeover', 'temper_tantrum', 'patent_theft', 'leveraged_buyout'].includes(
+            b.specialType,
+          )
             ? 1
             : 0;
         return bIsMove - aIsMove;
@@ -177,6 +163,26 @@ export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
     case 'low-value-first':
       return ordered.sort((a, b) => a.value - b.value);
 
+    case 'owyw-first': {
+      // For testing: OWYW first, then common, tracker, launch_stack
+      const owyw = ordered.find((c) => c.specialType === 'open_what_you_want');
+      const common = ordered.find((c) => !c.isSpecial);
+      const tracker = ordered.find((c) => c.specialType === 'tracker');
+      const launchStack = ordered.find((c) => c.specialType === 'launch_stack');
+      const rest = ordered.filter(
+        (c) => c !== owyw && c !== common && c !== tracker && c !== launchStack,
+      );
+
+      const result: Card[] = [];
+      if (owyw) result.push(owyw);
+      if (common) result.push(common);
+      if (tracker) result.push(tracker);
+      if (launchStack) result.push(launchStack);
+      result.push(...rest);
+
+      return result;
+    }
+
     default:
       return ordered;
   }
@@ -190,12 +196,10 @@ export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
  */
 export function dealCards(
   deck: Card[],
-  cardsPerPlayer: number
+  cardsPerPlayer: number,
 ): { playerDeck: Card[]; cpuDeck: Card[] } {
   if (deck.length !== cardsPerPlayer * 2) {
-    console.warn(
-      `Expected ${cardsPerPlayer * 2} cards, but deck has ${deck.length} cards`
-    );
+    console.warn(`Expected ${cardsPerPlayer * 2} cards, but deck has ${deck.length} cards`);
   }
 
   return {
@@ -210,13 +214,15 @@ export function dealCards(
  * @param playerStrategy - Ordering strategy for player's deck (default: 'random')
  * @param cpuStrategy - Ordering strategy for CPU's deck (default: 'random')
  * @param mirrorDecks - If true, both decks will have identical cards in identical order
+ * @param orderBeforeDealing - If true, orders the full deck before dealing (guarantees card distribution based on strategy)
  * @returns Object with playerDeck and cpuDeck ready for gameplay
  */
 export function initializeGameDeck(
   config: GameConfig,
   playerStrategy: DeckOrderStrategy = 'random',
   cpuStrategy: DeckOrderStrategy = 'random',
-  mirrorDecks: boolean = false
+  mirrorDecks: boolean = false,
+  orderBeforeDealing: boolean = false,
 ): {
   playerDeck: Card[];
   cpuDeck: Card[];
@@ -237,6 +243,16 @@ export function initializeGameDeck(
   }
 
   const deck = createDeck(config);
+
+  if (orderBeforeDealing) {
+    // Order the full deck first, then deal
+    // This guarantees specific cards go to specific players (e.g., all OWYW cards to player)
+    // Note: cpuStrategy is ignored in this mode, only playerStrategy is applied
+    const orderedDeck = orderDeck(deck, playerStrategy);
+    const { playerDeck, cpuDeck } = dealCards(orderedDeck, config.cardsPerPlayer);
+    return { playerDeck, cpuDeck };
+  }
+
   const shuffled = shuffleDeck(deck);
   const { playerDeck, cpuDeck } = dealCards(shuffled, config.cardsPerPlayer);
 

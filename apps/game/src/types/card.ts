@@ -27,6 +27,7 @@ export interface CardType {
   isSpecial: boolean;
   specialType?: SpecialCardType;
   triggersAnotherPlay?: boolean; // Does this card trigger another play?
+  specialActionDescription?: string; // Description of special action from CARDS.md
   count: number; // How many copies of this card in the deck
 }
 

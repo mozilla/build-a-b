@@ -4,8 +4,11 @@
 
 import type { Card, SpecialCardType } from './card';
 
+export type PlayerType = 'player' | 'cpu';
+
 export type GamePhase =
   | 'welcome' // Welcome screen
+  | 'intro' // Intro screen
   | 'select_billionaire' // Character selection
   | 'billionaire_details' // Billionaire bio drawer
   | 'select_background' // Background selection
@@ -19,6 +22,10 @@ export type GamePhase =
   | 'data_war.reveal_face_up' // Data War: tap to reveal final card
   | 'special_effect.showing' // Special effect: displaying effect to player
   | 'special_effect.processing' // Special effect: brief delay before resolving
+  | 'pre_reveal.processing' // Pre-reveal: processing non-interactive effects
+  | 'pre_reveal.animating' // Pre-reveal: OWYW animation playing
+  | 'pre_reveal.awaiting_interaction' // Pre-reveal: waiting for player to tap deck
+  | 'pre_reveal.selecting' // Pre-reveal: player selecting card from modal
   | 'resolving' // Winner taking cards
   | 'game_over'; // Victory screen with share options
 
@@ -30,7 +37,7 @@ export interface PlayedCardState {
 }
 
 export interface Player {
-  id: 'player' | 'cpu';
+  id: PlayerType;
   name: string;
   deck: Card[]; // Cards currently in player's possession
   playedCard: Card | null; // Latest card played this turn (for backwards compatibility)
@@ -42,9 +49,16 @@ export interface Player {
 
 export interface SpecialEffect {
   type: SpecialCardType;
-  playedBy: 'player' | 'cpu';
+  playedBy: PlayerType;
   card: Card;
   isInstant: boolean; // True for instant effects, false for queued
+}
+
+export interface PreRevealEffect {
+  type: 'owyw'; // Can add more types in future (e.g., 'forced_empathy_animation')
+  playerId: PlayerType;
+  requiresInteraction: boolean; // If true, waits for user to tap deck before executing
+  data?: unknown; // Optional data for the effect
 }
 
 export interface DataWarState {
@@ -58,17 +72,17 @@ export interface GameState {
   player: Player;
   cpu: Player;
   cardsInPlay: Card[]; // Cards currently being contested
-  activePlayer: 'player' | 'cpu'; // Whose action is expected
+  activePlayer: PlayerType; // Whose action is expected
   pendingEffects: SpecialEffect[]; // Queue of special effects (in play order)
-  trackerSmackerActive: 'player' | 'cpu' | null; // Who has Tracker Smacker blocking effects
-  winner: 'player' | 'cpu' | null;
+  trackerSmackerActive: PlayerType | null; // Who has Tracker Smacker blocking effects
+  winner: PlayerType | null;
   winCondition: WinCondition;
   selectedBillionaire: string; // Selected billionaire character
   selectedBackground: string; // Background image URL
   isPaused: boolean;
   showMenu: boolean; // Menu overlay visible
   showHandViewer: boolean; // Hand viewer module visible
-  handViewerPlayer: 'player' | 'cpu'; // Which hand to show in viewer
+  handViewerPlayer: PlayerType; // Which hand to show in viewer
   showInstructions: boolean;
   audioEnabled: boolean;
   showTooltip: boolean; // Dynamic tooltip visible
