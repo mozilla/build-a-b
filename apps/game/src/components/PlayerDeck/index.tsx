@@ -6,6 +6,7 @@ import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
 import { useGameStore, usePlayer } from '@/stores/game-store';
 import { Text } from '@/components';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
@@ -31,15 +32,20 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
 
     // This player won the turn if their deck grew by more than 1 card
     if (!isInitialSetup && currentPlayer.deck.length > prevDeckLength.current + 1) {
-      // Trigger win animation
-      setShowWinEffect(true);
+      // Delay before showing win animation (wait for cards to finish collecting)
+      const showTimer = setTimeout(() => {
+        setShowWinEffect(true);
+      }, ANIMATION_DURATIONS.WIN_EFFECT_DELAY);
 
-      // Reset after complete animation sequence
-      const timer = setTimeout(() => {
+      // Reset after complete animation sequence (longer duration for better visibility)
+      const hideTimer = setTimeout(() => {
         setShowWinEffect(false);
-      }, 1000);
+      }, ANIMATION_DURATIONS.WIN_EFFECT_DURATION);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
     }
     prevDeckLength.current = currentPlayer.deck.length;
   }, [currentPlayer.deck.length]);

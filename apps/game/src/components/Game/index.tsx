@@ -152,7 +152,7 @@ export function Game() {
             turnValueState={playerTurnState}
             owner="player"
             billionaireId={selectedBillionaire}
-            tooltipContent={tooltipMessage}
+            tooltipContent={canClickPlayerDeck ? tooltipMessage : ''}
           />
         </div>
 
