@@ -9,6 +9,7 @@ import { useShallow } from 'zustand/shallow';
 import type { Card, Player, PlayerType, PreRevealEffect, SpecialEffect } from '../types';
 import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deck-builder';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import {
   compareCards,
   applyTrackerModifier,
@@ -38,6 +39,10 @@ interface GameStore {
   openWhatYouWantCards: Card[]; // Top 3 cards for selection
   showOpenWhatYouWantModal: boolean;
   showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
+
+  // Forced Empathy State
+  forcedEmpathySwapping: boolean; // True when decks are actively animating
+  decksVisuallySwapped: boolean;  // True when decks should stay in swapped positions
 
   // UI State
   selectedBillionaire: string;
@@ -94,6 +99,10 @@ interface GameStore {
   setShowOpenWhatYouWantModal: (show: boolean) => void;
   setShowOpenWhatYouWantAnimation: (show: boolean) => void;
 
+  // Forced Empathy Actions
+  setForcedEmpathySwapping: (swapping: boolean) => void;
+  setDecksVisuallySwapped: (swapped: boolean) => void;
+
   // Actions - UI
   selectBillionaire: (billionaire: string) => void;
   selectBackground: (background: string) => void;
@@ -140,6 +149,8 @@ export const useGameStore = create<GameStore>()(
       openWhatYouWantCards: [],
       showOpenWhatYouWantModal: false,
       showOpenWhatYouWantAnimation: false,
+      forcedEmpathySwapping: false,
+      decksVisuallySwapped: false,
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -174,6 +185,8 @@ export const useGameStore = create<GameStore>()(
           anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
+          forcedEmpathySwapping: false,
+          decksVisuallySwapped: false,
         });
       },
 
@@ -440,7 +453,19 @@ export const useGameStore = create<GameStore>()(
             get().setTrackerSmackerActive(playedBy);
             break;
           case 'forced_empathy':
-            get().swapDecks();
+            // Trigger animation - this will visually swap the decks
+            get().setForcedEmpathySwapping(true);
+
+            // Wait for animation to complete, then swap the actual deck data
+            // The visual animation shows decks swapping positions
+            // At the end, we swap the data so they're back at their original positions with swapped data
+            setTimeout(() => {
+              get().swapDecks();
+              // Toggle the visual swap state to keep decks in swapped positions
+              get().setDecksVisuallySwapped(!get().decksVisuallySwapped);
+              // Reset animation state (but keep visual swap active)
+              get().setForcedEmpathySwapping(false);
+            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -669,6 +694,15 @@ export const useGameStore = create<GameStore>()(
         set({ showOpenWhatYouWantAnimation: show });
       },
 
+      // Forced Empathy Actions
+      setForcedEmpathySwapping: (swapping) => {
+        set({ forcedEmpathySwapping: swapping });
+      },
+
+      setDecksVisuallySwapped: (swapped) => {
+        set({ decksVisuallySwapped: swapped });
+      },
+
       // UI Actions
       selectBillionaire: (billionaire) => {
         set({
@@ -744,6 +778,8 @@ export const useGameStore = create<GameStore>()(
           showMenu: false,
           showHandViewer: false,
           showTooltip: false,
+          forcedEmpathySwapping: false,
+          decksVisuallySwapped: false,
         });
       },
     }),

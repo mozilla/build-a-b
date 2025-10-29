@@ -6,6 +6,7 @@ import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { getBackgroundImage } from '@/utils/selectors';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../stores/game-store';
@@ -37,6 +38,7 @@ export function Game() {
   const winCondition = useGameStore((state) => state.winCondition);
   const selectedBackground = useGameStore((state) => state.selectedBackground);
   const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
+  const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
 
   const backgroundImage =
     getBackgroundImage(selectedBackground) ||
@@ -188,6 +190,33 @@ export function Game() {
 
         {/* Open What You Want Modal */}
         <OpenWhatYouWantModal />
+
+        {/* Forced Empathy Animation Overlay */}
+        <AnimatePresence>
+          {forcedEmpathySwapping && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg shadow-2xl"
+                initial={{ scale: 0.5, rotateY: -180 }}
+                animate={{ scale: 1, rotateY: 0 }}
+                exit={{ scale: 0.5, rotateY: 180 }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.43, 0.13, 0.23, 0.96],
+                }}
+              >
+                <h2 className="text-3xl font-bold text-center">Forced Empathy!</h2>
+                <p className="text-sm text-center mt-1 opacity-90">Decks Swapped</p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Board>
     </div>
   );
