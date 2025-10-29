@@ -12,6 +12,8 @@ import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
+const DATAWAR_PDF_URL = process.env.NEXT_PUBLIC_DATAWAR_PDF_URL || '';
+
 export default async function Page() {
   // Check if DataWar feature is enabled
   const [shouldDisplayLaunchCta, isPhase2B, isDataWarEnabled, isPhase2C] = await Promise.all([
@@ -43,7 +45,7 @@ export default async function Page() {
               </p>
               <div>
                 <LinkButton
-                  href="https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf"
+                  href={DATAWAR_PDF_URL}
                   title="Get your own game cards"
                   target="_blank"
                   className='secondary-button landscape:w-fit

@@ -122,13 +122,9 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
 
                     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-                    // Calculate the index of the newly generated selfie
-                    // Current selfies count (before refresh)
-                    const currentSelfiesCount = avatarData?.selfies?.length || 0;
-
                     // Set vault to show the newly generated selfie first
-                    // New selfie will be at the end (index = currentSelfiesCount)
-                    setVaultInitialImage(currentSelfiesCount);
+                    // New selfie will be always first based on suapbase query.
+                    setVaultInitialImage(0);
 
                     // Background refresh of the server component tree
                     startTransition(() => router.refresh());
