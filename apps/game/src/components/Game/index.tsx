@@ -43,11 +43,15 @@ export function Game() {
     getBackgroundImage(selectedBillionaire) ||
     DEFAULT_BOARD_BACKGROUND;
 
+  const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
+
   useEffect(() => {
     switch (phase) {
-      // Skip to game on mount (temporary - will implement full setup flow later)
       case 'intro':
-        send({ type: 'SKIP_TO_GAME' });
+        // Usage: http://localhost:5173?skip-intro=true
+        if (shouldSkipIntro) {
+          send({ type: 'SKIP_TO_GAME' });
+        }
         break;
       case 'pre_reveal.processing':
         handlePreReveal();
