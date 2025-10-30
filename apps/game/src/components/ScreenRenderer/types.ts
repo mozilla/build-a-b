@@ -2,7 +2,7 @@
  * Background variant types for intro/setup screens
  * Note: Gameplay backgrounds are handled by Game/Board component
  */
-export type BackgroundVariant = 'night-sky' | 'billionaire';
+export type BackgroundVariant = 'night-sky' | 'billionaire' | 'grid';
 
 /**
  * Available billionaire backgrounds
