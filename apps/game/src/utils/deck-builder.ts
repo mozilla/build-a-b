@@ -3,7 +3,7 @@
  */
 
 import type { Card } from '../types';
-import type { GameConfig } from '../config/game-config';
+import type { GameConfig, CardTypeId } from '../config/game-config';
 
 /**
  * Generates a unique ID for a card instance
@@ -52,7 +52,8 @@ export type DeckOrderStrategy =
   | 'common-first' // Common cards at top
   | 'high-value-first' // Sort by value (5→1)
   | 'low-value-first' // Sort by value (1→5)
-  | 'owyw-first'; // OWYW (Open What You Want) cards at top
+  | 'owyw-first' // OWYW (Open What You Want) cards at top
+  | 'custom'; // Custom ordering - specify exact cards first, rest random
 
 /**
  * Shuffles a deck using the Fisher-Yates algorithm
@@ -75,14 +76,48 @@ export function shuffleDeck(deck: Card[]): Card[] {
  * Orders a deck based on a specific strategy (for testing purposes)
  * @param deck - Array of cards to order
  * @param strategy - Ordering strategy to apply
+ * @param customOrder - Optional array of card typeIds to place first (only used with 'custom' strategy)
  * @returns New ordered array
  */
-export function orderDeck(deck: Card[], strategy: DeckOrderStrategy): Card[] {
+export function orderDeck(
+  deck: Card[],
+  strategy: DeckOrderStrategy,
+  customOrder?: CardTypeId[],
+): Card[] {
   const ordered = [...deck];
 
   switch (strategy) {
     case 'random':
       return shuffleDeck(ordered);
+
+    case 'custom': {
+      if (!customOrder || customOrder.length === 0) {
+        // If no custom order specified, just shuffle
+        return shuffleDeck(ordered);
+      }
+
+      // Find cards by typeId in the order specified
+      const orderedCards: Card[] = [];
+      const usedCardIds = new Set<string>();
+
+      for (const typeId of customOrder) {
+        // Find the first unused card with this typeId
+        const card = ordered.find((c) => c.typeId === typeId && !usedCardIds.has(c.id));
+        if (card) {
+          orderedCards.push(card);
+          usedCardIds.add(card.id);
+        }
+      }
+
+      // Get remaining cards that weren't used
+      const remainingCards = ordered.filter((c) => !usedCardIds.has(c.id));
+
+      // Shuffle the remaining cards
+      const shuffledRemaining = shuffleDeck(remainingCards);
+
+      // Return custom order first, then shuffled remaining
+      return [...orderedCards, ...shuffledRemaining];
+    }
 
     case 'tracker-first':
       return ordered.sort((a, b) => {
@@ -209,58 +244,75 @@ export function dealCards(
 }
 
 /**
- * Initializes a complete game deck (creates, shuffles, and deals)
+ * Initializes a complete game deck (creates, orders, and deals)
  * @param config - Game configuration
  * @param playerStrategy - Ordering strategy for player's deck (default: 'random')
  * @param cpuStrategy - Ordering strategy for CPU's deck (default: 'random')
- * @param mirrorDecks - If true, both decks will have identical cards in identical order
- * @param orderBeforeDealing - If true, orders the full deck before dealing (guarantees card distribution based on strategy)
+ * @param playerCustomOrder - Optional array of card typeIds that player should get first (for 'custom' strategy)
+ * @param cpuCustomOrder - Optional array of card typeIds that CPU should get first (for 'custom' strategy)
  * @returns Object with playerDeck and cpuDeck ready for gameplay
+ * @note Always orders the full deck with playerStrategy before dealing (player gets priority).
+ *       Then CPU's portion is reordered with cpuStrategy on whatever cards remain.
+ *       For custom strategy, specify typeIds like: ['tracker-1', 'common-3', 'firewall-empathy']
  */
 export function initializeGameDeck(
   config: GameConfig,
   playerStrategy: DeckOrderStrategy = 'random',
   cpuStrategy: DeckOrderStrategy = 'random',
-  mirrorDecks: boolean = false,
-  orderBeforeDealing: boolean = false,
+  playerCustomOrder?: CardTypeId[],
+  cpuCustomOrder?: CardTypeId[],
 ): {
   playerDeck: Card[];
   cpuDeck: Card[];
 } {
-  if (mirrorDecks) {
-    // Create a single deck and give identical copies to both players
-    const deck = createDeck(config);
-    const shuffled = shuffleDeck(deck);
-    const { playerDeck } = dealCards(shuffled, config.cardsPerPlayer);
-
-    // Apply the same ordering strategy to both decks
-    const orderedDeck = orderDeck(playerDeck, playerStrategy);
-
-    return {
-      playerDeck: orderedDeck,
-      cpuDeck: [...orderedDeck], // Clone the deck for CPU
-    };
-  }
-
   const deck = createDeck(config);
 
-  if (orderBeforeDealing) {
-    // Order the full deck first, then deal
-    // This guarantees specific cards go to specific players (e.g., all OWYW cards to player)
-    // Note: cpuStrategy is ignored in this mode, only playerStrategy is applied
-    const orderedDeck = orderDeck(deck, playerStrategy);
+  // For custom strategy with specific card orders for both players
+  if (playerStrategy === 'custom' && (playerCustomOrder || cpuCustomOrder)) {
+    const playerTypeIds = playerCustomOrder || [];
+    const cpuTypeIds = cpuCustomOrder || [];
+
+    // Find cards by typeId for player
+    const playerCards: Card[] = [];
+    const usedCardIds = new Set<string>();
+
+    for (const typeId of playerTypeIds) {
+      const card = deck.find((c) => c.typeId === typeId && !usedCardIds.has(c.id));
+      if (card) {
+        playerCards.push(card);
+        usedCardIds.add(card.id);
+      }
+    }
+
+    // Find cards by typeId for CPU
+    const cpuCards: Card[] = [];
+    for (const typeId of cpuTypeIds) {
+      const card = deck.find((c) => c.typeId === typeId && !usedCardIds.has(c.id));
+      if (card) {
+        cpuCards.push(card);
+        usedCardIds.add(card.id);
+      }
+    }
+
+    // Remaining cards that haven't been assigned
+    const remainingCards = deck.filter((c) => !usedCardIds.has(c.id));
+    const shuffledRemaining = shuffleDeck(remainingCards);
+
+    // Build ordered deck: player custom cards first, then CPU custom cards, then shuffled remaining
+    const orderedDeck = [...playerCards, ...cpuCards, ...shuffledRemaining];
     const { playerDeck, cpuDeck } = dealCards(orderedDeck, config.cardsPerPlayer);
+
     return { playerDeck, cpuDeck };
   }
 
-  const shuffled = shuffleDeck(deck);
-  const { playerDeck, cpuDeck } = dealCards(shuffled, config.cardsPerPlayer);
+  // Order the full deck with player strategy (player gets priority)
+  const orderedDeck = orderDeck(deck, playerStrategy, playerCustomOrder);
+  const { playerDeck, cpuDeck: initialCpuDeck } = dealCards(orderedDeck, config.cardsPerPlayer);
 
-  // Apply ordering strategies to each deck
-  return {
-    playerDeck: orderDeck(playerDeck, playerStrategy),
-    cpuDeck: orderDeck(cpuDeck, cpuStrategy),
-  };
+  // Reorder CPU's deck with CPU strategy on whatever cards they received
+  const cpuDeck = orderDeck(initialCpuDeck, cpuStrategy, cpuCustomOrder);
+
+  return { playerDeck, cpuDeck };
 }
 
 /**

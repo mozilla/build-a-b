@@ -7,7 +7,7 @@ import { createActorContext } from '@xstate/react';
 import { createBrowserInspector } from '@statelyai/inspect';
 import { type PropsWithChildren, useEffect } from 'react';
 import { gameFlowMachine } from '../machines/game-flow-machine';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 
 // XState Inspector - only enabled in development
 const inspector = import.meta.env.DEV
@@ -34,7 +34,7 @@ export function GameProvider({ children }: PropsWithChildren) {
     // initializeGame('owyw-first', 'common-first', false, true)
 
     // Keep adding scenarios here as needed to test different flows.
-    initializeGame('firewall-first', 'random', false, true);
+    initializeGame('custom', 'custom');
   }, [initializeGame]);
 
   return (

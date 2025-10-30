@@ -1,4 +1,4 @@
-import { useGameStore } from '../../stores/game-store';
+import { useGameStore } from '../../store/game-store';
 import animationData from '../../assets/animations/placeholder.json';
 import { SpecialCardAnimation } from './index';
 

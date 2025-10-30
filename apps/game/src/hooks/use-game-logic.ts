@@ -6,7 +6,7 @@
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
 import { GameMachineContext } from '../providers/GameProvider';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 import { useCpuPlayer } from './use-cpu-player';
 import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';

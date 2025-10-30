@@ -1,4 +1,4 @@
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import type { FC } from 'react';
 import type { BackgroundConfig } from './types';
 

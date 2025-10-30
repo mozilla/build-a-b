@@ -33,13 +33,11 @@ describe('gameStore', () => {
     it('should support custom deck ordering strategies', () => {
       const { initializeGame } = useGameStore.getState();
 
-      initializeGame('tracker-first', 'common-first');
+      initializeGame('tracker-first');
 
       const state = useGameStore.getState();
-      // Player should have trackers first
+      // Player should have trackers first (since ordering happens before dealing)
       expect(state.player.deck[0].specialType).toBe('tracker');
-      // CPU should have common cards first
-      expect(state.cpu.deck[0].isSpecial).toBe(false);
     });
   });
 

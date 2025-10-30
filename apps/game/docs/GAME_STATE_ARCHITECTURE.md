@@ -380,7 +380,7 @@ on: {
 ### Purpose
 Zustand is a **lightweight state management library** that holds all game data. It provides:
 - Fast, selective updates (only re-render components that use changed data)
-- DevTools integration for debugging
+- [DevTools](https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en) integration for debugging
 - Simple API without boilerplate
 - Outside-React access (important for XState integration)
 

@@ -1,6 +1,6 @@
 import { Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
-import { useGameStore, usePlayer } from '@/stores/game-store';
+import { useGameStore, usePlayer } from '@/store';
 import { getBillionaireById } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState, type FC } from 'react';
