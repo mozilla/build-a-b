@@ -1,70 +1,25 @@
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useState } from 'react';
 
 import { Button } from '@/components/Button';
-import { Carousel } from '@/components/Carousel';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { useGameStore } from '@/stores/game-store';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
-import { BackgroundCard } from './BackgroundCard';
+import { BackgroundCarousel } from './BackgroundCarousel';
 import { BACKGROUNDS } from './backgrounds';
 import { selectBackgroundMicrocopy } from './microcopy';
 
 export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...props }) => {
-  const { selectedBackground, selectBackground } = useGameStore();
+  const { selectedBackground } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBackground || BACKGROUNDS[0].id);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to selected background on mount
-  useEffect(() => {
-    if (scrollContainerRef.current && localSelection) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === localSelection);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          // Center the selected card
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }
-  }, [localSelection]);
 
   const handleBackgroundSelect = (backgroundId: string) => {
     setLocalSelection(backgroundId);
-    selectBackground(backgroundId);
-
-    // Scroll to center the selected background
-    if (scrollContainerRef.current) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === backgroundId);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }
   };
 
   const handleNext = () => {
     if (localSelection) {
-      selectBackground(localSelection);
       send?.({ type: 'SELECT_BACKGROUND', background: localSelection });
     }
   };
@@ -99,20 +54,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
 
         {/* Backgrounds Carousel */}
         <div className="w-full relative py-8">
-          <Carousel
-            containerRef={scrollContainerRef}
-            scrollerAttributes={{ className: 'px-[calc(50%-5.625rem)] gap-8' }}
-          >
-            {BACKGROUNDS.map((background) => (
-              <BackgroundCard
-                key={background.id}
-                imageSrc={background.imageSrc}
-                name={background.name}
-                isSelected={localSelection === background.id}
-                onPress={() => handleBackgroundSelect(background.id)}
-              />
-            ))}
-          </Carousel>
+          <BackgroundCarousel onSelect={handleBackgroundSelect} />
         </div>
 
         {/* Next Button */}
