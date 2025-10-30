@@ -3,8 +3,12 @@ import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
 import { SelectBackground } from '@/components/Screens/SelectBackground';
 import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
+import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
+import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
+import { useGameStore } from '@/stores/game-store';
+import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import type { FC } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
@@ -21,8 +25,8 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   select_background: SelectBackground,
   intro: Intro,
   quick_start_guide: QuickStart,
-  // your_mission: Welcome, // Placeholder until implemented
-  // vs_animation: Welcome, // Placeholder until implemented
+  your_mission: YourMission,
+  vs_animation: VSAnimation,
   // ready: Welcome,
   // revealing: Welcome,
   // comparing: Welcome,
@@ -38,10 +42,12 @@ const SCREENS_WITH_CLOSE_ICON = [
   'select_background',
   'intro',
   'quick_start_guide',
+  'your_mission',
 ];
 
 export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
+  const { toggleMenu } = useGameStore();
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -68,7 +74,9 @@ export const ScreenRenderer: FC = () => {
         />
         {showCloseIcon && (
           <div className="absolute top-5 right-5 z-20">
-            <Icon name="pause" />
+            <Button onPress={toggleMenu}>
+              <Icon name="pause" />
+            </Button>
           </div>
         )}
       </AnimatePresence>

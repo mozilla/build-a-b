@@ -19,7 +19,7 @@ export const QuickStart: FC<BaseScreenProps> = ({ send, className, ...props }) =
       {/* Main content container - scrollable */}
       <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto">
         {/* Title Section */}
-        <div className="w-full mb-8 mt-6 px-6">
+        <div className="w-full mb-8 mt-22 px-6">
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">
             {quickStartMicrocopy.title}
           </Text>
