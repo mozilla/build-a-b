@@ -18,7 +18,7 @@ export const cardFeatures: Omit<CardFeatureProps, 'className'>[] = [
   {
     cardTitle: 'Trackers',
     cardImgSrc: tracker1,
-    cardDesc: 'These cards boosts your point total.',
+    cardDesc: 'These cards boost your point total.',
   },
   {
     cardTitle: 'Blockers',
