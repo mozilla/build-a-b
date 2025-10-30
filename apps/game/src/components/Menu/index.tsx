@@ -8,7 +8,7 @@ import { BackgroundCarousel } from '@/components/Screens/SelectBackground/Backgr
 import { Text } from '@/components/Text';
 import { AudioToggle } from '@/components/Toggle';
 import { useGameMachine } from '@/hooks/use-game-machine';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { menuMicrocopy } from './microcopy';
 

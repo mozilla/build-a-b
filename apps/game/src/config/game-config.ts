@@ -54,6 +54,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Common cards (5 unique types) - 8 copies each = 40 total
     {
       typeId: 'common-1',
+      name: 'Common Card 1',
       imageUrl: Common1,
       value: 1,
       isSpecial: false,
@@ -61,6 +62,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'common-2',
+      name: 'Common Card 2',
       imageUrl: Common2,
       value: 2,
       isSpecial: false,
@@ -68,6 +70,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'common-3',
+      name: 'Common Card 3',
       imageUrl: Common3,
       value: 3,
       isSpecial: false,
@@ -75,6 +78,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'common-4',
+      name: 'Common Card 4',
       imageUrl: Common4,
       value: 4,
       isSpecial: false,
@@ -82,6 +86,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'common-5',
+      name: 'Common Card 5',
       imageUrl: Common5,
       value: 5,
       isSpecial: false,
@@ -92,6 +97,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Value 0 (auto-lose hand but collect stack), triggers another play
     {
       typeId: 'ls-ai-platform',
+      name: 'Launch Stack: AI Platform',
       imageUrl: LsAiPlatform,
       value: 0,
       isSpecial: true,
@@ -102,6 +108,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'ls-energy-grid',
+      name: 'Launch Stack: Energy Grid',
       imageUrl: LsEnergyGrid,
       value: 0,
       isSpecial: true,
@@ -112,6 +119,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'ls-government',
+      name: 'Launch Stack: Government',
       imageUrl: LsGovernment,
       value: 0,
       isSpecial: true,
@@ -122,6 +130,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'ls-newspaper',
+      name: 'Launch Stack: Newspaper',
       imageUrl: LsNewspaper,
       value: 0,
       isSpecial: true,
@@ -132,6 +141,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'ls-rocket-company',
+      name: 'Launch Stack: Rocket Company',
       imageUrl: LsRocketCompany,
       value: 0,
       isSpecial: true,
@@ -145,6 +155,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Value 6 (higher than common cards)
     {
       typeId: 'firewall-empathy',
+      name: 'Firewall: Empathy',
       imageUrl: FirewallEmpathy,
       value: 6,
       isSpecial: true,
@@ -155,6 +166,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'firewall-open',
+      name: 'Firewall: Open',
       imageUrl: FirewallOpen,
       value: 6,
       isSpecial: true,
@@ -165,6 +177,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'firewall-recall',
+      name: 'Firewall: Recall',
       imageUrl: FirewallRecall,
       value: 6,
       isSpecial: true,
@@ -175,6 +188,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'firewall-smacker',
+      name: 'Firewall: Smacker',
       imageUrl: FirewallSmacker,
       value: 6,
       isSpecial: true,
@@ -188,6 +202,7 @@ export const DEFAULT_GAME_CONFIG = {
     // All value 6 (same as firewalls)
     {
       typeId: 'move-buyout',
+      name: 'Move: Buyout',
       imageUrl: MoveBuyout,
       value: 6,
       isSpecial: true,
@@ -198,6 +213,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'move-takeover',
+      name: 'Move: Takeover',
       imageUrl: MoveTakeover,
       value: 6,
       isSpecial: true,
@@ -208,6 +224,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'move-tantrum',
+      name: 'Move: Tantrum',
       imageUrl: MoveTantrum,
       value: 6,
       isSpecial: true,
@@ -218,6 +235,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'move-theft',
+      name: 'Move: Theft',
       imageUrl: MoveTheft,
       value: 6,
       isSpecial: true,
@@ -231,6 +249,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Values: 1, 2, 3 (confirmed from CARDS.md), triggers another play
     {
       typeId: 'tracker-1',
+      name: 'Tracker +1',
       imageUrl: Tracker1,
       value: 1,
       isSpecial: true,
@@ -241,6 +260,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'tracker-2',
+      name: 'Tracker +2',
       imageUrl: Tracker2,
       value: 2,
       isSpecial: true,
@@ -251,6 +271,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'tracker-3',
+      name: 'Tracker +3',
       imageUrl: Tracker3,
       value: 3,
       isSpecial: true,
@@ -264,6 +285,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Value 0 (confirmed from CARDS.md), triggers another play
     {
       typeId: 'blocker-1',
+      name: 'Blocker -1',
       imageUrl: Blocker1,
       value: 0,
       isSpecial: true,
@@ -275,6 +297,7 @@ export const DEFAULT_GAME_CONFIG = {
     },
     {
       typeId: 'blocker-2',
+      name: 'Blocker -2',
       imageUrl: Blocker2,
       value: 0,
       isSpecial: true,
@@ -289,6 +312,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Value 0, physical mechanic (skip for MVP or adapt for digital)
     {
       typeId: 'data-grab',
+      name: 'Data Grab',
       imageUrl: DataGrab,
       value: 0,
       isSpecial: true,

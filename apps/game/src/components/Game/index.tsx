@@ -39,8 +39,12 @@ export function Game() {
   const selectedBackground = useGameStore((state) => state.selectedBackground);
   const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const playerTurnState = useGameStore((state) => state.playerTurnState);
   const cpuTurnState = useGameStore((state) => state.cpuTurnState);
+
+  // Check if decks are visually swapped (they stay in swapped positions after animation)
+  const isSwapped = deckSwapCount % 2 === 1;
 
   const backgroundImage =
     getBackgroundImage(selectedBackground) ||
@@ -114,17 +118,34 @@ export function Game() {
     tapDeck();
   };
 
+  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
+  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
+  // Need to swap click handlers to match visual positions
+  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
+  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
+  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
+  const topDeckTooltip = ''; // Never show tooltip on top deck
+  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
+
+  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
+  // When swapped: top deck (owner="cpu") is visually at bottom
+  // When not swapped: bottom deck (owner="player") is visually at bottom
+  const topDeckActiveIndicator = isSwapped && activePlayer === 'player';
+  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player';
+
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
       <Board bgSrc={backgroundImage}>
         <div className="flex flex-col justify-between items-center flex-1 max-w-[25rem] max-h-[54rem]">
           <PlayerDeck
             deckLength={cpu.deck.length}
-            handleDeckClick={canClickCpuDeck ? handleDeckClick : undefined}
+            handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
             turnValue={cpu.currentTurnValue}
             turnValueState={cpuTurnState}
             owner="cpu"
             billionaireId={DEFAULT_BILLIONAIRE_ID}
+            tooltipContent={topDeckTooltip}
+            activeIndicator={topDeckActiveIndicator}
           />
 
           {/* Play Area - Center of board */}
@@ -144,12 +165,13 @@ export function Game() {
 
           <PlayerDeck
             deckLength={player.deck.length}
-            handleDeckClick={canClickPlayerDeck ? handleDeckClick : undefined}
+            handleDeckClick={bottomDeckCanClick ? handleDeckClick : undefined}
             turnValue={player.currentTurnValue}
             turnValueState={playerTurnState}
             owner="player"
             billionaireId={selectedBillionaire}
-            tooltipContent={canClickPlayerDeck ? tooltipMessage : ''}
+            tooltipContent={bottomDeckTooltip}
+            activeIndicator={bottomDeckActiveIndicator}
           />
         </div>
 

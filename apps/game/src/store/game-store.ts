@@ -50,7 +50,7 @@ export const useGameStore = create<GameStore>()(
       showOpenWhatYouWantModal: false,
       showOpenWhatYouWantAnimation: false,
       forcedEmpathySwapping: false,
-      decksVisuallySwapped: false,
+      deckSwapCount: 0, // Tracks number of forced empathy swaps (odd = swapped, even = normal)
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -86,7 +86,7 @@ export const useGameStore = create<GameStore>()(
           pendingEffects: [],
           trackerSmackerActive: null,
           forcedEmpathySwapping: false,
-          decksVisuallySwapped: false,
+          deckSwapCount: 0,
         });
       },
 
@@ -191,9 +191,19 @@ export const useGameStore = create<GameStore>()(
 
       swapDecks: () => {
         const { player, cpu } = get();
+        // Swap ONLY the deck arrays between player and cpu
+        // Visual positions stay the same after animation: bottom = player, top = cpu
+        // launchStackCount, points, and current turn state do NOT swap
+        // The visual animation + data swap results in correct final positions
         set({
-          player: { ...player, deck: cpu.deck },
-          cpu: { ...cpu, deck: player.deck },
+          player: {
+            ...player,
+            deck: cpu.deck,
+          },
+          cpu: {
+            ...cpu,
+            deck: player.deck,
+          },
         });
       },
 
@@ -375,16 +385,15 @@ export const useGameStore = create<GameStore>()(
             // Trigger animation - this will visually swap the decks
             get().setForcedEmpathySwapping(true);
 
-            // Wait for animation to complete, then swap the actual deck data
-            // The visual animation shows decks swapping positions
-            // At the end, we swap the data so they're back at their original positions with swapped data
+            // Wait for message (800ms) + animation (1500ms) = 2300ms total
+            // This gives users time to see "Forced Empathy!" message and understand what's happening
             setTimeout(() => {
               get().swapDecks();
-              // Toggle the visual swap state to keep decks in swapped positions
-              get().setDecksVisuallySwapped(!get().decksVisuallySwapped);
-              // Reset animation state (but keep visual swap active)
+              // Increment swap count to track position (odd = swapped, even = normal)
+              set({ deckSwapCount: get().deckSwapCount + 1 });
+              // Reset animation state - decks stay in swapped positions with new owners
               get().setForcedEmpathySwapping(false);
-            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
+            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION + 800);
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -618,10 +627,6 @@ export const useGameStore = create<GameStore>()(
         set({ forcedEmpathySwapping: swapping });
       },
 
-      setDecksVisuallySwapped: (swapped) => {
-        set({ decksVisuallySwapped: swapped });
-      },
-
       // UI Actions
       selectBillionaire: (billionaire) => {
         set({
@@ -698,7 +703,7 @@ export const useGameStore = create<GameStore>()(
           showHandViewer: false,
           showTooltip: false,
           forcedEmpathySwapping: false,
-          decksVisuallySwapped: false,
+          deckSwapCount: 0,
         });
       },
     }),

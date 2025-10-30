@@ -59,8 +59,7 @@ export function useGameLogic() {
    * - Interactive: Show animation, wait for user tap, then show selection UI
    */
   const handlePreReveal = () => {
-    const { preRevealProcessed, setPreRevealProcessed, preRevealEffects } =
-      useGameStore.getState();
+    const { preRevealProcessed, setPreRevealProcessed, preRevealEffects } = useGameStore.getState();
 
     // Guard: Only process once per pre_reveal phase entry
     if (preRevealProcessed) {
@@ -103,7 +102,6 @@ export function useGameLogic() {
       setShowOpenWhatYouWantAnimation,
       clearPreRevealEffects,
     } = useGameStore.getState();
-
 
     // Prepare the top 3 cards
     prepareOpenWhatYouWantCards(playerId);
@@ -154,7 +152,7 @@ export function useGameLogic() {
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
           setTimeout(() => {
             actorRef.send({ type: 'CARDS_REVEALED' });
-          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
+          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
           return;
         }
       }
@@ -179,14 +177,14 @@ export function useGameLogic() {
 
       // Check if Forced Empathy was played - if so, delay transition
       const forcedEmpathyPlayed =
-        (p.playedCard?.specialType === 'forced_empathy') ||
-        (c.playedCard?.specialType === 'forced_empathy');
+        p.playedCard?.specialType === 'forced_empathy' ||
+        c.playedCard?.specialType === 'forced_empathy';
 
       if (forcedEmpathyPlayed) {
         // Wait for deck swap animation to complete before transitioning
         setTimeout(() => {
           actorRef.send({ type: 'CARDS_REVEALED' });
-        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP);
+        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
         return;
       }
     }

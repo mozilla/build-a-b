@@ -7,7 +7,7 @@ import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import type { FC } from 'react';

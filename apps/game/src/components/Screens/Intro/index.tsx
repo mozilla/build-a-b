@@ -3,7 +3,7 @@ import { type FC } from 'react';
 import { Button } from '@/components/Button';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { getBillionaireImage } from '@/utils/selectors';
 
 import { cn } from '@/utils/cn';

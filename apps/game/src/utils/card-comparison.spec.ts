@@ -42,6 +42,7 @@ const createMockCard = (
   isSpecial: !!specialType,
   specialType: specialType,
   triggersAnotherPlay,
+  name: 'test',
 });
 
 describe('cardComparison', () => {

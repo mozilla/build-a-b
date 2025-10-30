@@ -30,7 +30,7 @@ export type GameStore = {
 
   // Forced Empathy State
   forcedEmpathySwapping: boolean; // True when decks are actively animating
-  decksVisuallySwapped: boolean; // True when decks should stay in swapped positions
+  deckSwapCount: number; // Number of times decks have been swapped (odd = swapped, even = normal)
 
   // UI State
   selectedBillionaire: string;
@@ -89,7 +89,6 @@ export type GameStore = {
 
   // Forced Empathy Actions
   setForcedEmpathySwapping: (swapping: boolean) => void;
-  setDecksVisuallySwapped: (swapped: boolean) => void;
 
   // Actions - UI
   selectBillionaire: (billionaire: string) => void;
