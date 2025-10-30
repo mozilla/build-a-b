@@ -70,7 +70,7 @@ export const Menu: FC = () => {
             <div className="relative w-full h-full bg-grey-200 rounded-[2rem] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] overflow-hidden">
               {/* Close Button */}
               <Button
-                onClick={toggleMenu}
+                onPress={toggleMenu}
                 className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                 aria-label="Close menu"
               >
