@@ -4,7 +4,7 @@
  */
 
 import { assign, createMachine } from 'xstate';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 export interface GameFlowContext {

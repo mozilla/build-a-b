@@ -7,7 +7,7 @@ import {
   resetCardIdCounter,
   orderDeck,
 } from './deck-builder';
-import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import { DEFAULT_GAME_CONFIG, type CardTypeId } from '../config/game-config';
 
 describe('deckBuilder', () => {
   beforeEach(() => {
@@ -314,6 +314,55 @@ describe('deckBuilder', () => {
       for (let i = 0; i < ordered.length - 1; i++) {
         expect(ordered[i].value).toBeLessThanOrEqual(ordered[i + 1].value);
       }
+    });
+
+    it('should place custom ordered cards first with custom strategy', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+
+      // Use typeIds instead of Card objects
+      const customOrder: CardTypeId[] = ['tracker-1', 'common-3', 'ls-ai-platform'];
+      const ordered = orderDeck(deck, 'custom', customOrder);
+
+      // First three cards should have the specified typeIds in order
+      expect(ordered[0].typeId).toBe('tracker-1');
+      expect(ordered[1].typeId).toBe('common-3');
+      expect(ordered[2].typeId).toBe('ls-ai-platform');
+
+      // Should still have all 66 cards
+      expect(ordered).toHaveLength(66);
+    });
+
+    it('should shuffle all cards when custom strategy used without customOrder', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+      const ordered = orderDeck(deck, 'custom');
+
+      // Should have all cards
+      expect(ordered).toHaveLength(deck.length);
+
+      // Should contain all the same cards
+      const originalIds = deck.map((c) => c.id).sort();
+      const orderedIds = ordered.map((c) => c.id).sort();
+      expect(orderedIds).toEqual(originalIds);
+    });
+
+    it('should maintain total deck size with custom strategy', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+
+      // Use typeIds instead of Card objects
+      const customOrder: CardTypeId[] = ['tracker-2', 'common-5'];
+      const ordered = orderDeck(deck, 'custom', customOrder);
+
+      // Should have all 66 cards
+      expect(ordered).toHaveLength(66);
+
+      // Should contain all the same cards
+      const originalIds = deck.map((c) => c.id).sort();
+      const orderedIds = ordered.map((c) => c.id).sort();
+      expect(orderedIds).toEqual(originalIds);
+
+      // First two should be the custom ordered ones
+      expect(ordered[0].typeId).toBe('tracker-2');
+      expect(ordered[1].typeId).toBe('common-5');
     });
   });
 });

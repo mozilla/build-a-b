@@ -9,7 +9,7 @@ import { getBackgroundImage } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
-import { useGameStore } from '../../stores/game-store';
+import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
@@ -39,6 +39,8 @@ export function Game() {
   const selectedBackground = useGameStore((state) => state.selectedBackground);
   const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
+  const playerTurnState = useGameStore((state) => state.playerTurnState);
+  const cpuTurnState = useGameStore((state) => state.cpuTurnState);
 
   const backgroundImage =
     getBackgroundImage(selectedBackground) ||
@@ -107,18 +109,6 @@ export function Game() {
     phase === 'pre_reveal.awaiting_interaction' ||
     isDataWarPhase;
   const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
-  const cpuTurnState =
-    cpu.playedCard?.specialType === 'tracker'
-      ? 'tracker'
-      : player.playedCard?.specialType === 'blocker'
-      ? 'blocker'
-      : 'normal';
-  const playerTurnState =
-    player.playedCard?.specialType === 'tracker'
-      ? 'tracker'
-      : cpu.playedCard?.specialType === 'blocker'
-      ? 'blocker'
-      : 'normal';
 
   const handleDeckClick = () => {
     tapDeck();

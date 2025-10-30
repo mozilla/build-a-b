@@ -47,7 +47,7 @@ export interface GameConfig {
  * Default game configuration
  * Total: 66 cards (33 per player)
  */
-export const DEFAULT_GAME_CONFIG: GameConfig = {
+export const DEFAULT_GAME_CONFIG = {
   cardsPerPlayer: 33,
   launchStacksToWin: 3,
   deckComposition: [
@@ -293,21 +293,22 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
       value: 0,
       isSpecial: true,
       specialType: 'data_grab',
-      specialActionDescription:
-        'Everyone grabs as many cards from the play area as possible.',
+      specialActionDescription: 'Everyone grabs as many cards from the play area as possible.',
       count: 3,
     },
   ],
-};
+} as const satisfies GameConfig;
+
+/**
+ * Union type of all valid card typeIds in the game
+ * Extracted from the DEFAULT_GAME_CONFIG for type safety and autocomplete
+ */
+export type CardTypeId = (typeof DEFAULT_GAME_CONFIG.deckComposition)[number]['typeId'];
 
 /**
  * Instant effect types that trigger immediately
  */
-export const INSTANT_EFFECTS = new Set([
-  'forced_empathy',
-  'tracker_smacker',
-  'hostile_takeover',
-]);
+export const INSTANT_EFFECTS = new Set(['forced_empathy', 'tracker_smacker', 'hostile_takeover']);
 
 /**
  * Card back image (shared across all cards)
