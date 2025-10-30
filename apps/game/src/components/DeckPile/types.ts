@@ -10,5 +10,5 @@ export interface DeckPileProps {
   tooltipContent?: string;
   activeIndicator?: boolean;
   forcedEmpathySwapping?: boolean;
-  decksVisuallySwapped?: boolean;
+  deckSwapCount?: number;
 }

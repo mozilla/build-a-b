@@ -1,5 +1,5 @@
 import { Carousel } from '@/components/Carousel';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { type FC, useEffect, useRef } from 'react';
 import { BackgroundCard } from './BackgroundCard';
 import { BACKGROUNDS } from './backgrounds';

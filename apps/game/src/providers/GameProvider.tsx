@@ -33,8 +33,11 @@ export function GameProvider({ children }: PropsWithChildren) {
     // ====== TEST SCENARIO 3: OWYW FLOW ======
     // initializeGame('owyw-first', 'common-first', false, true)
 
+    // ====== TEST SCENARIO 3: Empathy flow (deck swap) ======
+    // initializeGame('custom','custom', ['firewall-empathy', 'common-5', 'tracker-1', 'common-2'], ['common-3', 'common-4']);
+
     // Keep adding scenarios here as needed to test different flows.
-    initializeGame('custom', 'custom');
+    initializeGame('random', 'random');
   }, [initializeGame]);
 
   return (

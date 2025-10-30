@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { type FC, useEffect, useMemo } from 'react';
+import { type FC, useMemo } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 
 /**
@@ -20,7 +20,7 @@ import { cn } from '@/utils/cn';
  * - Transition animation to gameplay
  */
 export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
-  const { selectedBillionaire, initializeGame } = useGameStore();
+  const { selectedBillionaire } = useGameStore();
 
   const playerBillionaire = useMemo(
     () => BILLIONAIRES.find((b) => b.id === selectedBillionaire),
@@ -32,11 +32,6 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
     () => BILLIONAIRES.find((b) => b.id === DEFAULT_BILLIONAIRE_ID),
     [],
   );
-
-  // Initialize the game when VS animation screen mounts
-  useEffect(() => {
-    initializeGame();
-  }, [initializeGame]);
 
   return (
     <motion.div

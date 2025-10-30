@@ -317,6 +317,7 @@ describe('Turn Resolution', () => {
         imageUrl: '/test.webp',
         isSpecial: true,
         specialType: 'tracker_smacker',
+        name: 'smacker',
       };
 
       useGameStore.getState().handleCardEffect(trackerSmackerCard, 'player');
@@ -326,8 +327,14 @@ describe('Turn Resolution', () => {
 
     it('should swap decks when Forced Empathy is played', () => {
       // beforeEach already calls resetGame() which initializes the game
-      const playerDeckIdsBefore = useGameStore.getState().player.deck.map((c) => c.id).sort();
-      const cpuDeckIdsBefore = useGameStore.getState().cpu.deck.map((c) => c.id).sort();
+      const playerDeckIdsBefore = useGameStore
+        .getState()
+        .player.deck.map((c) => c.id)
+        .sort();
+      const cpuDeckIdsBefore = useGameStore
+        .getState()
+        .cpu.deck.map((c) => c.id)
+        .sort();
 
       // Directly call swapDecks() to test the swap functionality
       // (handleCardEffect has animation delays that aren't relevant for this test)
@@ -364,6 +371,7 @@ describe('Turn Resolution', () => {
         imageUrl: '/test.webp',
         isSpecial: true,
         specialType: 'tracker_smacker',
+        name: 'smacker',
       };
 
       useGameStore.setState({ pendingEffects: [] });

@@ -268,7 +268,7 @@ export function initializeGameDeck(
   const deck = createDeck(config);
 
   // For custom strategy with specific card orders for both players
-  if (playerStrategy === 'custom' && (playerCustomOrder || cpuCustomOrder)) {
+  if ((playerStrategy === 'custom' || cpuStrategy === 'custom') && (playerCustomOrder || cpuCustomOrder)) {
     const playerTypeIds = playerCustomOrder || [];
     const cpuTypeIds = cpuCustomOrder || [];
 
@@ -298,9 +298,20 @@ export function initializeGameDeck(
     const remainingCards = deck.filter((c) => !usedCardIds.has(c.id));
     const shuffledRemaining = shuffleDeck(remainingCards);
 
-    // Build ordered deck: player custom cards first, then CPU custom cards, then shuffled remaining
-    const orderedDeck = [...playerCards, ...cpuCards, ...shuffledRemaining];
-    const { playerDeck, cpuDeck } = dealCards(orderedDeck, config.cardsPerPlayer);
+    // Calculate how many remaining cards each player needs
+    const playerRemainingCount = config.cardsPerPlayer - playerCards.length;
+    const cpuRemainingCount = config.cardsPerPlayer - cpuCards.length;
+
+    // Split remaining cards between players
+    const playerRemainingCards = shuffledRemaining.slice(0, playerRemainingCount);
+    const cpuRemainingCards = shuffledRemaining.slice(
+      playerRemainingCount,
+      playerRemainingCount + cpuRemainingCount,
+    );
+
+    // Build each player's deck: custom cards first, then remaining shuffled cards
+    const playerDeck = [...playerCards, ...playerRemainingCards];
+    const cpuDeck = [...cpuCards, ...cpuRemainingCards];
 
     return { playerDeck, cpuDeck };
   }

@@ -2,7 +2,7 @@
  * DeckPile - Displays a deck of cards with card back and counter
  */
 
-import { type FC } from 'react';
+import { type FC, useRef, useState, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
@@ -19,41 +19,82 @@ export const DeckPile: FC<DeckPileProps> = ({
   tooltipContent,
   activeIndicator = false,
   forcedEmpathySwapping = false,
-  decksVisuallySwapped = false,
+  deckSwapCount = 0,
 }) => {
   const isPlayer = owner === 'player';
+  const deckRef = useRef<HTMLDivElement>(null);
+  const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
 
-  // Animation variants for deck swapping
-  const swapAnimation = forcedEmpathySwapping
-    ? {
-        // CPU deck moves down (to player position) with WIDE curve through right
-        // Player deck moves up (to CPU position) with WIDE curve through left
-        // Wider X values to avoid center cards
-        y: owner === 'cpu' ? ['0vh', '35vh', '66vh'] : ['0vh', '-35vh', '-66vh'],
-        x: owner === 'cpu' ? ['0vw', '25vw', '0vw'] : ['0vw', '-25vw', '0vw'],
-        scale: [1, 1.15, 1],
-        rotateY: owner === 'cpu' ? [0, 20, 0] : [0, -20, 0],
-      }
-    : decksVisuallySwapped
-    ? {
-        // Keep decks in swapped positions permanently
-        y: owner === 'cpu' ? '66vh' : '-66vh',
-        x: '0vw',
-        scale: 1,
-        rotateY: 0,
-      }
-    : {
-        // Normal positions
-        y: '0vh',
-        x: '0vw',
-        scale: 1,
-        rotateY: 0,
-      };
+  // Determine if decks are currently in swapped positions (odd swap count)
+  const isSwapped = deckSwapCount % 2 === 1;
+
+  // Measure the distance between decks when component mounts or window resizes
+  useLayoutEffect(() => {
+    const measureDistance = () => {
+      if (!deckRef.current) return;
+
+      const board = deckRef.current.closest('section'); // Find the Board component
+
+      if (!board) return;
+
+      const boardRect = board.getBoundingClientRect();
+
+      // Calculate the vertical distance as the height of the board minus some padding
+      // We want the decks to swap positions, so each travels approximately the board height
+      // Subtract deck heights and padding to stay within bounds
+      const verticalDistance = boardRect.height * 0.65; // 65% of board height for safer bounds
+
+      // Horizontal curve - use 20% of board width to avoid center cards
+      const horizontalCurve = boardRect.width * 0.2;
+
+      setSwapDistance({
+        y: verticalDistance,
+        x: horizontalCurve,
+      });
+    };
+
+    measureDistance();
+
+    // Remeasure on window resize
+    window.addEventListener('resize', measureDistance);
+    return () => window.removeEventListener('resize', measureDistance);
+  }, []);
+
+  // Animation variants for deck swapping using measured distances
+  // When swapCount is odd, decks stay in swapped positions
+  // When swapCount is even, decks return to normal positions
+  const swapAnimation =
+    forcedEmpathySwapping && swapDistance
+      ? {
+          // During animation: CPU deck moves down, Player deck moves up
+          y:
+            owner === 'cpu'
+              ? [0, swapDistance.y * 0.5, swapDistance.y]
+              : [0, -swapDistance.y * 0.5, -swapDistance.y],
+          x: owner === 'cpu' ? [0, swapDistance.x, 0] : [0, -swapDistance.x, 0],
+          scale: [1, 1.15, 1],
+          rotateY: owner === 'cpu' ? [0, 20, 0] : [0, -20, 0],
+        }
+      : isSwapped && swapDistance
+      ? {
+          // After swap: keep decks in swapped positions (no animation)
+          y: owner === 'cpu' ? swapDistance.y : -swapDistance.y,
+          x: 0,
+          scale: 1,
+          rotateY: 0,
+        }
+      : {
+          // Normal positions
+          y: 0,
+          x: 0,
+          scale: 1,
+          rotateY: 0,
+        };
 
   return (
     <Tooltip
       content={
-        <Text variant="body-small" color="text-accent" weight='medium'>
+        <Text variant="body-small" color="text-accent" weight="medium">
           {tooltipContent}
         </Text>
       }
@@ -65,13 +106,18 @@ export const DeckPile: FC<DeckPileProps> = ({
 
         {/* Card stack - only this animates during swap */}
         <motion.div
+          ref={deckRef}
           className="relative p-2"
           onClick={cardCount > 0 ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
           animate={swapAnimation}
           transition={{
-            duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP / 1000,
+            duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
+            delay:
+              forcedEmpathySwapping && swapDistance
+                ? ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DELAY / 1000
+                : 0, // Wait 800ms before animation starts
             ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth curve
             times: [0, 0.5, 1], // Keyframe timing
           }}

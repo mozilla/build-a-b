@@ -8,4 +8,5 @@ export type PlayerDeckProps = {
   owner: 'player' | 'cpu';
   tooltipContent?: string;
   billionaireId: string;
+  activeIndicator?: boolean;
 };

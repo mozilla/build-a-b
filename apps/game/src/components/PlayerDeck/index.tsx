@@ -16,12 +16,13 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   owner,
   tooltipContent,
   billionaireId,
+  activeIndicator = false,
 }) => {
   const currentBillionaire = getBillionaireById(billionaireId);
   const player = usePlayer();
   const cpu = useGameStore((state) => state.cpu);
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
-  const decksVisuallySwapped = useGameStore((state) => state.decksVisuallySwapped);
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
 
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
@@ -159,9 +160,9 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         onClick={handleDeckClick}
         showTooltip={!!tooltipContent}
         tooltipContent={tooltipContent}
-        activeIndicator={!!tooltipContent && owner === 'player'}
+        activeIndicator={activeIndicator}
         forcedEmpathySwapping={forcedEmpathySwapping}
-        decksVisuallySwapped={decksVisuallySwapped}
+        deckSwapCount={deckSwapCount}
       />
       {/** Turn points */}
       <TurnValue value={turnValue} state={turnValueState} />
