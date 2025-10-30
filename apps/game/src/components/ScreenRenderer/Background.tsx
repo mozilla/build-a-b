@@ -3,9 +3,9 @@ import type { FC } from 'react';
 import type { BackgroundConfig } from './types';
 
 // Import background images
+import blueGridBg from '@/assets/backgrounds/color_blue.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
-import { BILLIONAIRE_BACKGROUNDS } from '@/config/backgrounds';
-import { useGameLogic } from '@/hooks/use-game-logic';
+import { getBackgroundImage } from '@/utils/selectors';
 
 // Map game states to background configurations
 const STATE_BACKGROUND_CONFIG: Record<string, BackgroundConfig> = {
@@ -20,19 +20,15 @@ const STATE_BACKGROUND_CONFIG: Record<string, BackgroundConfig> = {
 
   // Guide screen - Gameplay background is now handled by Game component
   // We only show the grid overlay here as a visual effect
-  quick_start_guide: { variant: 'night-sky', gridOverlay: true },
+  quick_start_guide: { variant: 'grid', gridOverlay: true },
 
   // Gameplay screens - Background now handled by Game/Board component
   // ScreenRenderer should not render backgrounds during gameplay
   vs_animation: { variant: 'billionaire', blur: true, overlay: true },
 };
 
-export const ScreenBackground: FC = () => {
-  const { phase: currentPhase } = useGameLogic();
-  const { selectedBillionaire } = useGameStore();
-
-  // Convert state value to string
-  const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
+export const ScreenBackground: FC<{ phaseKey: string }> = ({ phaseKey }) => {
+  const { selectedBackground, selectedBillionaire } = useGameStore();
 
   // Get background configuration for current state
   const config = STATE_BACKGROUND_CONFIG[phaseKey];
@@ -43,7 +39,9 @@ export const ScreenBackground: FC = () => {
   // Determine which background image to use
   let backgroundImage = nightSkyBg;
   if (config.variant === 'billionaire' && selectedBillionaire) {
-    backgroundImage = BILLIONAIRE_BACKGROUNDS[selectedBillionaire] || nightSkyBg;
+    backgroundImage = getBackgroundImage(selectedBackground || selectedBillionaire) || nightSkyBg;
+  } else if (config.variant === 'grid') {
+    backgroundImage = blueGridBg;
   }
 
   return (

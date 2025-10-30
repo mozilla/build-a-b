@@ -2,17 +2,18 @@
  * Game Component - Main game container
  */
 
-import { BACKGROUNDS } from '@/components/Screens/SelectBackground/backgrounds';
+import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
+import { getBackgroundImage } from '@/utils/selectors';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../stores/game-store';
 import { Board } from '../Board';
+import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
-import { BILLIONAIRES } from '@/config/billionaires';
-import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { OpenWhatYouWantAnimation } from '../SpecialCardAnimation/OpenWhatYouWantAnimation';
-import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 
 /**
  * Game Component - Main game container
@@ -37,16 +38,20 @@ export function Game() {
   const selectedBackground = useGameStore((state) => state.selectedBackground);
   const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
 
-  // Find the selected background from the BACKGROUNDS array
-  const background = BACKGROUNDS.find((bg) => bg.id === selectedBackground);
-  // Default to first background if not found
-  const backgroundImage = background?.imageSrc || BACKGROUNDS[0].imageSrc;
+  const backgroundImage =
+    getBackgroundImage(selectedBackground) ||
+    getBackgroundImage(selectedBillionaire) ||
+    DEFAULT_BOARD_BACKGROUND;
+
+  const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
 
   useEffect(() => {
     switch (phase) {
-      // Skip to game on mount (temporary - will implement full setup flow later)
       case 'intro':
-        send({ type: 'SKIP_TO_GAME' });
+        // Usage: http://localhost:5173?skip-intro=true
+        if (shouldSkipIntro) {
+          send({ type: 'SKIP_TO_GAME' });
+        }
         break;
       case 'pre_reveal.processing':
         handlePreReveal();
@@ -127,7 +132,7 @@ export function Game() {
             turnValue={cpu.currentTurnValue}
             turnValueState={cpuTurnState}
             owner="cpu"
-            billionaireId={BILLIONAIRES.find((b) => b.id === 'chaz')!.id}
+            billionaireId={DEFAULT_BILLIONAIRE_ID}
           />
 
           {/* Play Area - Center of board */}
