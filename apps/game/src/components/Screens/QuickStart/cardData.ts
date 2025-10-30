@@ -43,6 +43,6 @@ export const cardFeatures: Omit<CardFeatureProps, 'className'>[] = [
   {
     cardTitle: 'Data Grab',
     cardImgSrc: dataGrab,
-    cardDesc: 'Quick!. Grab as many cards as you can!',
+    cardDesc: 'Quick! Grab as many cards as you can!',
   },
 ];
