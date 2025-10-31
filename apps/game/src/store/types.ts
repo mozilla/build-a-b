@@ -18,6 +18,11 @@ export type GameStore = {
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
 
+  // Launch Stack Collections - Cards removed from playable decks when collected
+  // These count towards player's total cards but cannot be played
+  playerLaunchStacks: Card[]; // Launch Stack cards player has collected
+  cpuLaunchStacks: Card[]; // Launch Stack cards CPU has collected
+
   // Turn State - Stable throughout turn lifecycle
   playerTurnState: 'normal' | 'tracker' | 'blocker';
   cpuTurnState: 'normal' | 'tracker' | 'blocker';
