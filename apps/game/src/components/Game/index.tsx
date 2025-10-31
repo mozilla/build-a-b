@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
+import { DebugUI } from '../DebugUI';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
@@ -229,6 +230,9 @@ export function Game() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Debug UI */}
+        <DebugUI />
       </Board>
     </div>
   );
