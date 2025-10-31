@@ -15,7 +15,7 @@ import {
   isEffectBlocked,
   shouldTriggerDataWar,
 } from '../utils/card-comparison';
-import { initializeGameDeck } from '../utils/deck-builder';
+import { initializeGameDeck, shuffleDeck } from '../utils/deck-builder';
 import type { GameStore } from './types';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
@@ -43,6 +43,8 @@ export const useGameStore = create<GameStore>()(
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      playerLaunchStacks: [], // Launch Stack cards player has collected
+      cpuLaunchStacks: [], // Launch Stack cards CPU has collected
       playerTurnState: 'normal',
       cpuTurnState: 'normal',
       openWhatYouWantActive: null,
@@ -85,6 +87,8 @@ export const useGameStore = create<GameStore>()(
           anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
+          playerLaunchStacks: [],
+          cpuLaunchStacks: [],
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
         });
@@ -208,11 +212,26 @@ export const useGameStore = create<GameStore>()(
         const player = get()[playerId];
         const newCount = player.launchStackCount + 1;
 
+        // Find the Launch Stack card that was just played
+        const launchStackCard = player.playedCard;
+        if (!launchStackCard || launchStackCard.specialType !== 'launch_stack') {
+          console.error('addLaunchStack called without a Launch Stack card being played');
+          return;
+        }
+
+        // Remove Launch Stack from cardsInPlay (it won't be collected by winner)
+        const updatedCardsInPlay = get().cardsInPlay.filter((c) => c.id !== launchStackCard.id);
+
+        // Add to player's Launch Stack collection
+        const launchStackKey = playerId === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+
         set({
           [playerId]: {
             ...player,
             launchStackCount: newCount,
           },
+          [launchStackKey]: [...get()[launchStackKey], launchStackCard],
+          cardsInPlay: updatedCardsInPlay,
         });
 
         // Check win condition
@@ -259,14 +278,22 @@ export const useGameStore = create<GameStore>()(
           return true;
         }
 
-        // Check if player has all cards
-        if (cpu.deck.length === 0 && cpu.playedCard === null) {
+        // Check if player has all cards (including Launch Stacks in collection)
+        if (
+          cpu.deck.length === 0 &&
+          cpu.playedCard === null &&
+          get().cpuLaunchStacks.length === 0
+        ) {
           set({ winner: 'player', winCondition: 'all_cards' });
           return true;
         }
 
-        // Check if CPU has all cards
-        if (player.deck.length === 0 && player.playedCard === null) {
+        // Check if CPU has all cards (including Launch Stacks in collection)
+        if (
+          player.deck.length === 0 &&
+          player.playedCard === null &&
+          get().playerLaunchStacks.length === 0
+        ) {
           set({ winner: 'cpu', winCondition: 'all_cards' });
           return true;
         }
@@ -622,11 +649,23 @@ export const useGameStore = create<GameStore>()(
 
       removeLaunchStacks: (playerId, count) => {
         const player = get()[playerId];
+        const launchStackKey = playerId === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const launchStacks = get()[launchStackKey];
+
+        // Take the Launch Stack cards to return (up to count)
+        const cardsToReturn = launchStacks.slice(0, count);
+        const remainingLaunchStacks = launchStacks.slice(count);
+
+        // Shuffle the cards back into the player's deck randomly
+        const newDeck = shuffleDeck([...player.deck, ...cardsToReturn]);
+
         set({
           [playerId]: {
             ...player,
             launchStackCount: Math.max(0, player.launchStackCount - count),
+            deck: newDeck,
           },
+          [launchStackKey]: remainingLaunchStacks,
         });
       },
 
@@ -772,6 +811,8 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,
+          playerLaunchStacks: [],
+          cpuLaunchStacks: [],
           isPaused: false,
           showMenu: false,
           showHandViewer: false,
