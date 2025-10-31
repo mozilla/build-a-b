@@ -199,7 +199,19 @@ export function useGameLogic() {
   const handleCompareTurn = () => {
     const store = useGameStore.getState();
 
-    // IMPORTANT: Check if either card triggers "another play" FIRST
+    // PRIORITY CHECK: Hostile Takeover ignores all trackers/blockers/ties
+    // If Hostile Takeover is played, skip straight to Data War
+    const hostileTakeoverPlayed =
+      store.player.playedCard?.specialType === 'hostile_takeover' ||
+      store.cpu.playedCard?.specialType === 'hostile_takeover';
+
+    if (hostileTakeoverPlayed) {
+      // Hostile Takeover always triggers Data War, ignoring all other effects
+      actorRef.send({ type: 'TIE' });
+      return;
+    }
+
+    // IMPORTANT: Check if either card triggers "another play"
     // This must happen before checking for ties/Data War
     const playerTriggersAnother =
       store.player.playedCard &&
