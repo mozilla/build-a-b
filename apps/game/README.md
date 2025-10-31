@@ -78,6 +78,23 @@ This starts the Vite dev server at `http://localhost:5173` with:
 - React Fast Refresh with React Compiler enabled
 - Base path set to `/` for local development
 
+### Developer Tools
+
+#### Debug UI
+
+A built-in debug tool for testing specific card scenarios:
+
+- **Key Sequence**: Type `debug` anywhere in the game
+- **Purpose**: Manually compose specific card sequences for player and CPU decks
+
+**Quick Usage:**
+
+1. Type `debug` to open the debug panel
+2. Search and select cards for player and/or CPU decks
+3. Click "Initialize Game" to restart with your custom deck composition
+4. Selected cards appear at the top of each deck in order
+5. Remaining slots filled randomly from the card pool
+
 ## Build Process
 
 ### Automated Build (Recommended)
