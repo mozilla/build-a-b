@@ -84,12 +84,12 @@ This starts the Vite dev server at `http://localhost:5173` with:
 
 A built-in debug tool for testing specific card scenarios:
 
-- **Key Sequence**: Type `debug` anywhere in the game
+- **Key Sequence**: Press arrow keys in the following order: `Up` `Up` `Down` `Down`
 - **Purpose**: Manually compose specific card sequences for player and CPU decks
 
 **Quick Usage:**
 
-1. Type `debug` to open the debug panel
+1. Press `Up` `Up` `Down` `Down` to open the debug panel
 2. Search and select cards for player and/or CPU decks
 3. Click "Initialize Game" to restart with your custom deck composition
 4. Selected cards appear at the top of each deck in order

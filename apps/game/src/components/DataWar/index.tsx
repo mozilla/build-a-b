@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { useGameStore } from '../../store/game-store';
 import { useGame } from '../../hooks/use-game';
 import { Card } from '../Card';
 import { DeckPile } from '../DeckPile';
@@ -6,6 +7,12 @@ import type { BaseScreenProps } from '../ScreenRenderer';
 
 export const DataWar: FC<BaseScreenProps> = () => {
   const { player, cpu, playCard } = useGame();
+  const playerLaunchStacks = useGameStore((state) => state.playerLaunchStacks);
+  const cpuLaunchStacks = useGameStore((state) => state.cpuLaunchStacks);
+
+  // Total cards owned = playable deck + collected Launch Stacks
+  const playerTotalCards = player.deck.length + playerLaunchStacks.length;
+  const cpuTotalCards = cpu.deck.length + cpuLaunchStacks.length;
 
   const handlePlayerDeckClick = () => {
     playCard('player');
@@ -18,7 +25,7 @@ export const DataWar: FC<BaseScreenProps> = () => {
   return (
     <div className="flex flex-col justify-between items-center flex-1">
       {/* CPU Deck (top) */}
-      <DeckPile cardCount={cpu.deck.length} owner="cpu" onClick={handleCpuDeckClick} />
+      <DeckPile cardCount={cpuTotalCards} owner="cpu" onClick={handleCpuDeckClick} />
 
       {/* Play Area - Center of board */}
       <div className="flex flex-col items-center justify-around flex-1 relative mb-4">
@@ -34,7 +41,7 @@ export const DataWar: FC<BaseScreenProps> = () => {
       </div>
 
       {/* Player Deck (bottom) */}
-      <DeckPile cardCount={player.deck.length} owner="player" onClick={handlePlayerDeckClick} />
+      <DeckPile cardCount={playerTotalCards} owner="player" onClick={handlePlayerDeckClick} />
     </div>
   );
 };

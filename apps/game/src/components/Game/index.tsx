@@ -43,6 +43,12 @@ export function Game() {
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const playerTurnState = useGameStore((state) => state.playerTurnState);
   const cpuTurnState = useGameStore((state) => state.cpuTurnState);
+  const playerLaunchStacks = useGameStore((state) => state.playerLaunchStacks);
+  const cpuLaunchStacks = useGameStore((state) => state.cpuLaunchStacks);
+
+  // Total cards owned = playable deck + collected Launch Stacks
+  const playerTotalCards = player.deck.length + playerLaunchStacks.length;
+  const cpuTotalCards = cpu.deck.length + cpuLaunchStacks.length;
 
   // Check if decks are visually swapped (they stay in swapped positions after animation)
   const isSwapped = deckSwapCount % 2 === 1;
@@ -139,7 +145,7 @@ export function Game() {
       <Board bgSrc={backgroundImage}>
         <div className="flex flex-col justify-between items-center flex-1 max-w-[25rem] max-h-[54rem]">
           <PlayerDeck
-            deckLength={cpu.deck.length}
+            deckLength={cpuTotalCards}
             handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
             turnValue={cpu.currentTurnValue}
             turnValueState={cpuTurnState}
@@ -165,7 +171,7 @@ export function Game() {
           </div>
 
           <PlayerDeck
-            deckLength={player.deck.length}
+            deckLength={playerTotalCards}
             handleDeckClick={bottomDeckCanClick ? handleDeckClick : undefined}
             turnValue={player.currentTurnValue}
             turnValueState={playerTurnState}
