@@ -24,6 +24,10 @@ export const ANIMATION_DURATIONS = {
 
   // UI transitions
   UI_TRANSITION_DELAY: 300,     // General UI transition/navigation delay
+
+  // Special card effects
+  FORCED_EMPATHY_SWAP_DURATION: 1000,    // Deck swap animation duration
+  FORCED_EMPATHY_SWAP_DELAY: 1500,    // Deck swap animation delay
 } as const;
 
 export type AnimationDuration = keyof typeof ANIMATION_DURATIONS;

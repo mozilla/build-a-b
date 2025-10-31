@@ -5,111 +5,18 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { useShallow } from 'zustand/shallow';
-import type { Card, Player, PlayerType, PreRevealEffect, SpecialEffect } from '../types';
-import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deck-builder';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import type { Card, Player, PlayerType, SpecialEffect } from '../types';
 import {
-  compareCards,
-  applyTrackerModifier,
   applyBlockerModifier,
+  applyTrackerModifier,
+  compareCards,
   isEffectBlocked,
   shouldTriggerDataWar,
 } from '../utils/card-comparison';
-
-interface GameStore {
-  // Player State
-  player: Player;
-  cpu: Player;
-
-  // Game State
-  cardsInPlay: Card[];
-  activePlayer: PlayerType;
-  anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
-  pendingEffects: SpecialEffect[];
-  preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
-  preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
-  trackerSmackerActive: PlayerType | null;
-  winner: PlayerType | null;
-  winCondition: 'all_cards' | 'launch_stacks' | null;
-
-  // Open What You Want State
-  openWhatYouWantActive: PlayerType | null;
-  openWhatYouWantCards: Card[]; // Top 3 cards for selection
-  showOpenWhatYouWantModal: boolean;
-  showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
-
-  // UI State
-  selectedBillionaire: string;
-  selectedBackground: string;
-  isPaused: boolean;
-  showMenu: boolean;
-  showHandViewer: boolean;
-  handViewerPlayer: PlayerType;
-  showInstructions: boolean;
-  audioEnabled: boolean;
-  showTooltip: boolean;
-
-  // Actions - Game Logic
-  initializeGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy,
-    mirrorDecks?: boolean,
-    orderBeforeDealing?: boolean,
-  ) => void;
-  playCard: (playerId: PlayerType) => void;
-  collectCards: (winnerId: PlayerType, cards: Card[]) => void;
-  addLaunchStack: (playerId: PlayerType) => void;
-  swapDecks: () => void;
-  stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
-  checkWinCondition: () => boolean;
-  setActivePlayer: (playerId: PlayerType) => void;
-  setAnotherPlayMode: (enabled: boolean) => void;
-
-  // Actions - Turn Resolution
-  resolveTurn: () => PlayerType | 'tie';
-  collectCardsAfterEffects: (winner: PlayerType | 'tie') => void;
-  applyTrackerEffect: (playerId: PlayerType, trackerCard: Card) => void;
-  applyBlockerEffect: (playerId: PlayerType, blockerCard: Card) => void;
-  checkForDataWar: () => boolean;
-  handleCardEffect: (card: Card, playedBy: PlayerType) => void;
-
-  // Actions - Special Effects
-  addPendingEffect: (effect: SpecialEffect) => void;
-  clearPendingEffects: () => void;
-  processPendingEffects: (winner: PlayerType | 'tie') => void;
-  addPreRevealEffect: (effect: PreRevealEffect) => void;
-  clearPreRevealEffects: () => void;
-  hasPreRevealEffects: () => boolean;
-  setPreRevealProcessed: (processed: boolean) => void;
-  setTrackerSmackerActive: (playerId: PlayerType | null) => void;
-  stealLaunchStack: (from: PlayerType, to: PlayerType) => void;
-  removeLaunchStacks: (playerId: PlayerType, count: number) => void;
-  reorderTopCards: (playerId: PlayerType, cards: Card[]) => void;
-
-  // Open What You Want Actions
-  setOpenWhatYouWantActive: (playerId: PlayerType | null) => void;
-  prepareOpenWhatYouWantCards: (playerId: PlayerType) => void;
-  playSelectedCardFromOWYW: (selectedCard: Card) => void;
-  setShowOpenWhatYouWantModal: (show: boolean) => void;
-  setShowOpenWhatYouWantAnimation: (show: boolean) => void;
-
-  // Actions - UI
-  selectBillionaire: (billionaire: string) => void;
-  selectBackground: (background: string) => void;
-  togglePause: () => void;
-  toggleMenu: () => void;
-  toggleHandViewer: (player?: PlayerType) => void;
-  toggleAudio: () => void;
-  toggleInstructions: () => void;
-  setShowTooltip: (show: boolean) => void;
-  resetGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy,
-    mirrorDecks?: boolean,
-    orderBeforeDealing?: boolean,
-  ) => void;
-}
+import { initializeGameDeck } from '../utils/deck-builder';
+import type { GameStore } from './types';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
   id,
@@ -136,10 +43,14 @@ export const useGameStore = create<GameStore>()(
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      playerTurnState: 'normal',
+      cpuTurnState: 'normal',
       openWhatYouWantActive: null,
       openWhatYouWantCards: [],
       showOpenWhatYouWantModal: false,
       showOpenWhatYouWantAnimation: false,
+      forcedEmpathySwapping: false,
+      deckSwapCount: 0, // Tracks number of forced empathy swaps (odd = swapped, even = normal)
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -154,15 +65,15 @@ export const useGameStore = create<GameStore>()(
       initializeGame: (
         playerStrategy = 'random',
         cpuStrategy = 'random',
-        mirrorDecks = false,
-        orderBeforeDealing = false,
+        playerCustomOrder,
+        cpuCustomOrder,
       ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          mirrorDecks,
-          orderBeforeDealing,
+          playerCustomOrder,
+          cpuCustomOrder,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -174,6 +85,8 @@ export const useGameStore = create<GameStore>()(
           anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
+          forcedEmpathySwapping: false,
+          deckSwapCount: 0,
         });
       },
 
@@ -191,18 +104,50 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
+        const opponentId = playerId === 'player' ? 'cpu' : 'player';
+
+        /**
+         * Helper: Determines if a tracker/blocker card's effect should be negated
+         * Effects are negated if:
+         * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
+         * 2. Hostile Takeover is in play (ignores ALL trackers/blockers from both players)
+         */
+        const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
+          if (cardType !== 'tracker' && cardType !== 'blocker') {
+            return false;
+          }
+
+          // Check if blocked by Tracker Smacker
+          const blockedBySmacker = isEffectBlocked(get().trackerSmackerActive, playerId);
+
+          // Check if Hostile Takeover is in play (either player)
+          const { player: p, cpu: c } = get();
+          const hostileTakeoverInPlay =
+            p.playedCard?.specialType === 'hostile_takeover' ||
+            c.playedCard?.specialType === 'hostile_takeover';
+
+          return blockedBySmacker || hostileTakeoverInPlay;
+        };
+
+        // Determine if this card's value should be negated
+        const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
+
+        // Calculate the effective card value (0 if negated, otherwise normal value)
+        const effectiveCardValue = shouldNegateValue ? 0 : card.value;
+
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
         const newTurnValue = get().anotherPlayMode
-          ? playerState.currentTurnValue + card.value
-          : card.value;
+          ? playerState.currentTurnValue + effectiveCardValue
+          : effectiveCardValue;
 
         const newPlayedCardsInHand = [
           ...playerState.playedCardsInHand,
           { card, isFaceDown: false },
         ];
 
-        set({
+        // Determine turn states based on card effects
+        const updates: Partial<GameStore> = {
           [playerId]: {
             ...playerState,
             playedCard: card,
@@ -211,7 +156,23 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: newTurnValue,
           },
           cardsInPlay: [...get().cardsInPlay, card],
-        });
+        };
+
+        // Set turn state for tracker (affects own turn value display)
+        // Only set if not negated
+        if (card.specialType === 'tracker' && !shouldNegateValue) {
+          const turnStateKey = playerId === 'player' ? 'playerTurnState' : 'cpuTurnState';
+          updates[turnStateKey] = 'tracker';
+        }
+
+        // Set turn state for blocker (affects opponent's turn value display)
+        // Only set if not negated
+        if (card.specialType === 'blocker' && !shouldNegateValue) {
+          const turnStateKey = opponentId === 'player' ? 'playerTurnState' : 'cpuTurnState';
+          updates[turnStateKey] = 'blocker';
+        }
+
+        set(updates);
       },
 
       collectCards: (winnerId, cards) => {
@@ -225,6 +186,9 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: 0,
           },
           cardsInPlay: [],
+          // Reset turn states for new turn
+          playerTurnState: 'normal',
+          cpuTurnState: 'normal',
         });
 
         // Also clear the loser's played card and hand stack
@@ -259,9 +223,19 @@ export const useGameStore = create<GameStore>()(
 
       swapDecks: () => {
         const { player, cpu } = get();
+        // Swap ONLY the deck arrays between player and cpu
+        // Visual positions stay the same after animation: bottom = player, top = cpu
+        // launchStackCount, points, and current turn state do NOT swap
+        // The visual animation + data swap results in correct final positions
         set({
-          player: { ...player, deck: cpu.deck },
-          cpu: { ...cpu, deck: player.deck },
+          player: {
+            ...player,
+            deck: cpu.deck,
+          },
+          cpu: {
+            ...cpu,
+            deck: player.deck,
+          },
         });
       },
 
@@ -430,9 +404,19 @@ export const useGameStore = create<GameStore>()(
               // Tracker effect is allowed (will trigger another play)
             }
             break;
-          case 'blocker':
-            get().applyBlockerEffect(playedBy, card);
+          case 'blocker': {
+            // Check if Hostile Takeover is in play - if so, ignore blocker effect
+            const { player: p, cpu: c } = get();
+            const hostileTakeoverInPlay =
+              p.playedCard?.specialType === 'hostile_takeover' ||
+              c.playedCard?.specialType === 'hostile_takeover';
+
+            if (!hostileTakeoverInPlay) {
+              get().applyBlockerEffect(playedBy, card);
+            }
+            // If Hostile Takeover is in play, blocker effect is completely ignored
             break;
+          }
           case 'launch_stack':
             get().addLaunchStack(playedBy);
             break;
@@ -440,7 +424,18 @@ export const useGameStore = create<GameStore>()(
             get().setTrackerSmackerActive(playedBy);
             break;
           case 'forced_empathy':
-            get().swapDecks();
+            // Trigger animation - this will visually swap the decks
+            get().setForcedEmpathySwapping(true);
+
+            // Wait for message (800ms) + animation (1500ms) = 2300ms total
+            // This gives users time to see "Forced Empathy!" message and understand what's happening
+            setTimeout(() => {
+              get().swapDecks();
+              // Increment swap count to track position (odd = swapped, even = normal)
+              set({ deckSwapCount: get().deckSwapCount + 1 });
+              // Reset animation state - decks stay in swapped positions with new owners
+              get().setForcedEmpathySwapping(false);
+            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION + 800);
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -473,6 +468,38 @@ export const useGameStore = create<GameStore>()(
 
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
+
+        // Immediately recalculate turn values for any blocked tracker/blocker cards
+        // This handles the case where Tracker Smacker is played in the same turn as opponent's tracker
+        const { player, cpu } = get();
+
+        // Check if player's card should be negated
+        if (player.playedCard) {
+          const isPlayerBlocked = isEffectBlocked(playerId, 'player');
+          if (isPlayerBlocked && (player.playedCard.specialType === 'tracker' || player.playedCard.specialType === 'blocker')) {
+            set({
+              player: {
+                ...player,
+                currentTurnValue: 0,
+              },
+              playerTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
+
+        // Check if CPU's card should be negated
+        if (cpu.playedCard) {
+          const isCpuBlocked = isEffectBlocked(playerId, 'cpu');
+          if (isCpuBlocked && (cpu.playedCard.specialType === 'tracker' || cpu.playedCard.specialType === 'blocker')) {
+            set({
+              cpu: {
+                ...cpu,
+                currentTurnValue: 0,
+              },
+              cpuTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
       },
 
       processPendingEffects: (winner) => {
@@ -669,6 +696,11 @@ export const useGameStore = create<GameStore>()(
         set({ showOpenWhatYouWantAnimation: show });
       },
 
+      // Forced Empathy Actions
+      setForcedEmpathySwapping: (swapping) => {
+        set({ forcedEmpathySwapping: swapping });
+      },
+
       // UI Actions
       selectBillionaire: (billionaire) => {
         set({
@@ -718,15 +750,15 @@ export const useGameStore = create<GameStore>()(
       resetGame: (
         playerStrategy = 'random',
         cpuStrategy = 'random',
-        mirrorDecks = false,
-        orderBeforeDealing = false,
+        playerCustomOrder,
+        cpuCustomOrder,
       ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          mirrorDecks,
-          orderBeforeDealing,
+          playerCustomOrder,
+          cpuCustomOrder,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -744,33 +776,11 @@ export const useGameStore = create<GameStore>()(
           showMenu: false,
           showHandViewer: false,
           showTooltip: false,
+          forcedEmpathySwapping: false,
+          deckSwapCount: 0,
         });
       },
     }),
     { name: 'DataWarGame' },
   ),
 );
-
-// Selector hooks for better performance
-export const usePlayer = () => useGameStore((state) => state.player);
-export const useCPU = () => useGameStore((state) => state.cpu);
-export const useCardsInPlay = () => useGameStore((state) => state.cardsInPlay);
-export const useWinner = () => useGameStore((state) => state.winner);
-export const useUIState = () =>
-  useGameStore((state) => ({
-    isPaused: state.isPaused,
-    showMenu: state.showMenu,
-    showHandViewer: state.showHandViewer,
-    showInstructions: state.showInstructions,
-    audioEnabled: state.audioEnabled,
-    showTooltip: state.showTooltip,
-  }));
-export const useOpenWhatYouWantState = () =>
-  useGameStore(
-    useShallow((state) => ({
-      isActive: state.openWhatYouWantActive,
-      cards: state.openWhatYouWantCards,
-      showModal: state.showOpenWhatYouWantModal,
-      showAnimation: state.showOpenWhatYouWantAnimation,
-    })),
-  );

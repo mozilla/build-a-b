@@ -3,7 +3,7 @@ import { type FC, useState } from 'react';
 import { BillionaireCard } from '@/components/BillionaireCard';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
