@@ -104,11 +104,42 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
+        const opponentId = playerId === 'player' ? 'cpu' : 'player';
+
+        /**
+         * Helper: Determines if a tracker/blocker card's effect should be negated
+         * Effects are negated if:
+         * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
+         * 2. Hostile Takeover is in play (ignores ALL trackers/blockers from both players)
+         */
+        const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
+          if (cardType !== 'tracker' && cardType !== 'blocker') {
+            return false;
+          }
+
+          // Check if blocked by Tracker Smacker
+          const blockedBySmacker = isEffectBlocked(get().trackerSmackerActive, playerId);
+
+          // Check if Hostile Takeover is in play (either player)
+          const { player: p, cpu: c } = get();
+          const hostileTakeoverInPlay =
+            p.playedCard?.specialType === 'hostile_takeover' ||
+            c.playedCard?.specialType === 'hostile_takeover';
+
+          return blockedBySmacker || hostileTakeoverInPlay;
+        };
+
+        // Determine if this card's value should be negated
+        const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
+
+        // Calculate the effective card value (0 if negated, otherwise normal value)
+        const effectiveCardValue = shouldNegateValue ? 0 : card.value;
+
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
         const newTurnValue = get().anotherPlayMode
-          ? playerState.currentTurnValue + card.value
-          : card.value;
+          ? playerState.currentTurnValue + effectiveCardValue
+          : effectiveCardValue;
 
         const newPlayedCardsInHand = [
           ...playerState.playedCardsInHand,
@@ -116,7 +147,6 @@ export const useGameStore = create<GameStore>()(
         ];
 
         // Determine turn states based on card effects
-        const opponentId = playerId === 'player' ? 'cpu' : 'player';
         const updates: Partial<GameStore> = {
           [playerId]: {
             ...playerState,
@@ -129,13 +159,15 @@ export const useGameStore = create<GameStore>()(
         };
 
         // Set turn state for tracker (affects own turn value display)
-        if (card.specialType === 'tracker') {
+        // Only set if not negated
+        if (card.specialType === 'tracker' && !shouldNegateValue) {
           const turnStateKey = playerId === 'player' ? 'playerTurnState' : 'cpuTurnState';
           updates[turnStateKey] = 'tracker';
         }
 
         // Set turn state for blocker (affects opponent's turn value display)
-        if (card.specialType === 'blocker') {
+        // Only set if not negated
+        if (card.specialType === 'blocker' && !shouldNegateValue) {
           const turnStateKey = opponentId === 'player' ? 'playerTurnState' : 'cpuTurnState';
           updates[turnStateKey] = 'blocker';
         }
@@ -372,9 +404,19 @@ export const useGameStore = create<GameStore>()(
               // Tracker effect is allowed (will trigger another play)
             }
             break;
-          case 'blocker':
-            get().applyBlockerEffect(playedBy, card);
+          case 'blocker': {
+            // Check if Hostile Takeover is in play - if so, ignore blocker effect
+            const { player: p, cpu: c } = get();
+            const hostileTakeoverInPlay =
+              p.playedCard?.specialType === 'hostile_takeover' ||
+              c.playedCard?.specialType === 'hostile_takeover';
+
+            if (!hostileTakeoverInPlay) {
+              get().applyBlockerEffect(playedBy, card);
+            }
+            // If Hostile Takeover is in play, blocker effect is completely ignored
             break;
+          }
           case 'launch_stack':
             get().addLaunchStack(playedBy);
             break;
@@ -426,6 +468,38 @@ export const useGameStore = create<GameStore>()(
 
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
+
+        // Immediately recalculate turn values for any blocked tracker/blocker cards
+        // This handles the case where Tracker Smacker is played in the same turn as opponent's tracker
+        const { player, cpu } = get();
+
+        // Check if player's card should be negated
+        if (player.playedCard) {
+          const isPlayerBlocked = isEffectBlocked(playerId, 'player');
+          if (isPlayerBlocked && (player.playedCard.specialType === 'tracker' || player.playedCard.specialType === 'blocker')) {
+            set({
+              player: {
+                ...player,
+                currentTurnValue: 0,
+              },
+              playerTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
+
+        // Check if CPU's card should be negated
+        if (cpu.playedCard) {
+          const isCpuBlocked = isEffectBlocked(playerId, 'cpu');
+          if (isCpuBlocked && (cpu.playedCard.specialType === 'tracker' || cpu.playedCard.specialType === 'blocker')) {
+            set({
+              cpu: {
+                ...cpu,
+                currentTurnValue: 0,
+              },
+              cpuTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
       },
 
       processPendingEffects: (winner) => {
