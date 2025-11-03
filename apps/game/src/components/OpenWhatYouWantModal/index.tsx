@@ -4,7 +4,7 @@ import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
-import { useGameStore, useOpenWhatYouWantState } from '../../stores/game-store';
+import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
 import { Button, Text } from '@/components';
 

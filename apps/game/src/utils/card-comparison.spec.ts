@@ -27,6 +27,7 @@ const createMockPlayer = (
   currentTurnValue,
   launchStackCount: 0,
   playedCardsInHand: [],
+  activeEffects: []
 });
 
 // Helper to create mock cards
@@ -42,6 +43,7 @@ const createMockCard = (
   isSpecial: !!specialType,
   specialType: specialType,
   triggersAnotherPlay,
+  name: 'test',
 });
 
 describe('cardComparison', () => {

@@ -16,6 +16,9 @@ export type GamePhase =
   | 'vs_animation' // Head-to-head VS takeover animation
   | 'ready' // Ready to start turn (tap deck prompt)
   | 'revealing' // Cards being revealed
+  | 'effect_notification.checking' // Effect notification: checking for unseen effects
+  | 'effect_notification.showing' // Effect notification: displaying effect badge and modal
+  | 'effect_notification.transitioning' // Effect notification: delay before comparing
   | 'comparing' // Values being compared
   | 'data_war.animating' // Data War: showing "DATA WAR!" animation
   | 'data_war.reveal_face_down' // Data War: tap to reveal 3 face-down cards
@@ -36,6 +39,12 @@ export interface PlayedCardState {
   isFaceDown: boolean; // True for Data War face-down cards
 }
 
+export interface ActiveEffect {
+  type: 'tracker' | 'blocker';
+  value: number; // The modifier value
+  source: PlayerType; // Who applied this effect
+}
+
 export interface Player {
   id: PlayerType;
   name: string;
@@ -45,6 +54,7 @@ export interface Player {
   currentTurnValue: number; // Calculated value for current turn (base + modifiers)
   launchStackCount: number; // Number of launch stacks collected (0-3)
   billionaireCharacter?: string; // Selected billionaire (player only)
+  activeEffects: ActiveEffect[]; // Active effects for this player (for stacked display)
 }
 
 export interface SpecialEffect {
@@ -64,6 +74,14 @@ export interface PreRevealEffect {
 export interface DataWarState {
   isActive: boolean;
   faceDownRevealed: boolean; // Have 3 face-down cards been revealed?
+}
+
+export interface EffectNotification {
+  card: Card;
+  playedBy: PlayerType;
+  effectType: string; // e.g., 'tracker', 'blocker', 'hostile_takeover'
+  effectName: string; // e.g., 'Cursed Cursor', 'Enhanced Tracking Protection'
+  effectDescription: string; // Full description from card data
 }
 
 export interface GameState {

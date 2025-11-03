@@ -1,14 +1,14 @@
 import { type FC, useState } from 'react';
 
 import { BillionaireCard } from '@/components/BillionaireCard';
-import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-import { useGameStore } from '@/stores/game-store';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 
-import { BILLIONAIRES, type Billionaire } from '@/config/billionaires';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { BILLIONAIRES, type Billionaire } from '@/config/billionaires';
+import { motion } from 'framer-motion';
 import { Drawer } from './Drawer';
 import { selectBillionaireMicrocopy } from './microcopy';
 
@@ -43,7 +43,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
   };
 
   return (
-    <div className={cn(className)} {...props}>
+    <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
       <div className="w-full relative z-10 flex flex-col items-center justify-start gap-8 px-9 py-8 pt-16">
         {/* Title and Description */}
@@ -69,15 +69,10 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
               name={billionaire.name}
               imageSrc={billionaire.imageSrc}
               isSelected={localSelection === billionaire.id}
-              onClick={() => handleBillionaireClick(billionaire)}
+              onPress={() => handleBillionaireClick(billionaire)}
             />
           ))}
         </div>
-      </div>
-
-      {/* Close/Menu Icon - positioned at top right */}
-      <div className="absolute top-5 right-4">
-        <Icon name="close" />
       </div>
 
       {/* Drawer Modal */}
@@ -87,6 +82,6 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
         onClose={handleDrawerClose}
         onConfirm={handleDrawerConfirm}
       />
-    </div>
+    </motion.div>
   );
 };

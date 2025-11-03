@@ -4,7 +4,9 @@
 
 export type { Card, CardType, CardValue, SpecialCardType } from './card';
 export type {
+  ActiveEffect,
   DataWarState,
+  EffectNotification,
   GamePhase,
   GameState,
   Player,

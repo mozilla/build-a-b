@@ -5,111 +5,19 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { useShallow } from 'zustand/shallow';
-import type { Card, Player, PlayerType, PreRevealEffect, SpecialEffect } from '../types';
-import { initializeGameDeck, type DeckOrderStrategy } from '../utils/deck-builder';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import type { Card, EffectNotification, Player, PlayerType, SpecialEffect } from '../types';
 import {
-  compareCards,
-  applyTrackerModifier,
   applyBlockerModifier,
+  applyTrackerModifier,
+  compareCards,
   isEffectBlocked,
   shouldTriggerDataWar,
 } from '../utils/card-comparison';
-
-interface GameStore {
-  // Player State
-  player: Player;
-  cpu: Player;
-
-  // Game State
-  cardsInPlay: Card[];
-  activePlayer: PlayerType;
-  anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
-  pendingEffects: SpecialEffect[];
-  preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
-  preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
-  trackerSmackerActive: PlayerType | null;
-  winner: PlayerType | null;
-  winCondition: 'all_cards' | 'launch_stacks' | null;
-
-  // Open What You Want State
-  openWhatYouWantActive: PlayerType | null;
-  openWhatYouWantCards: Card[]; // Top 3 cards for selection
-  showOpenWhatYouWantModal: boolean;
-  showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
-
-  // UI State
-  selectedBillionaire: string;
-  selectedBackground: string;
-  isPaused: boolean;
-  showMenu: boolean;
-  showHandViewer: boolean;
-  handViewerPlayer: PlayerType;
-  showInstructions: boolean;
-  audioEnabled: boolean;
-  showTooltip: boolean;
-
-  // Actions - Game Logic
-  initializeGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy,
-    mirrorDecks?: boolean,
-    orderBeforeDealing?: boolean,
-  ) => void;
-  playCard: (playerId: PlayerType) => void;
-  collectCards: (winnerId: PlayerType, cards: Card[]) => void;
-  addLaunchStack: (playerId: PlayerType) => void;
-  swapDecks: () => void;
-  stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
-  checkWinCondition: () => boolean;
-  setActivePlayer: (playerId: PlayerType) => void;
-  setAnotherPlayMode: (enabled: boolean) => void;
-
-  // Actions - Turn Resolution
-  resolveTurn: () => PlayerType | 'tie';
-  collectCardsAfterEffects: (winner: PlayerType | 'tie') => void;
-  applyTrackerEffect: (playerId: PlayerType, trackerCard: Card) => void;
-  applyBlockerEffect: (playerId: PlayerType, blockerCard: Card) => void;
-  checkForDataWar: () => boolean;
-  handleCardEffect: (card: Card, playedBy: PlayerType) => void;
-
-  // Actions - Special Effects
-  addPendingEffect: (effect: SpecialEffect) => void;
-  clearPendingEffects: () => void;
-  processPendingEffects: (winner: PlayerType | 'tie') => void;
-  addPreRevealEffect: (effect: PreRevealEffect) => void;
-  clearPreRevealEffects: () => void;
-  hasPreRevealEffects: () => boolean;
-  setPreRevealProcessed: (processed: boolean) => void;
-  setTrackerSmackerActive: (playerId: PlayerType | null) => void;
-  stealLaunchStack: (from: PlayerType, to: PlayerType) => void;
-  removeLaunchStacks: (playerId: PlayerType, count: number) => void;
-  reorderTopCards: (playerId: PlayerType, cards: Card[]) => void;
-
-  // Open What You Want Actions
-  setOpenWhatYouWantActive: (playerId: PlayerType | null) => void;
-  prepareOpenWhatYouWantCards: (playerId: PlayerType) => void;
-  playSelectedCardFromOWYW: (selectedCard: Card) => void;
-  setShowOpenWhatYouWantModal: (show: boolean) => void;
-  setShowOpenWhatYouWantAnimation: (show: boolean) => void;
-
-  // Actions - UI
-  selectBillionaire: (billionaire: string) => void;
-  selectBackground: (background: string) => void;
-  togglePause: () => void;
-  toggleMenu: () => void;
-  toggleHandViewer: (player?: PlayerType) => void;
-  toggleAudio: () => void;
-  toggleInstructions: () => void;
-  setShowTooltip: (show: boolean) => void;
-  resetGame: (
-    playerStrategy?: DeckOrderStrategy,
-    cpuStrategy?: DeckOrderStrategy,
-    mirrorDecks?: boolean,
-    orderBeforeDealing?: boolean,
-  ) => void;
-}
+import { initializeGameDeck, shuffleDeck } from '../utils/deck-builder';
+import { getEffectType, isSpecialCard, shouldShowEffectNotification } from '../utils/effect-helpers';
+import type { GameStore } from './types';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
   id,
@@ -119,6 +27,7 @@ const createInitialPlayer = (id: PlayerType): Player => ({
   playedCardsInHand: [],
   currentTurnValue: 0,
   launchStackCount: 0,
+  activeEffects: [],
 });
 
 export const useGameStore = create<GameStore>()(
@@ -136,10 +45,16 @@ export const useGameStore = create<GameStore>()(
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      playerLaunchStacks: [], // Launch Stack cards player has collected
+      cpuLaunchStacks: [], // Launch Stack cards CPU has collected
+      playerTurnState: 'normal',
+      cpuTurnState: 'normal',
       openWhatYouWantActive: null,
       openWhatYouWantCards: [],
       showOpenWhatYouWantModal: false,
       showOpenWhatYouWantAnimation: false,
+      forcedEmpathySwapping: false,
+      deckSwapCount: 0, // Tracks number of forced empathy swaps (odd = swapped, even = normal)
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -150,19 +65,31 @@ export const useGameStore = create<GameStore>()(
       audioEnabled: true,
       showTooltip: false,
 
+      // Effect Notification System
+      seenEffectTypes: new Set(JSON.parse(localStorage.getItem('seenEffectTypes') || '[]')),
+      pendingEffectNotifications: [],
+      currentEffectNotification: null,
+      showEffectNotificationBadge: false,
+      showEffectNotificationModal: false,
+      effectNotificationPersistence: 'localStorage',
+
+      // Tooltip System
+      seenTooltips: new Set(JSON.parse(localStorage.getItem('seenTooltips') || '[]')),
+      tooltipPersistence: 'localStorage',
+
       // Game Logic Actions
       initializeGame: (
         playerStrategy = 'random',
         cpuStrategy = 'random',
-        mirrorDecks = false,
-        orderBeforeDealing = false,
+        playerCustomOrder,
+        cpuCustomOrder,
       ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          mirrorDecks,
-          orderBeforeDealing,
+          playerCustomOrder,
+          cpuCustomOrder,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -174,6 +101,10 @@ export const useGameStore = create<GameStore>()(
           anotherPlayMode: false,
           pendingEffects: [],
           trackerSmackerActive: null,
+          playerLaunchStacks: [],
+          cpuLaunchStacks: [],
+          forcedEmpathySwapping: false,
+          deckSwapCount: 0,
         });
       },
 
@@ -191,18 +122,50 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
+        const opponentId = playerId === 'player' ? 'cpu' : 'player';
+
+        /**
+         * Helper: Determines if a tracker/blocker card's effect should be negated
+         * Effects are negated if:
+         * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
+         * 2. Hostile Takeover is in play (ignores ALL trackers/blockers from both players)
+         */
+        const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
+          if (cardType !== 'tracker' && cardType !== 'blocker') {
+            return false;
+          }
+
+          // Check if blocked by Tracker Smacker
+          const blockedBySmacker = isEffectBlocked(get().trackerSmackerActive, playerId);
+
+          // Check if Hostile Takeover is in play (either player)
+          const { player: p, cpu: c } = get();
+          const hostileTakeoverInPlay =
+            p.playedCard?.specialType === 'hostile_takeover' ||
+            c.playedCard?.specialType === 'hostile_takeover';
+
+          return blockedBySmacker || hostileTakeoverInPlay;
+        };
+
+        // Determine if this card's value should be negated
+        const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
+
+        // Calculate the effective card value (0 if negated, otherwise normal value)
+        const effectiveCardValue = shouldNegateValue ? 0 : card.value;
+
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
         const newTurnValue = get().anotherPlayMode
-          ? playerState.currentTurnValue + card.value
-          : card.value;
+          ? playerState.currentTurnValue + effectiveCardValue
+          : effectiveCardValue;
 
         const newPlayedCardsInHand = [
           ...playerState.playedCardsInHand,
           { card, isFaceDown: false },
         ];
 
-        set({
+        // Determine turn states based on card effects
+        const updates: Partial<GameStore> = {
           [playerId]: {
             ...playerState,
             playedCard: card,
@@ -211,7 +174,23 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: newTurnValue,
           },
           cardsInPlay: [...get().cardsInPlay, card],
-        });
+        };
+
+        // Set turn state for tracker (affects own turn value display)
+        // Only set if not negated
+        if (card.specialType === 'tracker' && !shouldNegateValue) {
+          const turnStateKey = playerId === 'player' ? 'playerTurnState' : 'cpuTurnState';
+          updates[turnStateKey] = 'tracker';
+        }
+
+        // Set turn state for blocker (affects opponent's turn value display)
+        // Only set if not negated
+        if (card.specialType === 'blocker' && !shouldNegateValue) {
+          const turnStateKey = opponentId === 'player' ? 'playerTurnState' : 'cpuTurnState';
+          updates[turnStateKey] = 'blocker';
+        }
+
+        set(updates);
       },
 
       collectCards: (winnerId, cards) => {
@@ -223,8 +202,12 @@ export const useGameStore = create<GameStore>()(
             playedCard: null,
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
+            activeEffects: [], // Clear active effects
           },
           cardsInPlay: [],
+          // Reset turn states for new turn
+          playerTurnState: 'normal',
+          cpuTurnState: 'normal',
         });
 
         // Also clear the loser's played card and hand stack
@@ -236,6 +219,7 @@ export const useGameStore = create<GameStore>()(
             playedCard: null,
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
+            activeEffects: [], // Clear active effects
           },
         });
       },
@@ -244,11 +228,26 @@ export const useGameStore = create<GameStore>()(
         const player = get()[playerId];
         const newCount = player.launchStackCount + 1;
 
+        // Find the Launch Stack card that was just played
+        const launchStackCard = player.playedCard;
+        if (!launchStackCard || launchStackCard.specialType !== 'launch_stack') {
+          console.error('addLaunchStack called without a Launch Stack card being played');
+          return;
+        }
+
+        // Remove Launch Stack from cardsInPlay (it won't be collected by winner)
+        const updatedCardsInPlay = get().cardsInPlay.filter((c) => c.id !== launchStackCard.id);
+
+        // Add to player's Launch Stack collection
+        const launchStackKey = playerId === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+
         set({
           [playerId]: {
             ...player,
             launchStackCount: newCount,
           },
+          [launchStackKey]: [...get()[launchStackKey], launchStackCard],
+          cardsInPlay: updatedCardsInPlay,
         });
 
         // Check win condition
@@ -259,9 +258,19 @@ export const useGameStore = create<GameStore>()(
 
       swapDecks: () => {
         const { player, cpu } = get();
+        // Swap ONLY the deck arrays between player and cpu
+        // Visual positions stay the same after animation: bottom = player, top = cpu
+        // launchStackCount, points, and current turn state do NOT swap
+        // The visual animation + data swap results in correct final positions
         set({
-          player: { ...player, deck: cpu.deck },
-          cpu: { ...cpu, deck: player.deck },
+          player: {
+            ...player,
+            deck: cpu.deck,
+          },
+          cpu: {
+            ...cpu,
+            deck: player.deck,
+          },
         });
       },
 
@@ -285,14 +294,22 @@ export const useGameStore = create<GameStore>()(
           return true;
         }
 
-        // Check if player has all cards
-        if (cpu.deck.length === 0 && cpu.playedCard === null) {
+        // Check if player has all cards (including Launch Stacks in collection)
+        if (
+          cpu.deck.length === 0 &&
+          cpu.playedCard === null &&
+          get().cpuLaunchStacks.length === 0
+        ) {
           set({ winner: 'player', winCondition: 'all_cards' });
           return true;
         }
 
-        // Check if CPU has all cards
-        if (player.deck.length === 0 && player.playedCard === null) {
+        // Check if CPU has all cards (including Launch Stacks in collection)
+        if (
+          player.deck.length === 0 &&
+          player.playedCard === null &&
+          get().playerLaunchStacks.length === 0
+        ) {
           set({ winner: 'cpu', winCondition: 'all_cards' });
           return true;
         }
@@ -354,10 +371,21 @@ export const useGameStore = create<GameStore>()(
         // Apply tracker modifier (add tracker value to turn total)
         const newValue = applyTrackerModifier(player.currentTurnValue, trackerCard);
 
+        // Add to active effects
+        const newActiveEffects = [
+          ...player.activeEffects,
+          {
+            type: 'tracker' as const,
+            value: trackerCard.value,
+            source: playerId,
+          },
+        ];
+
         set({
           [playerId]: {
             ...player,
             currentTurnValue: newValue,
+            activeEffects: newActiveEffects,
           },
         });
       },
@@ -367,18 +395,27 @@ export const useGameStore = create<GameStore>()(
         const opponentId = playerId === 'player' ? 'cpu' : 'player';
         const opponent = get()[opponentId];
 
-        // Check if effect is blocked by Tracker Smacker
-        if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
-          return;
-        }
+        // Note: Blocker cards are NOT affected by Tracker Smacker
+        // Tracker Smacker only blocks Trackers and Billionaire Move effects
 
         // Apply blocker modifier (subtract from opponent's turn value)
         const newValue = applyBlockerModifier(opponent.currentTurnValue, blockerCard);
+
+        // Add to opponent's active effects
+        const newActiveEffects = [
+          ...opponent.activeEffects,
+          {
+            type: 'blocker' as const,
+            value: blockerCard.value,
+            source: playerId,
+          },
+        ];
 
         set({
           [opponentId]: {
             ...opponent,
             currentTurnValue: newValue,
+            activeEffects: newActiveEffects,
           },
         });
       },
@@ -423,16 +460,23 @@ export const useGameStore = create<GameStore>()(
         // Handle specific effects
         switch (card.specialType) {
           case 'tracker':
-            // Tracker value is already added by playCard
-            // The "another play" trigger is handled in handleResolveTurn
-            // Check if effect is blocked by Tracker Smacker
-            if (!isEffectBlocked(get().trackerSmackerActive, playedBy)) {
-              // Tracker effect is allowed (will trigger another play)
+            // Apply tracker effect (adds to active effects and updates turn value)
+            // This is already protected by the Tracker Smacker check inside applyTrackerEffect
+            get().applyTrackerEffect(playedBy, card);
+            break;
+          case 'blocker': {
+            // Check if Hostile Takeover is in play - if so, ignore blocker effect
+            const { player: p, cpu: c } = get();
+            const hostileTakeoverInPlay =
+              p.playedCard?.specialType === 'hostile_takeover' ||
+              c.playedCard?.specialType === 'hostile_takeover';
+
+            if (!hostileTakeoverInPlay) {
+              get().applyBlockerEffect(playedBy, card);
             }
+            // If Hostile Takeover is in play, blocker effect is completely ignored
             break;
-          case 'blocker':
-            get().applyBlockerEffect(playedBy, card);
-            break;
+          }
           case 'launch_stack':
             get().addLaunchStack(playedBy);
             break;
@@ -440,7 +484,18 @@ export const useGameStore = create<GameStore>()(
             get().setTrackerSmackerActive(playedBy);
             break;
           case 'forced_empathy':
-            get().swapDecks();
+            // Trigger animation - this will visually swap the decks
+            get().setForcedEmpathySwapping(true);
+
+            // Wait for message (800ms) + animation (1500ms) = 2300ms total
+            // This gives users time to see "Forced Empathy!" message and understand what's happening
+            setTimeout(() => {
+              get().swapDecks();
+              // Increment swap count to track position (odd = swapped, even = normal)
+              set({ deckSwapCount: get().deckSwapCount + 1 });
+              // Reset animation state - decks stay in swapped positions with new owners
+              get().setForcedEmpathySwapping(false);
+            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION + 800);
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -473,6 +528,39 @@ export const useGameStore = create<GameStore>()(
 
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
+
+        // Immediately recalculate turn values for any blocked tracker cards
+        // This handles the case where Tracker Smacker is played in the same turn as opponent's tracker
+        // NOTE: Tracker Smacker only blocks TRACKERS and BILLIONAIRE MOVE effects, NOT blockers
+        const { player, cpu } = get();
+
+        // Check if player's card should be negated (only trackers)
+        if (player.playedCard) {
+          const isPlayerBlocked = isEffectBlocked(playerId, 'player');
+          if (isPlayerBlocked && player.playedCard.specialType === 'tracker') {
+            set({
+              player: {
+                ...player,
+                currentTurnValue: 0,
+              },
+              playerTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
+
+        // Check if CPU's card should be negated (only trackers)
+        if (cpu.playedCard) {
+          const isCpuBlocked = isEffectBlocked(playerId, 'cpu');
+          if (isCpuBlocked && cpu.playedCard.specialType === 'tracker') {
+            set({
+              cpu: {
+                ...cpu,
+                currentTurnValue: 0,
+              },
+              cpuTurnState: 'normal', // Reset to normal UI state
+            });
+          }
+        }
       },
 
       processPendingEffects: (winner) => {
@@ -595,11 +683,23 @@ export const useGameStore = create<GameStore>()(
 
       removeLaunchStacks: (playerId, count) => {
         const player = get()[playerId];
+        const launchStackKey = playerId === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const launchStacks = get()[launchStackKey];
+
+        // Take the Launch Stack cards to return (up to count)
+        const cardsToReturn = launchStacks.slice(0, count);
+        const remainingLaunchStacks = launchStacks.slice(count);
+
+        // Shuffle the cards back into the player's deck randomly
+        const newDeck = shuffleDeck([...player.deck, ...cardsToReturn]);
+
         set({
           [playerId]: {
             ...player,
             launchStackCount: Math.max(0, player.launchStackCount - count),
+            deck: newDeck,
           },
+          [launchStackKey]: remainingLaunchStacks,
         });
       },
 
@@ -669,6 +769,11 @@ export const useGameStore = create<GameStore>()(
         set({ showOpenWhatYouWantAnimation: show });
       },
 
+      // Forced Empathy Actions
+      setForcedEmpathySwapping: (swapping) => {
+        set({ forcedEmpathySwapping: swapping });
+      },
+
       // UI Actions
       selectBillionaire: (billionaire) => {
         set({
@@ -715,18 +820,195 @@ export const useGameStore = create<GameStore>()(
         set({ showTooltip: show });
       },
 
+      // Effect Notification Actions
+      markEffectAsSeen: (effectType) => {
+        const { seenEffectTypes, effectNotificationPersistence } = get();
+        const newSeenTypes = new Set(seenEffectTypes);
+        newSeenTypes.add(effectType);
+
+        set({ seenEffectTypes: newSeenTypes });
+
+        // Persist to localStorage if enabled
+        if (effectNotificationPersistence === 'localStorage') {
+          localStorage.setItem('seenEffectTypes', JSON.stringify(Array.from(newSeenTypes)));
+        }
+      },
+
+      hasSeenEffect: (effectType) => {
+        return get().seenEffectTypes.has(effectType);
+      },
+
+      hasUnseenEffectNotifications: () => {
+        const { player, cpu, hasSeenEffect } = get();
+
+        // Check player's played card
+        if (player.playedCard && isSpecialCard(player.playedCard)) {
+          const effectType = getEffectType(player.playedCard);
+          if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+            return true;
+          }
+        }
+
+        // Check CPU's played card
+        if (cpu.playedCard && isSpecialCard(cpu.playedCard)) {
+          const effectType = getEffectType(cpu.playedCard);
+          if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+
+      prepareEffectNotification: () => {
+        const { player, cpu, hasSeenEffect } = get();
+
+        // Collect ALL unseen notifications (priority: player first, then CPU)
+        const cards = [
+          { card: player.playedCard, playedBy: 'player' as PlayerType },
+          { card: cpu.playedCard, playedBy: 'cpu' as PlayerType },
+        ];
+
+        const notifications: EffectNotification[] = [];
+
+        for (const { card, playedBy } of cards) {
+          if (card && isSpecialCard(card)) {
+            const effectType = getEffectType(card);
+
+            if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+              notifications.push({
+                card,
+                playedBy,
+                effectType,
+                effectName: card.name,
+                effectDescription: card.specialActionDescription || '',
+              });
+            }
+          }
+        }
+
+        if (notifications.length > 0) {
+          // Set all pending notifications and show the first one
+          set({
+            pendingEffectNotifications: notifications,
+            currentEffectNotification: notifications[0],
+            showEffectNotificationBadge: true,
+          });
+        } else {
+          // No unseen notifications
+          set({
+            pendingEffectNotifications: [],
+            currentEffectNotification: null,
+            showEffectNotificationBadge: false,
+          });
+        }
+      },
+
+      dismissEffectNotification: () => {
+        const { currentEffectNotification, pendingEffectNotifications, markEffectAsSeen } = get();
+
+        if (currentEffectNotification) {
+          markEffectAsSeen(currentEffectNotification.effectType);
+        }
+
+        // Remove the current notification from the queue
+        const remainingNotifications = pendingEffectNotifications.slice(1);
+
+        if (remainingNotifications.length > 0) {
+          // Show the next notification
+          set({
+            pendingEffectNotifications: remainingNotifications,
+            currentEffectNotification: remainingNotifications[0],
+            showEffectNotificationModal: false, // Close modal, will reopen for next
+            showEffectNotificationBadge: true, // Keep badge visible for remaining notifications
+          });
+        } else {
+          // No more notifications
+          set({
+            pendingEffectNotifications: [],
+            currentEffectNotification: null,
+            showEffectNotificationBadge: false,
+            showEffectNotificationModal: false,
+          });
+        }
+      },
+
+      setShowEffectNotificationModal: (show) => {
+        set({ showEffectNotificationModal: show });
+      },
+
+      clearSeenEffects: () => {
+        set({ seenEffectTypes: new Set() });
+        localStorage.removeItem('seenEffectTypes');
+      },
+
+      setEffectNotificationPersistence: (mode) => {
+        set({ effectNotificationPersistence: mode });
+
+        if (mode === 'memory') {
+          // Clear localStorage if switching to memory mode
+          localStorage.removeItem('seenEffectTypes');
+        }
+      },
+
+      // Tooltip System Actions
+      markTooltipAsSeen: (tooltipId) => {
+        const { seenTooltips, tooltipPersistence } = get();
+        const newSeenTooltips = new Set(seenTooltips);
+        newSeenTooltips.add(tooltipId);
+
+        set({ seenTooltips: newSeenTooltips });
+
+        if (tooltipPersistence === 'localStorage') {
+          localStorage.setItem('seenTooltips', JSON.stringify(Array.from(newSeenTooltips)));
+        }
+      },
+
+      hasSeenTooltip: (tooltipId) => {
+        return get().seenTooltips.has(tooltipId);
+      },
+
+      shouldShowTooltip: (tooltipId) => {
+        return !get().hasSeenTooltip(tooltipId);
+      },
+
+      clearSeenTooltips: () => {
+        set({ seenTooltips: new Set() });
+        localStorage.removeItem('seenTooltips');
+      },
+
+      setTooltipPersistence: (mode) => {
+        set({ tooltipPersistence: mode });
+
+        if (mode === 'memory') {
+          localStorage.removeItem('seenTooltips');
+        }
+      },
+
+      // Active Effects Actions
+      clearActiveEffects: (playerId) => {
+        const playerState = get()[playerId];
+
+        set({
+          [playerId]: {
+            ...playerState,
+            activeEffects: [],
+          },
+        });
+      },
+
       resetGame: (
         playerStrategy = 'random',
         cpuStrategy = 'random',
-        mirrorDecks = false,
-        orderBeforeDealing = false,
+        playerCustomOrder,
+        cpuCustomOrder,
       ) => {
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
           cpuStrategy,
-          mirrorDecks,
-          orderBeforeDealing,
+          playerCustomOrder,
+          cpuCustomOrder,
         );
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
@@ -740,37 +1022,17 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,
+          playerLaunchStacks: [],
+          cpuLaunchStacks: [],
           isPaused: false,
           showMenu: false,
           showHandViewer: false,
           showTooltip: false,
+          forcedEmpathySwapping: false,
+          deckSwapCount: 0,
         });
       },
     }),
     { name: 'DataWarGame' },
   ),
 );
-
-// Selector hooks for better performance
-export const usePlayer = () => useGameStore((state) => state.player);
-export const useCPU = () => useGameStore((state) => state.cpu);
-export const useCardsInPlay = () => useGameStore((state) => state.cardsInPlay);
-export const useWinner = () => useGameStore((state) => state.winner);
-export const useUIState = () =>
-  useGameStore((state) => ({
-    isPaused: state.isPaused,
-    showMenu: state.showMenu,
-    showHandViewer: state.showHandViewer,
-    showInstructions: state.showInstructions,
-    audioEnabled: state.audioEnabled,
-    showTooltip: state.showTooltip,
-  }));
-export const useOpenWhatYouWantState = () =>
-  useGameStore(
-    useShallow((state) => ({
-      isActive: state.openWhatYouWantActive,
-      cards: state.openWhatYouWantCards,
-      showModal: state.showOpenWhatYouWantModal,
-      showAnimation: state.showOpenWhatYouWantAnimation,
-    })),
-  );

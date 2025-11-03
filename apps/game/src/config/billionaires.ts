@@ -13,6 +13,8 @@ export interface Billionaire {
   description?: string;
 }
 
+export const DEFAULT_BILLIONAIRE_ID = 'chaz';
+
 export const BILLIONAIRES: Billionaire[] = [
   {
     id: 'chaz',
@@ -22,7 +24,7 @@ export const BILLIONAIRES: Billionaire[] = [
   },
   {
     id: 'chloe',
-    name: 'Chloe Von Sphincterspiel',
+    name: 'Chloe Von Weirdenspiel',
     imageSrc: chloeImg,
     description: 'social-media-obsessed, attention-seeking, data-hoarding',
   },
