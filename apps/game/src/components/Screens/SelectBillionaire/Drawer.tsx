@@ -114,7 +114,7 @@ export const Drawer: FC<DrawerProps> = ({ isOpen, billionaire, onClose, onConfir
                   <Button
                     onClick={onConfirm}
                     variant="primary"
-                    className="w-full max-w-[15.5rem] mx-auto block"
+                    className="w-full max-w-[15.5rem] mx-auto block flex"
                   >
                     Select
                   </Button>

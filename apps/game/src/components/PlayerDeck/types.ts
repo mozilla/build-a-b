@@ -1,10 +1,10 @@
-import type { TurnValueState } from '../TurnValue/types';
+import type { ActiveEffect } from '../../types';
 
 export type PlayerDeckProps = {
   deckLength: number;
   handleDeckClick?: () => void;
   turnValue: number;
-  turnValueState: TurnValueState;
+  turnValueActiveEffects?: ActiveEffect[];
   owner: 'player' | 'cpu';
   tooltipContent?: string;
   billionaireId: string;
