@@ -40,7 +40,10 @@ export type GameFlowEvent =
   | { type: 'QUIT_GAME' }
   | { type: 'START_OWYW_ANIMATION' } // Start OWYW animation (transition to animating sub-state)
   | { type: 'CARD_SELECTED' } // Player confirmed card selection from OWYW modal
-  | { type: 'PRE_REVEAL_COMPLETE' }; // All pre-reveal effects processed
+  | { type: 'PRE_REVEAL_COMPLETE' } // All pre-reveal effects processed
+  | { type: 'SHOW_EFFECT_NOTIFICATION' } // Transition to effect notification
+  | { type: 'EFFECT_NOTIFICATION_DISMISSED' } // User closed modal
+  | { type: 'EFFECT_NOTIFICATION_COMPLETE' }; // Skip if no notifications
 
 export type EventType = GameFlowEvent['type'];
 /**
@@ -160,7 +163,54 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: '',
         }),
         on: {
-          CARDS_REVEALED: 'comparing',
+          CARDS_REVEALED: 'effect_notification',
+        },
+      },
+
+      effect_notification: {
+        initial: 'checking',
+        states: {
+          checking: {
+            // Check if there are unseen effect notifications to show
+            entry: assign({
+              tooltipMessage: '',
+            }),
+            after: {
+              500: [
+                // Small delay after instant effects complete
+                {
+                  target: 'showing',
+                  guard: 'hasUnseenEffectNotifications',
+                },
+                {
+                  target: '#dataWarGame.comparing', // Skip if no notifications
+                },
+              ],
+            },
+            on: {
+              EFFECT_NOTIFICATION_COMPLETE: '#dataWarGame.comparing',
+            },
+          },
+
+          showing: {
+            // Show notification badge and tooltip on card
+            entry: assign({
+              tooltipMessage: 'Tap to see effect',
+            }),
+            on: {
+              EFFECT_NOTIFICATION_DISMISSED: 'transitioning',
+            },
+          },
+
+          transitioning: {
+            // 1 second delay after modal closes
+            entry: assign({
+              tooltipMessage: '',
+            }),
+            after: {
+              1000: '#dataWarGame.comparing',
+            },
+          },
         },
       },
 
@@ -352,6 +402,11 @@ export const gameFlowMachine = createMachine(
         // Check if there are pre-reveal effects to process (like OWYW)
         const state = useGameStore.getState();
         return state.hasPreRevealEffects();
+      },
+      hasUnseenEffectNotifications: () => {
+        // Check if there are unseen effect notifications to show
+        const state = useGameStore.getState();
+        return state.hasUnseenEffectNotifications();
       },
     },
   },

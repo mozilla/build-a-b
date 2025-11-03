@@ -219,6 +219,12 @@ html {
   line-height: 1.5rem; /* 24px */
 }
 
+/* text-xs */
+@utility text-xs-custom {
+  font-size: 0.5rem; /* 8px */
+  line-height: 1rem; /* 16px */
+}
+
 /* text-sm */
 @utility text-sm-custom {
   font-size: 0.875rem; /* 14px */
@@ -356,6 +362,13 @@ html {
     @apply text-sm/5 font-semibold;
     @variant landscape {
       @apply text-sm/5;
+    }
+  }
+
+  .body-xs {
+    @apply text-xs/4 font-semibold;
+    @variant landscape {
+      @apply text-xs/4;
     }
   }
 
