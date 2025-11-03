@@ -27,6 +27,7 @@ const createMockPlayer = (
   currentTurnValue,
   launchStackCount: 0,
   playedCardsInHand: [],
+  activeEffects: []
 });
 
 // Helper to create mock cards
