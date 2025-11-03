@@ -472,6 +472,40 @@ export function useGameLogic() {
     actorRef.send({ type: 'RESET_GAME' });
   };
 
+  // Prepare effect notification when entering showing substate
+  useEffect(() => {
+    if (phase === 'effect_notification.showing') {
+      const { prepareEffectNotification } = useGameStore.getState();
+      prepareEffectNotification();
+    }
+  }, [phase]);
+
+  // Handle modal dismiss to trigger state transition
+  useEffect(() => {
+    if (phase === 'effect_notification.showing') {
+      let prevShowModal = useGameStore.getState().showEffectNotificationModal;
+
+      // Listen for modal close
+      const unsubscribe = useGameStore.subscribe((state) => {
+        const showModal = state.showEffectNotificationModal;
+        if (prevShowModal && !showModal) {
+          // Check if there are still pending notifications
+          const { pendingEffectNotifications } = useGameStore.getState();
+
+          if (pendingEffectNotifications.length === 0) {
+            // All notifications processed, transition to comparing
+            actorRef.send({ type: 'EFFECT_NOTIFICATION_DISMISSED' });
+          }
+          // If there are still pending notifications, stay in showing state
+          // User will click the next card to open its modal
+        }
+        prevShowModal = showModal;
+      });
+
+      return unsubscribe;
+    }
+  }, [phase, actorRef]);
+
   // Reset pre-reveal guard when leaving pre_reveal phase
   useEffect(() => {
     if (!phase.startsWith('pre_reveal')) {

@@ -6,6 +6,14 @@ export const usePlayer = () => useGameStore((state) => state.player);
 export const useCPU = () => useGameStore((state) => state.cpu);
 export const useCardsInPlay = () => useGameStore((state) => state.cardsInPlay);
 export const useWinner = () => useGameStore((state) => state.winner);
+export const useShowEffectNotificationBadge = () =>
+  useGameStore((state) => state.showEffectNotificationBadge);
+export const usePendingEffectNotifications = () =>
+  useGameStore((state) => state.pendingEffectNotifications);
+export const useCurrentEffectNotification = () =>
+  useGameStore((state) => state.currentEffectNotification);
+export const useSetShowEffectNotificationModal = () =>
+  useGameStore((state) => state.setShowEffectNotificationModal);
 export const useUIState = () =>
   useGameStore((state) => ({
     isPaused: state.isPaused,

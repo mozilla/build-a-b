@@ -5,6 +5,7 @@ import { getBillionaireById } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState, type FC } from 'react';
 import { DeckPile } from '../DeckPile';
+import { LaunchStackIndicator } from '../LaunchStackIndicator';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
 
@@ -12,7 +13,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
   handleDeckClick,
   turnValue,
-  turnValueState,
+  turnValueActiveEffects,
   owner,
   tooltipContent,
   billionaireId,
@@ -98,57 +99,63 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
 
   return (
     <div className="grid grid-cols-3 place-items-center w-full">
-      {/** Avatar */}
+      {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
-        <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px] mr-2">
-          {/* Avatar with scale animation */}
-          <motion.div
-            className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
-            animate={{
-              scale: showWinEffect ? 1.2 : 1,
-            }}
-            transition={{
-              duration: 0.3,
-              ease: 'easeOut',
-            }}
-          >
-            <img
-              src={currentBillionaire.imageSrc}
-              alt={currentBillionaire.name}
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
+        <div className="flex flex-col items-center gap-1">
+          {/* Launch Stack Rocket Indicators */}
+          <LaunchStackIndicator launchStackCount={currentPlayer.launchStackCount} />
 
-          {/* Win effect overlay */}
-          <AnimatePresence>
-            {showWinEffect && (
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="w-[93%] h-[93%] rounded-full bg-gradient-to-b from-[#FF6B4A] to-[#FFD54F] flex items-center justify-center shadow-lg">
-                  <motion.span
-                    initial={{ scale: 1 }}
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      duration: 1,
-                      delay: 0.5,
-                      ease: 'easeInOut',
-                    }}
-                  >
-                    <Text variant="body-medium" className="text-black font-bold">
-                      Win!
-                    </Text>
-                  </motion.span>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Avatar */}
+          <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px]">
+            {/* Avatar with scale animation */}
+            <motion.div
+              className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
+              animate={{
+                scale: showWinEffect ? 1.2 : 1,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: 'easeOut',
+              }}
+            >
+              <img
+                src={currentBillionaire.imageSrc}
+                alt={currentBillionaire.name}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+
+            {/* Win effect overlay */}
+            <AnimatePresence>
+              {showWinEffect && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-[93%] h-[93%] rounded-full bg-gradient-to-b from-[#FF6B4A] to-[#FFD54F] flex items-center justify-center shadow-lg">
+                    <motion.span
+                      initial={{ scale: 1 }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 1,
+                        delay: 0.5,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <Text variant="body-medium" className="text-black font-bold">
+                        Win!
+                      </Text>
+                    </motion.span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       ) : (
         <div />
@@ -165,7 +172,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         deckSwapCount={deckSwapCount}
       />
       {/** Turn points */}
-      <TurnValue value={turnValue} state={turnValueState} />
+      <TurnValue value={turnValue} activeEffects={turnValueActiveEffects} />
     </div>
   );
 };
