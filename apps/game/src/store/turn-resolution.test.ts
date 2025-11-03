@@ -196,12 +196,13 @@ describe('Turn Resolution', () => {
       expect(useGameStore.getState().cpu.currentTurnValue).toBe(0);
     });
 
-    it('should not apply effect when blocked by Tracker Smacker', () => {
+    it('should apply blocker effect even when Tracker Smacker is active', () => {
       const { playCard } = useGameStore.getState();
       playCard('player');
       const blockerCard = useGameStore.getState().player.playedCard!;
 
-      // CPU has Tracker Smacker active (blocks player effects)
+      // CPU has Tracker Smacker active
+      // Note: Tracker Smacker only blocks Trackers and Billionaire Move, NOT Blockers
       useGameStore.setState({
         trackerSmackerActive: 'cpu',
         cpu: {
@@ -212,8 +213,8 @@ describe('Turn Resolution', () => {
 
       useGameStore.getState().applyBlockerEffect('player', blockerCard);
 
-      // Value should not change
-      expect(useGameStore.getState().cpu.currentTurnValue).toBe(5);
+      // Blocker should still apply even with Tracker Smacker active
+      expect(useGameStore.getState().cpu.currentTurnValue).toBeLessThan(5);
     });
   });
 
