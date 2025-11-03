@@ -33,13 +33,11 @@ describe('gameStore', () => {
     it('should support custom deck ordering strategies', () => {
       const { initializeGame } = useGameStore.getState();
 
-      initializeGame('tracker-first', 'common-first');
+      initializeGame('tracker-first');
 
       const state = useGameStore.getState();
-      // Player should have trackers first
+      // Player should have trackers first (since ordering happens before dealing)
       expect(state.player.deck[0].specialType).toBe('tracker');
-      // CPU should have common cards first
-      expect(state.cpu.deck[0].isSpecial).toBe(false);
     });
   });
 
@@ -150,31 +148,72 @@ describe('gameStore', () => {
   });
 
   describe('addLaunchStack action', () => {
+    beforeEach(() => {
+      useGameStore.getState().resetGame();
+    });
+
     it('should increment launch stack count', () => {
       const { addLaunchStack, player } = useGameStore.getState();
 
       expect(player.launchStackCount).toBe(0);
 
+      // Set up a Launch Stack card being played
+      const launchStackCard = { id: 'ls-1', value: 5, specialType: 'launch_stack' } as Card;
+      useGameStore.setState({
+        player: { ...player, playedCard: launchStackCard },
+        cardsInPlay: [launchStackCard],
+      });
+
       addLaunchStack('player');
       expect(useGameStore.getState().player.launchStackCount).toBe(1);
+      expect(useGameStore.getState().playerLaunchStacks).toHaveLength(1);
+      expect(useGameStore.getState().cardsInPlay).toHaveLength(0); // Card removed from play
+
+      // Set up second Launch Stack
+      const launchStackCard2 = { id: 'ls-2', value: 5, specialType: 'launch_stack' } as Card;
+      useGameStore.setState({
+        player: { ...useGameStore.getState().player, playedCard: launchStackCard2 },
+        cardsInPlay: [launchStackCard2],
+      });
 
       addLaunchStack('player');
       expect(useGameStore.getState().player.launchStackCount).toBe(2);
+      expect(useGameStore.getState().playerLaunchStacks).toHaveLength(2);
     });
 
     it('should set win condition when 3 launch stacks collected', () => {
-      const { addLaunchStack } = useGameStore.getState();
+      const { addLaunchStack, player } = useGameStore.getState();
 
+      // Add first Launch Stack
+      const launchStackCard1 = { id: 'ls-1', value: 5, specialType: 'launch_stack' } as Card;
+      useGameStore.setState({
+        player: { ...player, playedCard: launchStackCard1 },
+        cardsInPlay: [launchStackCard1],
+      });
       addLaunchStack('player');
+
+      // Add second Launch Stack
+      const launchStackCard2 = { id: 'ls-2', value: 5, specialType: 'launch_stack' } as Card;
+      useGameStore.setState({
+        player: { ...useGameStore.getState().player, playedCard: launchStackCard2 },
+        cardsInPlay: [launchStackCard2],
+      });
       addLaunchStack('player');
 
       expect(useGameStore.getState().winner).toBe(null);
 
+      // Add third Launch Stack - should win
+      const launchStackCard3 = { id: 'ls-3', value: 5, specialType: 'launch_stack' } as Card;
+      useGameStore.setState({
+        player: { ...useGameStore.getState().player, playedCard: launchStackCard3 },
+        cardsInPlay: [launchStackCard3],
+      });
       addLaunchStack('player');
 
       const state = useGameStore.getState();
       expect(state.winner).toBe('player');
       expect(state.winCondition).toBe('launch_stacks');
+      expect(state.playerLaunchStacks).toHaveLength(3);
     });
   });
 

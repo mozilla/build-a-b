@@ -29,13 +29,15 @@ export type { CarouselProps } from './Carousel/types';
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip/types';
 
+// Debug Components
+export { DebugUI } from './DebugUI';
+
+export { Menu } from './Menu';
 export { Text } from './Text';
 export type { PolymorphicTextProps } from './Text/types';
 
 // Screen-level components
 export { ScreenRenderer } from './ScreenRenderer';
-export { Welcome } from './Screens/Welcome';
-export { DataWar } from './DataWar';
 
 // Game components
 export { Board } from './Board';

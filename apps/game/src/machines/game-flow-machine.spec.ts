@@ -9,7 +9,6 @@ describe('gameFlowMachine', () => {
       actor.start();
 
       expect(actor.getSnapshot().value).toBe('welcome');
-      expect(actor.getSnapshot().context.tooltipMessage).toBe('Welcome to Data War!');
 
       actor.stop();
     });
@@ -23,9 +22,6 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
 
       expect(actor.getSnapshot().value).toBe('select_billionaire');
-      expect(actor.getSnapshot().context.tooltipMessage).toBe(
-        "Whose little face is going to space?"
-      );
 
       actor.stop();
     });
@@ -103,7 +99,7 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should auto-transition from revealing to comparing after 1 second', () => {
+    it('should transition from revealing to comparing on CARDS_REVEALED', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -117,10 +113,14 @@ describe('gameFlowMachine', () => {
 
       expect(actor.getSnapshot().value).toBe('revealing');
 
-      setTimeout(() => {
-        expect(actor.getSnapshot().value).toBe('comparing');
-        actor.stop();
-      }, 1100);
+      // Send CARDS_REVEALED event
+      actor.send({ type: 'CARDS_REVEALED' });
+      expect(actor.getSnapshot().value).toEqual({ effect_notification: 'checking' });
+
+      // Skip effect notification
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' });
+      expect(actor.getSnapshot().value).toBe('comparing');
+      actor.stop();
     });
 
     it('should transition to data_war on TIE', () => {
@@ -134,7 +134,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
-      actor.send({ type: 'CARDS_REVEALED' }); // Skip auto-transition
+      actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
 
       actor.send({ type: 'TIE' });
       expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
@@ -154,6 +155,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
 
       actor.send({ type: 'SPECIAL_EFFECT' });
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -173,6 +175,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
       actor.send({ type: 'SPECIAL_EFFECT' });
 
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -195,6 +198,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
 
       actor.send({ type: 'RESOLVE_TURN' });
       expect(actor.getSnapshot().value).toBe('resolving');
@@ -216,6 +220,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
       actor.send({ type: 'TIE' });
 
       // Should start in animating substate
@@ -293,6 +298,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
       actor.send({ type: 'RESOLVE_TURN' });
 
       expect(actor.getSnapshot().context.currentTurn).toBe(1);
@@ -300,7 +306,7 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should return to ready state when no win condition', () => {
+    it('should return to ready state when no win condition', async () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -312,10 +318,17 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
+      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
       actor.send({ type: 'RESOLVE_TURN' });
 
-      // Check win condition (guard returns false)
+      // Check win condition (guard returns false, transitions to pre_reveal)
       actor.send({ type: 'CHECK_WIN_CONDITION' });
+
+      // State should be in pre_reveal.processing first
+      expect(actor.getSnapshot().value).toEqual({ pre_reveal: 'processing' });
+
+      // Wait for WIN_ANIMATION duration (1200ms) to transition to ready
+      await new Promise((resolve) => setTimeout(resolve, 1300));
 
       expect(actor.getSnapshot().value).toBe('ready');
 
@@ -362,25 +375,6 @@ describe('gameFlowMachine', () => {
   });
 
   describe('context management', () => {
-    it('should update tooltip messages appropriately', () => {
-      const actor = createActor(gameFlowMachine);
-      actor.start();
-
-      expect(actor.getSnapshot().context.tooltipMessage).toBe('Welcome to Data War!');
-
-      actor.send({ type: 'START_GAME' });
-      expect(actor.getSnapshot().context.tooltipMessage).toBe(
-        "Whose little face is going to space?"
-      );
-
-      actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
-      expect(actor.getSnapshot().context.tooltipMessage).toBe(
-        'Which one do you want to play on?'
-      );
-
-      actor.stop();
-    });
-
     it('should track trackerSmackerActive in context', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();

@@ -6,10 +6,11 @@
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
 import { GameMachineContext } from '../providers/GameProvider';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 import { useCpuPlayer } from './use-cpu-player';
 import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 /**
  * Main game logic hook that orchestrates the entire game
@@ -58,8 +59,7 @@ export function useGameLogic() {
    * - Interactive: Show animation, wait for user tap, then show selection UI
    */
   const handlePreReveal = () => {
-    const { preRevealProcessed, setPreRevealProcessed, preRevealEffects } =
-      useGameStore.getState();
+    const { preRevealProcessed, setPreRevealProcessed, preRevealEffects } = useGameStore.getState();
 
     // Guard: Only process once per pre_reveal phase entry
     if (preRevealProcessed) {
@@ -102,7 +102,6 @@ export function useGameLogic() {
       setShowOpenWhatYouWantAnimation,
       clearPreRevealEffects,
     } = useGameStore.getState();
-
 
     // Prepare the top 3 cards
     prepareOpenWhatYouWantCards(playerId);
@@ -148,7 +147,18 @@ export function useGameLogic() {
       // Handle special effects for the active player's card
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
+
+        // Check if Forced Empathy was played - if so, delay transition
+        if (activePlayerState.playedCard.specialType === 'forced_empathy') {
+          setTimeout(() => {
+            actorRef.send({ type: 'CARDS_REVEALED' });
+          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+          return;
+        }
       }
+
+      // Transition to comparing phase (unless Forced Empathy delays it)
+      actorRef.send({ type: 'CARDS_REVEALED' });
     } else {
       // Normal turn - both players play
       playCard('player');
@@ -164,9 +174,22 @@ export function useGameLogic() {
       if (c.playedCard) {
         handleCardEffect(c.playedCard, 'cpu');
       }
+
+      // Check if Forced Empathy was played - if so, delay transition
+      const forcedEmpathyPlayed =
+        p.playedCard?.specialType === 'forced_empathy' ||
+        c.playedCard?.specialType === 'forced_empathy';
+
+      if (forcedEmpathyPlayed) {
+        // Wait for deck swap animation to complete before transitioning
+        setTimeout(() => {
+          actorRef.send({ type: 'CARDS_REVEALED' });
+        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+        return;
+      }
     }
 
-    // Transition to comparing phase
+    // Transition to comparing phase (unless Forced Empathy delays it)
     actorRef.send({ type: 'CARDS_REVEALED' });
   };
 
@@ -176,7 +199,19 @@ export function useGameLogic() {
   const handleCompareTurn = () => {
     const store = useGameStore.getState();
 
-    // IMPORTANT: Check if either card triggers "another play" FIRST
+    // PRIORITY CHECK: Hostile Takeover ignores all trackers/blockers/ties
+    // If Hostile Takeover is played, skip straight to Data War
+    const hostileTakeoverPlayed =
+      store.player.playedCard?.specialType === 'hostile_takeover' ||
+      store.cpu.playedCard?.specialType === 'hostile_takeover';
+
+    if (hostileTakeoverPlayed) {
+      // Hostile Takeover always triggers Data War, ignoring all other effects
+      actorRef.send({ type: 'TIE' });
+      return;
+    }
+
+    // IMPORTANT: Check if either card triggers "another play"
     // This must happen before checking for ties/Data War
     const playerTriggersAnother =
       store.player.playedCard &&
@@ -436,6 +471,40 @@ export function useGameLogic() {
     useGameStore.getState().resetGame();
     actorRef.send({ type: 'RESET_GAME' });
   };
+
+  // Prepare effect notification when entering showing substate
+  useEffect(() => {
+    if (phase === 'effect_notification.showing') {
+      const { prepareEffectNotification } = useGameStore.getState();
+      prepareEffectNotification();
+    }
+  }, [phase]);
+
+  // Handle modal dismiss to trigger state transition
+  useEffect(() => {
+    if (phase === 'effect_notification.showing') {
+      let prevShowModal = useGameStore.getState().showEffectNotificationModal;
+
+      // Listen for modal close
+      const unsubscribe = useGameStore.subscribe((state) => {
+        const showModal = state.showEffectNotificationModal;
+        if (prevShowModal && !showModal) {
+          // Check if there are still pending notifications
+          const { pendingEffectNotifications } = useGameStore.getState();
+
+          if (pendingEffectNotifications.length === 0) {
+            // All notifications processed, transition to comparing
+            actorRef.send({ type: 'EFFECT_NOTIFICATION_DISMISSED' });
+          }
+          // If there are still pending notifications, stay in showing state
+          // User will click the next card to open its modal
+        }
+        prevShowModal = showModal;
+      });
+
+      return unsubscribe;
+    }
+  }, [phase, actorRef]);
 
   // Reset pre-reveal guard when leaving pre_reveal phase
   useEffect(() => {

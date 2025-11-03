@@ -2,10 +2,12 @@
  * TurnValue component types
  */
 
+import type { ActiveEffect } from '../../types';
+
 export type TurnValueState = 'normal' | 'tracker' | 'blocker';
 
 export interface TurnValueProps {
   value: number;
-  state?: TurnValueState;
+  activeEffects?: ActiveEffect[];
   className?: string;
 }

@@ -1,121 +1,178 @@
-import { BILLIONAIRES } from '@/config/billionaires';
-import { useEffect, useRef, useState, type FC } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { DeckPile } from '../DeckPile';
-import { TurnValue } from '../TurnValue';
-import type { PlayerDeckProps } from './types';
-import { useGameStore, usePlayer } from '@/stores/game-store';
 import { Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { useGameStore, usePlayer } from '@/store';
+import { getBillionaireById } from '@/utils/selectors';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef, useState, type FC } from 'react';
+import { DeckPile } from '../DeckPile';
+import { LaunchStackIndicator } from '../LaunchStackIndicator';
+import { TurnValue } from '../TurnValue';
+import type { PlayerDeckProps } from './types';
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
   handleDeckClick,
   turnValue,
-  turnValueState,
+  turnValueActiveEffects,
   owner,
   tooltipContent,
   billionaireId,
+  activeIndicator = false,
 }) => {
-  const currentBillionaire = BILLIONAIRES.find((b) => b.id === billionaireId);
+  const currentBillionaire = getBillionaireById(billionaireId);
   const player = usePlayer();
   const cpu = useGameStore((state) => state.cpu);
+  const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
 
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
   const prevDeckLength = useRef(currentPlayer.deck.length);
   const [showWinEffect, setShowWinEffect] = useState(false);
+  const isAnimatingRef = useRef(false); // Prevent multiple animations
+  const timersRef = useRef<{ show?: number; hide?: number }>({});
 
   useEffect(() => {
-    // Skip animation if this is initial deck setup (deck was empty or very small)
-    const isInitialSetup = prevDeckLength.current < 10;
+    const currentLength = currentPlayer.deck.length;
+    const previousLength = prevDeckLength.current;
 
-    // This player won the turn if their deck grew by more than 1 card
-    if (!isInitialSetup && currentPlayer.deck.length > prevDeckLength.current + 1) {
+    // Skip animation if:
+    // - This is initial deck setup (deck was empty or very small)
+    // - Deck didn't grow by more than 1 card
+    const isInitialSetup = previousLength < 10;
+    const deckGrew = currentLength > previousLength + 1;
+
+    // If deck changes while animation is running, cancel current animation
+    if (isAnimatingRef.current && currentLength !== previousLength) {
+      // Clear any pending timers
+      if (timersRef.current.show) clearTimeout(timersRef.current.show);
+      if (timersRef.current.hide) clearTimeout(timersRef.current.hide);
+
+      // Reset animation state
+      setShowWinEffect(false);
+      isAnimatingRef.current = false;
+      timersRef.current = {};
+    }
+
+    if (!isInitialSetup && deckGrew && !isAnimatingRef.current) {
+      // Mark that animation is running
+      isAnimatingRef.current = true;
+
       // Delay before showing win animation (wait for cards to finish collecting)
-      const showTimer = setTimeout(() => {
+      timersRef.current.show = setTimeout(() => {
         setShowWinEffect(true);
       }, ANIMATION_DURATIONS.WIN_EFFECT_DELAY);
 
       // Reset after complete animation sequence (longer duration for better visibility)
-      const hideTimer = setTimeout(() => {
+      timersRef.current.hide = setTimeout(() => {
         setShowWinEffect(false);
+        // Reset the animation flag so it can trigger again next time
+        isAnimatingRef.current = false;
+        timersRef.current = {};
       }, ANIMATION_DURATIONS.WIN_EFFECT_DURATION);
 
+      // Update the previous deck length only after animation is triggered
+      prevDeckLength.current = currentLength;
+
       return () => {
-        clearTimeout(showTimer);
-        clearTimeout(hideTimer);
+        if (timersRef.current.show) clearTimeout(timersRef.current.show);
+        if (timersRef.current.hide) clearTimeout(timersRef.current.hide);
       };
     }
-    prevDeckLength.current = currentPlayer.deck.length;
+
+    // Always update prevDeckLength if we didn't trigger animation
+    // This prevents triggering on every small change
+    if (!isAnimatingRef.current) {
+      prevDeckLength.current = currentLength;
+    }
   }, [currentPlayer.deck.length]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timersRef.current.show) clearTimeout(timersRef.current.show);
+      if (timersRef.current.hide) clearTimeout(timersRef.current.hide);
+      isAnimatingRef.current = false;
+      setShowWinEffect(false);
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-3 place-items-center w-full">
-      {/** Avatar */}
+      {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
-        <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px] mr-2">
-          {/* Avatar with scale animation */}
-          <motion.div
-            className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
-            animate={{
-              scale: showWinEffect ? 1.2 : 1,
-            }}
-            transition={{
-              duration: 0.3,
-              ease: 'easeOut',
-            }}
-          >
-            <img
-              src={currentBillionaire.imageSrc}
-              alt={currentBillionaire.name}
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
+        <div className="flex flex-col items-center gap-1">
+          {/* Launch Stack Rocket Indicators */}
+          <LaunchStackIndicator launchStackCount={currentPlayer.launchStackCount} />
 
-          {/* Win effect overlay */}
-          <AnimatePresence>
-            {showWinEffect && (
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="w-[93%] h-[93%] rounded-full bg-[#f5b727] flex items-center justify-center shadow-lg">
-                  <motion.span
-                    initial={{ scale: 1 }}
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      duration: 1,
-                      delay: 0.5,
-                      ease: 'easeInOut',
-                    }}
-                  >
-                    <Text variant='body-medium' className="text-black font-bold">Win!</Text>
-                  </motion.span>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Avatar */}
+          <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px]">
+            {/* Avatar with scale animation */}
+            <motion.div
+              className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
+              animate={{
+                scale: showWinEffect ? 1.2 : 1,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: 'easeOut',
+              }}
+            >
+              <img
+                src={currentBillionaire.imageSrc}
+                alt={currentBillionaire.name}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+
+            {/* Win effect overlay */}
+            <AnimatePresence>
+              {showWinEffect && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-[93%] h-[93%] rounded-full bg-gradient-to-b from-[#FF6B4A] to-[#FFD54F] flex items-center justify-center shadow-lg">
+                    <motion.span
+                      initial={{ scale: 1 }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 1,
+                        delay: 0.5,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <Text variant="body-medium" className="text-black font-bold">
+                        Win!
+                      </Text>
+                    </motion.span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       ) : (
         <div />
       )}
-      {/** Deck */}
+      {/** Deck - wrapped in motion for swap animation */}
       <DeckPile
         cardCount={deckLength}
         owner={owner}
         onClick={handleDeckClick}
         showTooltip={!!tooltipContent}
         tooltipContent={tooltipContent}
-        activeIndicator={!!tooltipContent && owner === 'player'}
+        activeIndicator={activeIndicator}
+        forcedEmpathySwapping={forcedEmpathySwapping}
+        deckSwapCount={deckSwapCount}
       />
       {/** Turn points */}
-      <TurnValue value={turnValue} state={turnValueState} />
+      <TurnValue value={turnValue} activeEffects={turnValueActiveEffects} />
     </div>
   );
 };

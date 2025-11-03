@@ -1,12 +1,11 @@
 import { iconRegistry } from '@/components/Icon/registry';
-import type { HTMLAttributes, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 type IconName = keyof typeof iconRegistry;
 export interface BaseIconProps {
   name: IconName;
   label?: string;
+  size?: number | string;
 }
 
-export type IconProps =
-  | (BaseIconProps & SVGProps<SVGSVGElement> & { as?: 'svg' })
-  | (BaseIconProps & HTMLAttributes<HTMLButtonElement> & { as: 'button' });
+export type IconProps = BaseIconProps & SVGProps<SVGSVGElement>;

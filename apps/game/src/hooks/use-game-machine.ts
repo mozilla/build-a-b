@@ -4,7 +4,7 @@
 
 import { useMachine } from '@xstate/react';
 import { gameFlowMachine } from '../machines/game-flow-machine';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 
 export function useGameMachine() {
   const checkWinCondition = useGameStore((state) => state.checkWinCondition);

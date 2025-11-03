@@ -1,7 +1,5 @@
-export interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
+import type { ButtonProps as HeroUIButtonProps } from '@heroui/react';
+
+export interface ButtonProps extends Omit<HeroUIButtonProps, 'variant'> {
   variant?: 'primary' | 'secondary';
-  disabled?: boolean;
-  className?: string;
 }
