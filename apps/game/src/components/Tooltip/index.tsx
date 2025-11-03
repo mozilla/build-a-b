@@ -5,25 +5,19 @@
 
 import { Tooltip as HeroUITooltip } from '@heroui/tooltip';
 import { type FC } from 'react';
-import type { ArrowDirection, TooltipPlacement, TooltipProps } from './types';
+import type { TooltipProps } from './types';
 
 export const Tooltip: FC<TooltipProps> = ({
+  placement = 'top',
   arrowDirection = 'bottom',
   classNames,
   showArrow = true,
   children,
   ...props
 }) => {
-  // Map arrow direction to HeroUI placement
-  // Arrow direction is opposite to tooltip placement
-  // e.g., if arrow points up, tooltip is positioned below
-  const placementMap: Record<ArrowDirection, TooltipPlacement> = {
-    top: 'bottom',
-    bottom: 'top',
-    left: 'right',
-    right: 'left',
-  };
-  const placement = placementMap[arrowDirection];
+  // Now placement and arrowDirection are independent
+  // placement: where the tooltip appears relative to target
+  // arrowDirection: which way the arrow points
 
   // Map arrow direction to rotation and positioning
   const arrowStylesMap = {
@@ -71,6 +65,8 @@ export const Tooltip: FC<TooltipProps> = ({
       'before:[clip-path:polygon(50%_0%,0%_100%,100%_100%)]',
       // Apply rotation and positioning based on arrow direction
       ...arrowStyles,
+      // High z-index for tooltips, but below modals (modals use z-50+)
+      'z-[45]',
     ],
     content: [
       'flex',

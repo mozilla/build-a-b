@@ -1,5 +1,12 @@
 import type { CardTypeId } from '@/config/game-config';
-import type { Card, Player, PlayerType, PreRevealEffect, SpecialEffect } from '@/types';
+import type {
+  Card,
+  EffectNotification,
+  Player,
+  PlayerType,
+  PreRevealEffect,
+  SpecialEffect,
+} from '@/types';
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
 
 export type GameStore = {
@@ -36,6 +43,18 @@ export type GameStore = {
   // Forced Empathy State
   forcedEmpathySwapping: boolean; // True when decks are actively animating
   deckSwapCount: number; // Number of times decks have been swapped (odd = swapped, even = normal)
+
+  // Effect Notification System
+  seenEffectTypes: Set<string>; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover')
+  pendingEffectNotifications: EffectNotification[]; // Queue of notifications to show
+  currentEffectNotification: EffectNotification | null; // Currently displayed notification in modal
+  showEffectNotificationBadge: boolean; // Show badge on card
+  showEffectNotificationModal: boolean; // Show modal
+  effectNotificationPersistence: 'localStorage' | 'memory'; // Configurable persistence
+
+  // Tooltip System
+  seenTooltips: Set<string>; // Tooltip IDs that have been seen
+  tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // UI State
   selectedBillionaire: string;
@@ -94,6 +113,26 @@ export type GameStore = {
 
   // Forced Empathy Actions
   setForcedEmpathySwapping: (swapping: boolean) => void;
+
+  // Effect Notification Actions
+  markEffectAsSeen: (effectType: string) => void;
+  hasSeenEffect: (effectType: string) => boolean;
+  hasUnseenEffectNotifications: () => boolean;
+  prepareEffectNotification: () => void;
+  dismissEffectNotification: () => void;
+  setShowEffectNotificationModal: (show: boolean) => void;
+  clearSeenEffects: () => void; // For testing
+  setEffectNotificationPersistence: (mode: 'localStorage' | 'memory') => void;
+
+  // Tooltip System Actions
+  markTooltipAsSeen: (tooltipId: string) => void;
+  hasSeenTooltip: (tooltipId: string) => boolean;
+  shouldShowTooltip: (tooltipId: string) => boolean;
+  clearSeenTooltips: () => void; // For testing
+  setTooltipPersistence: (mode: 'localStorage' | 'memory') => void;
+
+  // Active Effects Actions
+  clearActiveEffects: (playerId: PlayerType) => void;
 
   // Actions - UI
   selectBillionaire: (billionaire: string) => void;

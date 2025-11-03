@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
-import type { Card, Player, PlayerType, SpecialEffect } from '../types';
+import type { Card, EffectNotification, Player, PlayerType, SpecialEffect } from '../types';
 import {
   applyBlockerModifier,
   applyTrackerModifier,
@@ -16,6 +16,7 @@ import {
   shouldTriggerDataWar,
 } from '../utils/card-comparison';
 import { initializeGameDeck, shuffleDeck } from '../utils/deck-builder';
+import { getEffectType, isSpecialCard, shouldShowEffectNotification } from '../utils/effect-helpers';
 import type { GameStore } from './types';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
@@ -26,6 +27,7 @@ const createInitialPlayer = (id: PlayerType): Player => ({
   playedCardsInHand: [],
   currentTurnValue: 0,
   launchStackCount: 0,
+  activeEffects: [],
 });
 
 export const useGameStore = create<GameStore>()(
@@ -62,6 +64,18 @@ export const useGameStore = create<GameStore>()(
       showInstructions: false,
       audioEnabled: true,
       showTooltip: false,
+
+      // Effect Notification System
+      seenEffectTypes: new Set(JSON.parse(localStorage.getItem('seenEffectTypes') || '[]')),
+      pendingEffectNotifications: [],
+      currentEffectNotification: null,
+      showEffectNotificationBadge: false,
+      showEffectNotificationModal: false,
+      effectNotificationPersistence: 'localStorage',
+
+      // Tooltip System
+      seenTooltips: new Set(JSON.parse(localStorage.getItem('seenTooltips') || '[]')),
+      tooltipPersistence: 'localStorage',
 
       // Game Logic Actions
       initializeGame: (
@@ -188,6 +202,7 @@ export const useGameStore = create<GameStore>()(
             playedCard: null,
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
+            activeEffects: [], // Clear active effects
           },
           cardsInPlay: [],
           // Reset turn states for new turn
@@ -204,6 +219,7 @@ export const useGameStore = create<GameStore>()(
             playedCard: null,
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
+            activeEffects: [], // Clear active effects
           },
         });
       },
@@ -355,10 +371,21 @@ export const useGameStore = create<GameStore>()(
         // Apply tracker modifier (add tracker value to turn total)
         const newValue = applyTrackerModifier(player.currentTurnValue, trackerCard);
 
+        // Add to active effects
+        const newActiveEffects = [
+          ...player.activeEffects,
+          {
+            type: 'tracker' as const,
+            value: trackerCard.value,
+            source: playerId,
+          },
+        ];
+
         set({
           [playerId]: {
             ...player,
             currentTurnValue: newValue,
+            activeEffects: newActiveEffects,
           },
         });
       },
@@ -368,18 +395,27 @@ export const useGameStore = create<GameStore>()(
         const opponentId = playerId === 'player' ? 'cpu' : 'player';
         const opponent = get()[opponentId];
 
-        // Check if effect is blocked by Tracker Smacker
-        if (isEffectBlocked(get().trackerSmackerActive, playerId)) {
-          return;
-        }
+        // Note: Blocker cards are NOT affected by Tracker Smacker
+        // Tracker Smacker only blocks Trackers and Billionaire Move effects
 
         // Apply blocker modifier (subtract from opponent's turn value)
         const newValue = applyBlockerModifier(opponent.currentTurnValue, blockerCard);
+
+        // Add to opponent's active effects
+        const newActiveEffects = [
+          ...opponent.activeEffects,
+          {
+            type: 'blocker' as const,
+            value: blockerCard.value,
+            source: playerId,
+          },
+        ];
 
         set({
           [opponentId]: {
             ...opponent,
             currentTurnValue: newValue,
+            activeEffects: newActiveEffects,
           },
         });
       },
@@ -424,12 +460,9 @@ export const useGameStore = create<GameStore>()(
         // Handle specific effects
         switch (card.specialType) {
           case 'tracker':
-            // Tracker value is already added by playCard
-            // The "another play" trigger is handled in handleResolveTurn
-            // Check if effect is blocked by Tracker Smacker
-            if (!isEffectBlocked(get().trackerSmackerActive, playedBy)) {
-              // Tracker effect is allowed (will trigger another play)
-            }
+            // Apply tracker effect (adds to active effects and updates turn value)
+            // This is already protected by the Tracker Smacker check inside applyTrackerEffect
+            get().applyTrackerEffect(playedBy, card);
             break;
           case 'blocker': {
             // Check if Hostile Takeover is in play - if so, ignore blocker effect
@@ -496,14 +529,15 @@ export const useGameStore = create<GameStore>()(
       setTrackerSmackerActive: (playerId) => {
         set({ trackerSmackerActive: playerId });
 
-        // Immediately recalculate turn values for any blocked tracker/blocker cards
+        // Immediately recalculate turn values for any blocked tracker cards
         // This handles the case where Tracker Smacker is played in the same turn as opponent's tracker
+        // NOTE: Tracker Smacker only blocks TRACKERS and BILLIONAIRE MOVE effects, NOT blockers
         const { player, cpu } = get();
 
-        // Check if player's card should be negated
+        // Check if player's card should be negated (only trackers)
         if (player.playedCard) {
           const isPlayerBlocked = isEffectBlocked(playerId, 'player');
-          if (isPlayerBlocked && (player.playedCard.specialType === 'tracker' || player.playedCard.specialType === 'blocker')) {
+          if (isPlayerBlocked && player.playedCard.specialType === 'tracker') {
             set({
               player: {
                 ...player,
@@ -514,10 +548,10 @@ export const useGameStore = create<GameStore>()(
           }
         }
 
-        // Check if CPU's card should be negated
+        // Check if CPU's card should be negated (only trackers)
         if (cpu.playedCard) {
           const isCpuBlocked = isEffectBlocked(playerId, 'cpu');
-          if (isCpuBlocked && (cpu.playedCard.specialType === 'tracker' || cpu.playedCard.specialType === 'blocker')) {
+          if (isCpuBlocked && cpu.playedCard.specialType === 'tracker') {
             set({
               cpu: {
                 ...cpu,
@@ -784,6 +818,183 @@ export const useGameStore = create<GameStore>()(
 
       setShowTooltip: (show) => {
         set({ showTooltip: show });
+      },
+
+      // Effect Notification Actions
+      markEffectAsSeen: (effectType) => {
+        const { seenEffectTypes, effectNotificationPersistence } = get();
+        const newSeenTypes = new Set(seenEffectTypes);
+        newSeenTypes.add(effectType);
+
+        set({ seenEffectTypes: newSeenTypes });
+
+        // Persist to localStorage if enabled
+        if (effectNotificationPersistence === 'localStorage') {
+          localStorage.setItem('seenEffectTypes', JSON.stringify(Array.from(newSeenTypes)));
+        }
+      },
+
+      hasSeenEffect: (effectType) => {
+        return get().seenEffectTypes.has(effectType);
+      },
+
+      hasUnseenEffectNotifications: () => {
+        const { player, cpu, hasSeenEffect } = get();
+
+        // Check player's played card
+        if (player.playedCard && isSpecialCard(player.playedCard)) {
+          const effectType = getEffectType(player.playedCard);
+          if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+            return true;
+          }
+        }
+
+        // Check CPU's played card
+        if (cpu.playedCard && isSpecialCard(cpu.playedCard)) {
+          const effectType = getEffectType(cpu.playedCard);
+          if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+
+      prepareEffectNotification: () => {
+        const { player, cpu, hasSeenEffect } = get();
+
+        // Collect ALL unseen notifications (priority: player first, then CPU)
+        const cards = [
+          { card: player.playedCard, playedBy: 'player' as PlayerType },
+          { card: cpu.playedCard, playedBy: 'cpu' as PlayerType },
+        ];
+
+        const notifications: EffectNotification[] = [];
+
+        for (const { card, playedBy } of cards) {
+          if (card && isSpecialCard(card)) {
+            const effectType = getEffectType(card);
+
+            if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+              notifications.push({
+                card,
+                playedBy,
+                effectType,
+                effectName: card.name,
+                effectDescription: card.specialActionDescription || '',
+              });
+            }
+          }
+        }
+
+        if (notifications.length > 0) {
+          // Set all pending notifications and show the first one
+          set({
+            pendingEffectNotifications: notifications,
+            currentEffectNotification: notifications[0],
+            showEffectNotificationBadge: true,
+          });
+        } else {
+          // No unseen notifications
+          set({
+            pendingEffectNotifications: [],
+            currentEffectNotification: null,
+            showEffectNotificationBadge: false,
+          });
+        }
+      },
+
+      dismissEffectNotification: () => {
+        const { currentEffectNotification, pendingEffectNotifications, markEffectAsSeen } = get();
+
+        if (currentEffectNotification) {
+          markEffectAsSeen(currentEffectNotification.effectType);
+        }
+
+        // Remove the current notification from the queue
+        const remainingNotifications = pendingEffectNotifications.slice(1);
+
+        if (remainingNotifications.length > 0) {
+          // Show the next notification
+          set({
+            pendingEffectNotifications: remainingNotifications,
+            currentEffectNotification: remainingNotifications[0],
+            showEffectNotificationModal: false, // Close modal, will reopen for next
+            showEffectNotificationBadge: true, // Keep badge visible for remaining notifications
+          });
+        } else {
+          // No more notifications
+          set({
+            pendingEffectNotifications: [],
+            currentEffectNotification: null,
+            showEffectNotificationBadge: false,
+            showEffectNotificationModal: false,
+          });
+        }
+      },
+
+      setShowEffectNotificationModal: (show) => {
+        set({ showEffectNotificationModal: show });
+      },
+
+      clearSeenEffects: () => {
+        set({ seenEffectTypes: new Set() });
+        localStorage.removeItem('seenEffectTypes');
+      },
+
+      setEffectNotificationPersistence: (mode) => {
+        set({ effectNotificationPersistence: mode });
+
+        if (mode === 'memory') {
+          // Clear localStorage if switching to memory mode
+          localStorage.removeItem('seenEffectTypes');
+        }
+      },
+
+      // Tooltip System Actions
+      markTooltipAsSeen: (tooltipId) => {
+        const { seenTooltips, tooltipPersistence } = get();
+        const newSeenTooltips = new Set(seenTooltips);
+        newSeenTooltips.add(tooltipId);
+
+        set({ seenTooltips: newSeenTooltips });
+
+        if (tooltipPersistence === 'localStorage') {
+          localStorage.setItem('seenTooltips', JSON.stringify(Array.from(newSeenTooltips)));
+        }
+      },
+
+      hasSeenTooltip: (tooltipId) => {
+        return get().seenTooltips.has(tooltipId);
+      },
+
+      shouldShowTooltip: (tooltipId) => {
+        return !get().hasSeenTooltip(tooltipId);
+      },
+
+      clearSeenTooltips: () => {
+        set({ seenTooltips: new Set() });
+        localStorage.removeItem('seenTooltips');
+      },
+
+      setTooltipPersistence: (mode) => {
+        set({ tooltipPersistence: mode });
+
+        if (mode === 'memory') {
+          localStorage.removeItem('seenTooltips');
+        }
+      },
+
+      // Active Effects Actions
+      clearActiveEffects: (playerId) => {
+        const playerState = get()[playerId];
+
+        set({
+          [playerId]: {
+            ...playerState,
+            activeEffects: [],
+          },
+        });
       },
 
       resetGame: (
