@@ -16,7 +16,11 @@ import {
   shouldTriggerDataWar,
 } from '../utils/card-comparison';
 import { initializeGameDeck, shuffleDeck } from '../utils/deck-builder';
-import { getEffectType, isSpecialCard, shouldShowEffectNotification } from '../utils/effect-helpers';
+import {
+  getEffectType,
+  isSpecialCard,
+  shouldShowEffectNotification,
+} from '../utils/effect-helpers';
 import type { GameStore } from './types';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
@@ -66,7 +70,7 @@ export const useGameStore = create<GameStore>()(
       showTooltip: false,
 
       // Effect Notification System
-      seenEffectTypes: new Set(JSON.parse(localStorage.getItem('seenEffectTypes') || '[]')),
+      seenEffectTypes: JSON.parse(localStorage.getItem('seenEffectTypes') || '[]'),
       pendingEffectNotifications: [],
       currentEffectNotification: null,
       showEffectNotificationBadge: false,
@@ -74,7 +78,7 @@ export const useGameStore = create<GameStore>()(
       effectNotificationPersistence: 'localStorage',
 
       // Tooltip System
-      seenTooltips: new Set(JSON.parse(localStorage.getItem('seenTooltips') || '[]')),
+      seenTooltips: JSON.parse(localStorage.getItem('seenTooltips') || '[]'),
       tooltipPersistence: 'localStorage',
 
       // Game Logic Actions
@@ -823,19 +827,23 @@ export const useGameStore = create<GameStore>()(
       // Effect Notification Actions
       markEffectAsSeen: (effectType) => {
         const { seenEffectTypes, effectNotificationPersistence } = get();
-        const newSeenTypes = new Set(seenEffectTypes);
-        newSeenTypes.add(effectType);
+
+        // Convert to Set for operations, then back to array
+        const seenSet = new Set(seenEffectTypes);
+        seenSet.add(effectType);
+        const newSeenTypes = Array.from(seenSet);
 
         set({ seenEffectTypes: newSeenTypes });
 
         // Persist to localStorage if enabled
         if (effectNotificationPersistence === 'localStorage') {
-          localStorage.setItem('seenEffectTypes', JSON.stringify(Array.from(newSeenTypes)));
+          localStorage.setItem('seenEffectTypes', JSON.stringify(newSeenTypes));
         }
       },
 
       hasSeenEffect: (effectType) => {
-        return get().seenEffectTypes.has(effectType);
+        // Convert to Set for O(1) lookup
+        return new Set(get().seenEffectTypes).has(effectType);
       },
 
       hasUnseenEffectNotifications: () => {
@@ -880,6 +888,7 @@ export const useGameStore = create<GameStore>()(
                 card,
                 playedBy,
                 effectType,
+                specialType: card.specialType || null,
                 effectName: card.name,
                 effectDescription: card.specialActionDescription || '',
               });
@@ -938,7 +947,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       clearSeenEffects: () => {
-        set({ seenEffectTypes: new Set() });
+        set({ seenEffectTypes: [] });
         localStorage.removeItem('seenEffectTypes');
       },
 
@@ -954,18 +963,21 @@ export const useGameStore = create<GameStore>()(
       // Tooltip System Actions
       markTooltipAsSeen: (tooltipId) => {
         const { seenTooltips, tooltipPersistence } = get();
-        const newSeenTooltips = new Set(seenTooltips);
-        newSeenTooltips.add(tooltipId);
+
+        // Convert to Set for operations, then back to array
+        const seenSet = new Set(seenTooltips);
+        seenSet.add(tooltipId);
+        const newSeenTooltips = Array.from(seenSet);
 
         set({ seenTooltips: newSeenTooltips });
 
         if (tooltipPersistence === 'localStorage') {
-          localStorage.setItem('seenTooltips', JSON.stringify(Array.from(newSeenTooltips)));
+          localStorage.setItem('seenTooltips', JSON.stringify(newSeenTooltips));
         }
       },
 
       hasSeenTooltip: (tooltipId) => {
-        return get().seenTooltips.has(tooltipId);
+        return new Set(get().seenTooltips).has(tooltipId);
       },
 
       shouldShowTooltip: (tooltipId) => {
@@ -973,7 +985,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       clearSeenTooltips: () => {
-        set({ seenTooltips: new Set() });
+        set({ seenTooltips: [] });
         localStorage.removeItem('seenTooltips');
       },
 

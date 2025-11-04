@@ -2,21 +2,19 @@
  * TurnValue - Displays the current turn value with stacked effects
  */
 
-import { type FC, useEffect, useState } from 'react';
+import Text from '@/components/Text';
+import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
-import type { TurnValueProps } from './types';
-import TrackerCircle from '../../assets/icons/tracker-circle.svg';
+import { type FC, useEffect, useState } from 'react';
 import BlockerCircle from '../../assets/icons/blocker-circle.svg';
-import ValueCircle from '../../assets/icons/value-circle.svg';
-import TurnValueText from '../../assets/icons/turn-value.svg';
-import PlusIcon from '../../assets/icons/tracker-plus.svg';
 import MinusIcon from '../../assets/icons/blocker-minus.svg';
+import TrackerCircle from '../../assets/icons/tracker-circle.svg';
+import PlusIcon from '../../assets/icons/tracker-plus.svg';
+import TurnValueText from '../../assets/icons/turn-value.svg';
+import ValueCircle from '../../assets/icons/value-circle.svg';
+import type { TurnValueProps } from './types';
 
-export const TurnValue: FC<TurnValueProps> = ({
-  value,
-  activeEffects = [],
-  className = '',
-}) => {
+export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], className = '' }) => {
   const hasTracker = activeEffects.some((e) => e.type === 'tracker');
   const hasBlocker = activeEffects.some((e) => e.type === 'blocker');
 
@@ -47,7 +45,10 @@ export const TurnValue: FC<TurnValueProps> = ({
   return (
     <motion.div
       key={animationKey}
-      className={`relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center ${className}`}
+      className={cn(
+        'isolate relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center',
+        className,
+      )}
       initial={{ scale: 1 }}
       animate={{ scale: [1, 1.2, 1.2, 1] }}
       transition={{
@@ -100,8 +101,10 @@ export const TurnValue: FC<TurnValueProps> = ({
         )}
 
         {/* Center value */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-bold text-white text-3xl">{value}</span>
+        <div className="absolute inset-0 flex items-center justify-center z-2">
+          <Text as="span" variant="badge-xl" color="text-common-ash">
+            {value}
+          </Text>
         </div>
 
         {/* Effect icons - side by side with overlap in bottom-right */}

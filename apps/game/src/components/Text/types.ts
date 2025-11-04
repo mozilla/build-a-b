@@ -20,6 +20,9 @@ export type TextVariant =
   | 'body-small-medium' // Medium, 14px - Small body text
   | 'body-small' // Regular, 14px - Small body text
   | 'body-xs' // Regular, 12px - Extra small body text
+  // Badge
+  | 'badge-xl' // Extrabold, 42px - Large badges
+  | 'badge-xs' // Extrabold, 8px - Extra small badges
   // Labels
   | 'label-uppercase' // Extrabold, 8px, uppercase - Small labels
   | 'label-medium' // Medium, 12px - Labels

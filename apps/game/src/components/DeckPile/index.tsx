@@ -2,14 +2,14 @@
  * DeckPile - Displays a deck of cards with card back and counter
  */
 
-import { type FC, useRef, useState, useLayoutEffect } from 'react';
-import { motion } from 'framer-motion';
-import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { motion } from 'framer-motion';
+import { type FC, useLayoutEffect, useRef, useState } from 'react';
+import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
+import Text from '../Text';
 import { Tooltip } from '../Tooltip';
 import type { DeckPileProps } from './types';
-import Text from '../Text';
 
 export const DeckPile: FC<DeckPileProps> = ({
   cardCount,
@@ -94,20 +94,29 @@ export const DeckPile: FC<DeckPileProps> = ({
   return (
     <Tooltip
       content={
-        <Text variant="body-small" color="text-accent" weight="medium">
+        <Text className="leading-[1.2]" variant="body-small" color="text-accent" weight="semibold">
           {tooltipContent}
         </Text>
       }
       isOpen={showTooltip}
     >
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-1 w-full">
         {/* Counter for CPU (top) - stays in place */}
-        {!isPlayer && <div className="text-white text-sm font-medium">{cardCount} Cards left</div>}
+        {!isPlayer && (
+          <Text
+            className="tracking-[0.08em]"
+            color="text-common-ash"
+            variant="badge-xs"
+            transform="uppercase"
+          >
+            {cardCount} Cards left
+          </Text>
+        )}
 
         {/* Card stack - only this animates during swap */}
         <motion.div
           ref={deckRef}
-          className="relative p-2"
+          className="relative p-2 w-full"
           onClick={cardCount > 0 ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
@@ -124,7 +133,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className={`relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
+            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
               {/* Back cards for stacking effect - offset to top-left */}
               <div className="absolute -translate-x-2 -translate-y-2 pointer-events-none">
                 <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
@@ -144,7 +153,16 @@ export const DeckPile: FC<DeckPileProps> = ({
         </motion.div>
 
         {/* Counter for Player (bottom) - stays in place */}
-        {isPlayer && <div className="text-white text-sm font-medium">{cardCount} Cards left</div>}
+        {isPlayer && (
+          <Text
+            className="tracking-[0.08em]"
+            color="text-common-ash"
+            variant="badge-xs"
+            transform="uppercase"
+          >
+            {cardCount} Cards left
+          </Text>
+        )}
       </div>
     </Tooltip>
   );
