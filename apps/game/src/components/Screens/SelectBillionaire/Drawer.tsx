@@ -3,17 +3,29 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import type { Billionaire } from '@/config/billionaires';
-import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/utils/cn';
+import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion';
 import { type FC } from 'react';
 
-interface DrawerProps {
+interface DrawerProps
+  extends Omit<
+    HTMLMotionProps<'div'>,
+    'children' | 'onClick' | 'initial' | 'animate' | 'exit' | 'transition'
+  > {
   isOpen: boolean;
   billionaire: Billionaire | null;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-export const Drawer: FC<DrawerProps> = ({ isOpen, billionaire, onClose, onConfirm }) => {
+export const Drawer: FC<DrawerProps> = ({
+  isOpen,
+  billionaire,
+  onClose,
+  onConfirm,
+  className,
+  ...props
+}) => {
   if (!billionaire) return null;
 
   const description = billionaire.description || 'data-collecting, space-bound';
@@ -41,7 +53,8 @@ export const Drawer: FC<DrawerProps> = ({ isOpen, billionaire, onClose, onConfir
               ease: [0.35, 0, 0.15, 1],
               duration: 0.4,
             }}
-            className="fixed bottom-0 left-0 right-0 z-50 w-full mx-auto"
+            className={cn('fixed bottom-0 left-0 right-0 z-50 w-full mx-auto', className)}
+            {...props}
           >
             {/* Drawer Content */}
             <div className="relative w-full bg-[#0a0a15] rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8">

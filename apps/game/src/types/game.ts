@@ -79,6 +79,7 @@ export interface DataWarState {
 export interface EffectNotification {
   card: Card;
   playedBy: PlayerType;
+  specialType: SpecialCardType | null;
   effectType: string; // e.g., 'tracker', 'blocker', 'hostile_takeover'
   effectName: string; // e.g., 'Cursed Cursor', 'Enhanced Tracking Protection'
   effectDescription: string; // Full description from card data

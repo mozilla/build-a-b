@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
+import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import {
   useCurrentEffectNotification,
   useGameStore,
@@ -10,7 +11,6 @@ import {
 import { Card } from '../Card';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
 import { Tooltip } from '../Tooltip';
-import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import type { PlayedCardsProps } from './types';
 
 const ANIMATION_DELAYS = {
@@ -29,7 +29,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
 
   // Check if we should show the effect notification tooltip
   const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
-  const shouldShowEffectTooltip = !hasSeenTooltip(effectTooltipConfig.id) && !showEffectNotificationModal;
+  const shouldShowEffectTooltip =
+    !hasSeenTooltip(effectTooltipConfig.id) && !showEffectNotificationModal;
 
   return (
     <div className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative">
@@ -116,7 +117,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
 
                 // Wrap badge with tooltip only on first effect notification
                 return (
-                  <div className="absolute top-1/2 -translate-y-[5rem] -right-32 z-10">
+                  <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-10">
                     <Tooltip
                       content={effectTooltipConfig.message}
                       placement="bottom"
@@ -128,7 +129,13 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
                       }}
                     >
                       <div>
-                        <EffectNotificationBadge effectName={notification.effectName} />
+                        <EffectNotificationBadge
+                          effectName={
+                            notification.specialType === 'launch_stack'
+                              ? 'Launch Stack'
+                              : notification.effectName
+                          }
+                        />
                       </div>
                     </Tooltip>
                   </div>
