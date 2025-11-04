@@ -10,11 +10,12 @@ import { useGameLogic } from '@/hooks/use-game-logic';
 import { useGameStore } from '@/store';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
-import type { FC } from 'react';
+import type { FC, PropsWithChildren } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
 import { ScreenBackground } from './Background';
 
-export interface BaseScreenProps extends HTMLMotionProps<'div'> {
+export interface BaseScreenProps
+  extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
   send?: ReturnType<typeof useGameMachine>['send'];
 }
 
@@ -70,15 +71,16 @@ export const ScreenRenderer: FC = () => {
         <ScreenComponent
           key="component"
           send={send}
-          className="flex flex-col items-center justify-center relative w-full h-full"
-        />
-        {showCloseIcon && (
-          <div className="absolute top-5 right-5 z-20">
-            <Button onPress={toggleMenu}>
-              <Icon name="pause" />
-            </Button>
-          </div>
-        )}
+          className="flex flex-col items-center justify-center relative w-full h-full max-h-[54rem]"
+        >
+          {showCloseIcon && (
+            <div className="absolute top-5 right-5 z-20">
+              <Button onPress={toggleMenu}>
+                <Icon name="pause" />
+              </Button>
+            </div>
+          )}
+        </ScreenComponent>
       </AnimatePresence>
     </div>
   );

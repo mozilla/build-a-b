@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { introMicrocopy } from './microcopy';
 
-export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire } = useGameStore();
 
   const handleShowGuide = () => {
@@ -26,9 +26,13 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, ...props }) => {
     getBillionaireImage(selectedBillionaire) || '/assets/characters/default.png';
 
   return (
-    <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
+    <motion.div
+      className={cn('relative flex flex-col max-w-[25rem] mx-auto', className)}
+      {...props}
+    >
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8">
+      <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
+      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8 pt-16 h-full">
         {/* Billionaire Avatar - centered at top */}
         <div className="flex items-center justify-center pt-8 pb-4">
           <div className="w-[12.1875rem] h-[12.1875rem] rounded-full overflow-hidden border-4 border-accent">
