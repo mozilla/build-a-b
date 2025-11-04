@@ -45,7 +45,7 @@ export type GameStore = {
   deckSwapCount: number; // Number of times decks have been swapped (odd = swapped, even = normal)
 
   // Effect Notification System
-  seenEffectTypes: Set<string>; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover')
+  seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
   pendingEffectNotifications: EffectNotification[]; // Queue of notifications to show
   currentEffectNotification: EffectNotification | null; // Currently displayed notification in modal
   showEffectNotificationBadge: boolean; // Show badge on card
@@ -53,7 +53,7 @@ export type GameStore = {
   effectNotificationPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // Tooltip System
-  seenTooltips: Set<string>; // Tooltip IDs that have been seen
+  seenTooltips: string[]; // Tooltip IDs that have been seen - stored as array, used as Set
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // UI State
