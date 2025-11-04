@@ -4,7 +4,6 @@
 
 import { Icon } from '@/components/Icon';
 import Text from '@/components/Text';
-import { capitalize } from '@/utils/capitalize';
 import { motion } from 'framer-motion';
 import { type FC } from 'react';
 
@@ -12,7 +11,7 @@ interface EffectNotificationBadgeProps {
   effectName: string;
 }
 
-export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({ effectName }) => {
+export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = () => {
   return (
     <motion.div
       initial={{ scale: 0 }}
@@ -35,7 +34,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({ effe
         color="text-common-ash"
         weight="extrabold"
       >
-        1 {capitalize(effectName)}
+        1 Effect
       </Text>
     </motion.div>
   );

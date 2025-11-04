@@ -148,11 +148,11 @@ export function useGameLogic() {
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
 
-        // Check if Forced Empathy was played - if so, delay transition
+        // Check if Forced Empathy was played - if so, delay transition for BOTH animations
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
           setTimeout(() => {
             actorRef.send({ type: 'CARDS_REVEALED' });
-          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+          }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
           return;
         }
       }
@@ -181,10 +181,10 @@ export function useGameLogic() {
         c.playedCard?.specialType === 'forced_empathy';
 
       if (forcedEmpathyPlayed) {
-        // Wait for deck swap animation to complete before transitioning
+        // Wait for BOTH animations to finish: video + deck swap
         setTimeout(() => {
           actorRef.send({ type: 'CARDS_REVEALED' });
-        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+        }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
         return;
       }
     }

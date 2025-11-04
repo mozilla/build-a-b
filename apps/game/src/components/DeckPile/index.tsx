@@ -42,7 +42,7 @@ export const DeckPile: FC<DeckPileProps> = ({
       // Calculate the vertical distance as the height of the board minus some padding
       // We want the decks to swap positions, so each travels approximately the board height
       // Subtract deck heights and padding to stay within bounds
-      const verticalDistance = boardRect.height * 0.65; // 65% of board height for safer bounds
+      const verticalDistance = boardRect.height * 0.68; // 65% of board height for safer bounds
 
       // Horizontal curve - use 20% of board width to avoid center cards
       const horizontalCurve = boardRect.width * 0.2;
@@ -123,10 +123,7 @@ export const DeckPile: FC<DeckPileProps> = ({
           animate={swapAnimation}
           transition={{
             duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
-            delay:
-              forcedEmpathySwapping && swapDistance
-                ? ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DELAY / 1000
-                : 0, // Wait 800ms before animation starts
+            delay: 0, // No delay - starts immediately when forcedEmpathySwapping = true
             ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth curve
             times: [0, 0.5, 1], // Keyframe timing
           }}
