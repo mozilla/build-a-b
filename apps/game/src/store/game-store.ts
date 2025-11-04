@@ -56,8 +56,12 @@ export const useGameStore = create<GameStore>()(
       openWhatYouWantCards: [],
       showOpenWhatYouWantModal: false,
       showOpenWhatYouWantAnimation: false,
+      showForcedEmpathyAnimation: false,
       forcedEmpathySwapping: false,
       deckSwapCount: 0, // Tracks number of forced empathy swaps (odd = swapped, even = normal)
+      showHostileTakeoverAnimation: false,
+      showLaunchStackAnimation: false,
+      showDataWarAnimation: false,
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -106,6 +110,7 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           playerLaunchStacks: [],
           cpuLaunchStacks: [],
+          showForcedEmpathyAnimation: false,
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
         });
@@ -486,18 +491,24 @@ export const useGameStore = create<GameStore>()(
             get().setTrackerSmackerActive(playedBy);
             break;
           case 'forced_empathy':
-            // Trigger animation - this will visually swap the decks
-            get().setForcedEmpathySwapping(true);
-
-            // Wait for message (800ms) + animation (1500ms) = 2300ms total
-            // This gives users time to see "Forced Empathy!" message and understand what's happening
+            // Wait for card to settle on board before showing animation overlay
             setTimeout(() => {
-              get().swapDecks();
-              // Increment swap count to track position (odd = swapped, even = normal)
-              set({ deckSwapCount: get().deckSwapCount + 1 });
-              // Reset animation state - decks stay in swapped positions with new owners
-              get().setForcedEmpathySwapping(false);
-            }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION + 800);
+              // STEP 1: Show video overlay (decks don't move yet)
+              get().setShowForcedEmpathyAnimation(true);
+
+              // STEP 2: After video ends, hide video and start deck pile animation
+              setTimeout(() => {
+                get().setShowForcedEmpathyAnimation(false);
+                get().setForcedEmpathySwapping(true);
+
+                // STEP 3: After deck piles finish moving (DURATION only, no delay), swap data and hide animation
+                setTimeout(() => {
+                  get().swapDecks();
+                  set({ deckSwapCount: get().deckSwapCount + 1 });
+                  get().setForcedEmpathySwapping(false);
+                }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+              }, ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION);
+            }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY);
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -772,8 +783,22 @@ export const useGameStore = create<GameStore>()(
       },
 
       // Forced Empathy Actions
+      setShowForcedEmpathyAnimation: (show) => {
+        set({ showForcedEmpathyAnimation: show });
+      },
       setForcedEmpathySwapping: (swapping) => {
         set({ forcedEmpathySwapping: swapping });
+      },
+
+      // Special Effect Animation Actions
+      setShowHostileTakeoverAnimation: (show) => {
+        set({ showHostileTakeoverAnimation: show });
+      },
+      setShowLaunchStackAnimation: (show) => {
+        set({ showLaunchStackAnimation: show });
+      },
+      setShowDataWarAnimation: (show) => {
+        set({ showDataWarAnimation: show });
       },
 
       // UI Actions
@@ -1038,6 +1063,7 @@ export const useGameStore = create<GameStore>()(
           showMenu: false,
           showHandViewer: false,
           showTooltip: false,
+          showForcedEmpathyAnimation: false,
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
         });

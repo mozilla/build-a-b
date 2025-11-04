@@ -138,11 +138,8 @@ export const gameFlowMachine = createMachine(
       },
 
       vs_animation: {
-        entry: assign({
-          tooltipMessage: 'Get ready for battle!',
-        }),
         after: {
-          [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'ready', // Auto-transition after animation
+          [ANIMATION_DURATIONS.VS_ANIMATION_DURATION]: 'ready', // Auto-transition after animation
         },
         on: {
           VS_ANIMATION_COMPLETE: 'ready',
@@ -203,12 +200,12 @@ export const gameFlowMachine = createMachine(
           },
 
           transitioning: {
-            // 1 second delay after modal closes
+            // Delay after modal closes before continuing
             entry: assign({
               tooltipMessage: '',
             }),
             after: {
-              1000: '#dataWarGame.comparing',
+              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: '#dataWarGame.comparing',
             },
           },
         },
@@ -241,7 +238,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: 'DATA WAR!',
             }),
             after: {
-              [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'reveal_face_down',
+              [ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION]: 'reveal_face_down',
             },
           },
           reveal_face_down: {
