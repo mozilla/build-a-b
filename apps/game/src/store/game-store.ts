@@ -10,7 +10,6 @@ import { DEFAULT_GAME_CONFIG } from '../config/game-config';
 import type { Card, EffectNotification, Player, PlayerType, SpecialEffect } from '../types';
 import {
   applyBlockerModifier,
-  applyTrackerModifier,
   compareCards,
   isEffectBlocked,
   shouldTriggerDataWar,
@@ -372,8 +371,8 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // Apply tracker modifier (add tracker value to turn total)
-        const newValue = applyTrackerModifier(player.currentTurnValue, trackerCard);
+        // Note: The tracker value is already added to currentTurnValue in playCard()
+        // This function only tracks the effect for display purposes
 
         // Add to active effects
         const newActiveEffects = [
@@ -388,7 +387,6 @@ export const useGameStore = create<GameStore>()(
         set({
           [playerId]: {
             ...player,
-            currentTurnValue: newValue,
             activeEffects: newActiveEffects,
           },
         });
