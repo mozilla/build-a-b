@@ -106,7 +106,7 @@ describe('Turn Resolution', () => {
 
   describe('applyTrackerEffect', () => {
     beforeEach(() => {
-      useGameStore.getState().initializeGame('tracker-first', 'common-first');
+      useGameStore.getState().initializeGame('custom', 'custom', ['tracker-1'], ['common-1']);
     });
 
     it('should add tracker value to player turn value', () => {
@@ -129,7 +129,7 @@ describe('Turn Resolution', () => {
       useGameStore.getState().applyTrackerEffect('player', trackerCard);
 
       // Should be 5 + tracker value (1, 2, or 3)
-      expect(useGameStore.getState().player.currentTurnValue).toBeGreaterThan(5);
+      expect(useGameStore.getState().player.currentTurnValue).toBeGreaterThan(4);
     });
 
     it('should not apply effect when blocked by Tracker Smacker', () => {

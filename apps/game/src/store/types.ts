@@ -18,6 +18,7 @@ export type GameStore = {
   cardsInPlay: Card[];
   activePlayer: PlayerType;
   anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
+  anotherPlayExpected: boolean; // True when we're waiting for another play to complete before comparison
   pendingEffects: SpecialEffect[];
   preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
   preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
@@ -41,8 +42,14 @@ export type GameStore = {
   showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
 
   // Forced Empathy State
-  forcedEmpathySwapping: boolean; // True when decks are actively animating
+  showForcedEmpathyAnimation: boolean; // True when video overlay is showing
+  forcedEmpathySwapping: boolean; // True when decks are physically animating positions
   deckSwapCount: number; // Number of times decks have been swapped (odd = swapped, even = normal)
+
+  // Special Effect Animations
+  showHostileTakeoverAnimation: boolean; // Shows when hostile takeover is played
+  showLaunchStackAnimation: boolean; // Shows after collecting a launch stack
+  showDataWarAnimation: boolean; // Shows when data war occurs
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -76,7 +83,7 @@ export type GameStore = {
   ) => void;
   playCard: (playerId: PlayerType) => void;
   collectCards: (winnerId: PlayerType, cards: Card[]) => void;
-  addLaunchStack: (playerId: PlayerType) => void;
+  addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
   stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
   checkWinCondition: () => boolean;
@@ -112,7 +119,13 @@ export type GameStore = {
   setShowOpenWhatYouWantAnimation: (show: boolean) => void;
 
   // Forced Empathy Actions
+  setShowForcedEmpathyAnimation: (show: boolean) => void;
   setForcedEmpathySwapping: (swapping: boolean) => void;
+
+  // Special Effect Animation Actions
+  setShowHostileTakeoverAnimation: (show: boolean) => void;
+  setShowLaunchStackAnimation: (show: boolean) => void;
+  setShowDataWarAnimation: (show: boolean) => void;
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;
