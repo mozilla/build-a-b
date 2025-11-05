@@ -65,6 +65,12 @@ export const PrimaryContextProvider: FC<
 
     const { selfies_available, next_at } = avatarData.selfieAvailability;
 
+    // If user has Easter Egg stored, show camera roll full state
+    if (avatarData.hasEasterEgg) {
+      setSelfieAvailabilityState('CAMERA_ROLL_FULL');
+      return;
+    }
+
     // If user reached selfies limit + easter egg, show coming soon
     if (avatarData.selfies.length === MAX_SELFIES + 1) {
       setSelfieAvailabilityState('COMING_SOON');
