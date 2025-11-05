@@ -211,6 +211,14 @@ export function useGameLogic() {
       return;
     }
 
+    // IMPORTANT: Defer comparison until "another play" sequence is complete
+    // Check if we're waiting for another play to complete
+    if (store.anotherPlayExpected) {
+      // Still waiting for another play - skip tie/Data War check
+      actorRef.send({ type: 'RESOLVE_TURN' });
+      return;
+    }
+
     // IMPORTANT: Check if either card triggers "another play"
     // This must happen before checking for ties/Data War
     const playerTriggersAnother =
