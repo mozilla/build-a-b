@@ -7,7 +7,14 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
-import type { Card, EffectNotification, Player, PlayerType, SpecialEffect } from '../types';
+import type {
+  Card,
+  CardValue,
+  EffectNotification,
+  Player,
+  PlayerType,
+  SpecialEffect,
+} from '../types';
 import {
   applyBlockerModifier,
   compareCards,
@@ -31,6 +38,8 @@ const createInitialPlayer = (id: PlayerType): Player => ({
   currentTurnValue: 0,
   launchStackCount: 0,
   activeEffects: [],
+  pendingTrackerBonus: 0,
+  pendingBlockerPenalty: 0,
 });
 
 export const useGameStore = create<GameStore>()(
@@ -42,6 +51,7 @@ export const useGameStore = create<GameStore>()(
       cardsInPlay: [],
       activePlayer: 'player',
       anotherPlayMode: false,
+      anotherPlayExpected: false,
       pendingEffects: [],
       preRevealEffects: [],
       preRevealProcessed: false,
@@ -106,6 +116,7 @@ export const useGameStore = create<GameStore>()(
           winCondition: null,
           activePlayer: 'player',
           anotherPlayMode: false,
+          anotherPlayExpected: false,
           pendingEffects: [],
           trackerSmackerActive: null,
           playerLaunchStacks: [],
@@ -159,7 +170,22 @@ export const useGameStore = create<GameStore>()(
         const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
 
         // Calculate the effective card value (0 if negated, otherwise normal value)
-        const effectiveCardValue = shouldNegateValue ? 0 : card.value;
+        let effectiveCardValue = shouldNegateValue ? 0 : card.value;
+
+        // APPLY PENDING TRACKER BONUS FROM EARLIER IN SAME TURN
+        // If in anotherPlayMode (second+ card), apply any pending tracker bonus
+        if (get().anotherPlayMode && playerState.pendingTrackerBonus > 0) {
+          effectiveCardValue += playerState.pendingTrackerBonus;
+        }
+
+        // APPLY PENDING BLOCKER PENALTY FROM EARLIER IN SAME TURN
+        // If in anotherPlayMode (second+ card), apply any pending blocker penalty
+        if (get().anotherPlayMode && playerState.pendingBlockerPenalty > 0) {
+          effectiveCardValue = Math.max(
+            0,
+            effectiveCardValue - playerState.pendingBlockerPenalty,
+          ) as CardValue;
+        }
 
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
@@ -180,22 +206,51 @@ export const useGameStore = create<GameStore>()(
             playedCardsInHand: newPlayedCardsInHand,
             deck: remainingDeck,
             currentTurnValue: newTurnValue,
+            // CLEAR pending bonuses/penalties after applying (only if in anotherPlayMode)
+            // If NOT in anotherPlayMode (first card), keep them at 0 or set them below for trackers
+            pendingTrackerBonus: get().anotherPlayMode ? 0 : playerState.pendingTrackerBonus,
+            pendingBlockerPenalty: get().anotherPlayMode ? 0 : playerState.pendingBlockerPenalty,
           },
           cardsInPlay: [...get().cardsInPlay, card],
         };
 
-        // Set turn state for tracker (affects own turn value display)
-        // Only set if not negated
+        // Handle tracker card: STORE bonus for next card (in same turn, via anotherPlayMode)
         if (card.specialType === 'tracker' && !shouldNegateValue) {
           const turnStateKey = playerId === 'player' ? 'playerTurnState' : 'cpuTurnState';
           updates[turnStateKey] = 'tracker';
+
+          // Add to active effects for display purposes
+          const newActiveEffects = [
+            ...playerState.activeEffects,
+            {
+              type: 'tracker' as const,
+              value: card.value,
+              source: playerId,
+            },
+          ];
+
+          // STORE the tracker bonus for next card (don't apply to this card)
+          updates[playerId] = {
+            ...(updates[playerId] as Player),
+            pendingTrackerBonus: card.value, // Store +1, +2, or +3 for next card
+            activeEffects: newActiveEffects, // Add to display
+          };
         }
 
         // Set turn state for blocker (affects opponent's turn value display)
-        // Only set if not negated
+        // Blocker logic stays in handleCardEffect (applies immediately to opponent)
         if (card.specialType === 'blocker' && !shouldNegateValue) {
           const turnStateKey = opponentId === 'player' ? 'playerTurnState' : 'cpuTurnState';
           updates[turnStateKey] = 'blocker';
+        }
+
+        // Update anotherPlayExpected flag
+        // If this card triggers another play, we're expecting more cards
+        // If this card doesn't trigger another play and we're in anotherPlayMode, sequence is ending
+        if (card.triggersAnotherPlay) {
+          updates.anotherPlayExpected = true;
+        } else if (get().anotherPlayMode) {
+          updates.anotherPlayExpected = false;
         }
 
         set(updates);
@@ -211,11 +266,14 @@ export const useGameStore = create<GameStore>()(
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
             activeEffects: [], // Clear active effects
+            pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+            pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
           },
           cardsInPlay: [],
           // Reset turn states for new turn
           playerTurnState: 'normal',
           cpuTurnState: 'normal',
+          anotherPlayExpected: false, // Clear flag (turn is over)
         });
 
         // Also clear the loser's played card and hand stack
@@ -228,6 +286,8 @@ export const useGameStore = create<GameStore>()(
             playedCardsInHand: [], // Clear hand stack
             currentTurnValue: 0,
             activeEffects: [], // Clear active effects
+            pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+            pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
           },
         });
       },
@@ -467,12 +527,11 @@ export const useGameStore = create<GameStore>()(
         // Handle specific effects
         switch (card.specialType) {
           case 'tracker':
-            // Apply tracker effect (adds to active effects and updates turn value)
-            // This is already protected by the Tracker Smacker check inside applyTrackerEffect
-            get().applyTrackerEffect(playedBy, card);
+            // NO LONGER APPLY TRACKER EFFECT HERE
+            // Tracker logic is now handled in playCard() (store bonus for next card)
             break;
           case 'blocker': {
-            // Check if Hostile Takeover is in play - if so, ignore blocker effect
+            // KEEP BLOCKER LOGIC - applies immediately to opponent
             const { player: p, cpu: c } = get();
             const hostileTakeoverInPlay =
               p.playedCard?.specialType === 'hostile_takeover' ||
@@ -555,6 +614,8 @@ export const useGameStore = create<GameStore>()(
               player: {
                 ...player,
                 currentTurnValue: 0,
+                pendingTrackerBonus: 0, // CLEAR pending tracker bonus (blocked)
+                activeEffects: [], // CLEAR active effects for display
               },
               playerTurnState: 'normal', // Reset to normal UI state
             });
@@ -569,6 +630,8 @@ export const useGameStore = create<GameStore>()(
               cpu: {
                 ...cpu,
                 currentTurnValue: 0,
+                pendingTrackerBonus: 0, // CLEAR pending tracker bonus (blocked)
+                activeEffects: [], // CLEAR active effects for display
               },
               cpuTurnState: 'normal', // Reset to normal UI state
             });
@@ -1051,6 +1114,7 @@ export const useGameStore = create<GameStore>()(
           cardsInPlay: [],
           activePlayer: 'player',
           anotherPlayMode: false,
+          anotherPlayExpected: false,
           pendingEffects: [],
           preRevealEffects: [],
           preRevealProcessed: false,

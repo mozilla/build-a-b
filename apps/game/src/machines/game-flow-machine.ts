@@ -232,6 +232,25 @@ export const gameFlowMachine = createMachine(
 
       data_war: {
         initial: 'animating',
+        entry: () => {
+          // Clear pending bonuses/penalties (Data War = fresh start)
+          const { player, cpu } = useGameStore.getState();
+          useGameStore.setState({
+            player: {
+              ...player,
+              pendingTrackerBonus: 0,
+              pendingBlockerPenalty: 0,
+              currentTurnValue: 0,
+            },
+            cpu: {
+              ...cpu,
+              pendingTrackerBonus: 0,
+              pendingBlockerPenalty: 0,
+              currentTurnValue: 0,
+            },
+            anotherPlayExpected: false, // Clear flag (fresh start)
+          });
+        },
         states: {
           animating: {
             entry: assign({
@@ -387,7 +406,14 @@ export const gameFlowMachine = createMachine(
       },
       isDataWar: () => {
         // Check if the current turn is a tie (Data War)
+        // IMPORTANT: Defer Data War check if we're waiting for another play to complete
         const state = useGameStore.getState();
+
+        // If we're expecting another play, don't trigger Data War yet
+        if (state.anotherPlayExpected) {
+          return false;
+        }
+
         return state.checkForDataWar();
       },
       hasSpecialEffects: () => {

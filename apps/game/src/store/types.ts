@@ -18,6 +18,7 @@ export type GameStore = {
   cardsInPlay: Card[];
   activePlayer: PlayerType;
   anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
+  anotherPlayExpected: boolean; // True when we're waiting for another play to complete before comparison
   pendingEffects: SpecialEffect[];
   preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
   preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
