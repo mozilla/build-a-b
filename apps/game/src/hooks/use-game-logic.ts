@@ -148,11 +148,11 @@ export function useGameLogic() {
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
 
-        // Check if Forced Empathy was played - if so, delay transition
+        // Check if Forced Empathy was played - if so, delay transition for BOTH animations
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
           setTimeout(() => {
             actorRef.send({ type: 'CARDS_REVEALED' });
-          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+          }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
           return;
         }
       }
@@ -181,10 +181,10 @@ export function useGameLogic() {
         c.playedCard?.specialType === 'forced_empathy';
 
       if (forcedEmpathyPlayed) {
-        // Wait for deck swap animation to complete before transitioning
+        // Wait for BOTH animations to finish: video + deck swap
         setTimeout(() => {
           actorRef.send({ type: 'CARDS_REVEALED' });
-        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+        }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
         return;
       }
     }
@@ -208,6 +208,14 @@ export function useGameLogic() {
     if (hostileTakeoverPlayed) {
       // Hostile Takeover always triggers Data War, ignoring all other effects
       actorRef.send({ type: 'TIE' });
+      return;
+    }
+
+    // IMPORTANT: Defer comparison until "another play" sequence is complete
+    // Check if we're waiting for another play to complete
+    if (store.anotherPlayExpected) {
+      // Still waiting for another play - skip tie/Data War check
+      actorRef.send({ type: 'RESOLVE_TURN' });
       return;
     }
 

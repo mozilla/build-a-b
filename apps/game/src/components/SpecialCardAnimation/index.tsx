@@ -1,38 +1,61 @@
-import Lottie from 'lottie-react';
+import { useRef, useEffect } from 'react';
 import type { SpecialCardAnimationProps } from './types';
 
 /**
  * Generic Special Card Animation Component
- * Displays a full-screen overlay with a Lottie animation
- * Reusable for any special card effect (OWYW, Data Grab, etc.)
+ * Displays a board-sized overlay with a WebM video animation
+ * Matches the game board dimensions (max-w-[25rem] max-h-[54rem])
+ * Reusable for any special card effect (OWYW, Forced Empathy, Data Grab, etc.)
  */
 export const SpecialCardAnimation = ({
   show,
-  animationData,
+  videoSrc,
   title,
-  width = 300,
-  height = 300,
   className = '',
   animationClassName = '',
+  videoClassName = '',
   titleClassName = '',
   loop = true,
-  lottieOptions = {},
+  controls = false,
 }: SpecialCardAnimationProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Auto-play video when component becomes visible
+  useEffect(() => {
+    if (show && videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        console.error('Failed to play special card animation:', error);
+      });
+    }
+  }, [show]);
+
   if (!show) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm ${className}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}
     >
-      <div className={`flex flex-col items-center gap-4 ${animationClassName}`}>
-        <Lottie
-          animationData={animationData}
+      {/* Board-constrained container matching game board dimensions */}
+      <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 backdrop-blur-sm">
+        {/* Video fills full board */}
+        <video
+          ref={videoRef}
+          src={videoSrc}
           loop={loop}
-          autoplay={true}
-          style={{ width, height }}
-          {...lottieOptions}
+          muted
+          playsInline
+          controls={controls}
+          className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
+          aria-label={title ? `${title} animation` : 'Special card animation'}
         />
-        {title && <p className={`text-xl font-bold text-white ${titleClassName}`}>{title}</p>}
+        {/* Optional title overlay */}
+        {title && (
+          <div className={`absolute bottom-8 left-0 right-0 flex justify-center ${animationClassName}`}>
+            <p className={`text-xl font-bold text-white drop-shadow-lg ${titleClassName}`}>
+              {title}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

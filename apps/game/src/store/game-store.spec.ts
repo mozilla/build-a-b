@@ -164,7 +164,7 @@ describe('gameStore', () => {
         cardsInPlay: [launchStackCard],
       });
 
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard);
       expect(useGameStore.getState().player.launchStackCount).toBe(1);
       expect(useGameStore.getState().playerLaunchStacks).toHaveLength(1);
       expect(useGameStore.getState().cardsInPlay).toHaveLength(0); // Card removed from play
@@ -176,7 +176,7 @@ describe('gameStore', () => {
         cardsInPlay: [launchStackCard2],
       });
 
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard2);
       expect(useGameStore.getState().player.launchStackCount).toBe(2);
       expect(useGameStore.getState().playerLaunchStacks).toHaveLength(2);
     });
@@ -190,7 +190,7 @@ describe('gameStore', () => {
         player: { ...player, playedCard: launchStackCard1 },
         cardsInPlay: [launchStackCard1],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard1);
 
       // Add second Launch Stack
       const launchStackCard2 = { id: 'ls-2', value: 5, specialType: 'launch_stack' } as Card;
@@ -198,7 +198,7 @@ describe('gameStore', () => {
         player: { ...useGameStore.getState().player, playedCard: launchStackCard2 },
         cardsInPlay: [launchStackCard2],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard2);
 
       expect(useGameStore.getState().winner).toBe(null);
 
@@ -208,7 +208,7 @@ describe('gameStore', () => {
         player: { ...useGameStore.getState().player, playedCard: launchStackCard3 },
         cardsInPlay: [launchStackCard3],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard3);
 
       const state = useGameStore.getState();
       expect(state.winner).toBe('player');

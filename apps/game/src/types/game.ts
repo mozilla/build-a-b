@@ -55,6 +55,8 @@ export interface Player {
   launchStackCount: number; // Number of launch stacks collected (0-3)
   billionaireCharacter?: string; // Selected billionaire (player only)
   activeEffects: ActiveEffect[]; // Active effects for this player (for stacked display)
+  pendingTrackerBonus: number; // Tracker bonus to apply to next card in same turn (0 if none)
+  pendingBlockerPenalty: number; // Blocker penalty to apply to next card in same turn (0 if none)
 }
 
 export interface SpecialEffect {
