@@ -292,14 +292,13 @@ export const useGameStore = create<GameStore>()(
         });
       },
 
-      addLaunchStack: (playerId) => {
+      addLaunchStack: (playerId, launchStackCard) => {
         const player = get()[playerId];
         const newCount = player.launchStackCount + 1;
 
-        // Find the Launch Stack card that was just played
-        const launchStackCard = player.playedCard;
+        // Validate that this is actually a Launch Stack card
         if (!launchStackCard || launchStackCard.specialType !== 'launch_stack') {
-          console.error('addLaunchStack called without a Launch Stack card being played');
+          console.error('addLaunchStack called without a Launch Stack card');
           return;
         }
 
@@ -544,7 +543,8 @@ export const useGameStore = create<GameStore>()(
             break;
           }
           case 'launch_stack':
-            get().addLaunchStack(playedBy);
+            // DON'T add launch stack immediately
+            // It will be added in processPendingEffects if the player wins the turn
             break;
           case 'tracker_smacker':
             get().setTrackerSmackerActive(playedBy);
@@ -712,6 +712,15 @@ export const useGameStore = create<GameStore>()(
                 const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
                 get().stealCards(opponentId, effect.playedBy, 2);
               }
+              break;
+
+            case 'launch_stack':
+              // If the player who played this card won the turn, add it to their collection
+              if (winner === effect.playedBy) {
+                get().addLaunchStack(effect.playedBy, effect.card);
+              }
+              // If they lost, the launch stack card goes to the winner with other cards
+              // (it stays in cardsInPlay and will be collected normally)
               break;
 
             case 'data_grab': {
