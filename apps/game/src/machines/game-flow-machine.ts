@@ -255,27 +255,27 @@ export const gameFlowMachine = createMachine(
         entry: () => {
           // Clear pending bonuses/penalties (Data War = fresh start)
           const { player, cpu } = useGameStore.getState();
+          const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
+          const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
+
           useGameStore.setState({
             player: {
               ...player,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue: 0,
+              currentTurnValue: playerHasHostileTakeover ? player.playedCard?.value ?? 6 : 0,
             },
             cpu: {
               ...cpu,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue: 0,
+              currentTurnValue: cpuHasHostileTakeover ? cpu.playedCard?.value ?? 6 : 0,
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
           });
         },
         states: {
           animating: {
-            entry: assign({
-              tooltipMessage: 'DATA WAR!',
-            }),
             after: {
               [ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION]: 'reveal_face_down',
             },
