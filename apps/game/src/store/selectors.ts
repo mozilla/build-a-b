@@ -20,7 +20,7 @@ export const useUIState = () =>
     showMenu: state.showMenu,
     showHandViewer: state.showHandViewer,
     showInstructions: state.showInstructions,
-    audioEnabled: state.audioEnabled,
+    // audioEnabled: state.audioEnabled, // TODO: Add this back in when we have a way to toggle audio
     showTooltip: state.showTooltip,
   }));
 export const useOpenWhatYouWantState = () =>
