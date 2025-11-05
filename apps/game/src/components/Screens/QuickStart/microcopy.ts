@@ -21,6 +21,7 @@ export const quickStartMicrocopy = {
     },
   ],
   cta: 'Deal me in!',
+  menuCta: 'Close',
   cardCarousel: {
     title: 'The lineup',
     subtitle: 'Meet the cards of Data War.',

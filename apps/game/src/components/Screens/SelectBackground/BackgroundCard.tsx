@@ -22,9 +22,8 @@ export const BackgroundCard: FC<BackgroundCardProps> = ({
       disableRipple
       onPress={onPress}
       className={cn(
-        'relative flex-shrink-0 transition-all duration-300 cursor-pointer snap-center overflow-visible px-0',
-        'flex items-center justify-center',
-        isSelected ? 'w-[11.25rem] h-[19.938rem]' : 'w-[8.75rem] h-[18.875rem]',
+        'flex items-center justify-center relative flex-shrink-0 transition-transform duration-300 cursor-pointer snap-center overflow-visible px-0 w-[8.75rem] h-[18.875rem]',
+        isSelected && 'scale-[1.285]',
         className,
       )}
       aria-label={`Select ${name} background`}

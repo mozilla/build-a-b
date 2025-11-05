@@ -30,7 +30,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
       <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
       <div className="w-full relative z-10 py-8 pt-16 h-full">
         {/* Title and Description */}
-        <div className="flex flex-col items-center justify-start gap-8 h-full">
+        <div className="flex flex-col items-center justify-start gap-4 h-full">
           <div className="flex flex-col items-center gap-4 w-full px-[2.25rem] max-w-[25rem] mx-auto">
             <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
               {selectBackgroundMicrocopy.title}

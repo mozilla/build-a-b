@@ -5,12 +5,12 @@
 
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
-import { useCpuPlayer } from './use-cpu-player';
-import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
+import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { useCpuPlayer } from './use-cpu-player';
 
 /**
  * Main game logic hook that orchestrates the entire game
@@ -480,6 +480,19 @@ export function useGameLogic() {
     actorRef.send({ type: 'RESET_GAME' });
   };
 
+  const restartGame = () => {
+    useGameStore.getState().resetGame();
+    actorRef.send({ type: 'RESTART_GAME' });
+  };
+
+  const quitGame = () => {
+    const { resetGame, selectBackground, selectBillionaire } = useGameStore.getState();
+    resetGame();
+    selectBackground('');
+    selectBillionaire('');
+    actorRef.send({ type: 'QUIT_GAME' });
+  };
+
   // Prepare effect notification when entering showing substate
   useEffect(() => {
     if (phase === 'effect_notification.showing') {
@@ -547,6 +560,8 @@ export function useGameLogic() {
     handleCompareTurn,
     handleResolveTurn,
     resetGame,
+    restartGame,
+    quitGame,
 
     // Utilities (expose send for advanced use cases)
     send: actorRef.send,
