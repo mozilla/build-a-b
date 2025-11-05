@@ -186,18 +186,21 @@ export type Database = {
         Row: {
           avatar_id: number;
           created_at: string;
+          easter_egg_id: number | null;
           id: number;
           uuid: string;
         };
         Insert: {
           avatar_id: number;
           created_at?: string;
+          easter_egg_id?: number | null;
           id?: number;
           uuid?: string;
         };
         Update: {
           avatar_id?: number;
           created_at?: string;
+          easter_egg_id?: number | null;
           id?: number;
           uuid?: string;
         };
