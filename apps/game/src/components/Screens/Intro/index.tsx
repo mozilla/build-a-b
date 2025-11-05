@@ -60,7 +60,7 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
         </div>
 
         {/* Action Buttons - stacked at bottom */}
-        <div className="w-full flex flex-col items-center gap-4 pb-8 px-[4.5rem]">
+        <div className="w-full flex flex-col items-center gap-4 pt-4 pb-8 px-[4.5rem]">
           <Button onPress={handleShowGuide} variant="primary" className="w-full max-w-[15.5rem]">
             {introMicrocopy.quickStartButton}
           </Button>

@@ -25,7 +25,7 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   select_billionaire: SelectBillionaire,
   select_background: SelectBackground,
   intro: Intro,
-  quick_start_guide: QuickStart,
+  quick_start_guide: QuickStart as FC<BaseScreenProps>,
   your_mission: YourMission,
   vs_animation: VSAnimation,
   // ready: Welcome,
@@ -76,7 +76,7 @@ export const ScreenRenderer: FC = () => {
           {showCloseIcon && (
             <div className="absolute top-5 right-5 z-20">
               <Button onPress={toggleMenu}>
-                <Icon name="pause" />
+                <Icon name="pause" label="pause" />
               </Button>
             </div>
           )}

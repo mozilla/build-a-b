@@ -1,21 +1,26 @@
 import { Switch } from '@/components/Switch';
 import { Text } from '@/components/Text';
 import { cn } from '@/utils/cn';
-import { type FC } from 'react';
+import { type FC, type HTMLAttributes } from 'react';
 
-interface AudioToggleProps {
+interface AudioToggleProps extends HTMLAttributes<HTMLDivElement> {
   enabled: boolean;
   onToggle: () => void;
-  className?: string;
 }
 
-export const AudioToggle: FC<AudioToggleProps> = ({ enabled, onToggle, className }) => {
+export const AudioToggle: FC<AudioToggleProps> = ({
+  enabled,
+  onToggle,
+  className,
+  children,
+  ...props
+}) => {
   return (
-    <div className={cn('flex items-center justify-between w-full', className)}>
+    <div className={cn('flex items-center justify-between w-full', className)} {...props}>
       <div className="flex items-center gap-3">
         {/* <Icon name="audio" width={24} height={24} className="text-common-ash" /> */}
         <Text variant="title-3" className="text-common-ash">
-          Audio
+          {children}
         </Text>
       </div>
       <div className="flex items-center gap-4">

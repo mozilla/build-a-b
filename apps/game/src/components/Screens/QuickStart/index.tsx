@@ -9,8 +9,20 @@ import { motion } from 'framer-motion';
 import { CardCarousel } from './CardCarousel';
 import { quickStartMicrocopy } from './microcopy';
 
-export const QuickStart: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
+export const QuickStart: FC<BaseScreenProps & { fromMenu?: boolean; onContinue: () => void }> = ({
+  send,
+  className,
+  children,
+  fromMenu,
+  onContinue,
+  ...props
+}) => {
   const handleContinue = () => {
+    if (fromMenu) {
+      onContinue();
+      return;
+    }
+
     send?.({ type: 'SHOW_MISSION' });
   };
 
@@ -59,7 +71,7 @@ export const QuickStart: FC<BaseScreenProps> = ({ send, className, children, ...
         {/* CTA Button */}
         <div className="relative z-10 flex justify-center pb-8 pt-4 w-full px-12 max-w-[25rem] mx-auto">
           <Button className="w-full mx-auto" onPress={handleContinue} variant="primary">
-            {quickStartMicrocopy.cta}
+            {fromMenu ? quickStartMicrocopy.menuCta : quickStartMicrocopy.cta}
           </Button>
         </div>
       </div>

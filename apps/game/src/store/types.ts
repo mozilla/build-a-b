@@ -71,7 +71,8 @@ export type GameStore = {
   showHandViewer: boolean;
   handViewerPlayer: PlayerType;
   showInstructions: boolean;
-  audioEnabled: boolean;
+  musicEnabled: boolean;
+  soundEffectsEnabled: boolean;
   showTooltip: boolean;
 
   // Actions - Game Logic
@@ -153,7 +154,8 @@ export type GameStore = {
   togglePause: () => void;
   toggleMenu: () => void;
   toggleHandViewer: (player?: PlayerType) => void;
-  toggleAudio: () => void;
+  toggleMusic: () => void;
+  toggleSoundEffects: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
   resetGame: (
