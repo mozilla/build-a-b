@@ -423,8 +423,10 @@ export function useGameLogic() {
    */
   const handleDataWarFaceDown = () => {
     const store = useGameStore.getState();
+    const playerHasHostileTakeover = store.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuHasHostileTakeover = store.cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Add 3 cards face-down from each player
+    // Add 3 cards face-down from each player ONLY if not hostile takeover is played
     const playerCards = store.player.deck.slice(0, 3);
     const cpuCards = store.cpu.deck.slice(0, 3);
 
@@ -433,22 +435,26 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player: {
-        ...store.player,
-        deck: updatedPlayerDeck,
-        playedCardsInHand: [
-          ...store.player.playedCardsInHand,
-          ...playerCards.map((card) => ({ card, isFaceDown: true })),
-        ],
-      },
-      cpu: {
-        ...store.cpu,
-        deck: updatedCpuDeck,
-        playedCardsInHand: [
-          ...store.cpu.playedCardsInHand,
-          ...cpuCards.map((card) => ({ card, isFaceDown: true })),
-        ],
-      },
+      player: playerHasHostileTakeover
+        ? store.player
+        : {
+            ...store.player,
+            deck: updatedPlayerDeck,
+            playedCardsInHand: [
+              ...store.player.playedCardsInHand,
+              ...playerCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
+      cpu: cpuHasHostileTakeover
+        ? store.cpu
+        : {
+            ...store.cpu,
+            deck: updatedCpuDeck,
+            playedCardsInHand: [
+              ...store.cpu.playedCardsInHand,
+              ...cpuCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
       cardsInPlay: [...store.cardsInPlay, ...playerCards, ...cpuCards],
     });
   };
@@ -457,18 +463,27 @@ export function useGameLogic() {
    * Handles Data War face-up cards (add 1 card from each player and resolve)
    */
   const handleDataWarFaceUp = () => {
-    // Play one card from each player (this will also add to cardsInPlay)
-    playCard('player');
-    playCard('cpu');
+    // Play one card from each player that does not have hostile_takeover in hand.
+    const { player, cpu } = useGameStore.getState();
+    const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
+    const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    const { player: p, cpu: c } = useGameStore.getState();
+    if (playerHasHostileTakeover) {
+      playCard('cpu');
+    } else if (cpuHasHostileTakeover) {
+      playCard('player');
+    } else {
+      playCard('cpu');
+      playCard('player');
+    }
 
     // Handle special effects for the new cards
-    if (p.playedCard) {
-      handleCardEffect(p.playedCard, 'player');
+    if (!playerHasHostileTakeover && player.playedCard) {
+      handleCardEffect(player.playedCard, 'player');
     }
-    if (c.playedCard) {
-      handleCardEffect(c.playedCard, 'cpu');
+
+    if (!cpuHasHostileTakeover && cpu.playedCard) {
+      handleCardEffect(cpu.playedCard, 'cpu');
     }
   };
 

@@ -76,6 +76,7 @@ export const useGameStore = create<GameStore>()(
       selectedBackground: '',
       isPaused: false,
       showMenu: false,
+      audioEnabled: true,
       showHandViewer: false,
       handViewerPlayer: 'player',
       showInstructions: false,
@@ -171,7 +172,10 @@ export const useGameStore = create<GameStore>()(
         const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
 
         // Calculate the effective card value (0 if negated, otherwise normal value)
-        let effectiveCardValue = shouldNegateValue ? 0 : card.value;
+        // IMPORTANT: Tracker cards have 0 value when first played - their value is stored for the NEXT card
+        let effectiveCardValue = shouldNegateValue ? 0 :
+                                  (card.specialType === 'tracker' && !get().anotherPlayMode) ? 0 :
+                                  card.value;
 
         // APPLY PENDING TRACKER BONUS FROM EARLIER IN SAME TURN
         // If in anotherPlayMode (second+ card), apply any pending tracker bonus
@@ -494,6 +498,26 @@ export const useGameStore = create<GameStore>()(
           return false;
         }
 
+        // Check if Hostile Takeover was played
+        const playerPlayedHt = player.playedCard.specialType === 'hostile_takeover';
+        const cpuPlayedHt = cpu.playedCard.specialType === 'hostile_takeover';
+
+        if (playerPlayedHt || cpuPlayedHt) {
+          // Determine who played HT and who is the opponent
+          const htPlayer = playerPlayedHt ? player : cpu;
+          const opponent = playerPlayedHt ? cpu : player;
+
+          // If opponent has MORE cards than HT player, they've already played their Data War cards
+          // This means we're RETURNING from the HT Data War and should NOT retrigger
+          if (opponent.playedCardsInHand.length > htPlayer.playedCardsInHand.length) {
+            return false; // Don't retrigger - opponent already played their Data War cards
+          }
+
+          // Otherwise, this is the first time seeing HT - trigger Data War
+          return true;
+        }
+
+        // Normal tie logic for non-HT situations
         return shouldTriggerDataWar(
           player.playedCard,
           cpu.playedCard,
@@ -1139,6 +1163,7 @@ export const useGameStore = create<GameStore>()(
           cpuLaunchStacks: [],
           isPaused: false,
           showMenu: false,
+          audioEnabled: true,
           showHandViewer: false,
           showTooltip: false,
           showForcedEmpathyAnimation: false,
