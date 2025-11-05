@@ -45,7 +45,7 @@ export const ScreenBackground: FC<{ phaseKey: string }> = ({ phaseKey }) => {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Base background image */}
       <div className={`absolute inset-0 ${config.blur ? 'blur-[2px]' : ''}`} aria-hidden="true">
         <img

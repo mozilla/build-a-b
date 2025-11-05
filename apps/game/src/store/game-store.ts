@@ -79,7 +79,8 @@ export const useGameStore = create<GameStore>()(
       showHandViewer: false,
       handViewerPlayer: 'player',
       showInstructions: false,
-      audioEnabled: true,
+      musicEnabled: true,
+      soundEffectsEnabled: true,
       showTooltip: false,
 
       // Effect Notification System
@@ -907,8 +908,12 @@ export const useGameStore = create<GameStore>()(
         });
       },
 
-      toggleAudio: () => {
-        set({ audioEnabled: !get().audioEnabled });
+      toggleMusic: () => {
+        set({ musicEnabled: !get().musicEnabled });
+      },
+
+      toggleSoundEffects: () => {
+        set({ soundEffectsEnabled: !get().soundEffectsEnabled });
       },
 
       toggleInstructions: () => {
