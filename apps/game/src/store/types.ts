@@ -68,6 +68,7 @@ export type GameStore = {
   selectedBackground: string;
   isPaused: boolean;
   showMenu: boolean;
+  audioEnabled: boolean;
   showHandViewer: boolean;
   handViewerPlayer: PlayerType;
   showInstructions: boolean;
