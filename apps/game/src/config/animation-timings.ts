@@ -6,6 +6,7 @@ export const ANIMATION_DURATIONS = {
   // Card animations
   CARD_FLIP: 700, // Card flip animation duration (used by Card component)
   CARD_COMPARISON: 1500,
+  CARD_PLAY_FROM_DECK: 800, // Duration for card to travel from deck to play area
 
   // Special effects
   WIN_ANIMATION: 1200,

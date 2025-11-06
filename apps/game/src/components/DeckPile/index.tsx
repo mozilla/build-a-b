@@ -24,6 +24,25 @@ export const DeckPile: FC<DeckPileProps> = ({
   const isPlayer = owner === 'player';
   const deckRef = useRef<HTMLDivElement>(null);
   const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
+  const prevCardCountRef = useRef(cardCount);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Self-trigger animation when this deck's card count decreases
+  useLayoutEffect(() => {
+    if (cardCount < prevCardCountRef.current) {
+      // A card was played from this deck
+      setIsAnimating(true);
+
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
+
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+    prevCardCountRef.current = cardCount;
+  }, [cardCount]);
 
   // Determine if decks are currently in swapped positions (odd swap count)
   const isSwapped = deckSwapCount % 2 === 1;
@@ -91,6 +110,8 @@ export const DeckPile: FC<DeckPileProps> = ({
           rotateY: 0,
         };
 
+  const shiftTransitionDuration = ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000;
+
   return (
     <Tooltip
       content={
@@ -100,7 +121,7 @@ export const DeckPile: FC<DeckPileProps> = ({
       }
       isOpen={showTooltip}
     >
-      <div className="flex flex-col items-center gap-1 w-full">
+      <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
         {!isPlayer && (
           <Text
@@ -131,15 +152,83 @@ export const DeckPile: FC<DeckPileProps> = ({
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
             <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
-              {/* Back cards for stacking effect - offset to top-left */}
-              <div className="absolute -translate-x-2 -translate-y-2 pointer-events-none">
+              {/* Back cards for stacking effect */}
+
+              {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
+              {cardCount >= 4 && (
+                <motion.div
+                  data-new
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    opacity: isAnimating ? [0, 1] : 1,
+                    x: -8,
+                    y: -8,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Bottom card */}
+              {cardCount >= 3 && (
+                <motion.div
+                  data-bottom
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    x: isAnimating ? [-8, -4] : -4,
+                    y: isAnimating ? [-8, -4] : -4,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Middle card */}
+              {cardCount >= 2 && (
+                <motion.div
+                  data-mid
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    x: isAnimating ? [-4, 0] : 0,
+                    y: isAnimating ? [-4, 0] : 0,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: [0.43, 0.13, 0.23, 0.96],
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Top card */}
+              <motion.div
+                data-top
+                className="relative"
+                initial={false}
+                animate={{
+                  opacity: isAnimating ? [1, 0] : 0,
+                  x: 0,
+                  y: 0,
+                }}
+                transition={{
+                  duration: shiftTransitionDuration,
+                  ease: [0.43, 0.13, 0.23, 0.96],
+                }}
+              >
                 <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
-              </div>
-              <div className="absolute -translate-x-1 -translate-y-1 pointer-events-none">
-                <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
-              </div>
-              {/* Top card (main visible card) */}
-              <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+              </motion.div>
             </div>
           ) : (
             /* Empty deck indicator */
