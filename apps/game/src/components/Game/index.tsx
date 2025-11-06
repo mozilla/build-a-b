@@ -158,13 +158,13 @@ export function Game() {
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* CPU Cards */}
-              <PlayedCards cards={cpu.playedCardsInHand} />
+              <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" />
             </div>
 
             {/* Player Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* Player Cards */}
-              <PlayedCards cards={player.playedCardsInHand} />
+              <PlayedCards cards={player.playedCardsInHand} owner="player" />
             </div>
           </div>
 

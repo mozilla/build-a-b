@@ -1,4 +1,8 @@
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { cn } from '@/utils/cn';
+import { motion } from 'framer-motion';
 import type { FC } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import {
@@ -18,7 +22,7 @@ const ANIMATION_DELAYS = {
   CARD_SLIDE: 300,
 } as const;
 
-export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
+export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   const showEffectNotificationBadge = useShowEffectNotificationBadge();
   const pendingEffectNotifications = usePendingEffectNotifications();
   const currentEffectNotification = useCurrentEffectNotification();
@@ -27,13 +31,55 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
   const hasSeenTooltip = useGameStore((state) => state.hasSeenTooltip);
   const markTooltipAsSeen = useGameStore((state) => state.markTooltipAsSeen);
 
+  const playAreaRef = useRef<HTMLDivElement>(null);
+  const [deckOffset, setDeckOffset] = useState({ x: 0, y: 0 });
+
   // Check if we should show the effect notification tooltip
   const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
   const shouldShowEffectTooltip =
     !hasSeenTooltip(effectTooltipConfig.id) && !showEffectNotificationModal;
 
+  // Determine if this is the CPU's or player's card
+  const isCPU = owner === 'cpu';
+
+  // Measure the distance from deck to play area dynamically
+  useLayoutEffect(() => {
+    const measureDistance = () => {
+      if (!playAreaRef.current) return;
+
+      // Find the deck pile element based on owner
+      const deckSelector = isCPU
+        ? '[data-deck-owner="cpu"]' // CPU deck at top
+        : '[data-deck-owner="player"]'; // Player deck at bottom
+
+      const deckElement = document.querySelector(deckSelector);
+
+      if (!deckElement || !playAreaRef.current) return;
+
+      const deckRect = deckElement.getBoundingClientRect();
+      const playAreaRect = playAreaRef.current.getBoundingClientRect();
+
+      // Calculate the offset from deck center to play area center
+      const deltaX =
+        deckRect.left + deckRect.width / 2 - (playAreaRect.left + playAreaRect.width / 2);
+      const deltaY =
+        deckRect.top + deckRect.height / 2 - (playAreaRect.top + playAreaRect.height / 2);
+
+      setDeckOffset({ x: deltaX, y: deltaY });
+    };
+
+    measureDistance();
+
+    // Remeasure on window resize
+    window.addEventListener('resize', measureDistance);
+    return () => window.removeEventListener('resize', measureDistance);
+  }, [isCPU, cards.length]); // Re-measure when cards change
+
   return (
-    <div className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative">
+    <div
+      ref={playAreaRef}
+      className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative"
+    >
       {cards.map((playedCardState, index) => {
         const isTopCard = index === cards.length - 1;
         // Top card stays straight, cards underneath get subtle rotation (-5 to +5)
@@ -93,14 +139,30 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
         };
 
         return (
-          <div
+          <motion.div
             key={`${playedCardState.card.id}-${index}`}
-            className={`absolute ${isTopCard ? 'animate-slide-from-top' : ''} ${rotationClass} ${
-              shouldShowBadge ? 'cursor-pointer' : ''
-            }`}
+            className={cn('absolute', rotationClass, shouldShowBadge && 'cursor-pointer')}
             style={{
-              zIndex: index,
-              transition: `transform 600ms ease-out ${rotationDelay}ms`,
+              zIndex: '5',
+            }}
+            initial={{
+              // Start from measured deck position
+              x: deckOffset.x,
+              y: deckOffset.y,
+              rotate: isCPU ? -14 : 12, // Initial rotation based on Figma frames
+              scale: 0.69, // Cards start at deck size (86px vs 125px ≈ 0.69)
+            }}
+            animate={{
+              // Animate to center position
+              x: 0,
+              y: 0,
+              rotate: 0,
+              scale: 1,
+            }}
+            transition={{
+              duration: ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
+              ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth movement
+              delay: isTopCard ? 0 : rotationDelay / 1000,
             }}
             onClick={handleCardClick}
           >
@@ -141,7 +203,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [] }) => {
                   </div>
                 );
               })()}
-          </div>
+          </motion.div>
         );
       })}
     </div>
