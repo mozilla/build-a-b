@@ -6,6 +6,13 @@ export const usePlayer = () => useGameStore((state) => state.player);
 export const useCPU = () => useGameStore((state) => state.cpu);
 export const useCardsInPlay = () => useGameStore((state) => state.cardsInPlay);
 export const useWinner = () => useGameStore((state) => state.winner);
+export const useWinCondition = () => useGameStore((state) => state.winCondition);
+export const useSelectedBackground = () => useGameStore((state) => state.selectedBackground);
+export const useSelectedBillionaire = () => useGameStore((state) => state.selectedBillionaire);
+export const useDeckSwapCount = () => useGameStore((state) => state.deckSwapCount);
+export const usePlayerLaunchStacks = () => useGameStore((state) => state.playerLaunchStacks);
+export const useCpuLaunchStacks = () => useGameStore((state) => state.cpuLaunchStacks);
+
 export const useShowEffectNotificationBadge = () =>
   useGameStore((state) => state.showEffectNotificationBadge);
 export const usePendingEffectNotifications = () =>

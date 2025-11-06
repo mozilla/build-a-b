@@ -17,6 +17,15 @@ import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
+import {
+  useCpuLaunchStacks,
+  useDeckSwapCount,
+  usePlayerLaunchStacks,
+  useSelectedBackground,
+  useSelectedBillionaire,
+  useWinCondition,
+  useWinner,
+} from '@/store';
 
 /**
  * Game Component - Main game container
@@ -35,14 +44,14 @@ export function Game() {
     resetGame,
     send,
   } = useGameLogic();
-  // Use separate selectors to avoid creating new objects on every render
-  const winner = useGameStore((state) => state.winner);
-  const winCondition = useGameStore((state) => state.winCondition);
-  const selectedBackground = useGameStore((state) => state.selectedBackground);
-  const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
-  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
-  const playerLaunchStacks = useGameStore((state) => state.playerLaunchStacks);
-  const cpuLaunchStacks = useGameStore((state) => state.cpuLaunchStacks);
+
+  const playerLaunchStacks = usePlayerLaunchStacks();
+  const cpuLaunchStacks = useCpuLaunchStacks();
+  const deckSwapCount = useDeckSwapCount();
+  const selectedBackground = useSelectedBackground();
+  const selectedBillionaire = useSelectedBillionaire();
+  const winner = useWinner();
+  const winCondition = useWinCondition();
 
   // Total cards owned = playable deck + collected Launch Stacks
   const playerTotalCards = player.deck.length + playerLaunchStacks.length;
@@ -57,6 +66,38 @@ export function Game() {
     DEFAULT_BOARD_BACKGROUND;
 
   const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
+  // Determine if deck can be clicked based on phase and active player
+  const isDataWarPhase =
+    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up';
+
+  // During ready phase, only active player can tap
+  // During data war, only player deck is clickable (one click reveals both)
+  // During pre_reveal.awaiting_interaction, player can tap to see modal
+  const canClickPlayerDeck =
+    (phase === 'ready' && activePlayer === 'player') ||
+    phase === 'pre_reveal.awaiting_interaction' ||
+    (isDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover');
+
+  const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
+
+  const handleDeckClick = () => {
+    tapDeck();
+  };
+
+  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
+  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
+  // Need to swap click handlers to match visual positions
+  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
+  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
+  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
+  const topDeckTooltip = ''; // Never show tooltip on top deck
+  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
+
+  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
+  // When swapped: top deck (owner="cpu") is visually at bottom
+  // When not swapped: bottom deck (owner="player") is visually at bottom
+  const topDeckActiveIndicator = isSwapped && activePlayer === 'player' && canClickCpuDeck;
+  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player' && canClickPlayerDeck;
 
   useEffect(() => {
     switch (phase) {
@@ -106,37 +147,11 @@ export function Game() {
     }
   }, [phase, send]);
 
-  // Determine if deck can be clicked based on phase and active player
-  const isDataWarPhase =
-    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up';
-
-  // During ready phase, only active player can tap
-  // During data war, only player deck is clickable (one click reveals both)
-  // During pre_reveal.awaiting_interaction, player can tap to see modal
-  const canClickPlayerDeck =
-    (phase === 'ready' && activePlayer === 'player') ||
-    phase === 'pre_reveal.awaiting_interaction' ||
-    isDataWarPhase;
-  const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
-
-  const handleDeckClick = () => {
-    tapDeck();
-  };
-
-  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
-  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
-  // Need to swap click handlers to match visual positions
-  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
-  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
-  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
-  const topDeckTooltip = ''; // Never show tooltip on top deck
-  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
-
-  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
-  // When swapped: top deck (owner="cpu") is visually at bottom
-  // When not swapped: bottom deck (owner="player") is visually at bottom
-  const topDeckActiveIndicator = isSwapped && activePlayer === 'player';
-  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player';
+  useEffect(() => {
+    if (isDataWarPhase && player.playedCard?.specialType === 'hostile_takeover') {
+      tapDeck();
+    }
+  }, [isDataWarPhase, player.playedCard?.specialType, tapDeck]);
 
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
