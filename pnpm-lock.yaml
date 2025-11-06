@@ -26,6 +26,9 @@ importers:
       '@heroui/react':
         specifier: ^2.8.2
         version: 2.8.2(@types/react@19.2.2)(framer-motion@11.18.2(@emotion/is-prop-valid@1.2.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(tailwindcss@4.1.11)
+      '@react-aria/live-announcer':
+        specifier: ^3.4.2
+        version: 3.4.4
       '@redux-devtools/extension':
         specifier: ^3.3.0
         version: 3.3.0(redux@5.0.1)
