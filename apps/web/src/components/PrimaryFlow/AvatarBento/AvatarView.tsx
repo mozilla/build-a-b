@@ -26,6 +26,7 @@ const AvatarView: FC<AvatarData> = ({
   originalRidingAsset,
   selfies,
   selfieAvailability,
+  hasEasterEgg,
 }) => {
   const [navigatorShareAvailable, setNavigatorShareAvailable] = useState<boolean>(false);
   const [actionType, setActionType] = useState<ActionTypeOrNull>(null);
@@ -138,6 +139,7 @@ const AvatarView: FC<AvatarData> = ({
                         originalRidingAsset,
                         selfies,
                         selfieAvailability,
+                        hasEasterEgg,
                       }}
                       setActionType={setActionType}
                       saveActionValue="save"
@@ -156,6 +158,7 @@ const AvatarView: FC<AvatarData> = ({
                         originalRidingAsset,
                         selfies,
                         selfieAvailability,
+                        hasEasterEgg,
                       }}
                       onCancel={() => setActionType(null)}
                     />
