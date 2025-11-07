@@ -9,7 +9,7 @@ export const Board: FC<PropsWithChildren<BoardProps>> = ({ children, bgSrc }) =>
 
   return (
     <>
-      <div className="absolute size-full top-0 left-0 lg:flex items-center justify-center lg:blur-xl hidden">
+      <div className="isolate absolute size-full top-0 left-0 lg:flex items-center justify-center lg:blur-xl hidden">
         <img src={bgSrc} alt="" className="w-full h-full object-cover" role="presentation" />
       </div>
       <section

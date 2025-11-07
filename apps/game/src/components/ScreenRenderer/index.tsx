@@ -65,7 +65,7 @@ export const ScreenRenderer: FC = () => {
 
   // Pass send function and other common props to all screens
   return (
-    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center">
+    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
       <AnimatePresence>
         <ScreenBackground key="background" phaseKey={phaseKey} />
         <ScreenComponent

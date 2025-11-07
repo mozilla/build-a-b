@@ -57,8 +57,13 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   // Only show glow before the animation starts
   const shouldShowDataWarGlow = isTiedInComparing;
 
+  // Collection animation state
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
+  const winner = useGameStore((state) => state.collecting?.winner ?? null);
+
   const playAreaRef = useRef<HTMLDivElement>(null);
   const [deckOffset, setDeckOffset] = useState({ x: 0, y: 0 });
+  const [collectionOffset, setCollectionOffset] = useState({ x: 0, y: 0 });
 
   // Check if we should show the effect notification tooltip
   const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
@@ -69,38 +74,53 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   // Determine if this is the CPU's or player's card
   const isCPU = owner === 'cpu';
 
-  // Measure the distance from deck to play area dynamically
+  // Determine if decks are swapped (odd swap count)
+  const isSwapped = deckSwapCount % 2 === 1;
+
+  // Determine if cards should be collected to winning deck
+  const shouldCollect = winner !== null;
+
+  // Take dynamic measurements of deck and play area positions for accurate animations
   useLayoutEffect(() => {
-    const measureDistance = () => {
-      if (!playAreaRef.current) return;
+    if (!playAreaRef.current) return;
 
-      // Find the deck pile element based on owner
-      const deckSelector = isCPU
-        ? '[data-deck-owner="cpu"]' // CPU deck at top
-        : '[data-deck-owner="player"]'; // Player deck at bottom
+    const measure = () => {
+      const playAreaRect = playAreaRef.current!.getBoundingClientRect();
 
-      const deckElement = document.querySelector(deckSelector);
+      // deckOffset: measure deck corresponding to this PlayedCards owner
+      const deckSelector = isCPU ? '[data-measure-target="cpu"]' : '[data-measure-target="player"]';
+      const deckEl = document.querySelector(deckSelector) as HTMLElement | null;
+      if (deckEl) {
+        const d = deckEl.getBoundingClientRect();
+        setDeckOffset({
+          x: d.left + d.width / 2 - (playAreaRect.left + playAreaRect.width / 2),
+          y: d.top + d.height / 2 - (playAreaRect.top + playAreaRect.height / 2),
+        });
+      }
 
-      if (!deckElement || !playAreaRef.current) return;
-
-      const deckRect = deckElement.getBoundingClientRect();
-      const playAreaRect = playAreaRef.current.getBoundingClientRect();
-
-      // Calculate the offset from deck center to play area center
-      const deltaX =
-        deckRect.left + deckRect.width / 2 - (playAreaRect.left + playAreaRect.width / 2);
-      const deltaY =
-        deckRect.top + deckRect.height / 2 - (playAreaRect.top + playAreaRect.height / 2);
-
-      setDeckOffset({ x: deltaX, y: deltaY });
+      // collectionOffset: measure the winning deck (if any)
+      if (winner) {
+        const winningDeckEl = document.querySelector(
+          `[data-deck-owner="${winner}"]`,
+        ) as HTMLElement | null;
+        if (winningDeckEl) {
+          const w = winningDeckEl.getBoundingClientRect();
+          setCollectionOffset({
+            x: w.left + w.width / 2 - (playAreaRect.left + playAreaRect.width / 2),
+            y: w.top + w.height / 2 - (playAreaRect.top + playAreaRect.height / 2),
+          });
+        }
+      }
     };
 
-    measureDistance();
+    measure();
 
-    // Remeasure on window resize
-    window.addEventListener('resize', measureDistance);
-    return () => window.removeEventListener('resize', measureDistance);
-  }, [isCPU, cards.length]); // Re-measure when cards change
+    const onResize = () => requestAnimationFrame(measure);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, [isCPU, cards.length, winner, isSwapped]);
 
   return (
     <div
@@ -177,17 +197,38 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
           }
         };
 
+        // Determine final animation endpoint
+        // Cards go through two stages:
+        // 1. Play animation: deck → center (when first played)
+        // 2. Collection animation: center → winning deck (when round ends)
+
+        // Final position depends on collection state
+        const finalX = shouldCollect ? collectionOffset.x : 0;
+        const finalY = shouldCollect ? collectionOffset.y : 0;
+        const finalScale = shouldCollect ? 0.688 : 1; // Shrink back to deck size when collecting
+
+        // Collection rotation depends on which deck is winning and visual position
+        // When player wins (cards go to bottom deck): tilt ~31° during collection
+        // When CPU wins (cards go to top deck): tilt ~-31° (329°) during collection
+        const winnerIsVisuallyAtBottom = isSwapped ? winner === 'cpu' : winner === 'player';
+
+        // Apply rotation during collection to show cards sliding under deck
+        const collectionRotation = winnerIsVisuallyAtBottom ? 31 : -31;
+        const finalRotate = shouldCollect ? collectionRotation : 0;
+
+        const finalOpacity = shouldCollect ? [1, 1, 0] : 1;
+
         return (
           <motion.div
             key={`${playedCardState.card.id}-${index}`}
             className={cn(
-              'absolute',
+              'absolute backface-hidden',
               rotationClass,
               shouldShowBadge && 'cursor-pointer',
+              shouldCollect ? 'z-0' : 'z-2',
               glowClasses,
             )}
             style={{
-              zIndex: '5',
               // Force animation and glow to stop when video is playing
               ...(dataWarVideoPlaying &&
                 glowType === 'data-war' && {
@@ -200,23 +241,26 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
               x: deckOffset.x,
               y: deckOffset.y,
               rotate: isCPU ? -14 : 12, // Initial rotation based on Figma frames
-              scale: 0.69, // Cards start at deck size (86px vs 125px ≈ 0.69)
+              scale: 0.688,
             }}
             animate={{
-              // Animate to center position
-              x: 0,
-              y: 0,
-              rotate: 0,
-              scale: 1,
+              // Animate to center, then optionally to collection
+              x: finalX,
+              y: finalY,
+              rotate: finalRotate,
+              scale: finalScale,
+              opacity: finalOpacity,
             }}
             transition={{
-              duration: ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
+              duration: shouldCollect
+                ? ANIMATION_DURATIONS.CARD_COLLECTION / 1000
+                : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
               ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth movement
               delay: isTopCard ? 0 : rotationDelay / 1000,
             }}
             onClick={handleCardClick}
           >
-            <Card cardFrontSrc={cardImage} state="flipped" />
+            <Card cardFrontSrc={cardImage} state={shouldCollect ? 'initial' : 'flipped'} />
 
             {/* Effect Notification Badge with optional tooltip */}
             {shouldShowBadge &&

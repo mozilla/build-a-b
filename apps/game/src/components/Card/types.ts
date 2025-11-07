@@ -11,4 +11,4 @@ export type CardProps = {
     final: { x: number; y: number };
   };
   showFrontInStates?: CardState[];
-};
+} & Record<`data-${string}`, string>;

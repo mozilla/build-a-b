@@ -1,8 +1,9 @@
-import type { FC } from 'react';
-import { motion } from 'framer-motion';
-import type { CardProps } from './types';
-import CardBack from '../../assets/cards/card-back.webp';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { cn } from '@/utils/cn';
+import { motion } from 'framer-motion';
+import type { FC } from 'react';
+import CardBack from '../../assets/cards/card-back.webp';
+import type { CardProps } from './types';
 
 export const Card: FC<CardProps> = ({
   cardFrontSrc,
@@ -10,6 +11,7 @@ export const Card: FC<CardProps> = ({
   onBackClick,
   onFrontClick,
   positions,
+  ...dataAttributes
 }) => {
   const handleClick = () => {
     if (state === 'initial') {
@@ -26,21 +28,23 @@ export const Card: FC<CardProps> = ({
 
   return (
     <motion.div
-      className="cursor-pointer"
+      {...dataAttributes}
+      className={cn(
+        'cursor-pointer origin-center perspective-distant',
+        isFrontVisible
+          ? 'max-w-[125px] w-[7.8125rem] max-h-[175px] h-[10.9375rem]'
+          : 'max-w-[86px] w-[5.375rem] max-h-[120px] h-[7.5rem]',
+      )}
       onClick={handleClick}
       animate={{
         x: currentPosition.x,
         y: currentPosition.y,
-        width: isFrontVisible ? '7.8125rem' : '5.375rem',
-        height: isFrontVisible ? '10.9375rem' : '7.5rem',
-        maxWidth: isFrontVisible ? '125px' : '86px',
-        maxHeight: isFrontVisible ? '175px' : '120px',
+        scale: isFrontVisible ? 1 : 0.688,
       }}
       transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
-      style={{ perspective: '1000px' }}
     >
       <motion.div
-        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible"
+        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden"
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}

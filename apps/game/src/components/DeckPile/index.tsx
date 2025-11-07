@@ -26,10 +26,14 @@ export const DeckPile: FC<DeckPileProps> = ({
   const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
   const prevCardCountRef = useRef(cardCount);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isReceiving, setIsReceiving] = useState(false);
 
-  // Self-trigger animation when this deck's card count decreases
+  // Self-trigger corresponding animation when this deck's card count changes
   useLayoutEffect(() => {
-    if (cardCount < prevCardCountRef.current) {
+    const playingCard = cardCount < prevCardCountRef.current;
+    const receivingCards = cardCount > prevCardCountRef.current && prevCardCountRef.current > 0;
+
+    if (playingCard) {
       // A card was played from this deck
       setIsAnimating(true);
 
@@ -37,6 +41,19 @@ export const DeckPile: FC<DeckPileProps> = ({
       const timer = setTimeout(() => {
         setIsAnimating(false);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
+
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+
+    if (receivingCards) {
+      // Cards were added to this deck (collection)
+      setIsReceiving(true);
+
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsReceiving(false);
+      }, ANIMATION_DURATIONS.CARD_COLLECTION);
 
       // Cleanup timeout if component unmounts
       return () => clearTimeout(timer);
@@ -99,14 +116,14 @@ export const DeckPile: FC<DeckPileProps> = ({
           // After swap: keep decks in swapped positions (no animation)
           y: owner === 'cpu' ? swapDistance.y : -swapDistance.y,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         }
       : {
           // Normal positions
           y: 0,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         };
 
@@ -121,7 +138,7 @@ export const DeckPile: FC<DeckPileProps> = ({
       }
       isOpen={showTooltip}
     >
-      <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
+      <div className="flex flex-col items-center gap-1 w-full z-1" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
         {!isPlayer && (
           <Text
@@ -151,7 +168,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
+            <div className={`translate-x-4 relative ${activeIndicator ? '' : ''}`}>
               {/* Back cards for stacking effect */}
 
               {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
@@ -214,7 +231,6 @@ export const DeckPile: FC<DeckPileProps> = ({
 
               {/* Top card */}
               <motion.div
-                data-top
                 className="relative"
                 initial={false}
                 animate={{
@@ -223,11 +239,11 @@ export const DeckPile: FC<DeckPileProps> = ({
                   y: 0,
                 }}
                 transition={{
-                  duration: shiftTransitionDuration,
+                  duration: isAnimating ? shiftTransitionDuration * 0.5 : shiftTransitionDuration,
                   ease: [0.43, 0.13, 0.23, 0.96],
                 }}
               >
-                <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                <Card data-measure-target={owner} cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
               </motion.div>
             </div>
           ) : (
