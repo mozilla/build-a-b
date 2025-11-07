@@ -36,7 +36,12 @@ export const VaultContextProvider: FC<VaultContextProviderProps> = ({
   const [vaultInitialImage, setVaultInitialImage] = useState<number | undefined>(undefined);
 
   // Debug logging
-  console.log('[VaultContext] isPhase4:', isPhase4, 'curatedSelfies count:', curatedSelfies?.length || 0);
+  console.log(
+    '[VaultContext] isPhase4:',
+    isPhase4,
+    'curatedSelfies count:',
+    curatedSelfies?.length || 0,
+  );
 
   const value = useMemo(
     () => ({

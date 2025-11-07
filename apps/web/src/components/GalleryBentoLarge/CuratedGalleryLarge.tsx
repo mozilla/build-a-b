@@ -29,4 +29,3 @@ const CuratedGalleryLarge: FC<CuratedGalleryLargeProps> = ({ className, image })
 };
 
 export default CuratedGalleryLarge;
-

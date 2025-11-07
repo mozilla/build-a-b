@@ -49,4 +49,3 @@ export function getRandomCuratedSelfies(count: number): CuratedSelfie[] {
   const shuffled = [...allSelfies].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
-
