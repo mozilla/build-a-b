@@ -27,19 +27,25 @@ export const DeckPile: FC<DeckPileProps> = ({
   const prevCardCountRef = useRef(cardCount);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isReceiving, setIsReceiving] = useState(false);
+  const [cardsPlayedThisTurn, setCardsPlayedThisTurn] = useState(0);
 
   // Self-trigger corresponding animation when this deck's card count changes
   useLayoutEffect(() => {
-    const playingCard = cardCount < prevCardCountRef.current;
+    const cardDiff = prevCardCountRef.current - cardCount;
+    const playingCard = cardDiff > 0;
     const receivingCards = cardCount > prevCardCountRef.current && prevCardCountRef.current > 0;
 
     if (playingCard) {
+      // Track how many cards were just played
+      setCardsPlayedThisTurn(cardDiff);
+
       // A card was played from this deck
       setIsAnimating(true);
 
       // Reset animation state after animation completes
       const timer = setTimeout(() => {
         setIsAnimating(false);
+        setCardsPlayedThisTurn(0);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
 
       // Cleanup timeout if component unmounts
@@ -138,7 +144,7 @@ export const DeckPile: FC<DeckPileProps> = ({
       }
       isOpen={showTooltip}
     >
-      <div className="flex flex-col items-center gap-1 w-full z-1" data-deck-owner={owner}>
+      <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
         {!isPlayer && (
           <Text
@@ -154,7 +160,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         {/* Card stack - only this animates during swap */}
         <motion.div
           ref={deckRef}
-          className="relative p-2 w-full"
+          className="relative p-2 w-full z-19"
           onClick={cardCount > 0 ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
@@ -229,17 +235,26 @@ export const DeckPile: FC<DeckPileProps> = ({
                 </motion.div>
               )}
 
-              {/* Top card */}
+              {/* Top card - animated when played */}
               <motion.div
                 className="relative"
                 initial={false}
                 animate={{
-                  opacity: isAnimating ? [1, 0] : 0,
+                  // For multi-card plays, stagger fade-outs
+                  opacity: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? [1, 0.7, 0] // Multi-card: gradual fade
+                      : [1, 0] // Single card: direct fade
+                    : 0,
                   x: 0,
                   y: 0,
                 }}
                 transition={{
-                  duration: isAnimating ? shiftTransitionDuration * 0.5 : shiftTransitionDuration,
+                  duration: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? shiftTransitionDuration * 1.2 // Extend duration for multi-card
+                      : shiftTransitionDuration * 0.5
+                    : shiftTransitionDuration,
                   ease: [0.43, 0.13, 0.23, 0.96],
                 }}
               >

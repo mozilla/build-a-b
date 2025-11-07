@@ -11,6 +11,7 @@ export const Card: FC<CardProps> = ({
   onBackClick,
   onFrontClick,
   positions,
+  fullSize = false,
   ...dataAttributes
 }) => {
   const handleClick = () => {
@@ -26,12 +27,15 @@ export const Card: FC<CardProps> = ({
   const isFrontVisible = state === 'flipped' || state === 'final';
   const currentPosition = positions?.[state] ?? { x: 0, y: 0 };
 
+  // Determine if card should be full size
+  const isFullSize = fullSize || isFrontVisible;
+
   return (
     <motion.div
       {...dataAttributes}
       className={cn(
         'cursor-pointer origin-center perspective-distant',
-        isFrontVisible
+        isFullSize
           ? 'max-w-[125px] w-[7.8125rem] max-h-[175px] h-[10.9375rem]'
           : 'max-w-[86px] w-[5.375rem] max-h-[120px] h-[7.5rem]',
       )}
@@ -39,7 +43,7 @@ export const Card: FC<CardProps> = ({
       animate={{
         x: currentPosition.x,
         y: currentPosition.y,
-        scale: isFrontVisible ? 1 : 0.688,
+        scale: isFullSize ? 1 : 0.688,
       }}
       transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
     >
