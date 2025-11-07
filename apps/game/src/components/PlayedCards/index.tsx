@@ -1,10 +1,13 @@
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { cn } from '@/utils/cn';
+import { getCardGlowType, getGlowClasses } from '@/utils/glow-effects';
+import { useSelector } from '@xstate/react';
 import { motion } from 'framer-motion';
 import type { FC } from 'react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
+import { GameMachineContext } from '../../providers/GameProvider';
 import {
   useCurrentEffectNotification,
   useGameStore,
@@ -12,6 +15,7 @@ import {
   useSetShowEffectNotificationModal,
   useShowEffectNotificationBadge,
 } from '../../store';
+import { getGamePhase } from '../../utils/get-game-phase';
 import { Card } from '../Card';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
 import { Tooltip } from '../Tooltip';
@@ -28,8 +32,30 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   const currentEffectNotification = useCurrentEffectNotification();
   const setShowEffectNotificationModal = useSetShowEffectNotificationModal();
   const showEffectNotificationModal = useGameStore((state) => state.showEffectNotificationModal);
-  const hasSeenTooltip = useGameStore((state) => state.hasSeenTooltip);
-  const markTooltipAsSeen = useGameStore((state) => state.markTooltipAsSeen);
+  const shouldShowTooltip = useGameStore((state) => state.shouldShowTooltip);
+  const incrementTooltipCount = useGameStore((state) => state.incrementTooltipCount);
+
+  // Get game phase to detect data war
+  const actorRef = GameMachineContext.useActorRef();
+  const stateValue = useSelector(actorRef, (snapshot) => snapshot.value);
+  const phase = getGamePhase(stateValue);
+
+  // Show glow for common cards:
+  // - ONLY during 'comparing' phase if cards are tied (before animation starts)
+  // - NOT during data_war phases (animation playing or after)
+  // - NOT when expecting another play (blocker/tracker/launch stack needs to play again)
+  const player = useGameStore((state) => state.player);
+  const cpu = useGameStore((state) => state.cpu);
+  const dataWarVideoPlaying = useGameStore((state) => state.dataWarVideoPlaying);
+  const anotherPlayExpected = useGameStore((state) => state.anotherPlayExpected);
+  const isTiedInComparing =
+    phase === 'comparing' &&
+    player.playedCard &&
+    cpu.playedCard &&
+    player.currentTurnValue === cpu.currentTurnValue &&
+    !anotherPlayExpected; // Don't show glow if expecting another play
+  // Only show glow before the animation starts
+  const shouldShowDataWarGlow = isTiedInComparing;
 
   const playAreaRef = useRef<HTMLDivElement>(null);
   const [deckOffset, setDeckOffset] = useState({ x: 0, y: 0 });
@@ -37,7 +63,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   // Check if we should show the effect notification tooltip
   const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
   const shouldShowEffectTooltip =
-    !hasSeenTooltip(effectTooltipConfig.id) && !showEffectNotificationModal;
+    shouldShowTooltip(effectTooltipConfig.id, effectTooltipConfig.maxDisplayCount) &&
+    !showEffectNotificationModal;
 
   // Determine if this is the CPU's or player's card
   const isCPU = owner === 'cpu';
@@ -109,11 +136,23 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
           showEffectNotificationBadge &&
           pendingEffectNotifications.some((notif) => notif.card.id === playedCardState.card.id);
 
+        // Determine if this card should glow
+        // Only show glow on: top card, not face-down, has special ability or data war
+        const glowType =
+          isTopCard && !playedCardState.isFaceDown
+            ? getCardGlowType(
+                playedCardState.card.specialType,
+                playedCardState.card.isSpecial,
+                shouldShowDataWarGlow || false,
+              )
+            : 'none';
+        const glowClasses = getGlowClasses(glowType);
+
         const handleCardClick = () => {
           if (shouldShowBadge) {
-            // Mark tooltip as seen (only happens once)
+            // Increment tooltip display count
             if (shouldShowEffectTooltip) {
-              markTooltipAsSeen(effectTooltipConfig.id);
+              incrementTooltipCount(effectTooltipConfig.id);
             }
 
             // Find the notification for this card
@@ -141,9 +180,20 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
         return (
           <motion.div
             key={`${playedCardState.card.id}-${index}`}
-            className={cn('absolute', rotationClass, shouldShowBadge && 'cursor-pointer')}
+            className={cn(
+              'absolute',
+              rotationClass,
+              shouldShowBadge && 'cursor-pointer',
+              glowClasses,
+            )}
             style={{
               zIndex: '5',
+              // Force animation and glow to stop when video is playing
+              ...(dataWarVideoPlaying &&
+                glowType === 'data-war' && {
+                  animation: 'none',
+                  filter: 'none',
+                }),
             }}
             initial={{
               // Start from measured deck position
