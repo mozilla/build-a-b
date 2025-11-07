@@ -48,6 +48,7 @@ export const useGameStore = create<GameStore>()(
       // Initial State
       player: createInitialPlayer('player'),
       cpu: createInitialPlayer('cpu'),
+      collecting: null,
       cardsInPlay: [],
       activePlayer: 'player',
       anotherPlayMode: false,
@@ -268,38 +269,44 @@ export const useGameStore = create<GameStore>()(
 
       collectCards: (winnerId, cards) => {
         const winner = get()[winnerId];
-        set({
-          [winnerId]: {
-            ...winner,
-            deck: [...winner.deck, ...(cards || [])], // Add to bottom of deck
-            playedCard: null,
-            playedCardsInHand: [], // Clear hand stack
-            currentTurnValue: 0,
-            activeEffects: [], // Clear active effects
-            pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-            pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-          },
-          cardsInPlay: [],
-          // Reset turn states for new turn
-          playerTurnState: 'normal',
-          cpuTurnState: 'normal',
-          anotherPlayExpected: false, // Clear flag (turn is over)
-        });
+        set({ collecting: { winner: winnerId, cards } });
 
-        // Also clear the loser's played card and hand stack
-        const loserId = winnerId === 'player' ? 'cpu' : 'player';
-        const loser = get()[loserId];
-        set({
-          [loserId]: {
-            ...loser,
-            playedCard: null,
-            playedCardsInHand: [], // Clear hand stack
-            currentTurnValue: 0,
-            activeEffects: [], // Clear active effects
-            pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-            pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-          },
-        });
+        setTimeout(() => {
+          set({
+            [winnerId]: {
+              ...winner,
+              deck: [...winner.deck, ...(cards || [])], // Add to bottom of deck
+              playedCard: null,
+              playedCardsInHand: [], // Clear hand stack
+              currentTurnValue: 0,
+              activeEffects: [], // Clear active effects
+              pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+              pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
+            },
+            cardsInPlay: [],
+            // Reset turn states for new turn
+            playerTurnState: 'normal',
+            cpuTurnState: 'normal',
+            anotherPlayExpected: false, // Clear flag (turn is over)
+          });
+
+          // Also clear the loser's played card and hand stack
+          const loserId = winnerId === 'player' ? 'cpu' : 'player';
+          const loser = get()[loserId];
+          set({
+            [loserId]: {
+              ...loser,
+              playedCard: null,
+              playedCardsInHand: [], // Clear hand stack
+              currentTurnValue: 0,
+              activeEffects: [], // Clear active effects
+              pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+              pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
+            },
+          });
+
+          set({ collecting: null });
+        }, ANIMATION_DURATIONS.CARD_COLLECTION);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {

@@ -1,10 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useGameStore } from './game-store';
 import type { Card } from '../types';
 
 describe('Turn Resolution', () => {
   beforeEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
     useGameStore.getState().resetGame();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   describe('resolveTurn', () => {
@@ -71,6 +79,7 @@ describe('Turn Resolution', () => {
 
       const winner = useGameStore.getState().resolveTurn();
       collectCardsAfterEffects(winner);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       // Player should have won and collected both cards

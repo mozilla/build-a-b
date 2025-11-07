@@ -11,4 +11,5 @@ export type CardProps = {
     final: { x: number; y: number };
   };
   showFrontInStates?: CardState[];
-};
+  fullSize?: boolean; // Force full size (125px × 175px) regardless of state
+} & Record<`data-${string}`, string>;
