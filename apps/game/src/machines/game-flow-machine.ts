@@ -4,13 +4,14 @@
  */
 
 import { assign, createMachine } from 'xstate';
-import { useGameStore } from '../store/game-store';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import type { TooltipKey } from '../config/tooltip-config';
+import { useGameStore } from '../store/game-store';
 
 export interface GameFlowContext {
   currentTurn: number;
   trackerSmackerActive: 'player' | 'cpu' | null;
-  tooltipMessage: string;
+  tooltipMessage: TooltipKey; // References a key from TOOLTIP_CONFIGS
 }
 
 export type GameFlowEvent =
@@ -37,6 +38,7 @@ export type GameFlowEvent =
   | { type: 'WIN' }
   | { type: 'CONTINUE' }
   | { type: 'RESET_GAME' }
+  | { type: 'RESTART_GAME' } // Restart game and go to VS animation
   | { type: 'QUIT_GAME' }
   | { type: 'START_OWYW_ANIMATION' } // Start OWYW animation (transition to animating sub-state)
   | { type: 'CARD_SELECTED' } // Player confirmed card selection from OWYW modal
@@ -63,10 +65,29 @@ export const NON_GAMEPLAY_EVENT_TYPES = [
 ] as const;
 
 /**
+ * Phases/states that occur during non-gameplay (setup and intro screens)
+ * These are the state machine state names before actual card gameplay begins
+ */
+export const NON_GAMEPLAY_PHASES = [
+  'welcome',
+  'select_billionaire',
+  'select_background',
+  'intro',
+  'quick_start_guide',
+  'your_mission',
+  'vs_animation',
+] as const;
+
+/**
  * Type union of all non-gameplay event types
  */
 export type NonGameplayEventType = (typeof NON_GAMEPLAY_EVENT_TYPES)[number];
 export type GameplayEventType = Exclude<EventType, NonGameplayEventType>;
+
+/**
+ * Type union of all non-gameplay phase names
+ */
+export type NonGameplayPhase = (typeof NON_GAMEPLAY_PHASES)[number];
 
 /**
  * Type union of events that occur during non-gameplay phases
@@ -85,7 +106,7 @@ export const gameFlowMachine = createMachine(
     context: {
       currentTurn: 0,
       trackerSmackerActive: null,
-      tooltipMessage: '',
+      tooltipMessage: 'EMPTY',
     },
     states: {
       welcome: {
@@ -109,7 +130,7 @@ export const gameFlowMachine = createMachine(
 
       intro: {
         entry: assign({
-          tooltipMessage: 'How do I play?',
+          tooltipMessage: 'INTRO',
         }),
         on: {
           SHOW_GUIDE: 'quick_start_guide',
@@ -120,7 +141,7 @@ export const gameFlowMachine = createMachine(
 
       quick_start_guide: {
         entry: assign({
-          tooltipMessage: 'Quick Launch Guide',
+          tooltipMessage: 'QUICK_START_GUIDE',
         }),
         on: {
           SHOW_MISSION: 'your_mission',
@@ -130,7 +151,7 @@ export const gameFlowMachine = createMachine(
 
       your_mission: {
         entry: assign({
-          tooltipMessage: 'Your mission: (should you choose to accept it)',
+          tooltipMessage: 'YOUR_MISSION',
         }),
         on: {
           START_PLAYING: 'vs_animation',
@@ -138,11 +159,8 @@ export const gameFlowMachine = createMachine(
       },
 
       vs_animation: {
-        entry: assign({
-          tooltipMessage: 'Get ready for battle!',
-        }),
         after: {
-          [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'ready', // Auto-transition after animation
+          [ANIMATION_DURATIONS.VS_ANIMATION_DURATION]: 'ready', // Auto-transition after animation
         },
         on: {
           VS_ANIMATION_COMPLETE: 'ready',
@@ -151,7 +169,21 @@ export const gameFlowMachine = createMachine(
 
       ready: {
         entry: assign({
-          tooltipMessage: 'Tap stack to start!',
+          tooltipMessage: ({ context }) => {
+            // Check if we're expecting another play (after tracker/blocker/launch stack)
+            const state = useGameStore.getState();
+            if (state.anotherPlayExpected) {
+              return 'PLAY_AGAIN';
+            }
+
+            // First turn only: show "Tap to start!"
+            if (context.currentTurn === 0) {
+              return 'READY_TAP_DECK';
+            }
+
+            // All subsequent turns: show "Tap to continue"
+            return 'TAP_TO_CONTINUE';
+          },
         }),
         on: {
           REVEAL_CARDS: 'revealing',
@@ -160,7 +192,7 @@ export const gameFlowMachine = createMachine(
 
       revealing: {
         entry: assign({
-          tooltipMessage: '',
+          tooltipMessage: 'EMPTY',
         }),
         on: {
           CARDS_REVEALED: 'effect_notification',
@@ -173,7 +205,7 @@ export const gameFlowMachine = createMachine(
           checking: {
             // Check if there are unseen effect notifications to show
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             after: {
               500: [
@@ -195,7 +227,7 @@ export const gameFlowMachine = createMachine(
           showing: {
             // Show notification badge and tooltip on card
             entry: assign({
-              tooltipMessage: 'Tap to see effect',
+              tooltipMessage: 'EFFECT_NOTIFICATION',
             }),
             on: {
               EFFECT_NOTIFICATION_DISMISSED: 'transitioning',
@@ -203,12 +235,12 @@ export const gameFlowMachine = createMachine(
           },
 
           transitioning: {
-            // 1 second delay after modal closes
+            // Delay after modal closes before continuing
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             after: {
-              1000: '#dataWarGame.comparing',
+              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: '#dataWarGame.comparing',
             },
           },
         },
@@ -216,7 +248,7 @@ export const gameFlowMachine = createMachine(
 
       comparing: {
         entry: assign({
-          tooltipMessage: '', // Clear any previous tooltips
+          tooltipMessage: 'EMPTY', // Clear any previous tooltips
         }),
         // Give players time to see the revealed cards before resolving
         after: {
@@ -235,18 +267,37 @@ export const gameFlowMachine = createMachine(
 
       data_war: {
         initial: 'animating',
+        entry: () => {
+          // Clear pending bonuses/penalties (Data War = fresh start)
+          const { player, cpu } = useGameStore.getState();
+          const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
+          const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
+
+          useGameStore.setState({
+            player: {
+              ...player,
+              pendingTrackerBonus: 0,
+              pendingBlockerPenalty: 0,
+              currentTurnValue: playerHasHostileTakeover ? player.playedCard?.value ?? 6 : 0,
+            },
+            cpu: {
+              ...cpu,
+              pendingTrackerBonus: 0,
+              pendingBlockerPenalty: 0,
+              currentTurnValue: cpuHasHostileTakeover ? cpu.playedCard?.value ?? 6 : 0,
+            },
+            anotherPlayExpected: false, // Clear flag (fresh start)
+          });
+        },
         states: {
           animating: {
-            entry: assign({
-              tooltipMessage: 'DATA WAR!',
-            }),
             after: {
-              [ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY]: 'reveal_face_down',
+              [ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION]: 'reveal_face_down',
             },
           },
           reveal_face_down: {
             entry: assign({
-              tooltipMessage: 'Tap to reveal 3 cards face down',
+              tooltipMessage: 'DATA_WAR_FACE_DOWN',
             }),
             on: {
               TAP_DECK: 'reveal_face_up',
@@ -254,7 +305,7 @@ export const gameFlowMachine = createMachine(
           },
           reveal_face_up: {
             entry: assign({
-              tooltipMessage: 'Tap to reveal final card',
+              tooltipMessage: 'DATA_WAR_FACE_UP',
             }),
             on: {
               TAP_DECK: {
@@ -273,7 +324,7 @@ export const gameFlowMachine = createMachine(
         states: {
           showing: {
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             on: {
               DISMISS_EFFECT: 'processing',
@@ -310,7 +361,7 @@ export const gameFlowMachine = createMachine(
           // Automatically process non-interactive effects
           processing: {
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             after: {
               [ANIMATION_DURATIONS.WIN_ANIMATION]: [
@@ -327,7 +378,7 @@ export const gameFlowMachine = createMachine(
           // Animation plays (for OWYW)
           animating: {
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             after: {
               [ANIMATION_DURATIONS.OWYW_ANIMATION]: 'awaiting_interaction',
@@ -337,7 +388,7 @@ export const gameFlowMachine = createMachine(
           // Wait for user to tap deck before showing selection
           awaiting_interaction: {
             entry: assign({
-              tooltipMessage: 'Tap to see top 3 cards',
+              tooltipMessage: 'OWYW_TAP_DECK',
             }),
             on: {
               TAP_DECK: 'selecting',
@@ -347,7 +398,7 @@ export const gameFlowMachine = createMachine(
           // User is selecting from modal
           selecting: {
             entry: assign({
-              tooltipMessage: '',
+              tooltipMessage: 'EMPTY',
             }),
             on: {
               CARD_SELECTED: '#dataWarGame.revealing',
@@ -362,7 +413,7 @@ export const gameFlowMachine = createMachine(
       game_over: {
         type: 'final',
         entry: assign({
-          tooltipMessage: 'Game Over!',
+          tooltipMessage: 'GAME_OVER',
         }),
       },
     },
@@ -373,11 +424,24 @@ export const gameFlowMachine = createMachine(
         actions: assign({
           currentTurn: 0,
           trackerSmackerActive: null,
-          tooltipMessage: '',
+          tooltipMessage: 'EMPTY',
+        }),
+      },
+      RESTART_GAME: {
+        target: '.vs_animation',
+        actions: assign({
+          currentTurn: 0,
+          trackerSmackerActive: null,
+          tooltipMessage: 'EMPTY',
         }),
       },
       QUIT_GAME: {
         target: '.welcome',
+        actions: assign({
+          currentTurn: 0,
+          trackerSmackerActive: null,
+          tooltipMessage: 'EMPTY',
+        }),
       },
     },
   },
@@ -390,7 +454,14 @@ export const gameFlowMachine = createMachine(
       },
       isDataWar: () => {
         // Check if the current turn is a tie (Data War)
+        // IMPORTANT: Defer Data War check if we're waiting for another play to complete
         const state = useGameStore.getState();
+
+        // If we're expecting another play, don't trigger Data War yet
+        if (state.anotherPlayExpected) {
+          return false;
+        }
+
         return state.checkForDataWar();
       },
       hasSpecialEffects: () => {

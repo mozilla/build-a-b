@@ -10,7 +10,7 @@ import { BackgroundCarousel } from './BackgroundCarousel';
 import { BACKGROUNDS } from './backgrounds';
 import { selectBackgroundMicrocopy } from './microcopy';
 
-export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const SelectBackground: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBackground } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBackground || BACKGROUNDS[0].id);
 
@@ -27,41 +27,44 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...prop
   return (
     <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8 pt-16">
+      <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
+      <div className="w-full relative z-10 py-8 pt-16 h-full">
         {/* Title and Description */}
-        <div className="flex flex-col items-center gap-4 w-full px-[2.25rem]">
-          <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
-            {selectBackgroundMicrocopy.title}
-          </Text>
+        <div className="flex flex-col items-center justify-start gap-4 h-full">
+          <div className="flex flex-col items-center gap-4 w-full px-[2.25rem] max-w-[25rem] mx-auto">
+            <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
+              {selectBackgroundMicrocopy.title}
+            </Text>
 
-          <div className="flex flex-col items-center gap-1">
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash max-w-[16.625rem]"
-            >
-              {selectBackgroundMicrocopy.description}
-            </Text>
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash max-w-[16.625rem] text-sm"
-            >
-              {selectBackgroundMicrocopy.disclaimer}
-            </Text>
+            <div className="flex flex-col items-center gap-1">
+              <Text
+                variant="body-large-semibold"
+                align="center"
+                className="text-common-ash max-w-[16.625rem]"
+              >
+                {selectBackgroundMicrocopy.description}
+              </Text>
+              <Text
+                variant="body-large-semibold"
+                align="center"
+                className="text-common-ash max-w-[16.625rem] text-sm"
+              >
+                {selectBackgroundMicrocopy.disclaimer}
+              </Text>
+            </div>
           </div>
-        </div>
 
-        {/* Backgrounds Carousel */}
-        <div className="w-full relative py-8">
-          <BackgroundCarousel onSelect={handleBackgroundSelect} />
-        </div>
+          {/* Backgrounds Carousel */}
+          <div className="w-full relative py-8">
+            <BackgroundCarousel onSelect={handleBackgroundSelect} />
+          </div>
 
-        {/* Next Button */}
-        <div className="w-full flex justify-center pb-8 px-[2.25rem]">
-          <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
-            {selectBackgroundMicrocopy.ctaButton}
-          </Button>
+          {/* Next Button */}
+          <div className="w-full flex justify-center pb-8 px-[2.25rem] max-w-[25rem] mx-auto">
+            <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
+              {selectBackgroundMicrocopy.ctaButton}
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>

@@ -33,7 +33,7 @@ const CardFeature: FC<CardFeatureProps> = ({ cardTitle, cardImgSrc, cardDesc, cl
         <div className="flex flex-col gap-2 items-start w-[10.875rem]">
           <div className="flex flex-col gap-1 items-start w-full">
             <Text variant="body-medium-semibold" color="text-common-ash">
-              {cardDesc}
+              <span dangerouslySetInnerHTML={{ __html: cardDesc }}></span>
             </Text>
           </div>
         </div>

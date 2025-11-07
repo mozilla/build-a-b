@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { welcomeMicrocopy } from './microcopy';
 
-export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const handleStartGame = () => {
     send?.({ type: 'START_GAME' });
   };
@@ -20,13 +20,14 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, ...props }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={cn('relative flex flex-col min-h-full', className)}
+      className={cn('relative flex flex-col min-h-full max-w-[25rem] mx-auto', className)}
       {...props}
     >
       {/* Decorative floating billionaires background - simplified for now */}
       <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
         {/* Background decorative elements would go here */}
       </div>
+      <header>{children}</header>
 
       {/* Main content container - centered with flex-grow */}
       <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-9 py-8 flex-grow">

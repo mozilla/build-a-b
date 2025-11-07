@@ -6,6 +6,13 @@ export const usePlayer = () => useGameStore((state) => state.player);
 export const useCPU = () => useGameStore((state) => state.cpu);
 export const useCardsInPlay = () => useGameStore((state) => state.cardsInPlay);
 export const useWinner = () => useGameStore((state) => state.winner);
+export const useWinCondition = () => useGameStore((state) => state.winCondition);
+export const useSelectedBackground = () => useGameStore((state) => state.selectedBackground);
+export const useSelectedBillionaire = () => useGameStore((state) => state.selectedBillionaire);
+export const useDeckSwapCount = () => useGameStore((state) => state.deckSwapCount);
+export const usePlayerLaunchStacks = () => useGameStore((state) => state.playerLaunchStacks);
+export const useCpuLaunchStacks = () => useGameStore((state) => state.cpuLaunchStacks);
+
 export const useShowEffectNotificationBadge = () =>
   useGameStore((state) => state.showEffectNotificationBadge);
 export const usePendingEffectNotifications = () =>
@@ -20,7 +27,7 @@ export const useUIState = () =>
     showMenu: state.showMenu,
     showHandViewer: state.showHandViewer,
     showInstructions: state.showInstructions,
-    audioEnabled: state.audioEnabled,
+    // audioEnabled: state.audioEnabled, // TODO: Add this back in when we have a way to toggle audio
     showTooltip: state.showTooltip,
   }));
 export const useOpenWhatYouWantState = () =>

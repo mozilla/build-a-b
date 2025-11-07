@@ -9,7 +9,11 @@ import { HeaderProps } from '@/components/Header';
 import { avatarBentoData } from '@/utils/constants';
 import LinkButton from '../LinkButton';
 
-const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
+interface MobileMenuProps extends HeaderProps {
+  ctaLink?: string;
+}
+
+const MobileMenu: FC<MobileMenuProps> = ({ links, socials, ctaLabel, ctaCopy, ctaLink }) => {
   const [open, setOpen] = useState(false);
   const closeIcon = '/assets/images/close-icon.svg';
   const srcIcon = open ? closeIcon : '/assets/images/icons/menu.svg';
@@ -58,15 +62,26 @@ const MobileMenu: FC<HeaderProps> = ({ links, socials, ctaLabel, ctaCopy }) => {
               />
             </div>
             <div className="flex flex-col justify-center items-center">
-              {avatarBentoData?.primaryFlowData && (
-                <Suspense fallback={<div>Loading...</div>}>
-                  <GetStarted
-                    {...avatarBentoData.primaryFlowData}
-                    ctaText={ctaLabel}
-                    triggerClassNames="secondary-button w-full"
-                    trackableEvent="click_build_billionaire_mobile_nav"
-                  />
-                </Suspense>
+              {ctaLink ? (
+                <LinkButton
+                  href={ctaLink}
+                  title="Play Data War"
+                  className="secondary-button w-full"
+                  trackableEvent="click_play_datawar_mobile_nav"
+                >
+                  {ctaLabel}
+                </LinkButton>
+              ) : (
+                avatarBentoData?.primaryFlowData && (
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <GetStarted
+                      {...avatarBentoData.primaryFlowData}
+                      ctaText={ctaLabel}
+                      triggerClassNames="secondary-button w-full"
+                      trackableEvent="click_build_billionaire_mobile_nav"
+                    />
+                  </Suspense>
+                )
               )}
               <p className="mt-4 mb-10 text-sm-custom text-center">{ctaCopy}</p>
               <SocialNetwork

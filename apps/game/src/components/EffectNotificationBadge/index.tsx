@@ -2,16 +2,16 @@
  * EffectNotificationBadge - Badge showing effect on special cards
  */
 
-import { type FC } from 'react';
+import { Icon } from '@/components/Icon';
+import Text from '@/components/Text';
 import { motion } from 'framer-motion';
-import { capitalize } from '@/utils/capitalize';
-import RocketIcon from '../../assets/icons/rocket-filled.svg';
+import { type FC } from 'react';
 
 interface EffectNotificationBadgeProps {
   effectName: string;
 }
 
-export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({ effectName }) => {
+export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = () => {
   return (
     <motion.div
       initial={{ scale: 0 }}
@@ -22,15 +22,20 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({ effe
         stiffness: 300,
         damping: 20,
       }}
-      className="flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
+      className="max-w-[5.875rem] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
     >
       {/* Icon */}
-      <img src={RocketIcon} alt="" className="w-8 h-8" />
+      <Icon name="effectRocket" size={30} />
 
       {/* Effect text */}
-      <span className="text-white body-xs font-bold whitespace-nowrap p-2 bg-charcoal rounded-md">
-        1 {capitalize(effectName)}
-      </span>
+      <Text
+        variant="badge-xs"
+        className="whitespace-nowrap p-2 bg-charcoal rounded-md"
+        color="text-common-ash"
+        weight="extrabold"
+      >
+        1 Effect
+      </Text>
     </motion.div>
   );
 };

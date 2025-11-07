@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 import { Drawer } from './Drawer';
 import { selectBillionaireMicrocopy } from './microcopy';
 
-export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire, selectBillionaire } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBillionaire);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -45,7 +45,8 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
   return (
     <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-start gap-8 px-9 py-8 pt-16">
+      <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
+      <div className="w-full relative z-10 flex flex-col items-center justify-start gap-8 px-9 py-8 pt-16 max-w-[25rem] mx-auto h-full">
         {/* Title and Description */}
         <div className="flex flex-col items-center gap-4 w-full">
           <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
@@ -55,7 +56,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
           <Text
             variant="body-large-semibold"
             align="center"
-            className="text-common-ash max-w-[266px]"
+            className="text-common-ash max-w-[16.625rem]"
           >
             {selectBillionaireMicrocopy.description}
           </Text>
@@ -77,6 +78,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, ...pro
 
       {/* Drawer Modal */}
       <Drawer
+        className="max-w-[25rem] mx-auto"
         isOpen={isDrawerOpen}
         billionaire={selectedBillionaireData}
         onClose={handleDrawerClose}

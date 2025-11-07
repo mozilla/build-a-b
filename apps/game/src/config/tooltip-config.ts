@@ -1,72 +1,167 @@
 /**
  * Centralized tooltip configuration
- * Each tooltip has a unique ID and message
+ * All game tooltips are defined here for easy management and type safety
+ *
+ * maxDisplayCount:
+ * - null = unlimited (always show, like "DATA WAR!")
+ * - number = show N times max (e.g., 3 = show only first 3 times)
  */
 
 export interface TooltipConfig {
   id: string;
   message: string;
-  showOnce: boolean; // If true, only show this tooltip once
+  maxDisplayCount: number | null; // null = unlimited, number = show N times max
 }
 
-export const TOOLTIP_CONFIGS: Record<string, TooltipConfig> = {
-  READY_TAP_DECK: {
-    id: 'ready_tap_deck',
-    message: 'Tap stack to start!',
-    showOnce: true,
+/**
+ * All tooltip configurations
+ * Keys are used as references in the state machine
+ */
+export const TOOLTIP_CONFIGS = {
+  // Setup & Intro Tooltips
+  INTRO: {
+    id: 'intro',
+    message: 'How do I play?',
+    maxDisplayCount: null, // Always show (informational)
+  },
+  QUICK_START_GUIDE: {
+    id: 'quick_start_guide',
+    message: 'Quick Launch Guide',
+    maxDisplayCount: null, // Always show (informational)
+  },
+  YOUR_MISSION: {
+    id: 'your_mission',
+    message: 'Your mission: (should you choose to accept it)',
+    maxDisplayCount: null, // Always show (informational)
   },
 
+  // Gameplay Tooltips
+  READY_TAP_DECK: {
+    id: 'ready_tap_deck',
+    message: 'Tap to start!',
+    maxDisplayCount: 1, // Show only once (first time game begins)
+  },
+  TAP_TO_CONTINUE: {
+    id: 'tap_to_continue',
+    message: 'Tap to continue',
+    maxDisplayCount: 3, // Show 3 times after first turn
+  },
+  PLAY_AGAIN: {
+    id: 'play_again',
+    message: 'Play again',
+    maxDisplayCount: 3, // Show 3 times when playing another card (tracker/blocker/launch stack)
+  },
+
+  // Data War Tooltips
   DATA_WAR: {
     id: 'data_war',
     message: 'DATA WAR!',
-    showOnce: false, // Always show (not educational)
+    maxDisplayCount: null, // Always show (excitement/game state)
   },
-
   DATA_WAR_FACE_DOWN: {
     id: 'data_war_face_down',
-    message: 'Tap to reveal 3 cards face down',
-    showOnce: true,
+    message: 'Tap to play 3 cards',
+    maxDisplayCount: 3, // Show first 3 times
   },
-
   DATA_WAR_FACE_UP: {
     id: 'data_war_face_up',
-    message: 'Tap to reveal final card',
-    showOnce: true,
+    message: 'Tap to play your next war card',
+    maxDisplayCount: 3, // Show first 3 times
   },
 
+  // Special Effects Tooltips
   OWYW_TAP_DECK: {
     id: 'owyw_tap_deck',
     message: 'Tap to see top 3 cards',
-    showOnce: true,
+    maxDisplayCount: 2, // Show first 2 times
   },
-
   EFFECT_NOTIFICATION: {
     id: 'effect_notification',
     message: 'Tap to see effect',
-    showOnce: true, // Educational - show only the first time ever
+    maxDisplayCount: 1, // Show only once
   },
 
-  // Add more tooltips here as needed
-};
+  // Game Over
+  GAME_OVER: {
+    id: 'game_over',
+    message: 'Game Over!',
+    maxDisplayCount: null, // Always show (game state)
+  },
+
+  // Empty tooltip (for clearing)
+  EMPTY: {
+    id: 'empty',
+    message: '',
+    maxDisplayCount: null,
+  },
+} as const;
 
 /**
- * Gets tooltip message if it should be shown
- * Returns empty string if tooltip has been seen and showOnce is true
+ * Type-safe tooltip keys
+ * Use this type to ensure only valid tooltip keys are referenced
  */
-export function getTooltipMessage(
-  tooltipKey: string,
-  hasSeenTooltip: (id: string) => boolean
-): string {
-  const config = TOOLTIP_CONFIGS[tooltipKey];
+export type TooltipKey = keyof typeof TOOLTIP_CONFIGS;
+
+/**
+ * Gets tooltip configuration by key
+ * @param key - The tooltip key from TOOLTIP_CONFIGS
+ * @returns The tooltip configuration or null if not found
+ */
+export function getTooltipConfig(key: TooltipKey): TooltipConfig | null {
+  const config = TOOLTIP_CONFIGS[key];
 
   if (!config) {
-    console.warn(`Unknown tooltip key: ${tooltipKey}`);
+    console.warn(`Unknown tooltip key: ${key}`);
+    return null;
+  }
+
+  return config;
+}
+
+/**
+ * Gets tooltip message if it should be shown based on display count
+ * @param key - The tooltip key from TOOLTIP_CONFIGS
+ * @param currentCount - How many times this tooltip has been displayed
+ * @returns The tooltip message or empty string if should not be shown
+ */
+export function getTooltipMessage(key: TooltipKey, currentCount: number): string {
+  const config = getTooltipConfig(key);
+
+  if (!config) {
     return '';
   }
 
-  if (config.showOnce && hasSeenTooltip(config.id)) {
-    return ''; // Don't show if already seen
+  // If maxDisplayCount is null, always show
+  if (config.maxDisplayCount === null) {
+    return config.message;
+  }
+
+  // If we've reached the max display count, don't show
+  if (currentCount >= config.maxDisplayCount) {
+    return '';
   }
 
   return config.message;
+}
+
+/**
+ * Checks if a tooltip should be displayed based on its display count
+ * @param key - The tooltip key from TOOLTIP_CONFIGS
+ * @param currentCount - How many times this tooltip has been displayed
+ * @returns True if tooltip should be shown, false otherwise
+ */
+export function shouldShowTooltip(key: TooltipKey, currentCount: number): boolean {
+  const config = getTooltipConfig(key);
+
+  if (!config) {
+    return false;
+  }
+
+  // If maxDisplayCount is null, always show
+  if (config.maxDisplayCount === null) {
+    return true;
+  }
+
+  // Check if we haven't reached the max display count
+  return currentCount < config.maxDisplayCount;
 }
