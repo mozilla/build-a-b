@@ -25,6 +25,10 @@ export type GameStore = {
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+  collecting: {
+    winner: PlayerType | null;
+    cards: Card[];
+  } | null;
 
   // Launch Stack Collections - Cards removed from playable decks when collected
   // These count towards player's total cards but cannot be played

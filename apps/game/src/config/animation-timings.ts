@@ -7,6 +7,7 @@ export const ANIMATION_DURATIONS = {
   CARD_FLIP: 700, // Card flip animation duration (used by Card component)
   CARD_COMPARISON: 1800, // Increased for data war glow pause
   CARD_PLAY_FROM_DECK: 800, // Duration for card to travel from deck to play area
+  CARD_COLLECTION: 1200, // Duration for cards to collect to winning deck (matches WIN_ANIMATION)
 
   // Special effects
   WIN_ANIMATION: 1200,
