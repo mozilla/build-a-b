@@ -8,6 +8,7 @@ import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { getBackgroundImage } from '@/utils/selectors';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
+import { useTooltip } from '../../hooks/use-tooltip';
 import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
 import { DataWarAnimation } from '../DataWarAnimation';
@@ -36,7 +37,7 @@ export function Game() {
     player,
     cpu,
     activePlayer,
-    tooltipMessage,
+    tooltipMessage: tooltipKey, // This is now a key, not the actual message
     tapDeck,
     handlePreReveal,
     handleRevealCards,
@@ -44,6 +45,9 @@ export function Game() {
     resetGame,
     send,
   } = useGameLogic();
+
+  // Convert tooltip key to actual message (with display count tracking)
+  const tooltipMessage = useTooltip(tooltipKey);
 
   const playerLaunchStacks = usePlayerLaunchStacks();
   const cpuLaunchStacks = useCpuLaunchStacks();

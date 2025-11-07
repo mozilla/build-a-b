@@ -7,6 +7,12 @@ import MenuIcon from '@/assets/icons/menu.svg?react';
 import PauseIcon from '@/assets/icons/pause.svg?react';
 import RestartIcon from '@/assets/icons/restart.svg?react';
 import RocketIcon from '@/assets/icons/rocket.svg?react';
+import TrackerIcon from '@/assets/icons/tracker-plus.svg?react';
+import BlockerIcon from '@/assets/icons/blocker-minus.svg?react';
+import MoveIcon from '@/assets/icons/move.svg?react';
+import FirewallIcon from '@/assets/icons/firewall.svg?react';
+import LaunchStackIcon from '@/assets/icons/launch-stack.svg?react';
+
 import type { FC, SVGProps } from 'react';
 
 export const iconName = [
@@ -20,6 +26,11 @@ export const iconName = [
   'rocket',
   'restart',
   'effectRocket',
+  'trackerIcon',
+  'blockerIcon',
+  'moveIcon',
+  'firewallIcon',
+  'launchStackIcon',
 ] as const;
 export type IconName = (typeof iconName)[number];
 
@@ -34,4 +45,9 @@ export const iconRegistry = {
   rocket: RocketIcon,
   restart: RestartIcon,
   effectRocket: EffectRocketIcon,
+  trackerIcon: TrackerIcon,
+  blockerIcon: BlockerIcon,
+  moveIcon: MoveIcon,
+  firewallIcon: FirewallIcon,
+  launchStackIcon: LaunchStackIcon,
 } satisfies Record<IconName, FC<SVGProps<SVGSVGElement>>>;

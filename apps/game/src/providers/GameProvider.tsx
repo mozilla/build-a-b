@@ -24,7 +24,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 
   // Initialize game on mount
   useEffect(() => {
-    initializeGame('random', 'random');
+    initializeGame('custom', 'custom', ['common-1', 'blocker-2', 'ls-ai-platform', 'common-5'], ['common-2']);
   }, [initializeGame]);
 
   return (

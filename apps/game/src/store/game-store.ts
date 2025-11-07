@@ -72,6 +72,7 @@ export const useGameStore = create<GameStore>()(
       showHostileTakeoverAnimation: false,
       showLaunchStackAnimation: false,
       showDataWarAnimation: false,
+      dataWarVideoPlaying: false,
       selectedBillionaire: '',
       selectedBackground: '',
       isPaused: false,
@@ -93,7 +94,7 @@ export const useGameStore = create<GameStore>()(
       effectNotificationPersistence: 'localStorage',
 
       // Tooltip System
-      seenTooltips: JSON.parse(localStorage.getItem('seenTooltips') || '[]'),
+      tooltipDisplayCounts: JSON.parse(localStorage.getItem('tooltipDisplayCounts') || '{}'),
       tooltipPersistence: 'localStorage',
 
       // Game Logic Actions
@@ -172,14 +173,15 @@ export const useGameStore = create<GameStore>()(
         const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
 
         // Calculate the effective card value (0 if negated, otherwise normal value)
-        // IMPORTANT: Tracker cards have 0 value when first played - their value is stored for the NEXT card
+        // IMPORTANT: Tracker cards ALWAYS have 0 value when played - their value is stored for the NEXT NON-tracker card
         let effectiveCardValue = shouldNegateValue ? 0 :
-                                  (card.specialType === 'tracker' && !get().anotherPlayMode) ? 0 :
+                                  card.specialType === 'tracker' ? 0 :
                                   card.value;
 
         // APPLY PENDING TRACKER BONUS FROM EARLIER IN SAME TURN
-        // If in anotherPlayMode (second+ card), apply any pending tracker bonus
-        if (get().anotherPlayMode && playerState.pendingTrackerBonus > 0) {
+        // If in anotherPlayMode (second+ card) AND card doesn't trigger another play, apply pending bonus
+        // Tracker bonus should only apply to cards that END the play sequence (common/firewall/billionaire)
+        if (get().anotherPlayMode && playerState.pendingTrackerBonus > 0 && !card.triggersAnotherPlay) {
           effectiveCardValue += playerState.pendingTrackerBonus;
         }
 
@@ -213,7 +215,8 @@ export const useGameStore = create<GameStore>()(
             currentTurnValue: newTurnValue,
             // CLEAR pending bonuses/penalties after applying (only if in anotherPlayMode)
             // If NOT in anotherPlayMode (first card), keep them at 0 or set them below for trackers
-            pendingTrackerBonus: get().anotherPlayMode ? 0 : playerState.pendingTrackerBonus,
+            // Don't clear tracker bonus if card triggers another play (need to accumulate across sequence)
+            pendingTrackerBonus: get().anotherPlayMode && !card.triggersAnotherPlay ? 0 : playerState.pendingTrackerBonus,
             pendingBlockerPenalty: get().anotherPlayMode ? 0 : playerState.pendingBlockerPenalty,
           },
           cardsInPlay: [...get().cardsInPlay, card],
@@ -234,10 +237,12 @@ export const useGameStore = create<GameStore>()(
             },
           ];
 
-          // STORE the tracker bonus for next card (don't apply to this card)
+          // ACCUMULATE the tracker bonus for next card (don't apply to this card)
+          // Multiple trackers in sequence should accumulate their bonuses
+          const currentPendingBonus = (updates[playerId] as Player).pendingTrackerBonus;
           updates[playerId] = {
             ...(updates[playerId] as Player),
-            pendingTrackerBonus: card.value, // Store +1, +2, or +3 for next card
+            pendingTrackerBonus: currentPendingBonus + card.value, // ACCUMULATE tracker bonuses
             activeEffects: newActiveEffects, // Add to display
           };
         }
@@ -1085,39 +1090,50 @@ export const useGameStore = create<GameStore>()(
       },
 
       // Tooltip System Actions
-      markTooltipAsSeen: (tooltipId) => {
-        const { seenTooltips, tooltipPersistence } = get();
+      incrementTooltipCount: (tooltipId) => {
+        const { tooltipDisplayCounts, tooltipPersistence } = get();
 
-        // Convert to Set for operations, then back to array
-        const seenSet = new Set(seenTooltips);
-        seenSet.add(tooltipId);
-        const newSeenTooltips = Array.from(seenSet);
+        // Increment the count (default to 0 if not present)
+        const currentCount = tooltipDisplayCounts[tooltipId] || 0;
+        const newCounts = {
+          ...tooltipDisplayCounts,
+          [tooltipId]: currentCount + 1,
+        };
 
-        set({ seenTooltips: newSeenTooltips });
+        set({ tooltipDisplayCounts: newCounts });
 
         if (tooltipPersistence === 'localStorage') {
-          localStorage.setItem('seenTooltips', JSON.stringify(newSeenTooltips));
+          localStorage.setItem('tooltipDisplayCounts', JSON.stringify(newCounts));
         }
       },
 
-      hasSeenTooltip: (tooltipId) => {
-        return new Set(get().seenTooltips).has(tooltipId);
+      getTooltipDisplayCount: (tooltipId) => {
+        const { tooltipDisplayCounts } = get();
+        return tooltipDisplayCounts[tooltipId] || 0;
       },
 
-      shouldShowTooltip: (tooltipId) => {
-        return !get().hasSeenTooltip(tooltipId);
+      shouldShowTooltip: (tooltipId, maxDisplayCount) => {
+        const currentCount = get().getTooltipDisplayCount(tooltipId);
+
+        // If maxDisplayCount is null, always show
+        if (maxDisplayCount === null) {
+          return true;
+        }
+
+        // Check if we haven't reached the max display count
+        return currentCount < maxDisplayCount;
       },
 
-      clearSeenTooltips: () => {
-        set({ seenTooltips: [] });
-        localStorage.removeItem('seenTooltips');
+      clearTooltipCounts: () => {
+        set({ tooltipDisplayCounts: {} });
+        localStorage.removeItem('tooltipDisplayCounts');
       },
 
       setTooltipPersistence: (mode) => {
         set({ tooltipPersistence: mode });
 
         if (mode === 'memory') {
-          localStorage.removeItem('seenTooltips');
+          localStorage.removeItem('tooltipDisplayCounts');
         }
       },
 
