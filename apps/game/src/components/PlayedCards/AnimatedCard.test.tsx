@@ -6,6 +6,26 @@ import type { Card } from '../../types/card';
 import type { EffectNotification, PlayedCardState } from '../../types/game';
 import { AnimatedCard } from './AnimatedCard';
 
+// Mock XState and GameMachineContext
+vi.mock('@xstate/react', () => ({
+  useSelector: vi.fn(() => 'ready'),
+}));
+
+vi.mock('../../providers/GameProvider', () => ({
+  GameMachineContext: {
+    useActorRef: vi.fn(() => ({})),
+  },
+}));
+
+vi.mock('../../utils/get-game-phase', () => ({
+  getGamePhase: vi.fn(() => 'ready'),
+}));
+
+vi.mock('@/utils/glow-effects', () => ({
+  getCardGlowType: vi.fn(() => 'none'),
+  getGlowClasses: vi.fn(() => ''),
+}));
+
 // Mock framer-motion to avoid animation complexity in tests
 vi.mock('framer-motion', () => ({
   motion: {
@@ -90,7 +110,34 @@ describe('AnimatedCard Component', () => {
       pendingEffectNotifications: [],
       currentEffectNotification: null,
       showEffectNotificationModal: false,
-      hasSeenTooltip: () => false,
+      shouldShowTooltip: () => true,
+      incrementTooltipCount: vi.fn(),
+      player: {
+        id: 'player',
+        name: 'Player',
+        deck: [],
+        playedCard: null,
+        playedCardsInHand: [],
+        currentTurnValue: 0,
+        launchStackCount: 0,
+        activeEffects: [],
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+      },
+      cpu: {
+        id: 'cpu',
+        name: 'CPU',
+        deck: [],
+        playedCard: null,
+        playedCardsInHand: [],
+        currentTurnValue: 0,
+        launchStackCount: 0,
+        activeEffects: [],
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+      },
+      dataWarVideoPlaying: false,
+      anotherPlayExpected: false,
     });
   });
 
@@ -266,14 +313,14 @@ describe('AnimatedCard Component', () => {
     expect(state.currentEffectNotification).toEqual(notification1);
   });
 
-  it('should mark tooltip as seen on first click', () => {
-    const markTooltipAsSeen = vi.fn();
+  it('should increment tooltip count on first click', () => {
+    const incrementTooltipCount = vi.fn();
     useGameStore.setState({
       showEffectNotificationBadge: true,
       pendingEffectNotifications: [createMockNotification()],
       showEffectNotificationModal: false,
-      hasSeenTooltip: () => false,
-      markTooltipAsSeen,
+      shouldShowTooltip: () => true,
+      incrementTooltipCount,
     });
 
     render(<AnimatedCard {...defaultProps} />);
@@ -281,7 +328,7 @@ describe('AnimatedCard Component', () => {
     const card = screen.getByTestId('animated-card');
     fireEvent.click(card);
 
-    expect(markTooltipAsSeen).toHaveBeenCalledWith('effect_notification');
+    expect(incrementTooltipCount).toHaveBeenCalledWith('effect_notification');
   });
 
   it('should handle winner card z-index correctly', () => {
