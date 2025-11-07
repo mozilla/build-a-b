@@ -29,7 +29,10 @@ import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { notFound } from 'next/navigation';
 import LaunchRecording from '@/components/LaunchRecording';
 import Livestream from '@/components/Livestream';
-import { getRandomCuratedSelfies, getCuratedSelfiesCount } from '@/utils/helpers/get-curated-selfies';
+import {
+  getRandomCuratedSelfies,
+  getCuratedSelfiesCount,
+} from '@/utils/helpers/get-curated-selfies';
 import clsx from 'clsx';
 import type { FC } from 'react';
 import TwitchConRecapBento from '@/components/TwitchConRecapBento';
@@ -144,12 +147,16 @@ export default async function Home({
       {isPhase2C && <LaunchRecording />}
 
       <Ticker
-        items={isPhase4 ? tickerDataPhase4 : isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData}
+        items={
+          isPhase4 ? tickerDataPhase4 : isLaunchCompleted ? tickerDataAfterTwitchCon : tickerData
+        }
         isPhase4={isPhase4}
       />
 
       <main className="portrait:flex portrait:flex-row portrait:flex-wrap portrait:justify-between landscape:mb-8 landscape:grid landscape:grid-cols-12 ${isPhase4 ? 'landscape:grid-rows-5' : 'landscape:grid-rows-6'} landscape:gap-8">
-        <div className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'landscape:row-span-2' : 'landscape:row-span-3'} landscape:row-start-1 landscape:col-span-7`}>
+        <div
+          className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'landscape:row-span-2' : 'landscape:row-span-3'} landscape:row-start-1 landscape:col-span-7`}
+        >
           {isPhase4 ? (
             <DataWarLaunchHero />
           ) : (
@@ -160,7 +167,9 @@ export default async function Home({
             />
           )}
         </div>
-        <div className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'h-full landscape:row-span-2' : 'h-[32rem] landscape:row-span-3'} landscape:h-full landscape:col-span-5 landscape:col-start-8 landscape:row-start-1`}>
+        <div
+          className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'h-full landscape:row-span-2' : 'h-[32rem] landscape:row-span-3'} landscape:h-full landscape:col-span-5 landscape:col-start-8 landscape:row-start-1`}
+        >
           {!isLaunchCompleted && !isPhase4 && (
             <BentoDual
               className="flex w-full h-full"
@@ -197,21 +206,16 @@ export default async function Home({
               </Scrim>
             </BentoDual>
           )}
-          {isPhase4 && (
-            <TwitchConRecapBento />
-            
-          )}
+          {isPhase4 && <TwitchConRecapBento />}
         </div>
         {/* BBOOWYW Bento */}
-        <div className={`${isPhase4 ? 'h-full aspect-[2/1]' : 'h-[15.625rem]'} portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 ${isPhase4 ? 'landscape:row-start-3' : 'landscape:row-start-4'}`}>
+        <div
+          className={`${isPhase4 ? 'h-full aspect-[2/1]' : 'h-[15.625rem]'} portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 ${isPhase4 ? 'landscape:row-start-3' : 'landscape:row-start-4'}`}
+        >
           {isPhase4 ? (
             <OrangeCard isPhase4 />
           ) : (
-            <BentoDual
-              className="h-full"
-              effect="flip"
-              back={<OrangeCard />}
-            >
+            <BentoDual className="h-full" effect="flip" back={<OrangeCard />}>
               <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
                 <Image
                   src="/assets/images/icons/flip.svg"
@@ -242,11 +246,7 @@ export default async function Home({
         >
           {isPhase4 ? (
             /* Phase 4: Condensed Bye Bye Billionaires */
-            <Bento
-              className="h-full"
-              image="/assets/images/space.webp"
-              imageSizes="100vw"
-            >
+            <Bento className="h-full" image="/assets/images/space.webp" imageSizes="100vw">
               <div
                 className="relative h-full p-4 landscape:p-10
                               bg-gradient-to-t from-black from-[20%] to-transparent
@@ -268,9 +268,9 @@ export default async function Home({
                     ></iframe>
                   </div>
                   <p className="text-body-large">
-                    We did it, everyone. The Billionaires are now all safely off-planet and out of your
-                    personal data. Now go be your quirky, curious, clever, creative selves and Open What
-                    You Want.
+                    We did it, everyone. The Billionaires are now all safely off-planet and out of
+                    your personal data. Now go be your quirky, curious, clever, creative selves and
+                    Open What You Want.
                   </p>
                   <LinkButton
                     href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
@@ -311,7 +311,8 @@ export default async function Home({
                   },
                   {
                     asset: 'astronaut.webp',
-                    classNameMobile: 'absolute bottom-[6rem] left-[6rem] h-20 w-20 animate-float-tilt',
+                    classNameMobile:
+                      'absolute bottom-[6rem] left-[6rem] h-20 w-20 animate-float-tilt',
                     classNameDesktop:
                       'landscape:bottom-auto landscape:top-[2rem] landscape:left-auto landscape:right-[2rem] landscape:h-30 landscape:w-30',
                   },

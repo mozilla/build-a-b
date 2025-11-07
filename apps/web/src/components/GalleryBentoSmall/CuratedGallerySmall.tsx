@@ -18,7 +18,7 @@ const CuratedGallerySmall: FC<CuratedGallerySmallProps> = ({
   count,
 }) => {
   const { setShowVault, setVaultInitialImage } = useVaultContext();
-  
+
   const onOpenVault = () => {
     setVaultInitialImage(currentIndex);
     setShowVault(true);
@@ -26,17 +26,10 @@ const CuratedGallerySmall: FC<CuratedGallerySmallProps> = ({
   };
 
   return (
-    <Bento
-      image={image}
-      className="aspect-square group"
-      bgEffect
-      onClick={onOpenVault}
-    >
+    <Bento image={image} className="aspect-square group" bgEffect onClick={onOpenVault}>
       {showCount && count !== undefined && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-secondary-blue to-secondary-purple rounded-[0.75rem]">
-          <span className="text-[4rem] landscape:text-[5rem] font-bold text-white">
-            +{count}
-          </span>
+          <span className="text-[4rem] landscape:text-[5rem] font-bold text-white">+{count}</span>
         </div>
       )}
     </Bento>
@@ -44,4 +37,3 @@ const CuratedGallerySmall: FC<CuratedGallerySmallProps> = ({
 };
 
 export default CuratedGallerySmall;
-

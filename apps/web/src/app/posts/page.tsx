@@ -25,7 +25,10 @@ export default async function PostsPage() {
     return (
       <main className="prose mx-auto py-8">
         <h1>Posts</h1>
-        <p>Sanity CMS is not configured. Please set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET environment variables.</p>
+        <p>
+          Sanity CMS is not configured. Please set NEXT_PUBLIC_SANITY_PROJECT_ID and
+          NEXT_PUBLIC_SANITY_DATASET environment variables.
+        </p>
       </main>
     );
   }

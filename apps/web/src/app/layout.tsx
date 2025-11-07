@@ -128,7 +128,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   // Load curated selfies for Phase 4
   const curatedSelfies = isPhase4 ? getCuratedSelfies().map((s) => s.path) : [];
-  console.log('[Layout] Loading curated selfies. isPhase4:', isPhase4, 'count:', curatedSelfies.length);
+  console.log(
+    '[Layout] Loading curated selfies. isPhase4:',
+    isPhase4,
+    'count:',
+    curatedSelfies.length,
+  );
 
   // Create navigation links conditionally
   const baseLinks = [
