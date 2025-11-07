@@ -26,17 +26,40 @@ export const DeckPile: FC<DeckPileProps> = ({
   const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
   const prevCardCountRef = useRef(cardCount);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isReceiving, setIsReceiving] = useState(false);
+  const [cardsPlayedThisTurn, setCardsPlayedThisTurn] = useState(0);
 
-  // Self-trigger animation when this deck's card count decreases
+  // Self-trigger corresponding animation when this deck's card count changes
   useLayoutEffect(() => {
-    if (cardCount < prevCardCountRef.current) {
+    const cardDiff = prevCardCountRef.current - cardCount;
+    const playingCard = cardDiff > 0;
+    const receivingCards = cardCount > prevCardCountRef.current && prevCardCountRef.current > 0;
+
+    if (playingCard) {
+      // Track how many cards were just played
+      setCardsPlayedThisTurn(cardDiff);
+
       // A card was played from this deck
       setIsAnimating(true);
 
       // Reset animation state after animation completes
       const timer = setTimeout(() => {
         setIsAnimating(false);
+        setCardsPlayedThisTurn(0);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
+
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+
+    if (receivingCards) {
+      // Cards were added to this deck (collection)
+      setIsReceiving(true);
+
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsReceiving(false);
+      }, ANIMATION_DURATIONS.CARD_COLLECTION);
 
       // Cleanup timeout if component unmounts
       return () => clearTimeout(timer);
@@ -99,14 +122,14 @@ export const DeckPile: FC<DeckPileProps> = ({
           // After swap: keep decks in swapped positions (no animation)
           y: owner === 'cpu' ? swapDistance.y : -swapDistance.y,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         }
       : {
           // Normal positions
           y: 0,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         };
 
@@ -137,7 +160,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         {/* Card stack - only this animates during swap */}
         <motion.div
           ref={deckRef}
-          className="relative p-2 w-full"
+          className="relative p-2 w-full z-19"
           onClick={cardCount > 0 ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
@@ -212,22 +235,30 @@ export const DeckPile: FC<DeckPileProps> = ({
                 </motion.div>
               )}
 
-              {/* Top card */}
+              {/* Top card - animated when played */}
               <motion.div
-                data-top
                 className="relative"
                 initial={false}
                 animate={{
-                  opacity: isAnimating ? [1, 0] : 0,
+                  // For multi-card plays, stagger fade-outs
+                  opacity: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? [1, 0.7, 0] // Multi-card: gradual fade
+                      : [1, 0] // Single card: direct fade
+                    : 0,
                   x: 0,
                   y: 0,
                 }}
                 transition={{
-                  duration: shiftTransitionDuration,
+                  duration: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? shiftTransitionDuration * 1.2 // Extend duration for multi-card
+                      : shiftTransitionDuration * 0.5
+                    : shiftTransitionDuration,
                   ease: [0.43, 0.13, 0.23, 0.96],
                 }}
               >
-                <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                <Card data-measure-target={owner} cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
               </motion.div>
             </div>
           ) : (
