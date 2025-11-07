@@ -3,6 +3,7 @@ import Script from 'next/script';
 import localFont from 'next/font/local';
 import '@/styles/globals.css';
 import { Providers } from './providers';
+import { getCuratedSelfies } from '@/utils/helpers/get-curated-selfies';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -122,6 +123,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isDataWarEnabled = await evaluateFlag('showDataWar');
   // Check if Easter Egg feature is enabled
   const isEasterEggEnabled = await evaluateFlag('showEasterEgg');
+  // Check if Phase 4 feature is enabled
+  const isPhase4 = await evaluateFlag('showPhase4Features');
+
+  // Load curated selfies for Phase 4
+  const curatedSelfies = isPhase4 ? getCuratedSelfies().map((s) => s.path) : [];
+  console.log('[Layout] Loading curated selfies. isPhase4:', isPhase4, 'count:', curatedSelfies.length);
 
   // Create navigation links conditionally
   const baseLinks = [
@@ -148,7 +155,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     socials,
     ctaCopy:
       'This experience uses AI and prioritizes open-source models, guided by stimulus from paid artists and prompt engineers. Billionaires feed your data into AI, we use it to hand the power back to you.',
-    ctaLabel: 'Build a Billionaire',
+    ctaLabel: isPhase4 ? 'Play Data War' : 'Build a Billionaire',
+    ctaLink: isPhase4 ? '/datawar/game' : undefined,
   };
   return (
     <html lang="en" className={`scroll-smooth ${sharpSans.variable}`} data-scroll-behavior="smooth">
@@ -171,13 +179,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Suspense>
           <AnalyticsListener />
         </Suspense>
-        <Providers isEasterEggEnabled={isEasterEggEnabled}>
+        <Providers
+          isEasterEggEnabled={isEasterEggEnabled}
+          isPhase4={isPhase4}
+          curatedSelfies={curatedSelfies}
+        >
           <Container>
             <Header
               links={navigationData.links}
               socials={navigationData.socials}
               ctaCopy={navigationData.ctaCopy}
               ctaLabel={navigationData.ctaLabel}
+              ctaLink={navigationData.ctaLink}
             />
             {children}
             <Footer
@@ -185,6 +198,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               socials={navigationData.socials}
               ctaCopy={navigationData.ctaCopy}
               ctaLabel={navigationData.ctaLabel}
+              ctaLink={navigationData.ctaLink}
             />
           </Container>
         </Providers>

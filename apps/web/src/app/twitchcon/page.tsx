@@ -43,13 +43,15 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [isAnyPhase2, isPhase2B, isPhase2C, isLaunchCompleted, showSocialFeed] = await Promise.all([
-    evaluatePhase2Flag('a'),
-    evaluateFlag('showPhase2bFeatures'),
-    evaluateFlag('showPhase2cFeatures'),
-    evaluatePhase2Flag('c'),
-    evaluateFlag('showSocialFeed'),
-  ]);
+  const [isAnyPhase2, isPhase2B, isPhase2C, isLaunchCompleted, showSocialFeed, isPhase4] =
+    await Promise.all([
+      evaluatePhase2Flag('a'),
+      evaluateFlag('showPhase2bFeatures'),
+      evaluateFlag('showPhase2cFeatures'),
+      evaluatePhase2Flag('c'),
+      evaluateFlag('showSocialFeed'),
+      evaluateFlag('showPhase4Features'),
+    ]);
 
   const imagesForGallery = [
     {
@@ -398,7 +400,7 @@ export default async function Page() {
         </>
       )}
 
-      {isLaunchCompleted && countDown}
+      {isLaunchCompleted && !isPhase4 && countDown}
 
       {isAnyPhase2 && showSocialFeed && (
         <SocialFeed
@@ -408,7 +410,7 @@ export default async function Page() {
         />
       )}
 
-      {!isLaunchCompleted && countDown}
+      {!isLaunchCompleted && !isPhase4 && countDown}
 
       {isLaunchCompleted && (
         <section

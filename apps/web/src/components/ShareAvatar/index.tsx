@@ -11,16 +11,18 @@ import { FC } from 'react';
 
 export interface ShareAvatarProps {
   avatar: AvatarData;
-  onBookmarkClick: () => void;
   navigatorShareAvailable?: boolean;
   centered?: boolean;
+  onBookmarkClick?: () => void;
+  hideBookmark?: boolean;
 }
 
 const ShareAvatar: FC<ShareAvatarProps> = ({
   avatar,
-  onBookmarkClick,
   navigatorShareAvailable: externalNavigatorShareAvailable,
   centered,
+  onBookmarkClick,
+  hideBookmark = false,
 }) => {
   const {
     isNavigatorShareAvailable,
@@ -84,14 +86,16 @@ const ShareAvatar: FC<ShareAvatarProps> = ({
             </span>
           </a>
         </li>
-        <li>
-          <button className="cursor-pointer" type="button" onClick={onBookmarkClick}>
-            <span className="sr-only">Bookmark</span>
-            <span className="inline-block w-10 landscape:w-[4.375rem] aspect-square text-accent">
-              <Bookmark width="100%" height="100%" role="presentation" />
-            </span>
-          </button>
-        </li>
+        {!hideBookmark && onBookmarkClick && (
+          <li>
+            <button className="cursor-pointer" type="button" onClick={onBookmarkClick}>
+              <span className="sr-only">Bookmark</span>
+              <span className="inline-block w-10 landscape:w-[4.375rem] aspect-square text-accent">
+                <Bookmark width="100%" height="100%" role="presentation" />
+              </span>
+            </button>
+          </li>
+        )}
       </ul>
     </nav>
   );

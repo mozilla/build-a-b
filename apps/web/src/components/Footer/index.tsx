@@ -25,9 +25,10 @@ export interface FooterProps {
   }[];
   ctaCopy: string;
   ctaLabel: string;
+  ctaLink?: string;
 }
 
-const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
+const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, ctaLink }) => {
   const currentYear = new Date();
   const pathname = usePathname();
 
@@ -104,15 +105,26 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
       <div className="landscape:flex landscape:justify-between">
         <div className="ml-auto text-right mb-8 landscape:ml-0 landscape:mb-0 landscape:text-left">
           <p className="mb-4 ml-auto landscape:ml-0w-71 landscape:w-96 text-sm-custom">{ctaCopy}</p>
-          {avatarBentoData?.primaryFlowData && (
-            <Suspense fallback={<div>Loading...</div>}>
-              <GetStarted
-                {...avatarBentoData.primaryFlowData}
-                ctaText={ctaLabel}
-                triggerClassNames="secondary-button"
-                trackableEvent="click_build_billionaire_footer"
-              />
-            </Suspense>
+          {ctaLink ? (
+            <LinkButton
+              href={ctaLink}
+              title="Play Data War"
+              className="secondary-button"
+              trackableEvent="click_play_datawar_footer"
+            >
+              {ctaLabel}
+            </LinkButton>
+          ) : (
+            avatarBentoData?.primaryFlowData && (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...avatarBentoData.primaryFlowData}
+                  ctaText={ctaLabel}
+                  triggerClassNames="secondary-button"
+                  trackableEvent="click_build_billionaire_footer"
+                />
+              </Suspense>
+            )
           )}
         </div>
         <p className="self-end">
