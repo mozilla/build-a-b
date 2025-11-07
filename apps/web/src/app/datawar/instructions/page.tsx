@@ -16,12 +16,14 @@ const DATAWAR_PDF_URL = process.env.NEXT_PUBLIC_DATAWAR_PDF_URL || '';
 
 export default async function Page() {
   // Check if DataWar feature is enabled
-  const [shouldDisplayLaunchCta, isPhase2B, isDataWarEnabled, isPhase2C] = await Promise.all([
-    evaluatePhase2Flag('a'),
-    evaluateFlag('showPhase2bFeatures'),
-    evaluateFlag('showDataWar'),
-    evaluateFlag('showPhase2cFeatures'),
-  ]);
+  const [shouldDisplayLaunchCta, isPhase2B, isDataWarEnabled, isPhase2C, isPhase4] =
+    await Promise.all([
+      evaluatePhase2Flag('a'),
+      evaluateFlag('showPhase2bFeatures'),
+      evaluateFlag('showDataWar'),
+      evaluateFlag('showPhase2cFeatures'),
+      evaluateFlag('showPhase4Features'),
+    ]);
 
   if (!isDataWarEnabled) {
     notFound();
@@ -69,25 +71,27 @@ export default async function Page() {
           className="landscape:w-[30%] aspect-[377/275] border-none"
         />
       </section>
-      <CountDown
-        isPhase2B={isPhase2B}
-        isPhase2C={isPhase2C}
-        cta={
-          shouldDisplayLaunchCta ? (
-            <LinkButton href="/" className="secondary-button flex">
-              Watch the Launch!
-            </LinkButton>
-          ) : (
-            <Suspense fallback={<div>Loading...</div>}>
-              <GetStarted
-                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-                ctaText="Build a Billionaire"
-                triggerClassNames="secondary-button"
-              />
-            </Suspense>
-          )
-        }
-      />
+      {!isPhase4 && (
+        <CountDown
+          isPhase2B={isPhase2B}
+          isPhase2C={isPhase2C}
+          cta={
+            shouldDisplayLaunchCta ? (
+              <LinkButton href="/" className="secondary-button flex">
+                Watch the Launch!
+              </LinkButton>
+            ) : (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                  ctaText="Build a Billionaire"
+                  triggerClassNames="secondary-button"
+                />
+              </Suspense>
+            )
+          }
+        />
+      )}
     </>
   );
 }

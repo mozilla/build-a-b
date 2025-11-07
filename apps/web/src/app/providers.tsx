@@ -7,13 +7,22 @@ import { HeroUIProvider } from '@heroui/react';
 interface ProvidersProps {
   children: React.ReactNode;
   isEasterEggEnabled: boolean;
+  isPhase4?: boolean;
+  curatedSelfies?: string[];
 }
 
-export function Providers({ children, isEasterEggEnabled }: ProvidersProps) {
+export function Providers({
+  children,
+  isEasterEggEnabled,
+  isPhase4 = false,
+  curatedSelfies = [],
+}: ProvidersProps) {
   return (
     <HeroUIProvider>
       <PrimaryContextProvider initialData={null} isEasterEggEnabled={isEasterEggEnabled}>
-        <VaultContextProvider>{children}</VaultContextProvider>
+        <VaultContextProvider isPhase4={isPhase4} curatedSelfies={curatedSelfies}>
+          {children}
+        </VaultContextProvider>
       </PrimaryContextProvider>
     </HeroUIProvider>
   );

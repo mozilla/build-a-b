@@ -29,6 +29,7 @@ export default async function Page() {
     isDataWarEnabled,
     showSocialFeed,
     isPhase2C,
+    isPhase4,
   ] = await Promise.all([
     evaluatePhase2Flag('a'),
     evaluateFlag('showPhase2bFeatures'),
@@ -36,6 +37,7 @@ export default async function Page() {
     evaluateFlag('showDataWar'),
     evaluateFlag('showSocialFeed'),
     evaluateFlag('showPhase2cFeatures'),
+    evaluateFlag('showPhase4Features'),
   ]);
 
   if (!isDataWarEnabled) {
@@ -329,25 +331,27 @@ export default async function Page() {
         />
       )}
 
-      <CountDown
-        isPhase2B={isPhase2B}
-        isPhase2C={isPhase2C}
-        cta={
-          shouldDisplayLaunchCta ? (
-            <LinkButton href="/" className="secondary-button flex">
-              Watch the Launch!
-            </LinkButton>
-          ) : (
-            <Suspense fallback={<div>Loading...</div>}>
-              <GetStarted
-                {...(avatarBentoData.primaryFlowData as GetStartedProps)}
-                ctaText="Build a Billionaire"
-                triggerClassNames="secondary-button"
-              />
-            </Suspense>
-          )
-        }
-      />
+      {!isPhase4 && (
+        <CountDown
+          isPhase2B={isPhase2B}
+          isPhase2C={isPhase2C}
+          cta={
+            shouldDisplayLaunchCta ? (
+              <LinkButton href="/" className="secondary-button flex">
+                Watch the Launch!
+              </LinkButton>
+            ) : (
+              <Suspense fallback={<div>Loading...</div>}>
+                <GetStarted
+                  {...(avatarBentoData.primaryFlowData as GetStartedProps)}
+                  ctaText="Build a Billionaire"
+                  triggerClassNames="secondary-button"
+                />
+              </Suspense>
+            )
+          }
+        />
+      )}
     </>
   );
 }

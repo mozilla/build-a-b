@@ -5,7 +5,7 @@ import Vault from '.';
 import { useVaultContext } from './VaultContext';
 
 const VaultWrapper: FC = () => {
-  const { showVault, setShowVault, vaultInitialImage } = useVaultContext();
+  const { showVault, setShowVault, vaultInitialImage, isPhase4 } = useVaultContext();
 
   return (
     <Vault
@@ -14,6 +14,7 @@ const VaultWrapper: FC = () => {
       onOpenChange={() => {
         setShowVault(false);
       }}
+      isPhase4={isPhase4}
     />
   );
 };

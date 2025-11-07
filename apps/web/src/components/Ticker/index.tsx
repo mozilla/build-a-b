@@ -12,24 +12,36 @@ export interface TickerItem {
 export interface TickerProps {
   items?: TickerItem[];
   'aria-label'?: string;
+  isPhase4?: boolean;
 }
 
-const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
+const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel, isPhase4 = false }) => {
   const tickerData = items;
 
   const isHref = tickerData?.some((item) => item.href);
+
+  const containerClasses = isPhase4
+    ? `relative flex w-full h-[2.375rem] landscape:h-[4rem] rounded-[0.75rem]
+       landscape:rounded-[0.75rem] border-[0.125rem] landscape:border-[0.125rem]
+       border-common-ash landscape:border-common-ash
+       mb-4 landscape:mb-8 py-[0.295rem] items-center landscape:items-center
+       bg-gradient-to-r from-[#ff8a50] via-[#ffea80] to-[#ff8a50]
+       shrink-0 landscape:shrink-0`
+    : `relative flex w-full h-[2.375rem] landscape:h-[4rem] rounded-[0.75rem]
+       landscape:rounded-[0.75rem] border-[0.125rem] landscape:border-[0.125rem]
+       border-common-ash landscape:border-common-ash
+       mb-4 landscape:mb-8 py-[0.295rem] items-center landscape:items-center
+       bg-gradient-to-r from-secondary-blue to-secondary-purple
+       shrink-0 landscape:shrink-0`;
+
+  const textColorClass = isPhase4 ? 'text-charcoal' : 'text-white';
 
   return (
     <div
       role="marquee"
       aria-live="polite"
       aria-label={ariaLabel || 'Live updates ticker'}
-      className="relative flex w-full h-[2.375rem] landscape:h-[4rem] rounded-[0.75rem]
-                 landscape:rounded-[0.75rem] border-[0.125rem] landscape:border-[0.125rem]
-                 border-common-ash landscape:border-common-ash
-                 mb-4 landscape:mb-8 py-[0.295rem] items-center landscape:items-center
-                 bg-gradient-to-r from-secondary-blue to-secondary-purple
-                 shrink-0 landscape:shrink-0"
+      className={containerClasses}
     >
       <div
         aria-hidden="true"
@@ -50,7 +62,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
               <span
                 role="text"
                 aria-label={item.text}
-                className={`flex mx-auto w-full items-center text-white text-[0.85rem] landscape:text-[1.2rem] font-bold uppercase
+                className={`flex mx-auto w-full items-center ${textColorClass} text-[0.85rem] landscape:text-[1.2rem] font-bold uppercase
                            tracking-[0.068rem] landscape:tracking-[0.068rem] ${item.hashtag ? 'underline' : 'no-underline'}`}
               >
                 {item.hashtag && item.href ? (
@@ -81,7 +93,7 @@ const Ticker: FC<TickerProps> = ({ items, 'aria-label': ariaLabel }) => {
                   <span
                     role="text"
                     aria-label={`Hashtag ${item.hashtag}`}
-                    className="text-white mx-auto text-[0.8125rem] landscape:text-[1.08125rem] font-bold"
+                    className={`${textColorClass} mx-auto text-[0.8125rem] landscape:text-[1.08125rem] font-bold`}
                   >
                     {item.hashtag}
                   </span>
