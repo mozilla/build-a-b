@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import LinkButton from '@/components/LinkButton';
 
-export default function TwitchConRecapBento() {
+export default function TwitchConRecapBento({ version }: { version: 'phase2c' | 'phase4' }) {
   return (
     <div className="relative h-full w-full border-common-ash border-[0.125rem] overflow-hidden rounded-[0.75rem] bg-charcoal">
       {/* Background Image - positioned top right */}

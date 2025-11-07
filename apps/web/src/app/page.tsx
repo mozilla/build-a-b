@@ -41,55 +41,32 @@ const OrangeCard: FC<{ isLaunchCompleted?: boolean; isPhase4?: boolean }> = ({
   isLaunchCompleted,
   isPhase4,
 }) => {
-  if (isPhase4) {
-    return (
-      <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative rounded-[0.75rem] border-2 border-[#f8f6f4]">
-        <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center">
-          <h2 className="text-[2.125rem] portrait:text-[1.825rem] leading-[2.5rem] font-extrabold">
-            #BillionaireBlastOff
-          </h2>
-          <p className="text-[1.125rem] leading-[1.5rem] font-semibold">
-            The Billionaires are in space. The coast is clear. Open What You Want.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative">
-      <Image
-        src="/assets/images/icons/flip.svg"
-        alt="Flip card"
-        width={24}
-        height={24}
-        className="absolute landscape:hidden w-[2.625rem] h-[2.625rem] top-[0.8125rem] right-[0.75rem]"
-      />
-      <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-start mb-2">
-        <h2 className="text-title-1 mb-2 text-[2rem]">
-          #Billionaire
-          <br className="landscape:hidden" />
-          BlastOff
+    <div className="h-full w-full p-3 bg-gradient-to-r from-[#ffea80] to-[#ff8a50] text-charcoal relative rounded-[0.75rem] border-2 border-[#f8f6f4]">
+      <div className="h-full w-full border-2 border-[#00000040] rounded-[0.75rem] p-2 flex flex-col justify-center">
+        <h2 className="text-[2.125rem] portrait:text-[1.825rem] leading-[2.5rem] font-extrabold">
+          #BillionaireBlastOff
         </h2>
-        <p className="text-regular-custom">
-          {!isLaunchCompleted
-            ? 'With Billionaires permanently off-planet, we can finally browse in peace, indulge our curiosities, and open what we want.'
-            : 'The Billionaires are in space. The coast is clear. Open What You Want.'}
+        <p className="text-[1.125rem] leading-[1.5rem] font-semibold">
+          The Billionaires are in space. The coast is clear. Open What You Want.
         </p>
       </div>
-      <LinkButton
-        href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
-        target="_blank"
-        trackableEvent="click_firefox_owyw_logo"
-      >
-        <Image
-          src="/assets/images/firefox-open.webp"
-          width={120}
-          height={43}
-          alt=""
-          className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
-        />
-      </LinkButton>
+      {!isPhase4 && (
+        <LinkButton
+          href="https://www.firefox.com/?utm_source=bbomicrosite&utm_medium=referral&utm_campaign=bbo"
+          target="_blank"
+          trackableEvent="click_firefox_owyw_logo"
+        >
+          <Image
+            src="/assets/images/firefox-open.webp"
+            width={120}
+            height={43}
+            alt=""
+            className="absolute portrait:left-[calc(50%-3.75rem)] portrait:bottom-[0.5rem] landscape:right-12 landscape:bottom-1 w-[7.5rem] h-[2.6875rem]"
+          />
+        </LinkButton>
+      )}
+
     </div>
   );
 };
@@ -168,9 +145,9 @@ export default async function Home({
           )}
         </div>
         <div
-          className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'h-full landscape:row-span-2' : 'h-[32rem] landscape:row-span-3'} landscape:h-full landscape:col-span-5 landscape:col-start-8 landscape:row-start-1`}
+          className={`portrait:mb-4 portrait:w-full ${isPhase4 ? 'h-full landscape:row-span-2' : 'h-[32rem] landscape:row-span-3'} landscape:h-[39rem] landscape:col-span-5 landscape:col-start-8 landscape:row-start-1`}
         >
-          {!isLaunchCompleted && !isPhase4 && (
+          {isPhase2A || isPhase2B && (
             <BentoDual
               className="flex w-full h-full"
               back={
@@ -206,15 +183,57 @@ export default async function Home({
               </Scrim>
             </BentoDual>
           )}
-          {isPhase4 && <TwitchConRecapBento />}
+          {isPhase2C && (
+            <BentoDual
+              className="flex w-full h-full"
+              back={
+                <Window flip>
+                  <div className="p-4 landscape:p-8">
+                    <h3 className="text-2xl-custom landscape:text-3xl-custom text-title-1 pb-4">
+                      Two launches in one
+                    </h3>
+                    <p>
+                      We launched a new card game, Data War, and we launched Billionaires into space. Couldn't join us IRL at TwitchCon? Quell your FOMO right here.
+                    </p>
+                    <LinkButton
+                      href="/twitchcon"
+                      title="Visit TwitchCon page"
+                      className="secondary-button mt-5 bg-[#1373b4] hover:bg-accent active:bg-accent"
+                      trackableEvent="click_twitchcon_details_cta"
+                    >
+                      TwitchCon Recap
+                    </LinkButton>
+                  </div>
+                </Window>
+              }
+              effect="flip"
+              image="/assets/images/recap-twitchcon.webp"
+              priority
+            >
+              <div className="bg-gradient-to-b from-black to-transparent h-[50%] w-full p-4 landscape:p-8">
+                <p className="text-nav-item text-common-ash mt-4">RECAP</p>
+                <h1 className="text-2xl-custom landscape:text-3xl-custom font-extrabold mr-4 landscape:mr-[2.5rem] mt-6">
+                  TwitchCon was a blast!
+                </h1>
+                <p className="text-regular-custom landscape:text-lg-custom mt-4 mr-[4rem] landscape:mr-[5.375rem]">
+                  Thanks for everything, San Diego.
+                </p>
+              </div>
+            </BentoDual>
+          )}
+          {isPhase4 && <TwitchConRecapBento version="phase4" />}
         </div>
         {/* BBOOWYW Bento */}
         <div
-          className={`${isPhase4 ? 'h-full aspect-[2/1]' : 'h-[15.625rem]'} portrait:mb-4 portrait:w-full landscape:h-full landscape:col-span-4 landscape:col-start-1 ${isPhase4 ? 'landscape:row-start-3' : 'landscape:row-start-4'}`}
+          className={`${isPhase4 ? 'h-full aspect-[2/1] landscape:row-start-3' : 'h-[12rem] landscape:row-start-4'} portrait:mb-4 portrait:w-full landscape:col-span-4 landscape:col-start-1`}
         >
-          {isPhase4 ? (
+          {isPhase4 && (
             <OrangeCard isPhase4 />
-          ) : (
+          )}
+          {isPhase2C && (
+            <OrangeCard />
+          )}
+          {isPhase2A || isPhase2B && (
             <BentoDual className="h-full" effect="flip" back={<OrangeCard />}>
               <div className="h-full w-full px-6 flex flex-col justify-center bg-gradient-to-r from-secondary-blue to-secondary-purple">
                 <Image
@@ -419,7 +438,7 @@ export default async function Home({
           )}
         </div>
         {/* Default: Small Teaser Bento (Twitchcon) */}
-        {!isPhase4 && (
+        {isPhase2B && (
           <div className="portrait:mb-4 portrait:order-12 portrait:w-full landscape:row-span-2 landscape:col-span-4 landscape:col-start-9 landscape:row-start-4">
             <BentoDual
               className="h-full aspect-square"
