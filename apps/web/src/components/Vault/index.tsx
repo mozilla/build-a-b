@@ -100,13 +100,35 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage, isPhase4 = 
 
   // Create avatar data with the current selfie's asset for sharing
   const avatarWithCurrentSelfie = useMemo(() => {
+    // Phase 4: Create mock avatar data for curated selfies
+    if (isPhase4 && sortedSelfies.length > 0 && sortedSelfies[activeSlideIndex]) {
+      return {
+        uuid: '',
+        name: 'Billionaire',
+        bio: 'Space Explorer',
+        url: sortedSelfies[activeSlideIndex].asset ?? '',
+        originalRidingAsset: '',
+        instragramAsset: sortedSelfies[activeSlideIndex].asset ?? '',
+        selfies: [
+          {
+            id: 0,
+            asset: sortedSelfies[activeSlideIndex].asset ?? '',
+            created_at: new Date().toISOString(),
+          },
+        ],
+        selfieAvailability: { selfies_available: 0, next_at: null },
+        hasEasterEgg: false,
+      };
+    }
+
+    // Default: Use actual avatar data
     if (!avatarData || !sortedSelfies[activeSlideIndex]) return avatarData;
 
     return {
       ...avatarData,
       instragramAsset: sortedSelfies[activeSlideIndex].asset ?? '',
     };
-  }, [avatarData, sortedSelfies, activeSlideIndex]);
+  }, [avatarData, sortedSelfies, activeSlideIndex, isPhase4]);
 
   const isEasterEgg = useMemo(() => {
     if (!sortedSelfies) return null;
@@ -221,15 +243,14 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage, isPhase4 = 
               }
             />
           </div>
-          {((isPhase4 && sortedSelfies.length > 0) || avatarWithCurrentSelfie?.selfies) &&
-            avatarWithCurrentSelfie && (
-              <ShareAvatar
-                avatar={avatarWithCurrentSelfie}
-                centered
-                onBookmarkClick={() => setShowBookmarkScreen(true)}
-                hideBookmark={isPhase4}
-              />
-            )}
+          {avatarWithCurrentSelfie && (
+            <ShareAvatar
+              avatar={avatarWithCurrentSelfie}
+              centered
+              onBookmarkClick={() => setShowBookmarkScreen(true)}
+              hideBookmark={isPhase4}
+            />
+          )}
         </div>
       )}
     </PlaypenPopup>
