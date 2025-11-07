@@ -172,17 +172,17 @@ describe('Turn Resolution', () => {
       playCard('player');
       const tracker2Value = useGameStore.getState().player.playedCard!.value;
 
-      // Second tracker should add its value to the turn (since it's the second card)
+      // Second tracker should NOT add its value to the turn (since it's the second card)
       // AND store its bonus for the next card
-      expect(useGameStore.getState().player.currentTurnValue).toBe(tracker2Value + tracker1Value);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker2Value);
+      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker1Value + tracker2Value);
 
       // Play third card (common-3)
       playCard('player');
       const common3Value = useGameStore.getState().player.playedCard!.value;
 
-      // Final value should be: tracker1 + tracker2 + common3 + tracker2 bonus
-      const expectedFinal = tracker1Value + tracker2Value + common3Value + tracker2Value;
+      // Final value should be: tracker1 + tracker2 + common3
+      const expectedFinal = tracker1Value + tracker2Value + common3Value;
       expect(useGameStore.getState().player.currentTurnValue).toBe(expectedFinal);
     });
   });

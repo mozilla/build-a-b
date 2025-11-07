@@ -36,7 +36,26 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
         console.error('Failed to play Data War animation:', error);
       });
     }
+
+    // Reset video playing state when animation is hidden
+    if (!show) {
+      useGameStore.setState({ dataWarVideoPlaying: false });
+    }
+
+    // Cleanup on unmount
+    return () => {
+      useGameStore.setState({ dataWarVideoPlaying: false });
+    };
   }, [animationSrc, show]);
+
+  // Handle video play/end to control glow state
+  const handleVideoPlay = () => {
+    useGameStore.setState({ dataWarVideoPlaying: true });
+  };
+
+  const handleVideoEnded = () => {
+    useGameStore.setState({ dataWarVideoPlaying: false });
+  };
 
   if (!show || !animationSrc) return null;
 
@@ -59,6 +78,8 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
             playsInline
             className="w-full h-full object-cover"
             aria-label="Data War animation"
+            onPlay={handleVideoPlay}
+            onEnded={handleVideoEnded}
           />
         </div>
       </motion.div>
