@@ -174,7 +174,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className={`translate-x-4 relative ${activeIndicator ? '' : ''}`}>
+            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
               {/* Back cards for stacking effect */}
 
               {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
