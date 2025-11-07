@@ -1,8 +1,17 @@
 export const menuMicrocopy = {
   title: 'Menu',
   quickGuideButton: 'Quick Launch Guide',
+  music: 'Music',
+  soundEffects: 'Sound Effects',
   audio: 'Audio',
   changeBackground: 'Change Background:',
   restartButton: 'Restart',
   quitButton: 'Quit',
+  quitConfirmTitle: 'Quit Game?',
+  quitConfirmMessage: 'Are you sure you want to quit? Your progress will be lost.',
+  restartConfirmTitle: 'Restart Game?',
+  restartConfirmMessage: 'Are you sure you want to restart? Your progress will be lost.',
+  cancelButton: 'Cancel',
+  closeMenu: 'Close menu',
+  closeDrawer: 'Close drawer',
 } as const;

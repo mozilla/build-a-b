@@ -23,9 +23,10 @@ export interface HeaderProps {
   }[];
   ctaCopy: string;
   ctaLabel: string;
+  ctaLink?: string;
 }
 
-const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
+const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel, ctaLink }) => {
   return (
     <Bento className="h-[5.875rem] landscape:h-[10.9375rem] mb-4 landscape:mb-8 bg-no-repeat bg-cover bg-[url(/assets/images/night-sky.webp)]">
       <div className="relative header-container flex justify-between h-full pl-3 pr-4 landscape:pl-8 landscape:pr-8">
@@ -52,7 +53,13 @@ const Header: FC<HeaderProps> = ({ links, socials, ctaCopy, ctaLabel }) => {
             isInModal={false}
             trackableEvent="click_social_icon_header"
           />
-          <MobileMenu links={links} socials={socials} ctaCopy={ctaCopy} ctaLabel={ctaLabel} />
+          <MobileMenu
+            links={links}
+            socials={socials}
+            ctaCopy={ctaCopy}
+            ctaLabel={ctaLabel}
+            ctaLink={ctaLink}
+          />
         </div>
       </div>
       <div

@@ -2,24 +2,22 @@
  * TurnValue - Displays the current turn value with stacked effects
  */
 
-import { type FC, useEffect, useState } from 'react';
+import { Icon } from '@/components/Icon';
+import type { IconName } from '@/components/Icon/registry';
+import Text from '@/components/Text';
+import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
-import type { TurnValueProps } from './types';
-import TrackerCircle from '../../assets/icons/tracker-circle.svg';
-import BlockerCircle from '../../assets/icons/blocker-circle.svg';
-import ValueCircle from '../../assets/icons/value-circle.svg';
+import { type FC, useEffect, useState } from 'react';
 import TurnValueText from '../../assets/icons/turn-value.svg';
-import PlusIcon from '../../assets/icons/tracker-plus.svg';
-import MinusIcon from '../../assets/icons/blocker-minus.svg';
+import type { TurnValueProps } from './types';
 
-export const TurnValue: FC<TurnValueProps> = ({
-  value,
-  activeEffects = [],
-  className = '',
-}) => {
-  const hasTracker = activeEffects.some((e) => e.type === 'tracker');
-  const hasBlocker = activeEffects.some((e) => e.type === 'blocker');
+// Map effect types to icon names (only tracker and blocker affect turn values)
+const EFFECT_ICON_MAP: Record<string, IconName> = {
+  tracker: 'trackerIcon',
+  blocker: 'blockerIcon',
+};
 
+export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], className = '' }) => {
   // Track value changes to trigger animation
   const [animationKey, setAnimationKey] = useState(0);
 
@@ -32,22 +30,13 @@ export const TurnValue: FC<TurnValueProps> = ({
     setAnimationKey((prev) => prev + 1);
   }, [value]);
 
-  // Get the appropriate circle background for single effect or no effects
-  const getCircleBackground = () => {
-    if (hasTracker && !hasBlocker) return TrackerCircle;
-    if (hasBlocker && !hasTracker) return BlockerCircle;
-    return ValueCircle;
-  };
-
-  // Get SVG for each effect type
-  const getEffectSvg = (effectType: 'tracker' | 'blocker') => {
-    return effectType === 'tracker' ? TrackerCircle : BlockerCircle;
-  };
-
   return (
     <motion.div
       key={animationKey}
-      className={`relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center ${className}`}
+      className={cn(
+        'isolate relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center',
+        className,
+      )}
       initial={{ scale: 1 }}
       animate={{ scale: [1, 1.2, 1.2, 1] }}
       transition={{
@@ -61,16 +50,54 @@ export const TurnValue: FC<TurnValueProps> = ({
         <img src={TurnValueText} alt="TURN VALUE" className="w-full h-full" />
       </div>
 
-      {/* Background circle with layered effect SVGs */}
+      {/* Background circle with layered effect circles */}
       <div className="w-[3.75rem] h-[3.75rem] shrink-0 relative">
         {activeEffects.length === 0 ? (
-          // No effects - show normal circle
-          <img src={ValueCircle} alt="" className="w-full h-full rounded-full" />
+          // No effects - show neutral circle with glow animation
+          <motion.div
+            className="w-full h-full rounded-full bg-[rgba(255,255,255,0.1)] border-2 border-[rgba(255,255,255,0.3)]"
+            initial={{ filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0))' }}
+            animate={{
+              filter: [
+                'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+                'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
+                'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
+                'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+              ],
+            }}
+            transition={{
+              duration: 1.2,
+              times: [0, 0.3, 0.65, 1],
+              ease: 'easeInOut',
+            }}
+          />
         ) : activeEffects.length === 1 ? (
-          // Single effect - show corresponding circle
-          <img src={getCircleBackground()} alt="" className="w-full h-full rounded-full" />
+          // Single effect - show corresponding circle with glow animation
+          <motion.div
+            className={cn(
+              'w-full h-full rounded-full border-6',
+              activeEffects[0].type === 'tracker' &&
+                'bg-[rgba(73,193,180,0.3)] border-[#49C1B4]',
+              activeEffects[0].type === 'blocker' &&
+                'bg-[rgba(252,233,120,0.3)] border-[#FCE978]',
+            )}
+            initial={{ filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0))' }}
+            animate={{
+              filter: [
+                'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+                'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
+                'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
+                'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+              ],
+            }}
+            transition={{
+              duration: 1.2,
+              times: [0, 0.3, 0.65, 1],
+              ease: 'easeInOut',
+            }}
+          />
         ) : (
-          // Multiple effects - layer SVGs with scaling (reverse order so first is on top)
+          // Multiple effects - layer circles with scaling (reverse order so first is on top)
           <>
             {[...activeEffects].reverse().map((effect, index) => {
               const actualIndex = activeEffects.length - 1 - index;
@@ -88,10 +115,12 @@ export const TurnValue: FC<TurnValueProps> = ({
                     zIndex: activeEffects.length - actualIndex,
                   }}
                 >
-                  <img
-                    src={getEffectSvg(effect.type)}
-                    alt=""
-                    className="w-full h-full rounded-full"
+                  <div
+                    className={cn(
+                      'w-full h-full rounded-full border-6',
+                      effect.type === 'tracker' && 'bg-[rgba(73,193,180,0.3)] border-[#49C1B4]',
+                      effect.type === 'blocker' && 'bg-[rgba(252,233,120,0.3)] border-[#FCE978]',
+                    )}
                   />
                 </div>
               );
@@ -100,25 +129,28 @@ export const TurnValue: FC<TurnValueProps> = ({
         )}
 
         {/* Center value */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-bold text-white text-3xl">{value}</span>
+        <div className="absolute inset-0 flex items-center justify-center z-2">
+          <Text as="span" variant="badge-xl" color="text-common-ash">
+            {value}
+          </Text>
         </div>
 
         {/* Effect icons - side by side with overlap in bottom-right */}
         {activeEffects.length > 0 && (
-          <div className="absolute -bottom-2 left-[1.5rem] flex flex-row-reverse z-2">
+          <div className="absolute -bottom-2 left-[1.5rem] flex flex-row-reverse z-2 isolate">
             {activeEffects.map((effect, index) => (
               <motion.div
-                key={index}
-                className="w-8 h-8"
+                key={`${effect.type}-${index}`}
+                className="w-8 h-8 shrink-0"
                 style={{
                   zIndex: activeEffects.length - index,
+                  color: 'initial', // Prevent color inheritance
                 }}
                 initial={{ scale: 0, rotate: -90, x: 0 }}
                 animate={{
                   scale: 1,
                   rotate: 0,
-                  x: index > 0 ? index * 16 : 0, // 16px = 1rem
+                  x: index > 0 ? index * 16 : 0, // 16px offset per icon
                 }}
                 transition={{
                   type: 'spring',
@@ -127,10 +159,10 @@ export const TurnValue: FC<TurnValueProps> = ({
                   delay: index * 0.1,
                 }}
               >
-                <img
-                  src={effect.type === 'tracker' ? PlusIcon : MinusIcon}
-                  alt={effect.type === 'tracker' ? '+' : '-'}
-                  className="w-full h-full"
+                <Icon
+                  name={EFFECT_ICON_MAP[effect.type]}
+                  size={32}
+                  aria-label={`${effect.type} effect`}
                 />
               </motion.div>
             ))}

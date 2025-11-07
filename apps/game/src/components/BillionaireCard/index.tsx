@@ -17,7 +17,7 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
       disableRipple
       onPress={onPress}
       className={cn(
-        'flex flex-col items-center gap-2 cursor-pointer transition-transform-opacity h-auto',
+        'flex flex-col items-center gap-2 cursor-pointer transition-transform-opacity h-auto px-0 whitespace-normal',
         isSelected && 'scale-110 opacity-100',
         className,
       )}

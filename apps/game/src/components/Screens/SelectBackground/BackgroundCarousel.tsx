@@ -63,7 +63,7 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({ onSelect, clas
     <div className={className}>
       <Carousel
         containerRef={scrollContainerRef}
-        scrollerAttributes={{ className: 'px-[calc(50%-5.625rem)] gap-8' }}
+        scrollerAttributes={{ className: 'px-[calc(50%-4.375rem)] gap-12 py-16' }}
       >
         {BACKGROUNDS.map((background) => (
           <BackgroundCard

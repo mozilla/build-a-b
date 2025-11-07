@@ -6,17 +6,27 @@ import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { getBackgroundImage } from '@/utils/selectors';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
+import { useTooltip } from '../../hooks/use-tooltip';
 import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
+import { DataWarAnimation } from '../DataWarAnimation';
 import { DebugUI } from '../DebugUI';
 import { EffectNotificationModal } from '../EffectNotificationModal';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
-import { OpenWhatYouWantAnimation } from '../SpecialCardAnimation/OpenWhatYouWantAnimation';
+import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
+import {
+  useCpuLaunchStacks,
+  useDeckSwapCount,
+  usePlayerLaunchStacks,
+  useSelectedBackground,
+  useSelectedBillionaire,
+  useWinCondition,
+  useWinner,
+} from '@/store';
 
 /**
  * Game Component - Main game container
@@ -27,7 +37,7 @@ export function Game() {
     player,
     cpu,
     activePlayer,
-    tooltipMessage,
+    tooltipMessage: tooltipKey, // This is now a key, not the actual message
     tapDeck,
     handlePreReveal,
     handleRevealCards,
@@ -35,15 +45,17 @@ export function Game() {
     resetGame,
     send,
   } = useGameLogic();
-  // Use separate selectors to avoid creating new objects on every render
-  const winner = useGameStore((state) => state.winner);
-  const winCondition = useGameStore((state) => state.winCondition);
-  const selectedBackground = useGameStore((state) => state.selectedBackground);
-  const selectedBillionaire = useGameStore((state) => state.selectedBillionaire);
-  const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
-  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
-  const playerLaunchStacks = useGameStore((state) => state.playerLaunchStacks);
-  const cpuLaunchStacks = useGameStore((state) => state.cpuLaunchStacks);
+
+  // Convert tooltip key to actual message (with display count tracking)
+  const tooltipMessage = useTooltip(tooltipKey);
+
+  const playerLaunchStacks = usePlayerLaunchStacks();
+  const cpuLaunchStacks = useCpuLaunchStacks();
+  const deckSwapCount = useDeckSwapCount();
+  const selectedBackground = useSelectedBackground();
+  const selectedBillionaire = useSelectedBillionaire();
+  const winner = useWinner();
+  const winCondition = useWinCondition();
 
   // Total cards owned = playable deck + collected Launch Stacks
   const playerTotalCards = player.deck.length + playerLaunchStacks.length;
@@ -58,6 +70,38 @@ export function Game() {
     DEFAULT_BOARD_BACKGROUND;
 
   const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
+  // Determine if deck can be clicked based on phase and active player
+  const isDataWarPhase =
+    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up';
+
+  // During ready phase, only active player can tap
+  // During data war, only player deck is clickable (one click reveals both)
+  // During pre_reveal.awaiting_interaction, player can tap to see modal
+  const canClickPlayerDeck =
+    (phase === 'ready' && activePlayer === 'player') ||
+    phase === 'pre_reveal.awaiting_interaction' ||
+    (isDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover');
+
+  const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
+
+  const handleDeckClick = () => {
+    tapDeck();
+  };
+
+  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
+  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
+  // Need to swap click handlers to match visual positions
+  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
+  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
+  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
+  const topDeckTooltip = ''; // Never show tooltip on top deck
+  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
+
+  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
+  // When swapped: top deck (owner="cpu") is visually at bottom
+  // When not swapped: bottom deck (owner="player") is visually at bottom
+  const topDeckActiveIndicator = isSwapped && activePlayer === 'player' && canClickCpuDeck;
+  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player' && canClickPlayerDeck;
 
   useEffect(() => {
     switch (phase) {
@@ -107,37 +151,11 @@ export function Game() {
     }
   }, [phase, send]);
 
-  // Determine if deck can be clicked based on phase and active player
-  const isDataWarPhase =
-    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up';
-
-  // During ready phase, only active player can tap
-  // During data war, only player deck is clickable (one click reveals both)
-  // During pre_reveal.awaiting_interaction, player can tap to see modal
-  const canClickPlayerDeck =
-    (phase === 'ready' && activePlayer === 'player') ||
-    phase === 'pre_reveal.awaiting_interaction' ||
-    isDataWarPhase;
-  const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
-
-  const handleDeckClick = () => {
-    tapDeck();
-  };
-
-  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
-  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
-  // Need to swap click handlers to match visual positions
-  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
-  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
-  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
-  const topDeckTooltip = ''; // Never show tooltip on top deck
-  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
-
-  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
-  // When swapped: top deck (owner="cpu") is visually at bottom
-  // When not swapped: bottom deck (owner="player") is visually at bottom
-  const topDeckActiveIndicator = isSwapped && activePlayer === 'player';
-  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player';
+  useEffect(() => {
+    if (isDataWarPhase && player.playedCard?.specialType === 'hostile_takeover') {
+      tapDeck();
+    }
+  }, [isDataWarPhase, player.playedCard?.specialType, tapDeck]);
 
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
@@ -159,13 +177,13 @@ export function Game() {
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* CPU Cards */}
-              <PlayedCards cards={cpu.playedCardsInHand} />
+              <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" />
             </div>
 
             {/* Player Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* Player Cards */}
-              <PlayedCards cards={player.playedCardsInHand} />
+              <PlayedCards cards={player.playedCardsInHand} owner="player" />
             </div>
           </div>
 
@@ -203,41 +221,17 @@ export function Game() {
           </div>
         )}
 
-        {/* Open What You Want Animation */}
-        <OpenWhatYouWantAnimation />
+        {/* Data War Animation */}
+        <DataWarAnimation show={phase === 'data_war.animating'} />
+
+        {/* Special Effect Animations */}
+        <EffectAnimationOrchestrator />
 
         {/* Open What You Want Modal */}
         <OpenWhatYouWantModal />
 
         {/* Effect Notification Modal */}
         <EffectNotificationModal />
-
-        {/* Forced Empathy Animation Overlay */}
-        <AnimatePresence>
-          {forcedEmpathySwapping && (
-            <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg shadow-2xl"
-                initial={{ scale: 0.5, rotateY: -180 }}
-                animate={{ scale: 1, rotateY: 0 }}
-                exit={{ scale: 0.5, rotateY: 180 }}
-                transition={{
-                  duration: 0.5,
-                  ease: [0.43, 0.13, 0.23, 0.96],
-                }}
-              >
-                <h2 className="text-3xl font-bold text-center">Forced Empathy!</h2>
-                <p className="text-sm text-center mt-1 opacity-90">Decks Swapped</p>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Debug UI */}
         <DebugUI />

@@ -1,6 +1,11 @@
 'use server';
 
-import type { AvatarData, DatabaseAvailableSelfiesResponse, DatabaseAvatarResponse } from '@/types';
+import type {
+  AvatarData,
+  DatabaseAvailableSelfiesResponse,
+  DatabaseAvatarResponse,
+  DatabaseUserResponse,
+} from '@/types';
 import { cookies } from 'next/headers';
 import { COOKIE_NAME, MAX_SELFIES } from '../constants';
 import { buildImageUrl } from '../helpers/images';
@@ -22,6 +27,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
     const [
       { data: avatar, error: avatarError },
       { data: availableSelfies, error: selfieAvailablityError },
+      { data: user, error: userError },
     ] = await Promise.all([
       supabase
         .rpc('get_user_avatar_by_uuid', { user_uuid: userAssociationId })
@@ -29,6 +35,11 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       supabase
         .rpc('get_available_selfies', { p_uuid: userAssociationId })
         .maybeSingle<DatabaseAvailableSelfiesResponse>(),
+      supabase
+        .from('users')
+        .select('easter_egg_id')
+        .eq('uuid', userAssociationId)
+        .maybeSingle<Pick<DatabaseUserResponse, 'easter_egg_id'>>(),
     ]);
 
     if (avatarError) {
@@ -39,6 +50,10 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
       throw new Error(
         selfieAvailablityError?.message || 'Could not retrieve selfie availability data.',
       );
+    }
+
+    if (userError) {
+      throw new Error(userError?.message || 'Could not retrieve user data.');
     }
 
     if (!avatar) return null;
@@ -59,6 +74,7 @@ export async function getUserAvatar(userUuid?: string): Promise<AvatarData | nul
             : availableSelfies?.selfies_available,
         next_at: availableSelfies?.next_at ? new Date(availableSelfies?.next_at) : null,
       },
+      hasEasterEgg: !!user?.easter_egg_id,
     };
   } catch (e) {
     // This will be available via server logs.

@@ -1,11 +1,21 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useGameStore } from './game-store';
 import type { Card } from '../types';
 
 describe('gameStore', () => {
   beforeEach(() => {
+    // Clean up any existing timers
+    vi.clearAllTimers();
+    vi.useRealTimers();
     // Reset store before each test
     useGameStore.getState().resetGame();
+    // Use fake timers for animation timeouts
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   describe('initialization', () => {
@@ -57,7 +67,15 @@ describe('gameStore', () => {
       expect(state.player.playedCard).toEqual(topCard);
       expect(state.player.deck).toHaveLength(initialDeckSize - 1);
       expect(state.cardsInPlay).toHaveLength(1);
-      expect(state.player.currentTurnValue).toBe(topCard.value);
+
+      // Tracker cards have 0 value when first played (value applied to next card)
+      const expectedValue = topCard.specialType === 'tracker' ? 0 : topCard.value;
+      expect(state.player.currentTurnValue).toBe(expectedValue);
+
+      // If tracker, verify bonus is stored for next card
+      if (topCard.specialType === 'tracker') {
+        expect(state.player.pendingTrackerBonus).toBe(topCard.value);
+      }
     });
 
     it('should play card from top of CPU deck', () => {
@@ -68,7 +86,15 @@ describe('gameStore', () => {
 
       const state = useGameStore.getState();
       expect(state.cpu.playedCard).toEqual(topCard);
-      expect(state.cpu.currentTurnValue).toBe(topCard.value);
+
+      // Tracker cards have 0 value when first played (value applied to next card)
+      const expectedValue = topCard.specialType === 'tracker' ? 0 : topCard.value;
+      expect(state.cpu.currentTurnValue).toBe(expectedValue);
+
+      // If tracker, verify bonus is stored for next card
+      if (topCard.specialType === 'tracker') {
+        expect(state.cpu.pendingTrackerBonus).toBe(topCard.value);
+      }
     });
 
     it('should add played card to cardsInPlay', () => {
@@ -111,6 +137,7 @@ describe('gameStore', () => {
       const cardsInPlay = [...useGameStore.getState().cardsInPlay];
 
       collectCards('player', cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.deck).toHaveLength(initialPlayerDeck + 2);
@@ -127,6 +154,7 @@ describe('gameStore', () => {
       expect(useGameStore.getState().cpu.playedCard).not.toBe(null);
 
       collectCards('player', useGameStore.getState().cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.playedCard).toBe(null);
@@ -140,6 +168,7 @@ describe('gameStore', () => {
       playCard('cpu');
 
       collectCards('player', useGameStore.getState().cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.currentTurnValue).toBe(0);
@@ -164,7 +193,7 @@ describe('gameStore', () => {
         cardsInPlay: [launchStackCard],
       });
 
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard);
       expect(useGameStore.getState().player.launchStackCount).toBe(1);
       expect(useGameStore.getState().playerLaunchStacks).toHaveLength(1);
       expect(useGameStore.getState().cardsInPlay).toHaveLength(0); // Card removed from play
@@ -176,7 +205,7 @@ describe('gameStore', () => {
         cardsInPlay: [launchStackCard2],
       });
 
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard2);
       expect(useGameStore.getState().player.launchStackCount).toBe(2);
       expect(useGameStore.getState().playerLaunchStacks).toHaveLength(2);
     });
@@ -190,7 +219,7 @@ describe('gameStore', () => {
         player: { ...player, playedCard: launchStackCard1 },
         cardsInPlay: [launchStackCard1],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard1);
 
       // Add second Launch Stack
       const launchStackCard2 = { id: 'ls-2', value: 5, specialType: 'launch_stack' } as Card;
@@ -198,7 +227,7 @@ describe('gameStore', () => {
         player: { ...useGameStore.getState().player, playedCard: launchStackCard2 },
         cardsInPlay: [launchStackCard2],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard2);
 
       expect(useGameStore.getState().winner).toBe(null);
 
@@ -208,7 +237,7 @@ describe('gameStore', () => {
         player: { ...useGameStore.getState().player, playedCard: launchStackCard3 },
         cardsInPlay: [launchStackCard3],
       });
-      addLaunchStack('player');
+      addLaunchStack('player', launchStackCard3);
 
       const state = useGameStore.getState();
       expect(state.winner).toBe('player');

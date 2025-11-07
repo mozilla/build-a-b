@@ -20,6 +20,17 @@ export default defineConfig(({ command }) => ({
         plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
         svgoConfig: {
           floatPrecision: 2,
+          plugins: [
+            {
+              name: 'preset-default',
+              params: {
+                overrides: {
+                  // Disable ID minification to prevent gradient ID conflicts
+                  cleanupIds: false,
+                },
+              },
+            },
+          ],
         },
         // typescript: false,
         // memo: false,

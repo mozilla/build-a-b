@@ -5,12 +5,12 @@
 
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
-import { useCpuPlayer } from './use-cpu-player';
-import { shouldTriggerAnotherPlay, isEffectBlocked } from '../utils/card-comparison';
+import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { useCpuPlayer } from './use-cpu-player';
 
 /**
  * Main game logic hook that orchestrates the entire game
@@ -148,11 +148,11 @@ export function useGameLogic() {
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
 
-        // Check if Forced Empathy was played - if so, delay transition
+        // Check if Forced Empathy was played - if so, delay transition for BOTH animations
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
           setTimeout(() => {
             actorRef.send({ type: 'CARDS_REVEALED' });
-          }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+          }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
           return;
         }
       }
@@ -181,10 +181,10 @@ export function useGameLogic() {
         c.playedCard?.specialType === 'forced_empathy';
 
       if (forcedEmpathyPlayed) {
-        // Wait for deck swap animation to complete before transitioning
+        // Wait for BOTH animations to finish: video + deck swap
         setTimeout(() => {
           actorRef.send({ type: 'CARDS_REVEALED' });
-        }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+        }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
         return;
       }
     }
@@ -208,6 +208,14 @@ export function useGameLogic() {
     if (hostileTakeoverPlayed) {
       // Hostile Takeover always triggers Data War, ignoring all other effects
       actorRef.send({ type: 'TIE' });
+      return;
+    }
+
+    // IMPORTANT: Defer comparison until "another play" sequence is complete
+    // Check if we're waiting for another play to complete
+    if (store.anotherPlayExpected) {
+      // Still waiting for another play - skip tie/Data War check
+      actorRef.send({ type: 'RESOLVE_TURN' });
       return;
     }
 
@@ -415,8 +423,10 @@ export function useGameLogic() {
    */
   const handleDataWarFaceDown = () => {
     const store = useGameStore.getState();
+    const playerHasHostileTakeover = store.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuHasHostileTakeover = store.cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Add 3 cards face-down from each player
+    // Add 3 cards face-down from each player ONLY if not hostile takeover is played
     const playerCards = store.player.deck.slice(0, 3);
     const cpuCards = store.cpu.deck.slice(0, 3);
 
@@ -425,22 +435,26 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player: {
-        ...store.player,
-        deck: updatedPlayerDeck,
-        playedCardsInHand: [
-          ...store.player.playedCardsInHand,
-          ...playerCards.map((card) => ({ card, isFaceDown: true })),
-        ],
-      },
-      cpu: {
-        ...store.cpu,
-        deck: updatedCpuDeck,
-        playedCardsInHand: [
-          ...store.cpu.playedCardsInHand,
-          ...cpuCards.map((card) => ({ card, isFaceDown: true })),
-        ],
-      },
+      player: playerHasHostileTakeover
+        ? store.player
+        : {
+            ...store.player,
+            deck: updatedPlayerDeck,
+            playedCardsInHand: [
+              ...store.player.playedCardsInHand,
+              ...playerCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
+      cpu: cpuHasHostileTakeover
+        ? store.cpu
+        : {
+            ...store.cpu,
+            deck: updatedCpuDeck,
+            playedCardsInHand: [
+              ...store.cpu.playedCardsInHand,
+              ...cpuCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
       cardsInPlay: [...store.cardsInPlay, ...playerCards, ...cpuCards],
     });
   };
@@ -449,18 +463,27 @@ export function useGameLogic() {
    * Handles Data War face-up cards (add 1 card from each player and resolve)
    */
   const handleDataWarFaceUp = () => {
-    // Play one card from each player (this will also add to cardsInPlay)
-    playCard('player');
-    playCard('cpu');
+    // Play one card from each player that does not have hostile_takeover in hand.
+    const { player, cpu } = useGameStore.getState();
+    const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
+    const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    const { player: p, cpu: c } = useGameStore.getState();
+    if (playerHasHostileTakeover) {
+      playCard('cpu');
+    } else if (cpuHasHostileTakeover) {
+      playCard('player');
+    } else {
+      playCard('cpu');
+      playCard('player');
+    }
 
     // Handle special effects for the new cards
-    if (p.playedCard) {
-      handleCardEffect(p.playedCard, 'player');
+    if (!playerHasHostileTakeover && player.playedCard) {
+      handleCardEffect(player.playedCard, 'player');
     }
-    if (c.playedCard) {
-      handleCardEffect(c.playedCard, 'cpu');
+
+    if (!cpuHasHostileTakeover && cpu.playedCard) {
+      handleCardEffect(cpu.playedCard, 'cpu');
     }
   };
 
@@ -470,6 +493,19 @@ export function useGameLogic() {
   const resetGame = () => {
     useGameStore.getState().resetGame();
     actorRef.send({ type: 'RESET_GAME' });
+  };
+
+  const restartGame = () => {
+    useGameStore.getState().resetGame();
+    actorRef.send({ type: 'RESTART_GAME' });
+  };
+
+  const quitGame = () => {
+    const { resetGame, selectBackground, selectBillionaire } = useGameStore.getState();
+    resetGame();
+    selectBackground('');
+    selectBillionaire('');
+    actorRef.send({ type: 'QUIT_GAME' });
   };
 
   // Prepare effect notification when entering showing substate
@@ -539,6 +575,8 @@ export function useGameLogic() {
     handleCompareTurn,
     handleResolveTurn,
     resetGame,
+    restartGame,
+    quitGame,
 
     // Utilities (expose send for advanced use cases)
     send: actorRef.send,

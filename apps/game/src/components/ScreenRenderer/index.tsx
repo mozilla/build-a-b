@@ -10,11 +10,12 @@ import { useGameLogic } from '@/hooks/use-game-logic';
 import { useGameStore } from '@/store';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
-import type { FC } from 'react';
+import type { FC, PropsWithChildren } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
 import { ScreenBackground } from './Background';
 
-export interface BaseScreenProps extends HTMLMotionProps<'div'> {
+export interface BaseScreenProps
+  extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
   send?: ReturnType<typeof useGameMachine>['send'];
 }
 
@@ -24,7 +25,7 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   select_billionaire: SelectBillionaire,
   select_background: SelectBackground,
   intro: Intro,
-  quick_start_guide: QuickStart,
+  quick_start_guide: QuickStart as FC<BaseScreenProps>,
   your_mission: YourMission,
   vs_animation: VSAnimation,
   // ready: Welcome,
@@ -64,21 +65,22 @@ export const ScreenRenderer: FC = () => {
 
   // Pass send function and other common props to all screens
   return (
-    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center">
+    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
       <AnimatePresence>
         <ScreenBackground key="background" phaseKey={phaseKey} />
         <ScreenComponent
           key="component"
           send={send}
-          className="flex flex-col items-center justify-center relative w-full h-full"
-        />
-        {showCloseIcon && (
-          <div className="absolute top-5 right-5 z-20">
-            <Button onPress={toggleMenu}>
-              <Icon name="pause" />
-            </Button>
-          </div>
-        )}
+          className="flex flex-col items-center justify-center relative w-full h-full max-w-[25rem] max-h-[54rem]"
+        >
+          {showCloseIcon && (
+            <div className="absolute top-5 right-5 z-20">
+              <Button onPress={toggleMenu}>
+                <Icon name="pause" label="pause" />
+              </Button>
+            </div>
+          )}
+        </ScreenComponent>
       </AnimatePresence>
     </div>
   );

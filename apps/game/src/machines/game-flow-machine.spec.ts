@@ -72,7 +72,7 @@ describe('gameFlowMachine', () => {
       // Wait for auto-transition (2000ms + buffer)
       setTimeout(() => {
         expect(actor.getSnapshot().value).toBe('ready');
-        expect(actor.getSnapshot().context.tooltipMessage).toBe('Tap stack to start!');
+        expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
         actor.stop();
       }, 2100);
     });

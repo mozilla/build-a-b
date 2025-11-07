@@ -18,12 +18,17 @@ export type GameStore = {
   cardsInPlay: Card[];
   activePlayer: PlayerType;
   anotherPlayMode: boolean; // True when only activePlayer should play (tracker/blocker/launch_stack)
+  anotherPlayExpected: boolean; // True when we're waiting for another play to complete before comparison
   pendingEffects: SpecialEffect[];
   preRevealEffects: PreRevealEffect[]; // Queue of effects to process before reveal
   preRevealProcessed: boolean; // Flag to prevent duplicate pre-reveal processing
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+  collecting: {
+    winner: PlayerType | null;
+    cards: Card[];
+  } | null;
 
   // Launch Stack Collections - Cards removed from playable decks when collected
   // These count towards player's total cards but cannot be played
@@ -41,11 +46,18 @@ export type GameStore = {
   showOpenWhatYouWantAnimation: boolean; // Shows during 2-second transition
 
   // Forced Empathy State
-  forcedEmpathySwapping: boolean; // True when decks are actively animating
+  showForcedEmpathyAnimation: boolean; // True when video overlay is showing
+  forcedEmpathySwapping: boolean; // True when decks are physically animating positions
   deckSwapCount: number; // Number of times decks have been swapped (odd = swapped, even = normal)
 
+  // Special Effect Animations
+  showHostileTakeoverAnimation: boolean; // Shows when hostile takeover is played
+  showLaunchStackAnimation: boolean; // Shows after collecting a launch stack
+  showDataWarAnimation: boolean; // Shows when data war occurs
+  dataWarVideoPlaying: boolean; // True while the DATA WAR video is actively playing
+
   // Effect Notification System
-  seenEffectTypes: Set<string>; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover')
+  seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
   pendingEffectNotifications: EffectNotification[]; // Queue of notifications to show
   currentEffectNotification: EffectNotification | null; // Currently displayed notification in modal
   showEffectNotificationBadge: boolean; // Show badge on card
@@ -53,7 +65,7 @@ export type GameStore = {
   effectNotificationPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // Tooltip System
-  seenTooltips: Set<string>; // Tooltip IDs that have been seen
+  tooltipDisplayCounts: Record<string, number>; // Tooltip ID -> display count mapping
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // UI State
@@ -61,10 +73,12 @@ export type GameStore = {
   selectedBackground: string;
   isPaused: boolean;
   showMenu: boolean;
+  audioEnabled: boolean;
   showHandViewer: boolean;
   handViewerPlayer: PlayerType;
   showInstructions: boolean;
-  audioEnabled: boolean;
+  musicEnabled: boolean;
+  soundEffectsEnabled: boolean;
   showTooltip: boolean;
 
   // Actions - Game Logic
@@ -76,7 +90,7 @@ export type GameStore = {
   ) => void;
   playCard: (playerId: PlayerType) => void;
   collectCards: (winnerId: PlayerType, cards: Card[]) => void;
-  addLaunchStack: (playerId: PlayerType) => void;
+  addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
   stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
   checkWinCondition: () => boolean;
@@ -112,7 +126,13 @@ export type GameStore = {
   setShowOpenWhatYouWantAnimation: (show: boolean) => void;
 
   // Forced Empathy Actions
+  setShowForcedEmpathyAnimation: (show: boolean) => void;
   setForcedEmpathySwapping: (swapping: boolean) => void;
+
+  // Special Effect Animation Actions
+  setShowHostileTakeoverAnimation: (show: boolean) => void;
+  setShowLaunchStackAnimation: (show: boolean) => void;
+  setShowDataWarAnimation: (show: boolean) => void;
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;
@@ -125,10 +145,10 @@ export type GameStore = {
   setEffectNotificationPersistence: (mode: 'localStorage' | 'memory') => void;
 
   // Tooltip System Actions
-  markTooltipAsSeen: (tooltipId: string) => void;
-  hasSeenTooltip: (tooltipId: string) => boolean;
-  shouldShowTooltip: (tooltipId: string) => boolean;
-  clearSeenTooltips: () => void; // For testing
+  incrementTooltipCount: (tooltipId: string) => void; // Increment display count
+  getTooltipDisplayCount: (tooltipId: string) => number; // Get current display count
+  shouldShowTooltip: (tooltipId: string, maxDisplayCount: number | null) => boolean; // Check if should show
+  clearTooltipCounts: () => void; // For testing
   setTooltipPersistence: (mode: 'localStorage' | 'memory') => void;
 
   // Active Effects Actions
@@ -140,7 +160,8 @@ export type GameStore = {
   togglePause: () => void;
   toggleMenu: () => void;
   toggleHandViewer: (player?: PlayerType) => void;
-  toggleAudio: () => void;
+  toggleMusic: () => void;
+  toggleSoundEffects: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
   resetGame: (

@@ -2,14 +2,14 @@
  * DeckPile - Displays a deck of cards with card back and counter
  */
 
-import { type FC, useRef, useState, useLayoutEffect } from 'react';
-import { motion } from 'framer-motion';
-import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { motion } from 'framer-motion';
+import { type FC, useLayoutEffect, useRef, useState } from 'react';
+import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
+import Text from '../Text';
 import { Tooltip } from '../Tooltip';
 import type { DeckPileProps } from './types';
-import Text from '../Text';
 
 export const DeckPile: FC<DeckPileProps> = ({
   cardCount,
@@ -24,6 +24,48 @@ export const DeckPile: FC<DeckPileProps> = ({
   const isPlayer = owner === 'player';
   const deckRef = useRef<HTMLDivElement>(null);
   const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
+  const prevCardCountRef = useRef(cardCount);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isReceiving, setIsReceiving] = useState(false);
+  const [cardsPlayedThisTurn, setCardsPlayedThisTurn] = useState(0);
+
+  // Self-trigger corresponding animation when this deck's card count changes
+  useLayoutEffect(() => {
+    const cardDiff = prevCardCountRef.current - cardCount;
+    const playingCard = cardDiff > 0;
+    const receivingCards = cardCount > prevCardCountRef.current && prevCardCountRef.current > 0;
+
+    if (playingCard) {
+      // Track how many cards were just played
+      setCardsPlayedThisTurn(cardDiff);
+
+      // A card was played from this deck
+      setIsAnimating(true);
+
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+        setCardsPlayedThisTurn(0);
+      }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
+
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+
+    if (receivingCards) {
+      // Cards were added to this deck (collection)
+      setIsReceiving(true);
+
+      // Reset animation state after animation completes
+      const timer = setTimeout(() => {
+        setIsReceiving(false);
+      }, ANIMATION_DURATIONS.CARD_COLLECTION);
+
+      // Cleanup timeout if component unmounts
+      return () => clearTimeout(timer);
+    }
+    prevCardCountRef.current = cardCount;
+  }, [cardCount]);
 
   // Determine if decks are currently in swapped positions (odd swap count)
   const isSwapped = deckSwapCount % 2 === 1;
@@ -42,7 +84,7 @@ export const DeckPile: FC<DeckPileProps> = ({
       // Calculate the vertical distance as the height of the board minus some padding
       // We want the decks to swap positions, so each travels approximately the board height
       // Subtract deck heights and padding to stay within bounds
-      const verticalDistance = boardRect.height * 0.65; // 65% of board height for safer bounds
+      const verticalDistance = boardRect.height * 0.68; // 65% of board height for safer bounds
 
       // Horizontal curve - use 20% of board width to avoid center cards
       const horizontalCurve = boardRect.width * 0.2;
@@ -80,60 +122,144 @@ export const DeckPile: FC<DeckPileProps> = ({
           // After swap: keep decks in swapped positions (no animation)
           y: owner === 'cpu' ? swapDistance.y : -swapDistance.y,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         }
       : {
           // Normal positions
           y: 0,
           x: 0,
-          scale: 1,
+          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
           rotateY: 0,
         };
+
+  const shiftTransitionDuration = ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000;
 
   return (
     <Tooltip
       content={
-        <Text variant="body-small" color="text-accent" weight="medium">
+        <Text className="leading-[1.2]" variant="body-small" color="text-accent" weight="semibold">
           {tooltipContent}
         </Text>
       }
       isOpen={showTooltip}
     >
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
-        {!isPlayer && <div className="text-white text-sm font-medium">{cardCount} Cards left</div>}
+        {!isPlayer && (
+          <Text
+            className="tracking-[0.08em]"
+            color="text-common-ash"
+            variant="badge-xs"
+            transform="uppercase"
+          >
+            {cardCount} Cards left
+          </Text>
+        )}
 
         {/* Card stack - only this animates during swap */}
         <motion.div
           ref={deckRef}
-          className="relative p-2"
+          className="relative p-2 w-full z-19"
           onClick={cardCount > 0 ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
           animate={swapAnimation}
           transition={{
             duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
-            delay:
-              forcedEmpathySwapping && swapDistance
-                ? ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DELAY / 1000
-                : 0, // Wait 800ms before animation starts
+            delay: 0, // No delay - starts immediately when forcedEmpathySwapping = true
             ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth curve
             times: [0, 0.5, 1], // Keyframe timing
           }}
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className={`relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
-              {/* Back cards for stacking effect - offset to top-left */}
-              <div className="absolute -translate-x-2 -translate-y-2 pointer-events-none">
-                <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
-              </div>
-              <div className="absolute -translate-x-1 -translate-y-1 pointer-events-none">
-                <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
-              </div>
-              {/* Top card (main visible card) */}
-              <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
+              {/* Back cards for stacking effect */}
+
+              {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
+              {cardCount >= 4 && (
+                <motion.div
+                  data-new
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    opacity: isAnimating ? [0, 1] : 1,
+                    x: -8,
+                    y: -8,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Bottom card */}
+              {cardCount >= 3 && (
+                <motion.div
+                  data-bottom
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    x: isAnimating ? [-8, -4] : -4,
+                    y: isAnimating ? [-8, -4] : -4,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Middle card */}
+              {cardCount >= 2 && (
+                <motion.div
+                  data-mid
+                  className="absolute pointer-events-none"
+                  initial={false}
+                  animate={{
+                    x: isAnimating ? [-4, 0] : 0,
+                    y: isAnimating ? [-4, 0] : 0,
+                  }}
+                  transition={{
+                    duration: shiftTransitionDuration,
+                    ease: [0.43, 0.13, 0.23, 0.96],
+                  }}
+                >
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                </motion.div>
+              )}
+
+              {/* Top card - animated when played */}
+              <motion.div
+                className="relative"
+                initial={false}
+                animate={{
+                  // For multi-card plays, stagger fade-outs
+                  opacity: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? [1, 0.7, 0] // Multi-card: gradual fade
+                      : [1, 0] // Single card: direct fade
+                    : 0,
+                  x: 0,
+                  y: 0,
+                }}
+                transition={{
+                  duration: isAnimating
+                    ? cardsPlayedThisTurn > 1
+                      ? shiftTransitionDuration * 1.2 // Extend duration for multi-card
+                      : shiftTransitionDuration * 0.5
+                    : shiftTransitionDuration,
+                  ease: [0.43, 0.13, 0.23, 0.96],
+                }}
+              >
+                <Card data-measure-target={owner} cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+              </motion.div>
             </div>
           ) : (
             /* Empty deck indicator */
@@ -144,7 +270,16 @@ export const DeckPile: FC<DeckPileProps> = ({
         </motion.div>
 
         {/* Counter for Player (bottom) - stays in place */}
-        {isPlayer && <div className="text-white text-sm font-medium">{cardCount} Cards left</div>}
+        {isPlayer && (
+          <Text
+            className="tracking-[0.08em]"
+            color="text-common-ash"
+            variant="badge-xs"
+            transform="uppercase"
+          >
+            {cardCount} Cards left
+          </Text>
+        )}
       </div>
     </Tooltip>
   );

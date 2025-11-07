@@ -1,26 +1,23 @@
 import { motion } from 'framer-motion';
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useRef, useEffect } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
+import { getCharacterAnimation } from '@/utils/character-animations';
 
 /**
  * VSAnimation Screen
  *
- * Placeholder screen for the VS animation phase.
- * Currently shows billionaire names and "VS" text, auto-transitions after 2 seconds.
- *
- * TODO: Implement full VS animation showing:
- * - Player's selected billionaire with image
- * - Animated VS text with effects
- * - CPU opponent with image
- * - Transition animation to gameplay
+ * Displays a WebM video animation for the player vs CPU matchup.
+ * Falls back to text-based display if no animation exists for the matchup.
+ * Auto-transitions to gameplay after animation duration (~2 seconds).
  */
 export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
   const { selectedBillionaire } = useGameStore();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const playerBillionaire = useMemo(
     () => BILLIONAIRES.find((b) => b.id === selectedBillionaire),
@@ -33,6 +30,21 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
     [],
   );
 
+  // Get the animation for this matchup
+  const animationSrc = useMemo(
+    () => getCharacterAnimation(selectedBillionaire || DEFAULT_BILLIONAIRE_ID, DEFAULT_BILLIONAIRE_ID, 'vs'),
+    [selectedBillionaire],
+  );
+
+  // Auto-play video when component mounts
+  useEffect(() => {
+    if (videoRef.current && animationSrc) {
+      videoRef.current.play().catch((error) => {
+        console.error('Failed to play VS animation:', error);
+      });
+    }
+  }, [animationSrc]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -40,25 +52,40 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        'relative flex flex-col items-center justify-center gap-8 min-h-full px-9',
+        'relative flex flex-col items-center justify-center w-full h-full',
         className,
       )}
       {...props}
     >
-      {/* Player Name */}
-      <Text variant="title-2" align="center" className="text-common-ash">
-        {playerBillionaire?.name || 'Player'}
-      </Text>
+      {animationSrc ? (
+        // Video animation - fills full board dimensions
+        <video
+          ref={videoRef}
+          src={animationSrc}
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+          aria-label={`${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`}
+        />
+      ) : (
+        // Fallback: Text-based display with padding
+        <div className="flex flex-col items-center justify-center gap-8 px-9">
+          {/* Player Name */}
+          <Text variant="title-2" align="center" className="text-common-ash">
+            {playerBillionaire?.name || 'Player'}
+          </Text>
 
-      {/* VS Text */}
-      <Text variant="title-1" className="text-common-ash">
-        VS
-      </Text>
+          {/* VS Text */}
+          <Text variant="title-1" className="text-common-ash">
+            VS
+          </Text>
 
-      {/* CPU Name */}
-      <Text variant="title-2" align="center" className="text-common-ash">
-        {cpuBillionaire?.name || 'Computer'}
-      </Text>
+          {/* CPU Name */}
+          <Text variant="title-2" align="center" className="text-common-ash">
+            {cpuBillionaire?.name || 'Computer'}
+          </Text>
+        </div>
+      )}
     </motion.div>
   );
 };

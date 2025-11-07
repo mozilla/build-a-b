@@ -90,6 +90,9 @@ export const Tooltip: FC<TooltipProps> = ({
 
   return (
     <HeroUITooltip
+      style={{
+        zIndex: 100,
+      }}
       placement={placement}
       showArrow={showArrow}
       classNames={mergedClassNames}

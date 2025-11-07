@@ -28,6 +28,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
   const prevDeckLength = useRef(currentPlayer.deck.length);
+  const prevDeckSwapCount = useRef(deckSwapCount);
   const [showWinEffect, setShowWinEffect] = useState(false);
   const isAnimatingRef = useRef(false); // Prevent multiple animations
   const timersRef = useRef<{ show?: number; hide?: number }>({});
@@ -36,9 +37,20 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     const currentLength = currentPlayer.deck.length;
     const previousLength = prevDeckLength.current;
 
+    // Detect if a deck swap just happened
+    const deckSwapJustHappened = deckSwapCount !== prevDeckSwapCount.current;
+
+    // If deck swap just happened, reset prevDeckLength and skip this render
+    if (deckSwapJustHappened) {
+      prevDeckLength.current = currentLength;
+      prevDeckSwapCount.current = deckSwapCount;
+      return;
+    }
+
     // Skip animation if:
     // - This is initial deck setup (deck was empty or very small)
     // - Deck didn't grow by more than 1 card
+    // - Decks are currently swapping (Forced Empathy)
     const isInitialSetup = previousLength < 10;
     const deckGrew = currentLength > previousLength + 1;
 
@@ -54,7 +66,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       timersRef.current = {};
     }
 
-    if (!isInitialSetup && deckGrew && !isAnimatingRef.current) {
+    if (!isInitialSetup && deckGrew && !isAnimatingRef.current && !forcedEmpathySwapping) {
       // Mark that animation is running
       isAnimatingRef.current = true;
 
@@ -85,7 +97,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     if (!isAnimatingRef.current) {
       prevDeckLength.current = currentLength;
     }
-  }, [currentPlayer.deck.length]);
+  }, [currentPlayer.deck.length, forcedEmpathySwapping, deckSwapCount]);
 
   // Cleanup on unmount
   useEffect(() => {
