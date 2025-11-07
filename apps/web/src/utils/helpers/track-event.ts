@@ -33,6 +33,13 @@ const dataWarEvents = [
   'click_want_physical_deck',
   'click_go_to_datawar',
   'click_go_to_instructions',
+  'click_play_datawar_cta',
+  'click_see_game_details_cta',
+  'click_twitchcon_recap_cta',
+  'click_play_datawar_mobile_nav',
+  'click_play_datawar_footer',
+  'click_build_billionaire_mobile_nav',
+  'click_build_billionaire_footer',
 ] as const;
 export type DataWarEvent = (typeof dataWarEvents)[number];
 

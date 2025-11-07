@@ -16,13 +16,32 @@ interface VaultContextValue {
   setShowVault: Dispatch<SetStateAction<boolean>>;
   vaultInitialImage: number | undefined;
   setVaultInitialImage: Dispatch<SetStateAction<number | undefined>>;
+  isPhase4: boolean;
+  curatedSelfies: string[];
+}
+
+interface VaultContextProviderProps extends PropsWithChildren {
+  isPhase4?: boolean;
+  curatedSelfies?: string[];
 }
 
 export const VaultContext = createContext<VaultContextValue | undefined>(undefined);
 
-export const VaultContextProvider: FC<PropsWithChildren> = ({ children }) => {
+export const VaultContextProvider: FC<VaultContextProviderProps> = ({
+  children,
+  isPhase4 = false,
+  curatedSelfies = [],
+}) => {
   const [showVault, setShowVault] = useState(false);
   const [vaultInitialImage, setVaultInitialImage] = useState<number | undefined>(undefined);
+
+  // Debug logging
+  console.log(
+    '[VaultContext] isPhase4:',
+    isPhase4,
+    'curatedSelfies count:',
+    curatedSelfies?.length || 0,
+  );
 
   const value = useMemo(
     () => ({
@@ -30,8 +49,10 @@ export const VaultContextProvider: FC<PropsWithChildren> = ({ children }) => {
       setShowVault,
       vaultInitialImage,
       setVaultInitialImage,
+      isPhase4,
+      curatedSelfies,
     }),
-    [showVault, setShowVault, vaultInitialImage, setVaultInitialImage],
+    [showVault, setShowVault, vaultInitialImage, setVaultInitialImage, isPhase4, curatedSelfies],
   );
 
   return <VaultContext value={value}>{children}</VaultContext>;

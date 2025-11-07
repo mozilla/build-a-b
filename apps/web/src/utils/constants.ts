@@ -88,6 +88,24 @@ export const tickerDataAfterTwitchCon = [
   },
 ];
 
+export const tickerDataPhase4 = [
+  {
+    id: 1,
+    text: 'Data War Digital is Here!',
+    emoji: '🎮',
+  },
+  {
+    id: 2,
+    text: 'The Billionaires have Blasted Off!',
+    emoji: '🪐',
+  },
+  {
+    id: 3,
+    text: 'Open What You Want!',
+    emoji: '🚀',
+  },
+];
+
 /**
  * SocialEmbed will give you the entire script, but what we really need
  * is the ID and source. Please do not modify these unless you use
