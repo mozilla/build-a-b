@@ -355,3 +355,110 @@ body {
 @utility animate-heartbeat {
   animation: heartbeat 1.5s ease-in-out infinite;
 }
+
+/* Card-specific glow animations - each card type has its own color */
+
+/* Tracker cards - Teal glow (#49C1B4) */
+@keyframes tracker-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(73, 193, 180, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(73, 193, 180, 0.8));
+  }
+}
+
+@utility animate-tracker-glow {
+  animation: tracker-glow 2s ease-in-out infinite;
+}
+
+/* Firewall cards - Orange/yellow glow (#FEC560) */
+@keyframes firewall-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(254, 197, 96, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(254, 197, 96, 0.8));
+  }
+}
+
+@utility animate-firewall-glow {
+  animation: firewall-glow 2s ease-in-out infinite;
+}
+
+/* Blocker cards - Yellow glow (#FCE978) */
+@keyframes blocker-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(252, 233, 120, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(252, 233, 120, 0.8));
+  }
+}
+
+@utility animate-blocker-glow {
+  animation: blocker-glow 2s ease-in-out infinite;
+}
+
+/* Move cards - Lighter, brighter purple/blue glow (#8090D0) */
+@keyframes move-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(128, 144, 208, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(128, 144, 208, 0.9));
+  }
+}
+
+@utility animate-move-glow {
+  animation: move-glow 2s ease-in-out infinite;
+}
+
+/* Launch Stack cards - Lighter, brighter purple glow (#C77DB8) */
+@keyframes launch-stack-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(199, 125, 184, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(199, 125, 184, 0.9));
+  }
+}
+
+@utility animate-launch-stack-glow {
+  animation: launch-stack-glow 2s ease-in-out infinite;
+}
+
+/* Data Grab cards - Blue glow (#0088CC) */
+@keyframes data-grab-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(0, 136, 204, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(0, 136, 204, 0.8));
+  }
+}
+
+@utility animate-data-grab-glow {
+  animation: data-grab-glow 2s ease-in-out infinite;
+}
+
+/* Data War (common cards) - White glow */
+@keyframes data-war-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.9));
+  }
+}
+
+@utility animate-data-war-glow {
+  animation: data-war-glow 2s ease-in-out infinite;
+}

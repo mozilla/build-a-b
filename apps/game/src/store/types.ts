@@ -50,6 +50,7 @@ export type GameStore = {
   showHostileTakeoverAnimation: boolean; // Shows when hostile takeover is played
   showLaunchStackAnimation: boolean; // Shows after collecting a launch stack
   showDataWarAnimation: boolean; // Shows when data war occurs
+  dataWarVideoPlaying: boolean; // True while the DATA WAR video is actively playing
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -60,7 +61,7 @@ export type GameStore = {
   effectNotificationPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // Tooltip System
-  seenTooltips: string[]; // Tooltip IDs that have been seen - stored as array, used as Set
+  tooltipDisplayCounts: Record<string, number>; // Tooltip ID -> display count mapping
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
   // UI State
@@ -140,10 +141,10 @@ export type GameStore = {
   setEffectNotificationPersistence: (mode: 'localStorage' | 'memory') => void;
 
   // Tooltip System Actions
-  markTooltipAsSeen: (tooltipId: string) => void;
-  hasSeenTooltip: (tooltipId: string) => boolean;
-  shouldShowTooltip: (tooltipId: string) => boolean;
-  clearSeenTooltips: () => void; // For testing
+  incrementTooltipCount: (tooltipId: string) => void; // Increment display count
+  getTooltipDisplayCount: (tooltipId: string) => number; // Get current display count
+  shouldShowTooltip: (tooltipId: string, maxDisplayCount: number | null) => boolean; // Check if should show
+  clearTooltipCounts: () => void; // For testing
   setTooltipPersistence: (mode: 'localStorage' | 'memory') => void;
 
   // Active Effects Actions
