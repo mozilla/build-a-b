@@ -9,6 +9,13 @@ const DataWarLaunchHero: FC = () => {
       {/* Starry space background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0818] via-[#1a0a2e] to-[#0a0a1a]">
         {/* Stars background */}
+        <Image
+          src="/assets/images/space_407.webp"
+          alt="Data War - in space!"
+          fill
+          className="object-cover"
+          priority
+        />
       </div>
 
       {/* Right side - Phones */}
