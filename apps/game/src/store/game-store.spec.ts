@@ -1,11 +1,21 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useGameStore } from './game-store';
 import type { Card } from '../types';
 
 describe('gameStore', () => {
   beforeEach(() => {
+    // Clean up any existing timers
+    vi.clearAllTimers();
+    vi.useRealTimers();
     // Reset store before each test
     useGameStore.getState().resetGame();
+    // Use fake timers for animation timeouts
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   describe('initialization', () => {
@@ -127,6 +137,7 @@ describe('gameStore', () => {
       const cardsInPlay = [...useGameStore.getState().cardsInPlay];
 
       collectCards('player', cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.deck).toHaveLength(initialPlayerDeck + 2);
@@ -143,6 +154,7 @@ describe('gameStore', () => {
       expect(useGameStore.getState().cpu.playedCard).not.toBe(null);
 
       collectCards('player', useGameStore.getState().cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.playedCard).toBe(null);
@@ -156,6 +168,7 @@ describe('gameStore', () => {
       playCard('cpu');
 
       collectCards('player', useGameStore.getState().cardsInPlay);
+      vi.runAllTimers(); // Advance timers to complete collection animation
 
       const state = useGameStore.getState();
       expect(state.player.currentTurnValue).toBe(0);
