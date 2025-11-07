@@ -38,7 +38,7 @@ import type { FC } from 'react';
 import TwitchConRecapBento from '@/components/TwitchConRecapBento';
 
 const OrangeCard: FC<{ isLaunchCompleted?: boolean; isPhase4?: boolean }> = ({
-  isLaunchCompleted,
+  isLaunchCompleted: _isLaunchCompleted,
   isPhase4,
 }) => {
   return (
@@ -194,7 +194,7 @@ export default async function Home({
                     </h3>
                     <p>
                       We launched a new card game, Data War, and we launched Billionaires into
-                      space. Couldn't join us IRL at TwitchCon? Quell your FOMO right here.
+                      space. Couldn&apos;t join us IRL at TwitchCon? Quell your FOMO right here.
                     </p>
                     <LinkButton
                       href="/twitchcon"
