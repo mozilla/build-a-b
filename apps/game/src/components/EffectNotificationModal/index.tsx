@@ -58,7 +58,7 @@ export const EffectNotificationModal: FC = () => {
             <button
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                 isPlayerCard
-                  ? 'bg-green-400 text-black'
+                  ? 'bg-accent text-black'
                   : 'bg-transparent border-2 border-white text-white'
               }`}
             >
@@ -67,11 +67,11 @@ export const EffectNotificationModal: FC = () => {
             <button
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                 !isPlayerCard
-                  ? 'bg-cyan-400 text-black'
+                  ? 'bg-accent text-black'
                   : 'bg-transparent border-2 border-white text-white'
               }`}
             >
-              Opponents' Play
+              Opponent's Play
             </button>
           </div>
 

@@ -4,8 +4,10 @@ import { useGameStore, usePlayer } from '@/store';
 import { getBillionaireById } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState, type FC } from 'react';
+import winConfettiAnimation from '../../assets/animations/effects/win-confetti.json';
 import { DeckPile } from '../DeckPile';
 import { LaunchStackIndicator } from '../LaunchStackIndicator';
+import { LottieAnimation } from '../LottieAnimation';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
 
@@ -70,10 +72,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       // Mark that animation is running
       isAnimatingRef.current = true;
 
-      // Delay before showing win animation (wait for cards to finish collecting)
-      timersRef.current.show = setTimeout(() => {
-        setShowWinEffect(true);
-      }, ANIMATION_DURATIONS.WIN_EFFECT_DELAY);
+      setShowWinEffect(true);
 
       // Reset after complete animation sequence (longer duration for better visibility)
       timersRef.current.hide = setTimeout(() => {
@@ -147,7 +146,19 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="w-[93%] h-[93%] rounded-full bg-gradient-to-b from-[#FF6B4A] to-[#FFD54F] flex items-center justify-center shadow-lg">
+                  {/* Confetti animation - full container size */}
+                  <div className="absolute inset-0">
+                    <LottieAnimation
+                      className="-translate-x-20 -translate-y-20"
+                      animationData={winConfettiAnimation}
+                      autoplay={true}
+                      width={250}
+                      height={250}
+                    />
+                  </div>
+
+                  {/* Win text with gradient background */}
+                  <div className="w-[93%] h-[93%] rounded-full bg-gradient-to-b from-[#FF6B4A] to-[#FFD54F] flex items-center justify-center shadow-lg relative">
                     <motion.span
                       initial={{ scale: 1 }}
                       animate={{
@@ -182,6 +193,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         activeIndicator={activeIndicator}
         forcedEmpathySwapping={forcedEmpathySwapping}
         deckSwapCount={deckSwapCount}
+        isRunningWinAnimation={showWinEffect}
       />
       {/** Turn points */}
       <TurnValue value={turnValue} activeEffects={turnValueActiveEffects} />

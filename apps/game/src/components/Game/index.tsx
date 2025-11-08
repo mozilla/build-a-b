@@ -56,6 +56,7 @@ export function Game() {
   const selectedBillionaire = useSelectedBillionaire();
   const winner = useWinner();
   const winCondition = useWinCondition();
+  const collecting = useGameStore((state) => state.collecting);
 
   // Total cards owned = playable deck + collected Launch Stacks
   const playerTotalCards = player.deck.length + playerLaunchStacks.length;
@@ -77,12 +78,14 @@ export function Game() {
   // During ready phase, only active player can tap
   // During data war, only player deck is clickable (one click reveals both)
   // During pre_reveal.awaiting_interaction, player can tap to see modal
+  // Disable clicking during card collection animation
   const canClickPlayerDeck =
-    (phase === 'ready' && activePlayer === 'player') ||
-    phase === 'pre_reveal.awaiting_interaction' ||
-    (isDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover');
+    !collecting &&
+    ((phase === 'ready' && activePlayer === 'player') ||
+      phase === 'pre_reveal.awaiting_interaction' ||
+      (isDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover'));
 
-  const canClickCpuDeck = phase === 'ready' && activePlayer === 'cpu';
+  const canClickCpuDeck = !collecting && phase === 'ready' && activePlayer === 'cpu';
 
   const handleDeckClick = () => {
     tapDeck();
@@ -97,11 +100,10 @@ export function Game() {
   const topDeckTooltip = ''; // Never show tooltip on top deck
   const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
 
-  // Active indicator (heartbeat) shows when it's player's turn on the VISUALLY + bottom deck
-  // When swapped: top deck (owner="cpu") is visually at bottom
-  // When not swapped: bottom deck (owner="player") is visually at bottom
-  const topDeckActiveIndicator = isSwapped && activePlayer === 'player' && canClickCpuDeck;
-  const bottomDeckActiveIndicator = !isSwapped && activePlayer === 'player' && canClickPlayerDeck;
+  // Active indicator (heartbeat) shows on the active player's position
+  // Player always plays from bottom visually, CPU from top, regardless of deck swap
+  const topDeckActiveIndicator = activePlayer === 'cpu' && topDeckCanClick;
+  const bottomDeckActiveIndicator = activePlayer === 'player' && bottomDeckCanClick;
 
   useEffect(() => {
     switch (phase) {
