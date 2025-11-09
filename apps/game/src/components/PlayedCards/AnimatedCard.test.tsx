@@ -78,15 +78,6 @@ describe('AnimatedCard Component', () => {
     isFaceDown: false,
   };
 
-  const createMockNotification = (card: Card = mockCard): EffectNotification => ({
-    card,
-    playedBy: 'player' as const,
-    specialType: null,
-    effectType: 'tracker',
-    effectName: 'Test Effect',
-    effectDescription: 'Test description',
-  });
-
   const defaultProps = {
     playedCardState: mockPlayedCardState,
     index: 0,
@@ -106,6 +97,8 @@ describe('AnimatedCard Component', () => {
     settledZRef: { current: {} },
     elementRefs: { current: {} },
     onLandedChange: vi.fn(),
+    shouldShowBadge: false,
+    onCardClick: vi.fn(),
   };
 
   beforeEach(() => {
