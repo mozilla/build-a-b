@@ -73,17 +73,23 @@ export function Game() {
   const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
   // Determine if deck can be clicked based on phase and active player
   const isDataWarPhase =
-    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up';
+    phase === 'data_war.reveal_face_down' ||
+    phase === 'data_war.reveal_face_up.settling' ||
+    phase === 'data_war.reveal_face_up.ready';
+
+  // Data War phases where deck is clickable (exclude settling phase)
+  const isClickableDataWarPhase =
+    phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up.ready';
 
   // During ready phase, only active player can tap
   // During data war, only player deck is clickable (one click reveals both)
   // During pre_reveal.awaiting_interaction, player can tap to see modal
-  // Disable clicking during card collection animation
+  // Disable clicking during card collection animation and during settling
   const canClickPlayerDeck =
     !collecting &&
     ((phase === 'ready' && activePlayer === 'player') ||
       phase === 'pre_reveal.awaiting_interaction' ||
-      (isDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover'));
+      (isClickableDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover'));
 
   const canClickCpuDeck = !collecting && phase === 'ready' && activePlayer === 'cpu';
 

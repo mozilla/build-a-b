@@ -1,16 +1,12 @@
 import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
-import { useEffect, useMemo, useState } from 'react';
-import { A11y, Keyboard } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { useEffect, useState } from 'react';
 import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
 import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
 import { Button, Text } from '@/components';
-
-import 'swiper/css';
-import type { SwiperOptions } from 'swiper/types';
 import { capitalize } from '@/utils/capitalize';
+import { CardCarousel } from '../CardCarousel';
 
 export const OpenWhatYouWantModal = () => {
   const { send } = useGameMachineActor();
@@ -18,19 +14,6 @@ export const OpenWhatYouWantModal = () => {
   const playSelectedCardFromOWYW = useGameStore((state) => state.playSelectedCardFromOWYW);
   const setOpenWhatYouWantActive = useGameStore((state) => state.setOpenWhatYouWantActive);
   const clearPreRevealEffects = useGameStore((state) => state.clearPreRevealEffects);
-  const defaultOptions: Partial<SwiperOptions> = useMemo(
-    () => ({
-      modules: [A11y, Keyboard],
-      centeredSlides: true,
-      spaceBetween: -80, // Negative spacing creates visual card overlap
-      slidesPerView: 1,
-      keyboard: {
-        enabled: true,
-        onlyInViewport: true,
-      },
-    }),
-    [],
-  );
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   // Set the first card as selected when cards become available
@@ -39,6 +22,13 @@ export const OpenWhatYouWantModal = () => {
       setSelectedCard(cards[0]);
     }
   }, [cards, selectedCard]);
+
+  // Reset selected card when modal closes
+  useEffect(() => {
+    if (!showModal) {
+      setSelectedCard(null);
+    }
+  }, [showModal]);
 
   const handleConfirm = () => {
     if (selectedCard && isActive) {
@@ -52,18 +42,11 @@ export const OpenWhatYouWantModal = () => {
 
       // Transition from selecting sub-state to revealing state
       send({ type: 'CARD_SELECTED' });
-      setSelectedCard(null);
     }
   };
 
-  // Generate descriptive alt text for card images
-  const getCardAltText = (card: Card): string => {
-    // Special cards display their name below, so just use type + value
-    if (card.specialType) {
-      return `${capitalize(card.specialType)} card`;
-    }
-    // Regular cards need more description
-    return `Regular card with value ${card.value}`;
+  const handleCardSelect = (card: Card) => {
+    setSelectedCard(card);
   };
 
   return (
@@ -85,33 +68,7 @@ export const OpenWhatYouWantModal = () => {
             </span>
           </div>
           {cards.length > 0 ? (
-            <div className="w-full">
-              <Swiper
-                {...defaultOptions}
-                onSlideChange={(swiper) => {
-                  const currentCard = cards[swiper.activeIndex];
-                  setSelectedCard(currentCard);
-                }}
-                className="w-full h-[400px]"
-              >
-                {cards.map((card) => (
-                  <SwiperSlide key={card.id}>
-                    <div
-                      className={`flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 rotate-[-15deg]`}
-                      onClick={() => setSelectedCard(card)}
-                    >
-                      <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
-                        <img
-                          src={card.imageUrl}
-                          alt={getCardAltText(card)}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+            <CardCarousel cards={cards} selectedCard={selectedCard} onCardSelect={handleCardSelect} />
           ) : (
             <div className="text-center text-gray-400 py-8">No cards available</div>
           )}

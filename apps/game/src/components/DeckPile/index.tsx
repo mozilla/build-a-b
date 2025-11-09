@@ -144,6 +144,9 @@ export const DeckPile: FC<DeckPileProps> = ({
         </Text>
       }
       isOpen={showTooltip}
+      classNames={{
+        base: [isPlayer ? 'translate-y-6' : '-translate-y-6'],
+      }}
     >
       <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
