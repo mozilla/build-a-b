@@ -278,21 +278,39 @@ export function useGameLogic() {
         }
       }
     } else {
-      // Normal mode - check both players (prioritize player's card)
-      if (p.playedCard && shouldTriggerAnotherPlay(p.playedCard)) {
-        // Check if Tracker Smacker is blocking this effect
-        const isBlocked = checkIfBlocked('player');
+      // Normal mode - check both players
+      const playerTriggersAnother =
+        p.playedCard &&
+        shouldTriggerAnotherPlay(p.playedCard) &&
+        !checkIfBlocked('player');
 
-        if (!isBlocked) {
-          nextPlayer = 'player';
-        }
-      } else if (c.playedCard && shouldTriggerAnotherPlay(c.playedCard)) {
-        // Check if Tracker Smacker is blocking this effect
-        const isBlocked = checkIfBlocked('cpu');
+      const cpuTriggersAnother =
+        c.playedCard &&
+        shouldTriggerAnotherPlay(c.playedCard) &&
+        !checkIfBlocked('cpu');
 
-        if (!isBlocked) {
-          nextPlayer = 'cpu';
+      // Handle "another play" logic:
+      // - If BOTH trigger: Both play at the same time (stay in normal mode)
+      // - If ONLY ONE triggers: That player plays alone (another play mode)
+      const bothTriggered = playerTriggersAnother && cpuTriggersAnother;
+
+      if (bothTriggered) {
+        // Both triggered - check if both players have cards left
+        if (p.deck.length > 0 && c.deck.length > 0) {
+          // Both have cards - they'll play simultaneously (stay in normal mode)
+          setAnotherPlayMode(false);
+          setActivePlayer('player'); // Reset to default
+
+          // Go back to ready phase for simultaneous play
+          actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+          return;
         }
+        // At least one player has no cards - continue to resolution below
+        nextPlayer = null;
+      } else if (playerTriggersAnother) {
+        nextPlayer = 'player';
+      } else if (cpuTriggersAnother) {
+        nextPlayer = 'cpu';
       }
     }
 
@@ -411,7 +429,7 @@ export function useGameLogic() {
       // Add 3 face-down cards from each player to cardsInPlay
       handleDataWarFaceDown();
       actorRef.send({ type: 'TAP_DECK' });
-    } else if (phase === 'data_war.reveal_face_up') {
+    } else if (phase === 'data_war.reveal_face_up.ready') {
       // Add 1 face-up card from each player and compare
       handleDataWarFaceUp();
       actorRef.send({ type: 'TAP_DECK' });

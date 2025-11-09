@@ -45,8 +45,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
 
   // Check if badge should show (persists until modal shown or turn ends)
   // Only show badge on the side that has accumulated effects
-  const ownerHasEffects = accumulatedEffects.some((effect) => effect.playedBy === owner);
-  const shouldShowBadge = showEffectNotificationBadge && ownerHasEffects;
+  const ownerEffects = accumulatedEffects.filter((effect) => effect.playedBy === owner);
+  const shouldShowBadge = showEffectNotificationBadge && ownerEffects.length > 0;
 
   // Tooltip configuration
   const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
@@ -150,17 +150,14 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
             content={effectTooltipConfig.message}
             placement="bottom"
             arrowDirection="left"
-            isOpen={shouldShowEffectTooltip || undefined}
+            isOpen={!showEffectNotificationModal && shouldShowEffectTooltip ? true : undefined}
             classNames={{
-              base: ['translate-x-1', 'translate-y-[-0.8rem]'],
+              base: ['translate-x-1', 'translate-y-[2rem]'],
               content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
             }}
           >
             <div>
-              <EffectNotificationBadge
-                accumulatedEffects={accumulatedEffects}
-                showProgressBar={false}
-              />
+              <EffectNotificationBadge accumulatedEffects={ownerEffects} showProgressBar={false} />
             </div>
           </Tooltip>
         </div>

@@ -59,9 +59,9 @@ export const EffectNotificationModal: FC = () => {
       hideCloseButton={true}
       isDismissable={true}
       classNames={{
-        wrapper: 'z-[60]',
-        backdrop: 'z-[55]',
-        base: 'bg-[rgba(0,0,0,0.9)] z-[60]',
+        wrapper: 'z-[9999]',
+        backdrop: 'z-[9998]',
+        base: 'bg-[rgba(0,0,0,0.9)] z-[9999]',
         body: 'py-8 px-6',
       }}
     >
@@ -106,8 +106,8 @@ export const EffectNotificationModal: FC = () => {
             onCardSelect={handleCardSelect}
           />
 
-          {/* Effect Details for selected card */}
-          <div className="text-center max-w-md">
+          {/* Effect Details for selected card - fixed height to prevent layout shift */}
+          <div className="text-center max-w-md h-[10rem] flex flex-col overflow-y-auto">
             <Text variant="title-2" className="mb-4 text-white">
               {capitalize(effectName)}
             </Text>

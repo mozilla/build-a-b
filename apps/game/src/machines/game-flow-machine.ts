@@ -211,7 +211,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: 'EMPTY',
             }),
             after: {
-              500: [
+              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: [
                 // Small delay after instant effects complete, then immediately continue
                 // Badge will show (non-blocking) if effects were accumulated
                 {
@@ -284,16 +284,31 @@ export const gameFlowMachine = createMachine(
             },
           },
           reveal_face_up: {
-            entry: assign({
-              tooltipMessage: 'DATA_WAR_FACE_UP',
-            }),
-            on: {
-              TAP_DECK: {
-                target: '#dataWarGame.comparing',
-                guard: 'notShowingEffectModal',
-                actions: assign({
-                  currentTurn: ({ context }) => context.currentTurn + 1,
+            initial: 'settling',
+            states: {
+              settling: {
+                // Wait for face-down cards to finish animating (6 cards total with stagger)
+                // CARD_PLAY_FROM_DECK (800) + extra time for 3-card stagger (600) + settle (500)
+                entry: assign({
+                  tooltipMessage: 'EMPTY',
                 }),
+                after: {
+                  [ANIMATION_DURATIONS.DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION]: 'ready',
+                },
+              },
+              ready: {
+                entry: assign({
+                  tooltipMessage: 'DATA_WAR_FACE_UP',
+                }),
+                on: {
+                  TAP_DECK: {
+                    target: '#dataWarGame.comparing',
+                    guard: 'notShowingEffectModal',
+                    actions: assign({
+                      currentTurn: ({ context }) => context.currentTurn + 1,
+                    }),
+                  },
+                },
               },
             },
           },
