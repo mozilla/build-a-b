@@ -64,6 +64,15 @@ export type GameStore = {
   showEffectNotificationModal: boolean; // Show modal
   effectNotificationPersistence: 'localStorage' | 'memory'; // Configurable persistence
 
+  // Effect Notification - Accumulation System
+  accumulatedEffects: EffectNotification[]; // Effects accumulated during current turn
+  effectAccumulationPaused: boolean; // True when modal is open (pauses game)
+
+  // Progress Timer for Effect Badge (future feature)
+  effectBadgeTimerDuration: number; // Milliseconds to wait before auto-play (0 = disabled)
+  effectBadgeTimerActive: boolean; // True when timer is running
+  effectBadgeTimerStartTime: number | null; // Timestamp when timer started
+
   // Tooltip System
   tooltipDisplayCounts: Record<string, number>; // Tooltip ID -> display count mapping
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
@@ -143,6 +152,17 @@ export type GameStore = {
   setShowEffectNotificationModal: (show: boolean) => void;
   clearSeenEffects: () => void; // For testing
   setEffectNotificationPersistence: (mode: 'localStorage' | 'memory') => void;
+
+  // Effect Notification - Accumulation Actions
+  addEffectToAccumulation: (notification: EffectNotification) => void;
+  clearAccumulatedEffects: () => void;
+  openEffectModal: () => void; // Opens modal AND pauses game
+  closeEffectModal: () => void; // Closes modal AND resumes game
+
+  // Progress Timer Actions
+  startEffectBadgeTimer: () => boolean; // Returns true if game should wait
+  stopEffectBadgeTimer: () => void;
+  isEffectTimerActive: () => boolean;
 
   // Tooltip System Actions
   incrementTooltipCount: (tooltipId: string) => void; // Increment display count

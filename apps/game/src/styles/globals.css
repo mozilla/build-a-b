@@ -335,6 +335,22 @@ body {
   animation: slide-from-bottom 0.5s ease-out forwards;
 }
 
+/* Effect badge scale in - only animates on mount */
+@keyframes badge-scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@utility animate-badge-scale-in {
+  animation: badge-scale-in 0.5s ease-out forwards;
+}
+
 /* Heartbeat animation for active deck indicator */
 @keyframes heartbeat {
   0%,
