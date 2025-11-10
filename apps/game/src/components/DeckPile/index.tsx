@@ -20,6 +20,7 @@ export const DeckPile: FC<DeckPileProps> = ({
   activeIndicator = false,
   forcedEmpathySwapping = false,
   deckSwapCount = 0,
+  isRunningWinAnimation
 }) => {
   const isPlayer = owner === 'player';
   const deckRef = useRef<HTMLDivElement>(null);
@@ -143,6 +144,9 @@ export const DeckPile: FC<DeckPileProps> = ({
         </Text>
       }
       isOpen={showTooltip}
+      classNames={{
+        base: [isPlayer ? 'translate-y-6' : '-translate-y-6'],
+      }}
     >
       <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
         {/* Counter for CPU (top) - stays in place */}
@@ -161,7 +165,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         <motion.div
           ref={deckRef}
           className="relative p-2 w-full z-19"
-          onClick={cardCount > 0 ? onClick : undefined}
+          onClick={cardCount > 0 && !isRunningWinAnimation ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
           animate={swapAnimation}

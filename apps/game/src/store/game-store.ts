@@ -10,7 +10,6 @@ import { DEFAULT_GAME_CONFIG } from '../config/game-config';
 import type {
   Card,
   CardValue,
-  EffectNotification,
   Player,
   PlayerType,
   SpecialEffect,
@@ -93,6 +92,15 @@ export const useGameStore = create<GameStore>()(
       showEffectNotificationBadge: false,
       showEffectNotificationModal: false,
       effectNotificationPersistence: 'localStorage',
+
+      // Effect Notification - Accumulation System
+      accumulatedEffects: [],
+      effectAccumulationPaused: false,
+
+      // Progress Timer for Effect Badge
+      effectBadgeTimerDuration: 0, // Set to 0 for now (disabled)
+      effectBadgeTimerActive: false,
+      effectBadgeTimerStartTime: null,
 
       // Tooltip System
       tooltipDisplayCounts: JSON.parse(localStorage.getItem('tooltipDisplayCounts') || '{}'),
@@ -304,6 +312,9 @@ export const useGameStore = create<GameStore>()(
               pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
             },
           });
+
+          // Clear accumulated effects when turn ends
+          get().clearAccumulatedEffects();
 
           set({ collecting: null });
         }, ANIMATION_DURATIONS.CARD_COLLECTION);
@@ -1005,7 +1016,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       prepareEffectNotification: () => {
-        const { player, cpu, hasSeenEffect } = get();
+        const { player, cpu, hasSeenEffect, addEffectToAccumulation } = get();
 
         // Collect ALL unseen notifications (priority: player first, then CPU)
         const cards = [
@@ -1013,14 +1024,13 @@ export const useGameStore = create<GameStore>()(
           { card: cpu.playedCard, playedBy: 'cpu' as PlayerType },
         ];
 
-        const notifications: EffectNotification[] = [];
-
         for (const { card, playedBy } of cards) {
           if (card && isSpecialCard(card)) {
             const effectType = getEffectType(card);
 
             if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
-              notifications.push({
+              // Add to accumulation (non-blocking)
+              addEffectToAccumulation({
                 card,
                 playedBy,
                 effectType,
@@ -1030,22 +1040,6 @@ export const useGameStore = create<GameStore>()(
               });
             }
           }
-        }
-
-        if (notifications.length > 0) {
-          // Set all pending notifications and show the first one
-          set({
-            pendingEffectNotifications: notifications,
-            currentEffectNotification: notifications[0],
-            showEffectNotificationBadge: true,
-          });
-        } else {
-          // No unseen notifications
-          set({
-            pendingEffectNotifications: [],
-            currentEffectNotification: null,
-            showEffectNotificationBadge: false,
-          });
         }
       },
 
@@ -1094,6 +1088,84 @@ export const useGameStore = create<GameStore>()(
           // Clear localStorage if switching to memory mode
           localStorage.removeItem('seenEffectTypes');
         }
+      },
+
+      // Effect Notification - Accumulation Actions
+      addEffectToAccumulation: (notification) => {
+        const { accumulatedEffects } = get();
+
+        // Prevent duplicate effect types in the same turn
+        const isAlreadyAccumulated = accumulatedEffects.some(
+          (effect) => effect.effectType === notification.effectType,
+        );
+
+        if (!isAlreadyAccumulated) {
+          set({
+            accumulatedEffects: [...accumulatedEffects, notification],
+            showEffectNotificationBadge: true,
+          });
+        }
+      },
+
+      clearAccumulatedEffects: () => {
+        set({
+          accumulatedEffects: [],
+          showEffectNotificationBadge: false,
+          effectAccumulationPaused: false, // Resume game if modal was open
+          showEffectNotificationModal: false, // Close modal if open
+        });
+      },
+
+      openEffectModal: () => {
+        set({
+          showEffectNotificationModal: true,
+          effectAccumulationPaused: true, // Pause game
+        });
+      },
+
+      closeEffectModal: () => {
+        const { accumulatedEffects, markEffectAsSeen } = get();
+
+        // Mark all accumulated effects as seen
+        accumulatedEffects.forEach((effect) => {
+          markEffectAsSeen(effect.effectType);
+        });
+
+        set({
+          showEffectNotificationModal: false,
+          effectAccumulationPaused: false, // Resume game
+          accumulatedEffects: [], // Clear after viewing
+          showEffectNotificationBadge: false,
+        });
+      },
+
+      // Progress Timer Actions
+      startEffectBadgeTimer: () => {
+        const { effectBadgeTimerDuration } = get();
+
+        if (effectBadgeTimerDuration === 0) {
+          // Timer disabled, proceed immediately
+          return false;
+        }
+
+        set({
+          effectBadgeTimerActive: true,
+          effectBadgeTimerStartTime: Date.now(),
+        });
+
+        // Return true to indicate game should wait
+        return true;
+      },
+
+      stopEffectBadgeTimer: () => {
+        set({
+          effectBadgeTimerActive: false,
+          effectBadgeTimerStartTime: null,
+        });
+      },
+
+      isEffectTimerActive: () => {
+        return get().effectBadgeTimerActive;
       },
 
       // Tooltip System Actions

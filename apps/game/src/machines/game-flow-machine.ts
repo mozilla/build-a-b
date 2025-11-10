@@ -186,7 +186,10 @@ export const gameFlowMachine = createMachine(
           },
         }),
         on: {
-          REVEAL_CARDS: 'revealing',
+          REVEAL_CARDS: {
+            target: 'revealing',
+            guard: 'notShowingEffectModal',
+          },
         },
       },
 
@@ -203,44 +206,18 @@ export const gameFlowMachine = createMachine(
         initial: 'checking',
         states: {
           checking: {
-            // Check if there are unseen effect notifications to show
+            // Check if there are unseen effect notifications and add to accumulation (non-blocking)
             entry: assign({
               tooltipMessage: 'EMPTY',
             }),
             after: {
-              500: [
-                // Small delay after instant effects complete
+              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: [
+                // Small delay after instant effects complete, then immediately continue
+                // Badge will show (non-blocking) if effects were accumulated
                 {
-                  target: 'showing',
-                  guard: 'hasUnseenEffectNotifications',
-                },
-                {
-                  target: '#dataWarGame.comparing', // Skip if no notifications
+                  target: '#dataWarGame.comparing',
                 },
               ],
-            },
-            on: {
-              EFFECT_NOTIFICATION_COMPLETE: '#dataWarGame.comparing',
-            },
-          },
-
-          showing: {
-            // Show notification badge and tooltip on card
-            entry: assign({
-              tooltipMessage: 'EFFECT_NOTIFICATION',
-            }),
-            on: {
-              EFFECT_NOTIFICATION_DISMISSED: 'transitioning',
-            },
-          },
-
-          transitioning: {
-            // Delay after modal closes before continuing
-            entry: assign({
-              tooltipMessage: 'EMPTY',
-            }),
-            after: {
-              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: '#dataWarGame.comparing',
             },
           },
         },
@@ -300,19 +277,38 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: 'DATA_WAR_FACE_DOWN',
             }),
             on: {
-              TAP_DECK: 'reveal_face_up',
+              TAP_DECK: {
+                target: 'reveal_face_up',
+                guard: 'notShowingEffectModal',
+              },
             },
           },
           reveal_face_up: {
-            entry: assign({
-              tooltipMessage: 'DATA_WAR_FACE_UP',
-            }),
-            on: {
-              TAP_DECK: {
-                target: '#dataWarGame.comparing',
-                actions: assign({
-                  currentTurn: ({ context }) => context.currentTurn + 1,
+            initial: 'settling',
+            states: {
+              settling: {
+                // Wait for face-down cards to finish animating (6 cards total with stagger)
+                // CARD_PLAY_FROM_DECK (800) + extra time for 3-card stagger (600) + settle (500)
+                entry: assign({
+                  tooltipMessage: 'EMPTY',
                 }),
+                after: {
+                  [ANIMATION_DURATIONS.DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION]: 'ready',
+                },
+              },
+              ready: {
+                entry: assign({
+                  tooltipMessage: 'DATA_WAR_FACE_UP',
+                }),
+                on: {
+                  TAP_DECK: {
+                    target: '#dataWarGame.comparing',
+                    guard: 'notShowingEffectModal',
+                    actions: assign({
+                      currentTurn: ({ context }) => context.currentTurn + 1,
+                    }),
+                  },
+                },
               },
             },
           },
@@ -478,6 +474,12 @@ export const gameFlowMachine = createMachine(
         // Check if there are unseen effect notifications to show
         const state = useGameStore.getState();
         return state.hasUnseenEffectNotifications();
+      },
+      notShowingEffectModal: () => {
+        // Check if effect modal is NOT open (game should NOT be paused)
+        // When modal is open (effectAccumulationPaused = true), prevent transitions
+        const state = useGameStore.getState();
+        return !state.effectAccumulationPaused;
       },
     },
   },

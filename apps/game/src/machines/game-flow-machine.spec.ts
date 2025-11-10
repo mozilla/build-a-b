@@ -1,8 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createActor } from 'xstate';
 import { gameFlowMachine } from './game-flow-machine';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 
 describe('gameFlowMachine', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('initial state', () => {
     it('should start in welcome state', () => {
       const actor = createActor(gameFlowMachine);
@@ -117,8 +126,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'CARDS_REVEALED' });
       expect(actor.getSnapshot().value).toEqual({ effect_notification: 'checking' });
 
-      // Skip effect notification
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' });
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       expect(actor.getSnapshot().value).toBe('comparing');
       actor.stop();
     });
@@ -135,7 +144,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
       actor.send({ type: 'TIE' });
       expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
@@ -155,7 +165,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
       actor.send({ type: 'SPECIAL_EFFECT' });
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -175,7 +186,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'SPECIAL_EFFECT' });
 
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -198,7 +210,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
       actor.send({ type: 'RESOLVE_TURN' });
       expect(actor.getSnapshot().value).toBe('resolving');
@@ -220,7 +233,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'TIE' });
 
       // Should start in animating substate
@@ -298,7 +312,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'RESOLVE_TURN' });
 
       expect(actor.getSnapshot().context.currentTurn).toBe(1);
@@ -306,7 +321,7 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should return to ready state when no win condition', async () => {
+    it('should return to ready state when no win condition', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -318,7 +333,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'RESOLVE_TURN' });
 
       // Check win condition (guard returns false, transitions to pre_reveal)
@@ -328,7 +344,7 @@ describe('gameFlowMachine', () => {
       expect(actor.getSnapshot().value).toEqual({ pre_reveal: 'processing' });
 
       // Wait for WIN_ANIMATION duration (1200ms) to transition to ready
-      await new Promise((resolve) => setTimeout(resolve, 1300));
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.WIN_ANIMATION);
 
       expect(actor.getSnapshot().value).toBe('ready');
 

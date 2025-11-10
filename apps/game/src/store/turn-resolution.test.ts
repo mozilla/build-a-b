@@ -31,7 +31,7 @@ describe('Turn Resolution', () => {
 
     it('should return cpu as winner when CPU value is higher', () => {
       const { initializeGame, playCard } = useGameStore.getState();
-      initializeGame('low-value-first');
+      initializeGame('custom', 'custom', ['common-1'], ['common-2']);
 
       // Player gets first 33 cards (low value), CPU gets remaining cards (higher value)
       playCard('player');
@@ -115,7 +115,9 @@ describe('Turn Resolution', () => {
 
   describe('Tracker Card Behavior', () => {
     beforeEach(() => {
-      useGameStore.getState().initializeGame('custom', 'custom', ['tracker-1', 'common-3'], ['common-1']);
+      useGameStore
+        .getState()
+        .initializeGame('custom', 'custom', ['tracker-1', 'common-3'], ['common-1']);
     });
 
     it('should not apply tracker value immediately - value should be 0', () => {
@@ -165,7 +167,9 @@ describe('Turn Resolution', () => {
       const { playCard, setAnotherPlayMode } = useGameStore.getState();
 
       // Initialize with two trackers and one common card
-      useGameStore.getState().initializeGame('custom', 'custom', ['tracker-1', 'tracker-2', 'common-3'], ['common-1']);
+      useGameStore
+        .getState()
+        .initializeGame('custom', 'custom', ['tracker-1', 'tracker-2', 'common-3'], ['common-1']);
 
       // Play first tracker
       playCard('player');
@@ -184,7 +188,9 @@ describe('Turn Resolution', () => {
       // Second tracker should NOT add its value to the turn (since it's the second card)
       // AND store its bonus for the next card
       expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker1Value + tracker2Value);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(
+        tracker1Value + tracker2Value,
+      );
 
       // Play third card (common-3)
       playCard('player');
@@ -997,10 +1003,38 @@ describe('Turn Resolution', () => {
           name: 'Data Grab',
         };
 
-        const card1: Card = { id: 'c1', typeId: 'common-1', value: 1, imageUrl: '/test.webp', isSpecial: false, name: 'C1' };
-        const card2: Card = { id: 'c2', typeId: 'common-2', value: 2, imageUrl: '/test.webp', isSpecial: false, name: 'C2' };
-        const card3: Card = { id: 'c3', typeId: 'common-3', value: 3, imageUrl: '/test.webp', isSpecial: false, name: 'C3' };
-        const card4: Card = { id: 'c4', typeId: 'common-4', value: 4, imageUrl: '/test.webp', isSpecial: false, name: 'C4' };
+        const card1: Card = {
+          id: 'c1',
+          typeId: 'common-1',
+          value: 1,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C1',
+        };
+        const card2: Card = {
+          id: 'c2',
+          typeId: 'common-2',
+          value: 2,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C2',
+        };
+        const card3: Card = {
+          id: 'c3',
+          typeId: 'common-3',
+          value: 3,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C3',
+        };
+        const card4: Card = {
+          id: 'c4',
+          typeId: 'common-4',
+          value: 4,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C4',
+        };
 
         const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
         const initialCpuDeckSize = useGameStore.getState().cpu.deck.length;
@@ -1042,7 +1076,11 @@ describe('Turn Resolution', () => {
       useGameStore.setState({
         player: {
           ...useGameStore.getState().player,
-          playedCard: { value: 6, specialType: 'hostile_takeover', playedCardsInHand: [] } as unknown as Card,
+          playedCard: {
+            value: 6,
+            specialType: 'hostile_takeover',
+            playedCardsInHand: [],
+          } as unknown as Card,
           currentTurnValue: 6,
           playedCardsInHand: [],
         },

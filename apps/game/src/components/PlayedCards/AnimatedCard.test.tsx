@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import type { HTMLAttributes } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useGameStore } from '../../store';
@@ -47,9 +47,14 @@ vi.mock('../Card', () => ({
 }));
 
 vi.mock('../EffectNotificationBadge', () => ({
-  EffectNotificationBadge: ({ effectName }: { effectName: string }) => (
-    <div data-testid="effect-badge">{effectName}</div>
-  ),
+  EffectNotificationBadge: ({ accumulatedEffects }: { accumulatedEffects: EffectNotification[] }) => {
+    const effectCount = accumulatedEffects.length;
+    return (
+      <div data-testid="effect-badge">
+        {effectCount} {effectCount === 1 ? 'Effect' : 'Effects'}
+      </div>
+    );
+  },
 }));
 
 vi.mock('../Tooltip', () => ({
@@ -73,15 +78,6 @@ describe('AnimatedCard Component', () => {
     isFaceDown: false,
   };
 
-  const createMockNotification = (card: Card = mockCard): EffectNotification => ({
-    card,
-    playedBy: 'player' as const,
-    specialType: null,
-    effectType: 'tracker',
-    effectName: 'Test Effect',
-    effectDescription: 'Test description',
-  });
-
   const defaultProps = {
     playedCardState: mockPlayedCardState,
     index: 0,
@@ -101,17 +97,27 @@ describe('AnimatedCard Component', () => {
     settledZRef: { current: {} },
     elementRefs: { current: {} },
     onLandedChange: vi.fn(),
+    shouldShowBadge: false,
+    onCardClick: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     useGameStore.setState({
       showEffectNotificationBadge: false,
-      pendingEffectNotifications: [],
-      currentEffectNotification: null,
+      accumulatedEffects: [],
+      effectAccumulationPaused: false,
       showEffectNotificationModal: false,
       shouldShowTooltip: () => true,
       incrementTooltipCount: vi.fn(),
+      isEffectTimerActive: () => false,
+      stopEffectBadgeTimer: vi.fn(),
+      openEffectModal: vi.fn(() => {
+        useGameStore.setState({
+          showEffectNotificationModal: true,
+          effectAccumulationPaused: true,
+        });
+      }),
       player: {
         id: 'player',
         name: 'Player',
@@ -165,55 +171,6 @@ describe('AnimatedCard Component', () => {
     expect(card.getAttribute('data-state')).toBe('flipped');
   });
 
-  it('should show effect notification badge for top card with pending notification', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [createMockNotification()],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-    expect(screen.getByTestId('effect-badge')).toBeDefined();
-  });
-
-  it('should not show effect badge for non-top card', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [createMockNotification()],
-    });
-
-    render(<AnimatedCard {...defaultProps} isTopCard={false} />);
-    expect(screen.queryByTestId('effect-badge')).toBeNull();
-  });
-
-  it('should handle card click when badge is shown', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [createMockNotification()],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-
-    const card = screen.getByTestId('animated-card');
-    fireEvent.click(card);
-
-    // Should open effect notification modal
-    expect(useGameStore.getState().showEffectNotificationModal).toBe(true);
-  });
-
-  it('should not handle click when badge is not shown', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: false,
-      pendingEffectNotifications: [],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-
-    const card = screen.getByTestId('animated-card');
-    fireEvent.click(card);
-
-    expect(useGameStore.getState().showEffectNotificationModal).toBe(false);
-  });
-
   it('should apply correct rotation class for top card', () => {
     render(<AnimatedCard {...defaultProps} isTopCard={true} />);
 
@@ -229,54 +186,12 @@ describe('AnimatedCard Component', () => {
     expect(card.className).toMatch(/rotate/);
   });
 
-  it('should show cursor-pointer when badge is visible', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [createMockNotification()],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-
-    const card = screen.getByTestId('animated-card');
-    expect(card.className).toContain('cursor-pointer');
-  });
-
   it('should register element ref', () => {
     const elementRefs = { current: {} };
     render(<AnimatedCard {...defaultProps} elementRefs={elementRefs} />);
 
     // Element should be registered in refs
     expect(Object.keys(elementRefs.current)).toContain('card-1-1');
-  });
-
-  it('should display Launch Stack for special type', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [
-        {
-          ...createMockNotification(),
-          specialType: 'launch_stack',
-        },
-      ],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-    expect(screen.getByText('Launch Stack')).toBeDefined();
-  });
-
-  it('should use effect name when not launch_stack', () => {
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [
-        {
-          ...createMockNotification(),
-          effectName: 'Custom Effect',
-        },
-      ],
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-    expect(screen.getByText('Custom Effect')).toBeDefined();
   });
 
   it('should show card as initial state when collecting', () => {
@@ -290,45 +205,6 @@ describe('AnimatedCard Component', () => {
     render(<AnimatedCard {...defaultProps} isCPU={true} />);
     // CPU cards should use negative initial rotation
     expect(screen.getByTestId('animated-card')).toBeDefined();
-  });
-
-  it('should reorder notifications when different notification is clicked', () => {
-    const notification1 = createMockNotification();
-    const notification2 = createMockNotification({ ...mockCard, id: 'card-2' });
-
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [notification1, notification2],
-      currentEffectNotification: notification2,
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-
-    const card = screen.getByTestId('animated-card');
-    fireEvent.click(card);
-
-    // Should reorder to put clicked notification first
-    const state = useGameStore.getState();
-    expect(state.pendingEffectNotifications[0]).toEqual(notification1);
-    expect(state.currentEffectNotification).toEqual(notification1);
-  });
-
-  it('should increment tooltip count on first click', () => {
-    const incrementTooltipCount = vi.fn();
-    useGameStore.setState({
-      showEffectNotificationBadge: true,
-      pendingEffectNotifications: [createMockNotification()],
-      showEffectNotificationModal: false,
-      shouldShowTooltip: () => true,
-      incrementTooltipCount,
-    });
-
-    render(<AnimatedCard {...defaultProps} />);
-
-    const card = screen.getByTestId('animated-card');
-    fireEvent.click(card);
-
-    expect(incrementTooltipCount).toHaveBeenCalledWith('effect_notification');
   });
 
   it('should handle winner card z-index correctly', () => {

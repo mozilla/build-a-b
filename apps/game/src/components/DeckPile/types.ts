@@ -11,4 +11,5 @@ export interface DeckPileProps {
   activeIndicator?: boolean;
   forcedEmpathySwapping?: boolean;
   deckSwapCount?: number;
+  isRunningWinAnimation?: boolean;
 }
