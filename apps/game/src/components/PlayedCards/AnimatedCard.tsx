@@ -5,20 +5,11 @@ import { useSelector } from '@xstate/react';
 import { motion } from 'framer-motion';
 import type { FC } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
-import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import { GameMachineContext } from '../../providers/GameProvider';
-import {
-  useCurrentEffectNotification,
-  useGameStore,
-  usePendingEffectNotifications,
-  useSetShowEffectNotificationModal,
-  useShowEffectNotificationBadge,
-} from '../../store';
-import type { EffectNotification, PlayedCardState } from '../../types/game';
+import { useGameStore } from '../../store';
+import type { PlayedCardState } from '../../types/game';
 import { getGamePhase } from '../../utils/get-game-phase';
 import { Card } from '../Card';
-import { EffectNotificationBadge } from '../EffectNotificationBadge';
-import { Tooltip } from '../Tooltip';
 import {
   ANIMATION_DELAYS,
   COLLECTION_ROTATION,
@@ -55,6 +46,10 @@ interface AnimatedCardProps {
   settledZRef: React.MutableRefObject<Record<string, number>>;
   elementRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   onLandedChange: (landedKey: string) => void;
+
+  // Card interaction
+  shouldShowBadge: boolean;
+  onCardClick?: () => void;
 }
 
 /**
@@ -80,15 +75,9 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   settledZRef,
   elementRefs,
   onLandedChange,
+  shouldShowBadge,
+  onCardClick,
 }) => {
-  // Effect notification hooks
-  const showEffectNotificationBadge = useShowEffectNotificationBadge();
-  const pendingEffectNotifications = usePendingEffectNotifications();
-  const currentEffectNotification = useCurrentEffectNotification();
-  const setShowEffectNotificationModal = useSetShowEffectNotificationModal();
-  const showEffectNotificationModal = useGameStore((state) => state.showEffectNotificationModal);
-  const shouldShowTooltip = useGameStore((state) => state.shouldShowTooltip);
-  const incrementTooltipCount = useGameStore((state) => state.incrementTooltipCount);
 
   // Get game phase to detect data war
   const actorRef = GameMachineContext.useActorRef();
@@ -108,10 +97,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     !anotherPlayExpected;
   const shouldShowDataWarGlow = isTiedInComparing;
 
-  const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
-  const shouldShowEffectTooltip =
-    shouldShowTooltip(effectTooltipConfig.id, effectTooltipConfig.maxDisplayCount) &&
-    !showEffectNotificationModal;
 
   // Calculate stagger delay for sequential play
   const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK : 0;
@@ -128,11 +113,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   // Determine card image (back or front)
   const cardImage = playedCardState.isFaceDown ? CARD_BACK_IMAGE : playedCardState.card.imageUrl;
 
-  // Check if this card should show the effect notification badge
-  const shouldShowBadge =
-    isTopCard &&
-    showEffectNotificationBadge &&
-    pendingEffectNotifications.some((notif) => notif.card.id === playedCardState.card.id);
 
   // Determine if this card should glow
   const glowType =
@@ -145,30 +125,11 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       : 'none';
   const glowClasses = getGlowClasses(glowType);
 
-  // Handle card click for effect notification
+  // Handle card click - opens modal when badge is visible
   const handleCardClick = () => {
-    if (!shouldShowBadge) return;
-
-    if (shouldShowEffectTooltip) {
-      incrementTooltipCount(effectTooltipConfig.id);
+    if (isTopCard && shouldShowBadge && onCardClick) {
+      onCardClick();
     }
-
-    const clickedNotification = pendingEffectNotifications.find(
-      (notif) => notif.card.id === playedCardState.card.id,
-    );
-
-    if (clickedNotification && clickedNotification !== currentEffectNotification) {
-      const reorderedNotifications = [
-        clickedNotification,
-        ...pendingEffectNotifications.filter((notif) => notif !== clickedNotification),
-      ];
-      useGameStore.setState({
-        pendingEffectNotifications: reorderedNotifications,
-        currentEffectNotification: clickedNotification,
-      });
-    }
-
-    setShowEffectNotificationModal(true);
   };
 
   // Calculate initial rotation with spread effect for multi-card batches
@@ -260,8 +221,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       className={cn(
         'absolute backface-hidden',
         rotationClass,
-        shouldShowBadge && 'cursor-pointer',
         glowClasses,
+        isTopCard && shouldShowBadge && 'cursor-pointer',
       )}
       style={{
         zIndex: appliedZ,
@@ -310,58 +271,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
         fullSize={!shouldCollect}
       />
 
-      {shouldShowBadge && (
-        <EffectNotificationBadgeWithTooltip
-          playedCardState={playedCardState}
-          pendingEffectNotifications={pendingEffectNotifications}
-          shouldShowEffectTooltip={shouldShowEffectTooltip}
-          effectTooltipConfig={effectTooltipConfig}
-        />
-      )}
     </motion.div>
   );
 };
 
-/**
- * Sub-component to handle effect notification badge with tooltip
- */
-const EffectNotificationBadgeWithTooltip: FC<{
-  playedCardState: PlayedCardState;
-  pendingEffectNotifications: EffectNotification[];
-  shouldShowEffectTooltip: boolean;
-  effectTooltipConfig: { id: string; message: string };
-}> = ({
-  playedCardState,
-  pendingEffectNotifications,
-  shouldShowEffectTooltip,
-  effectTooltipConfig,
-}) => {
-  const notification = pendingEffectNotifications.find(
-    (notif) => notif.card.id === playedCardState.card.id,
-  );
-
-  if (!notification) return null;
-
-  return (
-    <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-10">
-      <Tooltip
-        content={effectTooltipConfig.message}
-        placement="bottom"
-        arrowDirection="left"
-        isOpen={shouldShowEffectTooltip}
-        classNames={{
-          base: ['translate-x-1', 'translate-y-[-0.8rem]'],
-          content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
-        }}
-      >
-        <div>
-          <EffectNotificationBadge
-            effectName={
-              notification.specialType === 'launch_stack' ? 'Launch Stack' : notification.effectName
-            }
-          />
-        </div>
-      </Tooltip>
-    </div>
-  );
-};

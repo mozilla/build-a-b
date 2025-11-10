@@ -22,7 +22,8 @@ export type GamePhase =
   | 'comparing' // Values being compared
   | 'data_war.animating' // Data War: showing "DATA WAR!" animation
   | 'data_war.reveal_face_down' // Data War: tap to reveal 3 face-down cards
-  | 'data_war.reveal_face_up' // Data War: tap to reveal final card
+  | 'data_war.reveal_face_up.settling' // Data War: waiting for face-down cards to finish animating
+  | 'data_war.reveal_face_up.ready' // Data War: tap to reveal final card
   | 'special_effect.showing' // Special effect: displaying effect to player
   | 'special_effect.processing' // Special effect: brief delay before resolving
   | 'pre_reveal.processing' // Pre-reveal: processing non-interactive effects
