@@ -32,7 +32,7 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
     >
       {/* Main content container */}
       <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
-      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8 pt-16 h-full">
+      <div className="w-full relative z-10 flex flex-col items-center justify-between py-8 pt-16 h-full">
         {/* Billionaire Avatar - centered at top */}
         <div className="flex items-center justify-center pt-8 pb-4">
           <div className="w-[12.1875rem] h-[12.1875rem] rounded-full overflow-hidden border-4 border-accent">
