@@ -1,6 +1,8 @@
 import { Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { useGameStore, usePlayer } from '@/store';
+import type { PlayerType } from '@/types';
+import { cn } from '@/utils/cn';
 import { getBillionaireById } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState, type FC } from 'react';
@@ -10,6 +12,28 @@ import { LaunchStackIndicator } from '../LaunchStackIndicator';
 import { LottieAnimation } from '../LottieAnimation';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
+
+type Containers = {
+  avatar: string;
+  deck: string;
+  turnValue: string;
+  cardCount: string;
+};
+
+const gridLayoutMap: Record<PlayerType, Containers> = {
+  player: {
+    avatar: 'row-4 col-1',
+    deck: 'row-4 col-2',
+    turnValue: 'row-4 col-3',
+    cardCount: 'row-5 col-2 self-center',
+  },
+  cpu: {
+    cardCount: 'row-1 col-2 self-center',
+    avatar: 'row-2 col-1',
+    deck: 'row-2',
+    turnValue: 'row-2 col-3',
+  },
+};
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
@@ -26,9 +50,11 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   const cpu = useGameStore((state) => state.cpu);
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
-
+  const isSwapped = deckSwapCount % 2 === 1;
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
+  const swappedOwner = isSwapped ? (owner === 'player' ? 'cpu' : 'player') : owner;
+
   const prevDeckLength = useRef(currentPlayer.deck.length);
   const prevDeckSwapCount = useRef(deckSwapCount);
   const [showWinEffect, setShowWinEffect] = useState(false);
@@ -109,10 +135,10 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   }, []);
 
   return (
-    <div className="grid grid-cols-3 place-items-center w-full">
+    <>
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
-        <div className="flex flex-col items-center gap-1">
+        <div className={cn('flex flex-col items-center gap-1', gridLayoutMap[owner].avatar)}>
           {/* Launch Stack Rocket Indicators */}
           <LaunchStackIndicator launchStackCount={currentPlayer.launchStackCount} />
 
@@ -184,19 +210,49 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         <div />
       )}
       {/** Deck - wrapped in motion for swap animation */}
+      {owner === 'cpu' && (
+        <Text
+          className={cn(
+            'tracking-[0.08em] text-center',
+            gridLayoutMap[isSwapped ? swappedOwner : owner].cardCount,
+          )}
+          color="text-common-ash"
+          variant="badge-xs"
+          transform="uppercase"
+        >
+          {deckLength} Cards left
+        </Text>
+      )}
       <DeckPile
+        className={cn('col-2', gridLayoutMap[isSwapped ? swappedOwner : owner].deck)}
         cardCount={deckLength}
         owner={owner}
         onClick={handleDeckClick}
         showTooltip={!!tooltipContent}
         tooltipContent={tooltipContent}
         activeIndicator={activeIndicator}
-        forcedEmpathySwapping={forcedEmpathySwapping}
         deckSwapCount={deckSwapCount}
         isRunningWinAnimation={showWinEffect}
       />
       {/** Turn points */}
-      <TurnValue value={turnValue} activeEffects={turnValueActiveEffects} />
-    </div>
+      <TurnValue
+        className={gridLayoutMap[owner].turnValue}
+        value={turnValue}
+        activeEffects={turnValueActiveEffects}
+      />
+      {owner === 'player' && (
+        <Text
+          className={cn(
+            'tracking-[0.08em] text-center',
+            gridLayoutMap[isSwapped ? swappedOwner : owner].cardCount,
+          )}
+          color="text-common-ash"
+          variant="badge-xs"
+          transform="uppercase"
+        >
+          {deckLength} Cards left
+        </Text>
+      )}
+    </>
   );
 };

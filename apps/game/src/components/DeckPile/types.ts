@@ -9,7 +9,7 @@ export interface DeckPileProps {
   showTooltip?: boolean;
   tooltipContent?: string;
   activeIndicator?: boolean;
-  forcedEmpathySwapping?: boolean;
   deckSwapCount?: number;
   isRunningWinAnimation?: boolean;
+  className?: string;
 }
