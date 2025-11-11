@@ -53,7 +53,8 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   const isSwapped = deckSwapCount % 2 === 1;
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
-  const swappedOwner = isSwapped ? (owner === 'player' ? 'cpu' : 'player') : owner;
+  // When swapped, use the opposite owner for grid positioning
+  const layoutOwner = isSwapped ? (owner === 'player' ? 'cpu' : 'player') : owner;
 
   const prevDeckLength = useRef(currentPlayer.deck.length);
   const prevDeckSwapCount = useRef(deckSwapCount);
@@ -212,10 +213,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       {/** Deck - wrapped in motion for swap animation */}
       {owner === 'cpu' && (
         <Text
-          className={cn(
-            'tracking-[0.08em] text-center',
-            gridLayoutMap[isSwapped ? swappedOwner : owner].cardCount,
-          )}
+          className={cn('tracking-[0.08em] text-center', gridLayoutMap[owner].cardCount)}
           color="text-common-ash"
           variant="badge-xs"
           transform="uppercase"
@@ -224,7 +222,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         </Text>
       )}
       <DeckPile
-        className={cn('col-2', gridLayoutMap[isSwapped ? swappedOwner : owner].deck)}
+        className={cn('col-2', gridLayoutMap[layoutOwner].deck)}
         cardCount={deckLength}
         owner={owner}
         onClick={handleDeckClick}
@@ -242,10 +240,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       />
       {owner === 'player' && (
         <Text
-          className={cn(
-            'tracking-[0.08em] text-center',
-            gridLayoutMap[isSwapped ? swappedOwner : owner].cardCount,
-          )}
+          className={cn('tracking-[0.08em] text-center', gridLayoutMap[owner].cardCount)}
           color="text-common-ash"
           variant="badge-xs"
           transform="uppercase"
