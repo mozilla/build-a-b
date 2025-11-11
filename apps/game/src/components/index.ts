@@ -1,4 +1,7 @@
 // Primitive UI Components for Intro and Setup
+export { Frame } from './Frame';
+export type { FrameProps } from './Frame';
+
 export { Button } from './Button';
 export type { ButtonProps } from './Button/types';
 

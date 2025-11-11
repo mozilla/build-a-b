@@ -1,6 +1,7 @@
 import blueGridBg from '@/assets/backgrounds/color_blue.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { Button } from '@/components/Button';
+import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
 import { QuickStart } from '@/components/Screens/QuickStart';
 import { BackgroundCarousel } from '@/components/Screens/SelectBackground/BackgroundCarousel';
@@ -75,11 +76,9 @@ export const Menu: FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/50 z-200"
+          className="fixed inset-0 bg-black/50 z-200 lg:hidden"
           onClick={toggleMenu}
-        >
-          <img src={nightSkyBg} alt="" className="w-full h-full object-cover" role="presentation" />
-        </motion.div>
+        />
 
         {/* Menu Panel */}
         <motion.div
@@ -92,7 +91,11 @@ export const Menu: FC = () => {
           }}
           className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100vh] w-[100vw]"
         >
-          <div className="relative w-full h-full max-h-[54rem] bg-grey-200 rounded-[2rem] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)]">
+          <Frame
+            backgroundSrc={nightSkyBg}
+            className="rounded-[2rem] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] overflow-hidden"
+            blurZIndex={200}
+          >
             {/* Close Button */}
             <header className="max-w-[25rem] mx-auto relative w-full">
               <Button
@@ -105,7 +108,7 @@ export const Menu: FC = () => {
             </header>
 
             {/* Menu Content */}
-            <div className="relative h-full flex flex-col items-center pt-16 pb-8 max-h-[54rem]">
+            <div className="relative h-full flex flex-col items-center pt-16 pb-8 max-h-[54rem] overflow-auto">
               {/* Title */}
               <Text
                 variant="title-2"
@@ -178,7 +181,7 @@ export const Menu: FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Frame>
         </motion.div>
       </Fragment>
       <Fragment key="quick-launch-fragment">
@@ -224,7 +227,7 @@ export const Menu: FC = () => {
                 onClick={handleQuitCancel}
               />
 
-              {/* Drawer Sheet */}
+              {/* Drawer Sheet - positioned relative to frame */}
               <motion.div
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -233,16 +236,13 @@ export const Menu: FC = () => {
                   ease: [0.35, 0, 0.15, 1],
                   duration: 0.4,
                 }}
-                className="fixed bottom-0 left-0 right-0 z-204 w-full mx-auto"
+                className="absolute bottom-0 left-0 right-0 z-204 w-full max-w-[25rem] mx-auto"
               >
                 {/* Drawer Content */}
-                <div className="relative w-full bg-[#0a0a15] rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8">
-                  <img
-                    src={nightSkyBg}
-                    alt=""
-                    className="w-full h-full object-cover absolute inset-0"
-                    role="presentation"
-                  />
+                <div
+                  className="relative w-full bg-cover bg-center bg-no-repeat rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8"
+                  style={{ backgroundImage: `url(${nightSkyBg})` }}
+                >
                   {/* Inner glow effect */}
                   <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0.5rem_1.875rem_0px_rgba(0,166,249,1)]" />
 
@@ -302,7 +302,7 @@ export const Menu: FC = () => {
                 onClick={handleRestartCancel}
               />
 
-              {/* Drawer Sheet */}
+              {/* Drawer Sheet - positioned relative to frame */}
               <motion.div
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -311,16 +311,13 @@ export const Menu: FC = () => {
                   ease: [0.35, 0, 0.15, 1],
                   duration: 0.4,
                 }}
-                className="fixed bottom-0 left-0 right-0 z-204 w-full mx-auto"
+                className="absolute bottom-0 left-0 right-0 z-204 w-full max-w-[25rem] mx-auto"
               >
                 {/* Drawer Content */}
-                <div className="relative w-full bg-[#0a0a15] rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8">
-                  <img
-                    src={nightSkyBg}
-                    alt=""
-                    className="w-full h-full object-cover absolute inset-0"
-                    role="presentation"
-                  />
+                <div
+                  className="relative w-full bg-cover bg-center bg-no-repeat rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8"
+                  style={{ backgroundImage: `url(${nightSkyBg})` }}
+                >
                   {/* Inner glow effect */}
                   <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0.5rem_1.875rem_0px_rgba(0,166,249,1)]" />
 
