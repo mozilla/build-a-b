@@ -78,7 +78,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   shouldShowBadge,
   onCardClick,
 }) => {
-
   // Get game phase to detect data war
   const actorRef = GameMachineContext.useActorRef();
   const stateValue = useSelector(actorRef, (snapshot) => snapshot.value);
@@ -97,7 +96,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     !anotherPlayExpected;
   const shouldShowDataWarGlow = isTiedInComparing;
 
-
   // Calculate stagger delay for sequential play
   const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK : 0;
 
@@ -112,7 +110,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
 
   // Determine card image (back or front)
   const cardImage = playedCardState.isFaceDown ? CARD_BACK_IMAGE : playedCardState.card.imageUrl;
-
 
   // Determine if this card should glow
   const glowType =
@@ -149,7 +146,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     : COLLECTION_ROTATION.TOP;
   const finalRotate = shouldCollect ? collectionRotation : 0;
 
-  const finalOpacity = shouldCollect ? [1, 1, 1] : 1;
+  // Fade out cards as they're collected into the deck
+  const finalOpacity = shouldCollect ? [1, 1, 0.25] : 1;
 
   // Z-index calculation
   const startZ = isNewCard
@@ -270,8 +268,6 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
         }
         fullSize={!shouldCollect}
       />
-
     </motion.div>
   );
 };
-
