@@ -102,8 +102,10 @@ export function Game() {
   // Tooltip ALWAYS shows on the visually bottom deck (player's position)
   const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
   const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
-  const topDeckTooltip = isSwapped ? (canClickPlayerDeck ? tooltipMessage : '') : ''; // Never show tooltip on top deck
-  const bottomDeckTooltip = isSwapped ? '' : canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
+  // Top deck only shows tooltip when swapped AND player can click, because it's visually bottom
+  const topDeckTooltip = isSwapped && canClickPlayerDeck ? tooltipMessage : '';
+  // Bottom deck shows tooltip when NOT swapped AND player can click, because it's visually bottom
+  const bottomDeckTooltip = !isSwapped && canClickPlayerDeck ? tooltipMessage : '';
 
   // Active indicator (heartbeat) shows on the active player's position
   // Player always plays from bottom visually, CPU from top, regardless of deck swap

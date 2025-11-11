@@ -32,19 +32,25 @@ export const DeckPile: FC<DeckPileProps> = ({
   const swapProgress = useMotionValue(0);
   /**
    * Arcs the flight path of the decks throughout the course of the swap animation.
-   * sin(π * progress) peaks at 0.
+   * Uses sin(π * progress) which peaks at progress 0.5
+   * The horizontal offset moves the deck sideways during the swap animation.
    */
   const horizontalOffset = useTransform(swapProgress, (progress) => {
     const maxOffset = 120;
     const swapDirection = isPlayer ? 1 : -1;
     return `${swapDirection * maxOffset * Math.sin(Math.PI * progress)}%`;
   });
+  /**
+   * Rotates the deck during the swap animation for visual polish.
+   * The rotation follows the same arc pattern as the horizontal movement.
+   */
   const swapRotation = useTransform(
     swapProgress,
     (progress) => `${-20 * Math.sin(Math.PI * progress)}deg`,
   );
   /**
-   * Deck swapping
+   * Deck swapping animation
+   * Triggers when deckSwapCount changes, animating the deck position swap.
    */
   useEffect(() => {
     if (deckSwapCount !== prevDeckSwapCountRef.current) {
