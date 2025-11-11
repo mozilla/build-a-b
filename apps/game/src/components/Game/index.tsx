@@ -5,6 +5,15 @@
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
+import {
+  useCpuLaunchStacks,
+  useDeckSwapCount,
+  usePlayerLaunchStacks,
+  useSelectedBackground,
+  useSelectedBillionaire,
+  useWinCondition,
+  useWinner,
+} from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
@@ -18,16 +27,6 @@ import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
-import {
-  useCpuLaunchStacks,
-  useDeckSwapCount,
-  usePlayerLaunchStacks,
-  useSelectedBackground,
-  useSelectedBillionaire,
-  useWinCondition,
-  useWinner,
-} from '@/store';
-
 /**
  * Game Component - Main game container
  */
@@ -103,8 +102,8 @@ export function Game() {
   // Tooltip ALWAYS shows on the visually bottom deck (player's position)
   const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
   const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
-  const topDeckTooltip = ''; // Never show tooltip on top deck
-  const bottomDeckTooltip = canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
+  const topDeckTooltip = isSwapped ? (canClickPlayerDeck ? tooltipMessage : '') : ''; // Never show tooltip on top deck
+  const bottomDeckTooltip = isSwapped ? '' : canClickPlayerDeck ? tooltipMessage : ''; // Always show on bottom
 
   // Active indicator (heartbeat) shows on the active player's position
   // Player always plays from bottom visually, CPU from top, regardless of deck swap
@@ -168,7 +167,7 @@ export function Game() {
   return (
     <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
       <Board bgSrc={backgroundImage}>
-        <div className="flex flex-col justify-between items-center flex-1 max-w-[25rem] max-h-[54rem]">
+        <div className="grid max-w-[25rem] max-h-[54rem] grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-3 gap-x-2 h-full">
           <PlayerDeck
             deckLength={cpuTotalCards}
             handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
@@ -181,7 +180,7 @@ export function Game() {
           />
 
           {/* Play Area - Center of board */}
-          <div className="flex flex-col items-center justify-around flex-1 relative mb-4">
+          <div className="flex flex-col items-center justify-around flex-1 relative mb-4 row-3 col-span-full">
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* CPU Cards */}
@@ -194,7 +193,6 @@ export function Game() {
               <PlayedCards cards={player.playedCardsInHand} owner="player" />
             </div>
           </div>
-
           <PlayerDeck
             deckLength={playerTotalCards}
             handleDeckClick={bottomDeckCanClick ? handleDeckClick : undefined}

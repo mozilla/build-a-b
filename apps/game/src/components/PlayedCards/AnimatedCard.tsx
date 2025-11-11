@@ -149,7 +149,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     : COLLECTION_ROTATION.TOP;
   const finalRotate = shouldCollect ? collectionRotation : 0;
 
-  const finalOpacity = shouldCollect ? [1, 1, 1] : 1;
+  const finalOpacity = shouldCollect ? [1, 1, 0.25] : 1;
 
   // Z-index calculation
   const startZ = isNewCard
