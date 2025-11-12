@@ -4,6 +4,7 @@ import type {
   EffectNotification,
   Player,
   PlayerType,
+  PlayedCardState,
   PreRevealEffect,
   SpecialEffect,
 } from '@/types';
@@ -55,6 +56,15 @@ export type GameStore = {
   showLaunchStackAnimation: boolean; // Shows after collecting a launch stack
   showDataWarAnimation: boolean; // Shows when data war occurs
   dataWarVideoPlaying: boolean; // True while the DATA WAR video is actively playing
+
+  // Data Grab Mini-Game State
+  dataGrabActive: boolean; // True when Data Grab is triggered
+  dataGrabCards: PlayedCardState[]; // Cards currently falling in mini-game (preserves face-up/down state)
+  dataGrabCollectedByPlayer: PlayedCardState[]; // Cards player has collected
+  dataGrabCollectedByCPU: PlayedCardState[]; // Cards CPU has collected
+  showDataGrabTakeover: boolean; // Show intro animation and countdown
+  dataGrabGameActive: boolean; // True during active gameplay (~1.5 seconds)
+  showDataGrabResults: boolean; // Show results in hand viewer
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -143,6 +153,16 @@ export type GameStore = {
   setShowHostileTakeoverAnimation: (show: boolean) => void;
   setShowLaunchStackAnimation: (show: boolean) => void;
   setShowDataWarAnimation: (show: boolean) => void;
+
+  // Data Grab Actions
+  checkForDataGrab: () => boolean; // Check if Data Grab should trigger
+  initializeDataGrab: () => void; // Initialize Data Grab state
+  startDataGrabGame: () => void; // Start the mini-game
+  collectDataGrabCard: (cardId: string, collectedBy: PlayerType) => void; // Player/CPU collects a card
+  finalizeDataGrabResults: () => void; // Process results and distribute cards
+  setShowDataGrabTakeover: (show: boolean) => void;
+  setDataGrabGameActive: (active: boolean) => void;
+  setShowDataGrabResults: (show: boolean) => void;
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;

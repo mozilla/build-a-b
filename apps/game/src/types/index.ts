@@ -11,6 +11,7 @@ export type {
   GameState,
   Player,
   PlayerType,
+  PlayedCardState,
   PreRevealEffect,
   SpecialEffect,
   WinCondition,
