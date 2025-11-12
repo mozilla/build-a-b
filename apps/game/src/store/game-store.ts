@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { getRandomBillionaire, type BillionaireId } from '../config/billionaires';
+import { DATA_GRAB_CONFIG } from '../config/data-grab-config';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
 import type { Card, CardValue, Player, PlayerType, SpecialEffect } from '../types';
 import {
@@ -68,6 +69,16 @@ export const useGameStore = create<GameStore>()(
       showLaunchStackAnimation: false,
       showDataWarAnimation: false,
       dataWarVideoPlaying: false,
+
+      // Data Grab Mini-Game State
+      dataGrabActive: false,
+      dataGrabCards: [],
+      dataGrabCollectedByPlayer: [],
+      dataGrabCollectedByCPU: [],
+      showDataGrabTakeover: false,
+      dataGrabGameActive: false,
+      showDataGrabResults: false,
+
       selectedBillionaire: '',
       cpuBillionaire: '',
       selectedBackground: '',
@@ -926,6 +937,176 @@ export const useGameStore = create<GameStore>()(
         set({ showDataWarAnimation: show });
       },
 
+      // Data Grab Actions
+      checkForDataGrab: () => {
+        const { player, cpu } = get();
+
+        // Check if either player played a Data Grab card
+        const playerPlayedDataGrab = player.playedCard?.specialType === 'data_grab';
+        const cpuPlayedDataGrab = cpu.playedCard?.specialType === 'data_grab';
+
+        // Check if minimum cards requirement is met (count all played cards from both players)
+        const totalCardsInPlay = player.playedCardsInHand.length + cpu.playedCardsInHand.length;
+        const hasMinimumCards = totalCardsInPlay >= DATA_GRAB_CONFIG.MIN_CARDS_IN_PLAY;
+
+        // Data Grab triggers if:
+        // 1. Either player played a Data Grab card, AND
+        // 2. There are at least MIN_CARDS_IN_PLAY cards in play
+        return (playerPlayedDataGrab || cpuPlayedDataGrab) && hasMinimumCards;
+      },
+
+      initializeDataGrab: () => {
+        const { player, cpu } = get();
+
+        // Collect all played cards from both players, preserving face-up/face-down state
+        const allPlayedCards = [
+          ...player.playedCardsInHand,
+          ...cpu.playedCardsInHand,
+        ];
+
+        // Initialize Data Grab with all cards in play (with face-up/down state preserved)
+        // Clear playedCardsInHand since those cards are now in the mini-game
+        set({
+          dataGrabActive: true,
+          dataGrabCards: allPlayedCards,
+          dataGrabCollectedByPlayer: [],
+          dataGrabCollectedByCPU: [],
+          showDataGrabTakeover: true,
+          dataGrabGameActive: false,
+          showDataGrabResults: false,
+          player: {
+            ...player,
+            playedCardsInHand: [], // Clear to prevent double collection
+          },
+          cpu: {
+            ...cpu,
+            playedCardsInHand: [], // Clear to prevent double collection
+          },
+        });
+      },
+
+      startDataGrabGame: () => {
+        set({
+          showDataGrabTakeover: false,
+          dataGrabGameActive: true,
+        });
+      },
+
+      collectDataGrabCard: (cardId, collectedBy) => {
+        const { dataGrabCards, dataGrabCollectedByPlayer, dataGrabCollectedByCPU } = get();
+
+        // Find the played card state
+        const playedCardState = dataGrabCards.find((pcs) => pcs.card.id === cardId);
+        if (!playedCardState) {
+          return;
+        }
+
+        // Check if already collected
+        const alreadyCollected =
+          dataGrabCollectedByPlayer.some((pcs) => pcs.card.id === cardId) ||
+          dataGrabCollectedByCPU.some((pcs) => pcs.card.id === cardId);
+
+        if (alreadyCollected) {
+          return;
+        }
+
+        // Add to appropriate collection (do NOT remove from dataGrabCards)
+        if (collectedBy === 'player') {
+          set({
+            dataGrabCollectedByPlayer: [...dataGrabCollectedByPlayer, playedCardState],
+          });
+        } else {
+          set({
+            dataGrabCollectedByCPU: [...dataGrabCollectedByCPU, playedCardState],
+          });
+        }
+      },
+
+      finalizeDataGrabResults: () => {
+        const {
+          dataGrabCards,
+          dataGrabCollectedByPlayer,
+          dataGrabCollectedByCPU,
+        } = get();
+
+        // Get IDs of already collected cards
+        const collectedIds = new Set([
+          ...dataGrabCollectedByPlayer.map((pcs) => pcs.card.id),
+          ...dataGrabCollectedByCPU.map((pcs) => pcs.card.id),
+        ]);
+
+        // Filter out cards that were already collected
+        const missedCards = dataGrabCards.filter((pcs) => !collectedIds.has(pcs.card.id));
+
+        const updatedPlayerCards = [...dataGrabCollectedByPlayer];
+        const updatedCPUCards = [...dataGrabCollectedByCPU];
+
+        // All missed cards go to CPU
+        missedCards.forEach((playedCardState) => {
+          updatedCPUCards.push(playedCardState);
+        });
+
+        // Extract just the Card objects from PlayedCardState for deck distribution
+        const playerCards = updatedPlayerCards.map((pcs) => pcs.card);
+        const cpuCards = updatedCPUCards.map((pcs) => pcs.card);
+
+        // Get current player/cpu state
+        const { player, cpu } = get();
+
+        // The mini-game IS the turn resolution - cards are already distributed based on clicks
+        // No need to call resolveTurn() - just finalize everything and start a new turn
+        console.log('[DataGrab] Finalizing - Player gets:', playerCards.length, 'CPU gets:', cpuCards.length);
+
+        // Distribute cards and reset state for a fresh turn
+        set({
+          player: {
+            ...player,
+            deck: [...player.deck, ...playerCards],
+            playedCard: null, // Clear played card
+            currentTurnValue: 0, // Reset turn value for new turn
+            pendingTrackerBonus: 0, // Clear any pending bonuses
+            pendingBlockerPenalty: 0, // Clear any pending penalties
+          },
+          cpu: {
+            ...cpu,
+            deck: [...cpu.deck, ...cpuCards],
+            playedCard: null, // Clear played card
+            currentTurnValue: 0, // Reset turn value for new turn
+            pendingTrackerBonus: 0, // Clear any pending bonuses
+            pendingBlockerPenalty: 0, // Clear any pending penalties
+          },
+          dataGrabCollectedByPlayer: updatedPlayerCards,
+          dataGrabCollectedByCPU: updatedCPUCards,
+          dataGrabCards: [], // Clear remaining cards
+          dataGrabGameActive: false,
+          showDataGrabResults: true,
+          cardsInPlay: [], // Clear cards in play
+          anotherPlayExpected: false, // Reset another play mode
+        });
+      },
+
+      setShowDataGrabTakeover: (show) => {
+        set({ showDataGrabTakeover: show });
+      },
+
+      setDataGrabGameActive: (active) => {
+        set({ dataGrabGameActive: active });
+      },
+
+      setShowDataGrabResults: (show) => {
+        set({ showDataGrabResults: show });
+
+        // Reset Data Grab state when closing results
+        if (!show) {
+          set({
+            dataGrabActive: false,
+            dataGrabCards: [],
+            dataGrabCollectedByPlayer: [],
+            dataGrabCollectedByCPU: [],
+          });
+        }
+      },
+
       // UI Actions
       selectBillionaire: (billionaire) => {
         const cpuBillionaire = getRandomBillionaire(billionaire as BillionaireId);
@@ -1271,6 +1452,14 @@ export const useGameStore = create<GameStore>()(
           showForcedEmpathyAnimation: false,
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
+          // Reset Data Grab state
+          dataGrabActive: false,
+          dataGrabCards: [],
+          dataGrabCollectedByPlayer: [],
+          dataGrabCollectedByCPU: [],
+          showDataGrabTakeover: false,
+          dataGrabGameActive: false,
+          showDataGrabResults: false,
         });
       },
     }),

@@ -4,6 +4,7 @@
  */
 
 import forcedEmpathyVideo from '@/assets/animations/effects/forced-empathy.webm';
+import dataGrabVideo from '@/assets/animations/effects/data-grab.webm';
 // Import more animations as they become available:
 // import hostileTakeoverVideo from '@/assets/animations/effects/hostile-takeover.webm';
 // import openWhatYouWantVideo from '@/assets/animations/effects/open-what-you-want.webm';
@@ -13,7 +14,8 @@ export type SpecialEffectAnimationType =
   | 'forced_empathy'
   | 'open_what_you_want'
   | 'hostile_takeover'
-  | 'launch_stack';
+  | 'launch_stack'
+  | 'data_grab';
 
 export interface SpecialEffectAnimation {
   videoSrc: string;
@@ -47,6 +49,11 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<
   launch_stack: {
     videoSrc: forcedEmpathyVideo, // TODO: Replace with actual Launch Stack animation when available
     title: 'Launch Stack',
+    loop: true,
+  },
+  data_grab: {
+    videoSrc: dataGrabVideo,
+    title: 'Data Grab',
     loop: true,
   },
 };

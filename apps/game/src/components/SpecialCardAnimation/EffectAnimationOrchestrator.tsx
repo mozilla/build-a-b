@@ -21,6 +21,7 @@ export const EffectAnimationOrchestrator = () => {
     showForcedEmpathyAnimation,
     showHostileTakeoverAnimation,
     showLaunchStackAnimation,
+    showDataGrabTakeover,
   } = useGameStore();
 
   // Priority order: Check animations in order of their display timing
@@ -55,6 +56,19 @@ export const EffectAnimationOrchestrator = () => {
   // Launch Stack - Shows after collecting a launch stack
   if (showLaunchStackAnimation) {
     const animation = SPECIAL_EFFECT_ANIMATIONS.launch_stack;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={animation.videoSrc}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Data Grab - Shows takeover animation with countdown
+  if (showDataGrabTakeover) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.data_grab;
     return (
       <SpecialCardAnimation
         show={true}

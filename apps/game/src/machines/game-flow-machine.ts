@@ -45,7 +45,10 @@ export type GameFlowEvent =
   | { type: 'PRE_REVEAL_COMPLETE' } // All pre-reveal effects processed
   | { type: 'SHOW_EFFECT_NOTIFICATION' } // Transition to effect notification
   | { type: 'EFFECT_NOTIFICATION_DISMISSED' } // User closed modal
-  | { type: 'EFFECT_NOTIFICATION_COMPLETE' }; // Skip if no notifications
+  | { type: 'EFFECT_NOTIFICATION_COMPLETE' } // Skip if no notifications
+  | { type: 'DATA_GRAB_COUNTDOWN_COMPLETE' } // Countdown finished, start mini-game
+  | { type: 'DATA_GRAB_GAME_COMPLETE' } // Mini-game timer ended
+  | { type: 'DATA_GRAB_RESULTS_VIEWED' }; // User viewed results, continue to resolving
 
 export type EventType = GameFlowEvent['type'];
 /**
@@ -231,6 +234,7 @@ export const gameFlowMachine = createMachine(
         after: {
           [ANIMATION_DURATIONS.CARD_COMPARISON]: [
             { target: 'data_war', guard: 'isDataWar' },
+            { target: 'data_grab', guard: 'isDataGrab' },
             { target: 'special_effect', guard: 'hasSpecialEffects' },
             { target: 'resolving' },
           ],
@@ -310,6 +314,55 @@ export const gameFlowMachine = createMachine(
                   },
                 },
               },
+            },
+          },
+        },
+      },
+
+      data_grab: {
+        initial: 'takeover',
+        entry: () => {
+          // Initialize Data Grab state in store
+          useGameStore.getState().initializeDataGrab();
+        },
+        states: {
+          takeover: {
+            // Intro animation + "Ready? Set? Go!" countdown
+            entry: assign({
+              tooltipMessage: 'EMPTY',
+            }),
+            after: {
+              [ANIMATION_DURATIONS.DATA_GRAB_TAKEOVER +
+                ANIMATION_DURATIONS.DATA_GRAB_COUNTDOWN]: 'playing',
+            },
+            on: {
+              DATA_GRAB_COUNTDOWN_COMPLETE: 'playing',
+            },
+          },
+          playing: {
+            // Active mini-game (10 seconds)
+            entry: () => {
+              // Start the mini-game timer
+              useGameStore.getState().startDataGrabGame();
+            },
+            after: {
+              [ANIMATION_DURATIONS.DATA_GRAB_GAME]: 'results',
+            },
+            on: {
+              DATA_GRAB_GAME_COMPLETE: 'results',
+            },
+          },
+          results: {
+            // Show results in hand viewer (minimum 3 seconds)
+            entry: () => {
+              // Finalize results and show hand viewer
+              useGameStore.getState().finalizeDataGrabResults();
+            },
+            after: {
+              [ANIMATION_DURATIONS.DATA_GRAB_HAND_VIEWER]: '#dataWarGame.resolving',
+            },
+            on: {
+              DATA_GRAB_RESULTS_VIEWED: '#dataWarGame.resolving',
             },
           },
         },
@@ -480,6 +533,11 @@ export const gameFlowMachine = createMachine(
         // When modal is open (effectAccumulationPaused = true), prevent transitions
         const state = useGameStore.getState();
         return !state.effectAccumulationPaused;
+      },
+      isDataGrab: () => {
+        // Check if a Data Grab card was played and there are enough cards in play
+        const state = useGameStore.getState();
+        return state.checkForDataGrab();
       },
     },
   },

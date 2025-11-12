@@ -7,4 +7,5 @@ export interface CardCarouselProps {
   onCardSelect: (card: Card) => void;
   renderCardContent?: (card: Card) => ReactNode; // Optional custom content below card
   className?: string;
+  faceDownCardIds?: Set<string>; // Optional set of card IDs that should show face-down
 }
