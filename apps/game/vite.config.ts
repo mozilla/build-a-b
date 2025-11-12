@@ -25,6 +25,7 @@ export default defineConfig(({ command }) => ({
               name: 'preset-default',
               params: {
                 overrides: {
+                  removeViewBox: false,
                   // Disable ID minification to prevent gradient ID conflicts
                   cleanupIds: false,
                 },

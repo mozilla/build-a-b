@@ -21,7 +21,7 @@ export const BlurredBackground: FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: ANIMATION_DURATIONS.UI_TRANSITION_DELAY / 1000 }}
-          className="fixed size-full top-0 left-0 lg:flex items-center justify-center lg:blur-xl hidden pointer-events-none"
+          className="fixed size-full top-0 left-0 flex items-center justify-center blur-xl pointer-events-none"
         >
           <img
             src={backgroundSrc}
