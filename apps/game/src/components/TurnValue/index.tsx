@@ -6,10 +6,13 @@ import { Icon } from '@/components/Icon';
 import type { IconName } from '@/components/Icon/registry';
 import Text from '@/components/Text';
 import { cn } from '@/utils/cn';
-import { motion } from 'framer-motion';
-import { type FC, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { type FC, useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { LottieAnimation } from '@/components/LottieAnimation';
 import TurnValueText from '../../assets/icons/turn-value.svg';
 import type { TurnValueProps } from './types';
+import burstAnimation from '@/assets/animations/effects/burst.json';
 
 // Map effect types to icon names (only tracker and blocker affect turn values)
 const EFFECT_ICON_MAP: Record<string, IconName> = {
@@ -20,31 +23,52 @@ const EFFECT_ICON_MAP: Record<string, IconName> = {
 export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], className = '' }) => {
   // Track value changes to trigger animation
   const [animationKey, setAnimationKey] = useState(0);
+  const [showBurst, setShowBurst] = useState(false);
+  const [burstPosition, setBurstPosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Skip animation if value is going back to zero
     if (value === 0) {
       return;
     }
+
+    // Get the position of the turn value component
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setBurstPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      });
+      setShowBurst(true);
+
+      // Hide burst after animation duration (1200ms to match scale animation)
+      setTimeout(() => {
+        setShowBurst(false);
+      }, 1200);
+    }
+
     // Trigger animation when value changes
     setAnimationKey((prev) => prev + 1);
   }, [value]);
 
   return (
-    <motion.div
-      key={animationKey}
-      className={cn(
-        'isolate relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center',
-        className,
-      )}
-      initial={{ scale: 1 }}
-      animate={{ scale: [1, 1.2, 1.2, 1] }}
-      transition={{
-        duration: 1.2,
-        times: [0, 0.3, 0.65, 1],
-        ease: 'easeInOut',
-      }}
-    >
+    <>
+      <motion.div
+        ref={containerRef}
+        key={animationKey}
+        className={cn(
+          'isolate relative w-[5.5rem] h-[5.5rem] flex flex-col items-center justify-center',
+          className,
+        )}
+        initial={{ scale: 1 }}
+        animate={{ scale: [1, 1.2, 1.2, 1] }}
+        transition={{
+          duration: 1.2,
+          times: [0, 0.3, 0.65, 1],
+          ease: 'easeInOut',
+        }}
+      >
       {/* Turn Value text */}
       <div className="w-[4.375rem] h-[1.5rem] -mb-3">
         <img src={TurnValueText} alt="TURN VALUE" className="w-full h-full" />
@@ -170,5 +194,35 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
         )}
       </div>
     </motion.div>
+
+      {/* Burst Animation - Rendered via Portal to appear on top */}
+      {typeof window !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {showBurst && (
+              <motion.div
+                className="fixed pointer-events-none w-[200px] h-[200px] -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${burstPosition.x}px`,
+                  top: `${burstPosition.y}px`,
+                }}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1.5, opacity: 1 }}
+                exit={{ scale: 1, opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+              >
+                <LottieAnimation
+                  animationData={burstAnimation}
+                  loop={false}
+                  autoplay={true}
+                  width={200}
+                  height={200}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 };

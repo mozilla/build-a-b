@@ -27,6 +27,9 @@ import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
+import { DataGrabMiniGame } from '../DataGrabMiniGame';
+import { DataGrabResultsModal } from '../DataGrabResultsModal';
+
 /**
  * Game Component - Main game container
  */
@@ -241,6 +244,12 @@ export function Game() {
 
         {/* Effect Notification Modal */}
         <EffectNotificationModal />
+
+        {/* Data Grab Mini-Game */}
+        <DataGrabMiniGame />
+
+        {/* Data Grab Results Modal */}
+        <DataGrabResultsModal />
 
         {/* Debug UI */}
         <DebugUI />

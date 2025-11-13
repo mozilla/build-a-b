@@ -8,6 +8,7 @@ import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { SwiperOptions } from 'swiper/types';
 import { capitalize } from '@/utils/capitalize';
+import { CARD_BACK_IMAGE } from '@/config/game-config';
 
 import 'swiper/css';
 import type { CardCarouselProps } from './types';
@@ -18,6 +19,7 @@ export const CardCarousel = ({
   onCardSelect,
   renderCardContent,
   className = '',
+  faceDownCardIds,
 }: CardCarouselProps) => {
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
@@ -59,23 +61,28 @@ export const CardCarousel = ({
         }}
         className="w-full h-[400px]"
       >
-        {cards.map((card) => (
-          <SwiperSlide key={card.id}>
-            <div
-              className="flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 rotate-[-15deg]"
-              onClick={() => onCardSelect(card)}
-            >
-              <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
-                <img
-                  src={card.imageUrl}
-                  alt={getCardAltText(card)}
-                  className="w-full h-full object-cover"
-                />
+        {cards.map((card) => {
+          const isFaceDown = faceDownCardIds?.has(card.id) ?? false;
+          const cardImage = isFaceDown ? CARD_BACK_IMAGE : card.imageUrl;
+
+          return (
+            <SwiperSlide key={card.id}>
+              <div
+                className="flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 rotate-[-15deg]"
+                onClick={() => onCardSelect(card)}
+              >
+                <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
+                  <img
+                    src={cardImage}
+                    alt={isFaceDown ? 'Face-down card' : getCardAltText(card)}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {renderCardContent && renderCardContent(card)}
               </div>
-              {renderCardContent && renderCardContent(card)}
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

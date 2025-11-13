@@ -22,8 +22,11 @@ export const DeckPile: FC<DeckPileProps> = ({
   deckSwapCount = 0,
   className,
   isRunningWinAnimation,
+  layoutOwner,
 }) => {
-  const isPlayer = owner === 'player';
+  // Use layoutOwner for positioning logic (accounts for deck swaps), fallback to owner
+  const positionOwner = layoutOwner ?? owner;
+  const isPlayer = positionOwner === 'player';
   const deckRef = useRef<HTMLDivElement>(null);
   const prevCardCountRef = useRef(cardCount);
   const prevDeckSwapCountRef = useRef(deckSwapCount);
