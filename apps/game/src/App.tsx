@@ -1,4 +1,5 @@
-import { ScreenRenderer } from '@/components';
+import { ScreenRenderer, VideoPreloader } from '@/components';
+import { BlurredBackground } from '@/components/BlurredBackground';
 import { Menu } from '@/components/Menu';
 import { HeroUIProvider } from '@heroui/react';
 import { Game } from './components/Game';
@@ -12,9 +13,11 @@ function App() {
     <HeroUIProvider>
       <GameProvider>
         <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
+          <BlurredBackground />
           <Game />
           <ScreenRenderer />
           <Menu />
+          <VideoPreloader />
         </div>
       </GameProvider>
     </HeroUIProvider>

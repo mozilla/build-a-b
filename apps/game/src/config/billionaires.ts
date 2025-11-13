@@ -6,14 +6,25 @@ import prudenceImg from '@/assets/characters/prudence.webp';
 import savannahImg from '@/assets/characters/savannah.webp';
 import walterImg from '@/assets/characters/walter.webp';
 
+export type BillionaireId = 'chaz' | 'chloe' | 'savannah' | 'walter' | 'enzo' | 'prudence';
 export interface Billionaire {
-  id: string;
+  id: BillionaireId;
   name: string;
   imageSrc: string;
   description?: string;
 }
 
 export const DEFAULT_BILLIONAIRE_ID = 'chaz';
+
+/**
+ * Selects a random billionaire from the list, excluding the specified billionaire ID
+ * Used to randomly assign a CPU opponent that's different from the player's selection
+ */
+export const getRandomBillionaire = (excludeId?: BillionaireId): BillionaireId => {
+  const availableBillionaires = BILLIONAIRES.filter((b) => b.id !== excludeId);
+  const randomIndex = Math.floor(Math.random() * availableBillionaires.length);
+  return availableBillionaires[randomIndex].id;
+};
 
 export const BILLIONAIRES: Billionaire[] = [
   {
@@ -52,4 +63,4 @@ export const BILLIONAIRES: Billionaire[] = [
     imageSrc: prudenceImg,
     description: 'empire-expanding, tax-avoiding, fortune-amassing',
   },
-];
+] as const;

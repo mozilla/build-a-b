@@ -1,4 +1,7 @@
 // Primitive UI Components for Intro and Setup
+export { Frame } from './Frame';
+export type { FrameProps } from './Frame';
+
 export { Button } from './Button';
 export type { ButtonProps } from './Button/types';
 
@@ -28,6 +31,8 @@ export type { CarouselProps } from './Carousel/types';
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip/types';
+
+export { VideoPreloader } from './VideoPreloader';
 
 // Debug Components
 export { DebugUI } from './DebugUI';

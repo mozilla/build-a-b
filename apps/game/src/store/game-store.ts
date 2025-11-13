@@ -6,14 +6,9 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { getRandomBillionaire, type BillionaireId } from '../config/billionaires';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
-import type {
-  Card,
-  CardValue,
-  Player,
-  PlayerType,
-  SpecialEffect,
-} from '../types';
+import type { Card, CardValue, Player, PlayerType, SpecialEffect } from '../types';
 import {
   applyBlockerModifier,
   compareCards,
@@ -74,6 +69,7 @@ export const useGameStore = create<GameStore>()(
       showDataWarAnimation: false,
       dataWarVideoPlaying: false,
       selectedBillionaire: '',
+      cpuBillionaire: '',
       selectedBackground: '',
       isPaused: false,
       showMenu: false,
@@ -183,14 +179,20 @@ export const useGameStore = create<GameStore>()(
 
         // Calculate the effective card value (0 if negated, otherwise normal value)
         // IMPORTANT: Tracker cards ALWAYS have 0 value when played - their value is stored for the NEXT NON-tracker card
-        let effectiveCardValue = shouldNegateValue ? 0 :
-                                  card.specialType === 'tracker' ? 0 :
-                                  card.value;
+        let effectiveCardValue = shouldNegateValue
+          ? 0
+          : card.specialType === 'tracker'
+          ? 0
+          : card.value;
 
         // APPLY PENDING TRACKER BONUS FROM EARLIER IN SAME TURN
         // If in anotherPlayMode (second+ card) AND card doesn't trigger another play, apply pending bonus
         // Tracker bonus should only apply to cards that END the play sequence (common/firewall/billionaire)
-        if (get().anotherPlayMode && playerState.pendingTrackerBonus > 0 && !card.triggersAnotherPlay) {
+        if (
+          get().anotherPlayMode &&
+          playerState.pendingTrackerBonus > 0 &&
+          !card.triggersAnotherPlay
+        ) {
           effectiveCardValue += playerState.pendingTrackerBonus;
         }
 
@@ -225,7 +227,10 @@ export const useGameStore = create<GameStore>()(
             // CLEAR pending bonuses/penalties after applying (only if in anotherPlayMode)
             // If NOT in anotherPlayMode (first card), keep them at 0 or set them below for trackers
             // Don't clear tracker bonus if card triggers another play (need to accumulate across sequence)
-            pendingTrackerBonus: get().anotherPlayMode && !card.triggersAnotherPlay ? 0 : playerState.pendingTrackerBonus,
+            pendingTrackerBonus:
+              get().anotherPlayMode && !card.triggersAnotherPlay
+                ? 0
+                : playerState.pendingTrackerBonus,
             pendingBlockerPenalty: get().anotherPlayMode ? 0 : playerState.pendingBlockerPenalty,
           },
           cardsInPlay: [...get().cardsInPlay, card],
@@ -923,8 +928,10 @@ export const useGameStore = create<GameStore>()(
 
       // UI Actions
       selectBillionaire: (billionaire) => {
+        const cpuBillionaire = getRandomBillionaire(billionaire as BillionaireId);
         set({
           selectedBillionaire: billionaire,
+          cpuBillionaire,
           player: {
             ...get().player,
             billionaireCharacter: billionaire,
