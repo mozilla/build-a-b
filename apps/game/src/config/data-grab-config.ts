@@ -12,16 +12,15 @@ export const DATA_GRAB_CONFIG = {
   MIN_CARDS_IN_PLAY: 1, // Minimum cards in play to trigger Data Grab
 
   // Timing (all in milliseconds)
-  CARD_FALL_SPEED: 3500, // 3.5s for cards to fall from top to bottom
-  COUNTDOWN_DURATION: 3000, // "Ready? Set? Go!" countdown
+  CARD_FALL_SPEED: 4500, // 3.5s for cards to fall from top to bottom
 
   // Visual elements
-  COOKIE_COUNT: 10, // Number of floating data cookies
-  POOF_DURATION: 500, // Poof animation when card tapped
+  COOKIE_COUNT: 4, // Number of floating data cookies
+  BURST_DURATION: 1500, // Poof animation when card tapped
 
   // Animation
   TAKEOVER_DURATION: 2000, // Intro takeover animation
-  HAND_VIEWER_MIN_DURATION: 2000, // Minimum time to show results
+  HAND_VIEWER_MIN_DURATION: 1000, // Minimum time to show results
 } as const;
 
 /**

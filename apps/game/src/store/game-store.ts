@@ -1055,8 +1055,7 @@ export const useGameStore = create<GameStore>()(
 
         // The mini-game IS the turn resolution - cards are already distributed based on clicks
         // No need to call resolveTurn() - just finalize everything and start a new turn
-        console.log('[DataGrab] Finalizing - Player gets:', playerCards.length, 'CPU gets:', cpuCards.length);
-
+        
         // Distribute cards and reset state for a fresh turn
         set({
           player: {

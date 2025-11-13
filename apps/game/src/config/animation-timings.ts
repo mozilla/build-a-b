@@ -38,11 +38,8 @@ export const ANIMATION_DURATIONS = {
   DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 3000,
 
   // Data Grab mini-game
-  DATA_GRAB_TAKEOVER: 2000, // Takeover intro animation
-  DATA_GRAB_COUNTDOWN: 3000, // Ready/Set/Go countdown
-  DATA_GRAB_GAME: 3500, // Active gameplay duration (matches card fall speed)
-  DATA_GRAB_CARD_FALL: 3500, // Card fall animation
-  DATA_GRAB_POOF: 500, // Poof effect on tap
+  DATA_GRAB_TAKEOVER: 5000, // Takeover intro animation
+  DATA_GRAB_GAME: 4500, // Active gameplay duration (matches card fall speed)
   DATA_GRAB_HAND_VIEWER: 1000, // Minimum results display time (reduced from 3000ms)
 } as const;
 
