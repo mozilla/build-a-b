@@ -5,7 +5,7 @@
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FC } from 'react';
-import { useBlurredBackgroundStore, type BlurredBackgroundState } from './store.ts';
+import { useBlurredBackgroundStore, type BlurredBackgroundState } from './store';
 
 export const BlurredBackground: FC = () => {
   const backgroundSrc = useBlurredBackgroundStore(
