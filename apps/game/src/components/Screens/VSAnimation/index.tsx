@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { type FC, useMemo, useRef, useEffect } from 'react';
+import { type FC, useEffect, useMemo, useRef } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
-import { useGameStore } from '@/store';
-import { cn } from '@/utils/cn';
+import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
+import { cn } from '@/utils/cn';
 
 /**
  * VSAnimation Screen
@@ -17,6 +17,7 @@ import { getCharacterAnimation } from '@/utils/character-animations';
  */
 export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
   const { selectedBillionaire } = useGameStore();
+  const cpuBillionaireId = useCpuBillionaire();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const playerBillionaire = useMemo(
@@ -24,16 +25,21 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
     [selectedBillionaire],
   );
 
-  // CPU always uses Chaz (the default billionaire)
+  // CPU billionaire is randomly selected from remaining billionaires
   const cpuBillionaire = useMemo(
-    () => BILLIONAIRES.find((b) => b.id === DEFAULT_BILLIONAIRE_ID),
-    [],
+    () => BILLIONAIRES.find((b) => b.id === cpuBillionaireId),
+    [cpuBillionaireId],
   );
 
   // Get the animation for this matchup
   const animationSrc = useMemo(
-    () => getCharacterAnimation(selectedBillionaire || DEFAULT_BILLIONAIRE_ID, DEFAULT_BILLIONAIRE_ID, 'vs'),
-    [selectedBillionaire],
+    () =>
+      getCharacterAnimation(
+        selectedBillionaire || DEFAULT_BILLIONAIRE_ID,
+        cpuBillionaireId || DEFAULT_BILLIONAIRE_ID,
+        'vs',
+      ),
+    [selectedBillionaire, cpuBillionaireId],
   );
 
   // Auto-play video when component mounts
@@ -51,10 +57,7 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className={cn(
-        'relative flex flex-col items-center justify-center w-full h-full',
-        className,
-      )}
+      className={cn('relative flex flex-col items-center justify-center w-full h-full', className)}
       {...props}
     >
       {animationSrc ? (

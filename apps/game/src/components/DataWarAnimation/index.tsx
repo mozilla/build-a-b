@@ -1,8 +1,8 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { type FC, useMemo, useRef, useEffect } from 'react';
-import { useGameStore } from '@/store';
 import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
+import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
+import { AnimatePresence, motion } from 'framer-motion';
+import { type FC, useEffect, useMemo, useRef } from 'react';
 
 interface DataWarAnimationProps {
   show: boolean;
@@ -17,16 +17,18 @@ interface DataWarAnimationProps {
  */
 export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
   const { selectedBillionaire } = useGameStore();
+  const cpuBillionaire = useCpuBillionaire();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Get the animation for this matchup
   const animationSrc = useMemo(
-    () => getCharacterAnimation(
-      selectedBillionaire || DEFAULT_BILLIONAIRE_ID,
-      DEFAULT_BILLIONAIRE_ID,
-      'datawar',
-    ),
-    [selectedBillionaire],
+    () =>
+      getCharacterAnimation(
+        selectedBillionaire || DEFAULT_BILLIONAIRE_ID,
+        cpuBillionaire || DEFAULT_BILLIONAIRE_ID,
+        'datawar',
+      ),
+    [selectedBillionaire, cpuBillionaire],
   );
 
   // Auto-play video when component mounts

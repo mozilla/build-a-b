@@ -79,6 +79,7 @@ export type GameStore = {
 
   // UI State
   selectedBillionaire: string;
+  cpuBillionaire: string;
   selectedBackground: string;
   isPaused: boolean;
   showMenu: boolean;
