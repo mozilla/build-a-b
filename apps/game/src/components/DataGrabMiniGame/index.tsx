@@ -9,6 +9,7 @@ import { useGameStore } from '@/store';
 import { type FC, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FallingCard } from './FallingCard';
+import { DataCookie } from './DataCookie';
 
 // Board dimensions (in rem)
 const BOARD_WIDTH_REM = 25; // 25rem
@@ -96,7 +97,7 @@ export const DataGrabMiniGame: FC = () => {
   // Generate positions once when cards are loaded
   const cardPositions = useMemo(
     () => generateCardPositions(dataGrabCards.length),
-    [dataGrabCards.length]
+    [dataGrabCards.length],
   );
 
   // Calculate wrapper height and animation parameters
@@ -136,11 +137,15 @@ export const DataGrabMiniGame: FC = () => {
         />
 
         {/* Floating Data Cookies - DISABLED but kept for future use */}
-        {/* <div className="absolute inset-0 z-10">
-        {Array.from({ length: DATA_GRAB_CONFIG.COOKIE_COUNT }).map((_, index) => (
-          <DataCookie key={`cookie-${index}`} index={index} totalCookies={DATA_GRAB_CONFIG.COOKIE_COUNT} />
-        ))}
-      </div> */}
+        <div className="absolute inset-0 z-10">
+          {Array.from({ length: DATA_GRAB_CONFIG.COOKIE_COUNT }).map((_, index) => (
+            <DataCookie
+              key={`cookie-${index}`}
+              index={index}
+              totalCookies={DATA_GRAB_CONFIG.COOKIE_COUNT}
+            />
+          ))}
+        </div>
 
         {/* Falling Cards (Layer 3) - Cards in animated wrapper */}
         <motion.div
@@ -171,13 +176,6 @@ export const DataGrabMiniGame: FC = () => {
             />
           ))}
         </motion.div>
-
-        {/* Instructions */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 text-center">
-          <div className="bg-black/60 backdrop-blur-sm px-6 py-3 rounded-full">
-            <p className="text-white text-lg font-bold">Tap cards before they fall!</p>
-          </div>
-        </div>
       </div>
     </div>
   );

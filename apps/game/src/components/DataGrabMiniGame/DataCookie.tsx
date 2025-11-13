@@ -17,11 +17,8 @@ export const DataCookie: FC<DataCookieProps> = ({ index, totalCookies }) => {
   const leftPosition = (index / totalCookies) * 100;
   const topPosition = Math.random() * 80 + 10; // 10% to 90% from top
 
-  // Random animation delay for visual variety
-  const animationDelay = Math.random() * 2;
-
   // Random size variation (80% to 120% of base size)
-  const sizeScale = 0.8 + Math.random() * 0.4;
+  const sizeScale = 1.2 + Math.random() * 0.4;
 
   return (
     <motion.div
@@ -32,17 +29,15 @@ export const DataCookie: FC<DataCookieProps> = ({ index, totalCookies }) => {
         width: `${48 * sizeScale}px`,
         height: `${48 * sizeScale}px`,
       }}
-      initial={{ y: 0, opacity: 0.6 }}
+      initial={{ y: 0 }}
       animate={{
         y: [0, -20, 0],
-        opacity: [0.6, 0.9, 0.6],
       }}
       transition={{
         duration: parseFloat(DATA_GRAB_ANIMATIONS.COOKIE_FLOAT.duration),
         ease: 'easeInOut', // Framer Motion uses camelCase
         repeat: Infinity,
         repeatType: 'reverse', // alternate = reverse in Framer Motion
-        delay: animationDelay,
       }}
     >
       <img

@@ -332,8 +332,7 @@ export const gameFlowMachine = createMachine(
               tooltipMessage: 'EMPTY',
             }),
             after: {
-              [ANIMATION_DURATIONS.DATA_GRAB_TAKEOVER +
-                ANIMATION_DURATIONS.DATA_GRAB_COUNTDOWN]: 'playing',
+              [ANIMATION_DURATIONS.DATA_GRAB_TAKEOVER]: 'playing',
             },
             on: {
               DATA_GRAB_COUNTDOWN_COMPLETE: 'playing',

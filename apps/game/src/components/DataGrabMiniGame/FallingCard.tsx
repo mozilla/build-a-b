@@ -5,13 +5,14 @@
  * Preserves face-up/face-down state from game
  */
 
-import { useState, type FC } from 'react';
+import { useState, type FC, type MouseEvent, type TouchEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LottieAnimation } from '@/components/LottieAnimation';
 import { DATA_GRAB_CONFIG } from '@/config/data-grab-config';
 import { CARD_BACK_IMAGE } from '@/config/game-config';
 import type { PlayedCardState } from '@/types';
-import confettiAnimation from '@/assets/animations/effects/win-confetti.json';
+import burstAnimation from '@/assets/animations/effects/burst.json';
 
 interface CardPosition {
   x: number; // Base X position in rem
@@ -36,7 +37,7 @@ export const FallingCard: FC<FallingCardProps> = ({
   collectedByPlayer,
   collectedByCPU,
 }) => {
-  const [showPoof, setShowPoof] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
 
   const { card, isFaceDown } = playedCardState;
@@ -50,31 +51,30 @@ export const FallingCard: FC<FallingCardProps> = ({
   const cardImage = isFaceDown ? CARD_BACK_IMAGE : card.imageUrl;
 
   // Handle player tap/click
-  const handleClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+  const handleClick = (event: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) => {
     if (isCollected) return;
 
-    console.log('[FallingCard] Card clicked:', card.name, card.id);
-
-    setShowPoof(true);
-
-    // Get click position for poof animation
+    // Get click position FIRST, before any state updates or parent re-renders
     const rect = event.currentTarget.getBoundingClientRect();
-    setClickPosition({
+    const newPosition = {
       x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    });
+      y: rect.top + rect.height / 2,
+    };
+
+    // Update position first, then show burst
+    setClickPosition(newPosition);
+    setShowBurst(true);
 
     // Call collect action - player collected
-    console.log('[FallingCard] Calling onCollect for player');
     onCollect(card.id, 'player');
 
-    // Hide poof after animation duration
+    // Hide burst after animation duration
     setTimeout(() => {
-      setShowPoof(false);
-    }, DATA_GRAB_CONFIG.POOF_DURATION);
+      setShowBurst(false);
+    }, DATA_GRAB_CONFIG.BURST_DURATION);
   };
 
-  if (isCollected && !showPoof) return null;
+  if (isCollected && !showBurst) return null;
 
   return (
     <>
@@ -99,29 +99,33 @@ export const FallingCard: FC<FallingCardProps> = ({
         />
       </motion.div>
 
-      {/* Poof Animation */}
-      <AnimatePresence>
-        {showPoof && (
-          <motion.div
-            className="fixed pointer-events-none w-[150px] h-[150px] -translate-x-1/2 -translate-y-1/2 z-30"
-            style={{
-              left: `${clickPosition.x}px`,
-              top: `${clickPosition.y}px`,
-            }}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-          >
-            <LottieAnimation
-              animationData={confettiAnimation}
-              loop={false}
-              autoplay={true}
-              width={150}
-              height={150}
-            />
-          </motion.div>
+      {/* Burst Animation - Rendered via Portal to escape container clipping */}
+      {typeof window !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {showBurst && (
+              <motion.div
+                className="fixed pointer-events-none w-[150px] h-[150px] -translate-x-1/2 -translate-y-1/2 z-[9999]"
+                style={{
+                  left: `${clickPosition.x}px`,
+                  top: `${clickPosition.y}px`,
+                }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+              >
+                <LottieAnimation
+                  animationData={burstAnimation}
+                  loop={false}
+                  autoplay={true}
+                  width={100}
+                  height={100}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </>
   );
 };
