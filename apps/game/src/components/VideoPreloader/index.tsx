@@ -35,14 +35,10 @@ export const VideoPreloader: FC<VideoPreloaderProps> = ({ enabled = true }) => {
     ];
   }, [selectedBillionaire, cpuBillionaire]);
 
-  const { preloadedCount, totalCount } = useVideoPreloader(videoUrls, {
+  useVideoPreloader(videoUrls, {
     enabled,
     preloadStrategy: 'auto',
   });
-
-  if (import.meta.env.DEV && preloadedCount > 0) {
-    console.log(`📹 Video preloader: ${preloadedCount}/${totalCount} videos ready`);
-  }
 
   return null;
 };
