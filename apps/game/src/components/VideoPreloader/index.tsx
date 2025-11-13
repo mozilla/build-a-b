@@ -5,7 +5,6 @@
  * Triggers after billionaire selection when we know which videos will be needed.
  */
 
-import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { useVideoPreloader } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
@@ -26,8 +25,8 @@ export const VideoPreloader: FC<VideoPreloaderProps> = ({ enabled = true }) => {
   const videoUrls = useMemo(() => {
     if (!selectedBillionaire || !cpuBillionaire) return [];
 
-    const playerBillionaire = selectedBillionaire || DEFAULT_BILLIONAIRE_ID;
-    const cpuBillionaireId = cpuBillionaire || DEFAULT_BILLIONAIRE_ID;
+    const playerBillionaire = selectedBillionaire;
+    const cpuBillionaireId = cpuBillionaire;
 
     return [
       getCharacterAnimation(playerBillionaire, cpuBillionaireId, 'vs'),

@@ -11,7 +11,6 @@ export interface FrameProps {
   className?: string;
   style?: CSSProperties;
   overlay?: React.ReactNode;
-  blurZIndex?: number;
 }
 
 export const Frame: FC<PropsWithChildren<FrameProps>> = ({
