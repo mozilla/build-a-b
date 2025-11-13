@@ -1203,9 +1203,9 @@ export const useGameStore = create<GameStore>()(
       },
 
       prepareEffectNotification: () => {
-        const { player, cpu, hasSeenEffect, addEffectToAccumulation } = get();
+        const { player, cpu, addEffectToAccumulation } = get();
 
-        // Collect ALL unseen notifications (priority: player first, then CPU)
+        // Collect ALL notifications (priority: player first, then CPU)
         const cards = [
           { card: player.playedCard, playedBy: 'player' as PlayerType },
           { card: cpu.playedCard, playedBy: 'cpu' as PlayerType },
@@ -1215,7 +1215,7 @@ export const useGameStore = create<GameStore>()(
           if (card && isSpecialCard(card)) {
             const effectType = getEffectType(card);
 
-            if (shouldShowEffectNotification(effectType) && !hasSeenEffect(effectType)) {
+            if (shouldShowEffectNotification(effectType)) {
               // Add to accumulation (non-blocking)
               addEffectToAccumulation({
                 card,
@@ -1311,13 +1311,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       closeEffectModal: () => {
-        const { accumulatedEffects, markEffectAsSeen } = get();
-
-        // Mark all accumulated effects as seen
-        accumulatedEffects.forEach((effect) => {
-          markEffectAsSeen(effect.effectType);
-        });
-
+        // No longer marking effects as seen - badge/modal will always show
         set({
           showEffectNotificationModal: false,
           effectAccumulationPaused: false, // Resume game
