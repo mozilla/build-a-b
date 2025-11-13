@@ -936,10 +936,7 @@ export const useGameStore = create<GameStore>()(
         const { player, cpu } = get();
 
         // Collect all played cards from both players, preserving face-up/face-down state
-        const allPlayedCards = [
-          ...player.playedCardsInHand,
-          ...cpu.playedCardsInHand,
-        ];
+        const allPlayedCards = [...player.playedCardsInHand, ...cpu.playedCardsInHand];
 
         // Initialize Data Grab with all cards in play (with face-up/down state preserved)
         // Clear playedCardsInHand since those cards are now in the mini-game
@@ -1000,11 +997,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       finalizeDataGrabResults: () => {
-        const {
-          dataGrabCards,
-          dataGrabCollectedByPlayer,
-          dataGrabCollectedByCPU,
-        } = get();
+        const { dataGrabCards, dataGrabCollectedByPlayer, dataGrabCollectedByCPU } = get();
 
         // Get IDs of already collected cards
         const collectedIds = new Set([
@@ -1032,7 +1025,7 @@ export const useGameStore = create<GameStore>()(
 
         // The mini-game IS the turn resolution - cards are already distributed based on clicks
         // No need to call resolveTurn() - just finalize everything and start a new turn
-        
+
         // Distribute cards and reset state for a fresh turn
         set({
           player: {
