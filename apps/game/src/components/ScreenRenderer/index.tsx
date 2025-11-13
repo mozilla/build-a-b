@@ -85,7 +85,7 @@ export const ScreenRenderer: FC = () => {
         <Frame
           key="screen-frame"
           backgroundSrc={backgroundImage}
-          className="flex flex-col overflow-auto"
+          className="flex flex-col"
           overlay={
             <>
               {/* Dark overlay for blurred backgrounds */}
@@ -103,7 +103,7 @@ export const ScreenRenderer: FC = () => {
           <ScreenComponent
             key="component"
             send={send}
-            className="flex flex-col items-center justify-center relative w-full h-full"
+            className="flex flex-col items-center justify-center relative w-full h-full lg:rounded-xl overflow-clip"
           >
             {showCloseIcon && (
               <div className="absolute top-5 right-5 z-20">

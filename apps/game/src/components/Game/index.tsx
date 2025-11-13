@@ -4,8 +4,8 @@
 
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
-import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import {
+  useCpuBillionaire,
   useCpuLaunchStacks,
   useDeckSwapCount,
   usePlayerLaunchStacks,
@@ -53,6 +53,7 @@ export function Game() {
   const deckSwapCount = useDeckSwapCount();
   const selectedBackground = useSelectedBackground();
   const selectedBillionaire = useSelectedBillionaire();
+  const cpuBillionaire = useCpuBillionaire();
   const winner = useWinner();
   const winCondition = useWinCondition();
   const collecting = useGameStore((state) => state.collecting);
@@ -176,7 +177,7 @@ export function Game() {
             turnValue={cpu.currentTurnValue}
             turnValueActiveEffects={cpu.activeEffects}
             owner="cpu"
-            billionaireId={DEFAULT_BILLIONAIRE_ID}
+            billionaireId={cpuBillionaire}
             tooltipContent={topDeckTooltip}
             activeIndicator={topDeckActiveIndicator}
           />
