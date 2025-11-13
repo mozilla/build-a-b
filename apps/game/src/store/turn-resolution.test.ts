@@ -120,7 +120,7 @@ describe('Turn Resolution', () => {
         .initializeGame('custom', 'custom', ['tracker-1', 'common-3'], ['common-1']);
     });
 
-    it('should not apply tracker value immediately - value should be 0', () => {
+    it('should apply tracker value immediately', () => {
       const { playCard } = useGameStore.getState();
 
       // Play a tracker card as first card
@@ -129,14 +129,14 @@ describe('Turn Resolution', () => {
       const trackerCard = useGameStore.getState().player.playedCard!;
       expect(trackerCard.specialType).toBe('tracker');
 
-      // Tracker should have 0 turn value when first played
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
+      // Tracker value should be displayed immediately (just like any other card)
+      expect(useGameStore.getState().player.currentTurnValue).toBe(trackerCard.value);
 
-      // But should store the bonus for next card
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(trackerCard.value);
+      // pendingTrackerBonus is no longer used (always 0)
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
     });
 
-    it('should apply tracker value to the NEXT card', () => {
+    it('should add tracker value immediately and next card adds to total', () => {
       const { playCard, setAnotherPlayMode } = useGameStore.getState();
 
       // Play tracker as first card
@@ -144,9 +144,9 @@ describe('Turn Resolution', () => {
       const trackerCard = useGameStore.getState().player.playedCard!;
       const trackerValue = trackerCard.value;
 
-      // Verify tracker has 0 value
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(trackerValue);
+      // Tracker value is immediately visible
+      expect(useGameStore.getState().player.currentTurnValue).toBe(trackerValue);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
       // Enable another play mode (tracker triggers another play)
       setAnotherPlayMode(true);
@@ -155,15 +155,15 @@ describe('Turn Resolution', () => {
       playCard('player');
       const nextCard = useGameStore.getState().player.playedCard!;
 
-      // Turn value should be: next card value + tracker bonus
-      const expectedValue = nextCard.value + trackerValue;
+      // Turn value should be: tracker value + next card value (accumulated)
+      const expectedValue = trackerValue + nextCard.value;
       expect(useGameStore.getState().player.currentTurnValue).toBe(expectedValue);
 
-      // Pending bonus should be cleared after being applied
+      // pendingTrackerBonus is no longer used
       expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
     });
 
-    it('should handle chained trackers correctly', () => {
+    it('should handle chained trackers correctly - each adds value immediately', () => {
       const { playCard, setAnotherPlayMode } = useGameStore.getState();
 
       // Initialize with two trackers and one common card
@@ -171,28 +171,27 @@ describe('Turn Resolution', () => {
         .getState()
         .initializeGame('custom', 'custom', ['tracker-1', 'tracker-2', 'common-3'], ['common-1']);
 
-      // Play first tracker
+      // Play first tracker - value is immediately visible
       playCard('player');
       const tracker1Value = useGameStore.getState().player.playedCard!.value;
 
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker1Value);
+      expect(useGameStore.getState().player.currentTurnValue).toBe(tracker1Value);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
       // Enable another play for second tracker
       setAnotherPlayMode(true);
 
-      // Play second tracker
+      // Play second tracker - adds to existing value
       playCard('player');
       const tracker2Value = useGameStore.getState().player.playedCard!.value;
 
-      // Second tracker should NOT add its value to the turn (since it's the second card)
-      // AND store its bonus for the next card
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(
+      // Second tracker value is added to the first tracker's value
+      expect(useGameStore.getState().player.currentTurnValue).toBe(
         tracker1Value + tracker2Value,
       );
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
-      // Play third card (common-3)
+      // Play third card (common-3) - adds to accumulated tracker values
       playCard('player');
       const common3Value = useGameStore.getState().player.playedCard!.value;
 

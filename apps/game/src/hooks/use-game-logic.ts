@@ -28,11 +28,12 @@ export function useGameLogic() {
   const context = useSelector(actorRef, (snapshot) => snapshot.context);
   const tooltipMessage = useSelector(actorRef, (snapshot) => snapshot.context.tooltipMessage);
 
-  // Get Zustand store actions
+  // Get Zustand store actions and state
   const {
     player,
     cpu,
     activePlayer,
+    effectAccumulationPaused,
     playCard,
     resolveTurn,
     collectCardsAfterEffects,
@@ -545,7 +546,8 @@ export function useGameLogic() {
   }, [phase]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
-  useCpuPlayer(phase, activePlayer, tapDeck);
+  // Pass isPaused flag to prevent CPU from playing while effect modal is open
+  useCpuPlayer(phase, activePlayer, tapDeck, { isPaused: effectAccumulationPaused });
 
   return {
     // State

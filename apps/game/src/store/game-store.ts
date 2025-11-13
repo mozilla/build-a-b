@@ -189,23 +189,8 @@ export const useGameStore = create<GameStore>()(
         const shouldNegateValue = isTrackerBlockerNegated(card.specialType);
 
         // Calculate the effective card value (0 if negated, otherwise normal value)
-        // IMPORTANT: Tracker cards ALWAYS have 0 value when played - their value is stored for the NEXT NON-tracker card
-        let effectiveCardValue = shouldNegateValue
-          ? 0
-          : card.specialType === 'tracker'
-          ? 0
-          : card.value;
-
-        // APPLY PENDING TRACKER BONUS FROM EARLIER IN SAME TURN
-        // If in anotherPlayMode (second+ card) AND card doesn't trigger another play, apply pending bonus
-        // Tracker bonus should only apply to cards that END the play sequence (common/firewall/billionaire)
-        if (
-          get().anotherPlayMode &&
-          playerState.pendingTrackerBonus > 0 &&
-          !card.triggersAnotherPlay
-        ) {
-          effectiveCardValue += playerState.pendingTrackerBonus;
-        }
+        // Trackers now display their value immediately (just like any other card)
+        let effectiveCardValue = shouldNegateValue ? 0 : card.value;
 
         // APPLY PENDING BLOCKER PENALTY FROM EARLIER IN SAME TURN
         // If in anotherPlayMode (second+ card), apply any pending blocker penalty
@@ -235,19 +220,14 @@ export const useGameStore = create<GameStore>()(
             playedCardsInHand: newPlayedCardsInHand,
             deck: remainingDeck,
             currentTurnValue: newTurnValue,
-            // CLEAR pending bonuses/penalties after applying (only if in anotherPlayMode)
-            // If NOT in anotherPlayMode (first card), keep them at 0 or set them below for trackers
-            // Don't clear tracker bonus if card triggers another play (need to accumulate across sequence)
-            pendingTrackerBonus:
-              get().anotherPlayMode && !card.triggersAnotherPlay
-                ? 0
-                : playerState.pendingTrackerBonus,
+            // CLEAR pending penalties after applying (only if in anotherPlayMode)
+            pendingTrackerBonus: 0, // No longer used - trackers show value immediately
             pendingBlockerPenalty: get().anotherPlayMode ? 0 : playerState.pendingBlockerPenalty,
           },
           cardsInPlay: [...get().cardsInPlay, card],
         };
 
-        // Handle tracker card: STORE bonus for next card (in same turn, via anotherPlayMode)
+        // Handle tracker card: Set turn state and active effects for display
         if (card.specialType === 'tracker' && !shouldNegateValue) {
           const turnStateKey = playerId === 'player' ? 'playerTurnState' : 'cpuTurnState';
           updates[turnStateKey] = 'tracker';
@@ -262,13 +242,10 @@ export const useGameStore = create<GameStore>()(
             },
           ];
 
-          // ACCUMULATE the tracker bonus for next card (don't apply to this card)
-          // Multiple trackers in sequence should accumulate their bonuses
-          const currentPendingBonus = (updates[playerId] as Player).pendingTrackerBonus;
+          // Update active effects for display (tracker value is now immediately visible in currentTurnValue)
           updates[playerId] = {
             ...(updates[playerId] as Player),
-            pendingTrackerBonus: currentPendingBonus + card.value, // ACCUMULATE tracker bonuses
-            activeEffects: newActiveEffects, // Add to display
+            activeEffects: newActiveEffects,
           };
         }
 
