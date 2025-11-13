@@ -12,4 +12,5 @@ export interface DeckPileProps {
   deckSwapCount?: number;
   isRunningWinAnimation?: boolean;
   className?: string;
+  layoutOwner?: 'player' | 'cpu'; // Physical position after swaps (defaults to owner if not provided)
 }

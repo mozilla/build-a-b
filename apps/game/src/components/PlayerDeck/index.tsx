@@ -231,6 +231,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         activeIndicator={activeIndicator}
         deckSwapCount={deckSwapCount}
         isRunningWinAnimation={showWinEffect}
+        layoutOwner={layoutOwner}
       />
       {/** Turn points */}
       <TurnValue
