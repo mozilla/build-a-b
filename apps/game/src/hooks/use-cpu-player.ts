@@ -10,6 +10,7 @@ import { ANIMATION_DURATIONS } from '../config/animation-timings';
 interface useCpuPlayerOptions {
   enabled?: boolean; // Whether CPU automation is enabled (default: true)
   delay?: number; // Delay in ms before CPU plays (default: CPU_TURN_DELAY)
+  isPaused?: boolean; // Whether the game is paused (e.g., modal open) - default: false
 }
 
 /**
@@ -26,12 +27,13 @@ export function useCpuPlayer(
   onCPUTurn: () => void,
   options: useCpuPlayerOptions = {}
 ) {
-  const { enabled = true, delay = ANIMATION_DURATIONS.CPU_TURN_DELAY } = options;
+  const { enabled = true, delay = ANIMATION_DURATIONS.CPU_TURN_DELAY, isPaused = false } = options;
 
   useEffect(() => {
     // Only automate during regular ready phase when it's CPU's turn
     // Data War phases require manual player click (both players reveal simultaneously)
-    const shouldTap = enabled && activePlayer === 'cpu' && currentPhase === 'ready';
+    // Also check if game is not paused (e.g., effect modal is open)
+    const shouldTap = enabled && activePlayer === 'cpu' && currentPhase === 'ready' && !isPaused;
 
     if (!shouldTap) {
       return;
@@ -45,5 +47,5 @@ export function useCpuPlayer(
     return () => {
       clearTimeout(timer);
     };
-  }, [enabled, activePlayer, currentPhase, delay, onCPUTurn]);
+  }, [enabled, activePlayer, currentPhase, delay, isPaused, onCPUTurn]);
 }
