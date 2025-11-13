@@ -5,18 +5,6 @@
 export type BackgroundVariant = 'night-sky' | 'billionaire' | 'grid';
 
 /**
- * Available billionaire backgrounds
- * Maps to character selection in game
- */
-export type BillionaireBackground =
-  | 'chaz'
-  | 'chloe'
-  | 'savannah'
-  | 'walter'
-  | 'poindexter'
-  | 'prudence';
-
-/**
  * Configuration for background rendering
  */
 export interface BackgroundConfig {

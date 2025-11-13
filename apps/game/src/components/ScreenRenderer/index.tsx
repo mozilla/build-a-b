@@ -1,4 +1,8 @@
+import blueGridBg from '@/assets/backgrounds/color_blue.webp';
+import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
+import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
+import { STATE_BACKGROUND_CONFIG } from '@/components/ScreenRenderer/background-config';
 import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
 import { SelectBackground } from '@/components/Screens/SelectBackground';
@@ -8,11 +12,11 @@ import { Welcome } from '@/components/Screens/Welcome';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
 import { useGameStore } from '@/store';
+import { getBackgroundImage } from '@/utils/selectors';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import type { FC, PropsWithChildren } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
-import { ScreenBackground } from './Background';
 
 export interface BaseScreenProps
   extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
@@ -48,7 +52,7 @@ const SCREENS_WITH_CLOSE_ICON = [
 
 export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
-  const { toggleMenu } = useGameStore();
+  const { toggleMenu, selectedBackground, selectedBillionaire } = useGameStore();
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -63,24 +67,53 @@ export const ScreenRenderer: FC = () => {
     return null;
   }
 
+  // Get background configuration
+  const config = STATE_BACKGROUND_CONFIG[phaseKey];
+
+  // Determine which background image to use
+  let backgroundImage = nightSkyBg;
+  if (config?.variant === 'billionaire' && selectedBillionaire) {
+    backgroundImage = getBackgroundImage(selectedBackground || selectedBillionaire) || nightSkyBg;
+  } else if (config?.variant === 'grid') {
+    backgroundImage = blueGridBg;
+  }
+
   // Pass send function and other common props to all screens
   return (
     <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
       <AnimatePresence>
-        <ScreenBackground key="background" phaseKey={phaseKey} />
-        <ScreenComponent
-          key="component"
-          send={send}
-          className="flex flex-col items-center justify-center relative w-full h-full max-w-[25rem] max-h-[54rem]"
+        <Frame
+          key="screen-frame"
+          backgroundSrc={backgroundImage}
+          className="flex flex-col"
+          overlay={
+            <>
+              {/* Dark overlay for blurred backgrounds */}
+              {config?.overlay && (
+                <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.2)] to-[rgba(0,0,0,0.2)] pointer-events-none" />
+              )}
+
+              {/* Grid overlay for quick start guide */}
+              {config?.gridOverlay && (
+                <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0px_32px_0px_#53ffbc]" />
+              )}
+            </>
+          }
         >
-          {showCloseIcon && (
-            <div className="absolute top-5 right-5 z-20">
-              <Button onPress={toggleMenu}>
-                <Icon name="pause" label="pause" />
-              </Button>
-            </div>
-          )}
-        </ScreenComponent>
+          <ScreenComponent
+            key="component"
+            send={send}
+            className="flex flex-col items-center justify-center relative w-full h-full lg:rounded-xl overflow-clip"
+          >
+            {showCloseIcon && (
+              <div className="absolute top-5 right-5 z-20">
+                <Button onPress={toggleMenu}>
+                  <Icon name="pause" label="pause" />
+                </Button>
+              </div>
+            )}
+          </ScreenComponent>
+        </Frame>
       </AnimatePresence>
     </div>
   );
