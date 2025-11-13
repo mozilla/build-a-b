@@ -1,4 +1,4 @@
-import { ScreenRenderer } from '@/components';
+import { ScreenRenderer, VideoPreloader } from '@/components';
 import { BlurredBackground } from '@/components/BlurredBackground';
 import { Menu } from '@/components/Menu';
 import { HeroUIProvider } from '@heroui/react';
@@ -17,6 +17,7 @@ function App() {
           <Game />
           <ScreenRenderer />
           <Menu />
+          <VideoPreloader />
         </div>
       </GameProvider>
     </HeroUIProvider>

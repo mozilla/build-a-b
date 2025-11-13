@@ -32,6 +32,8 @@ export type { CarouselProps } from './Carousel/types';
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip/types';
 
+export { VideoPreloader } from './VideoPreloader';
+
 // Debug Components
 export { DebugUI } from './DebugUI';
 
