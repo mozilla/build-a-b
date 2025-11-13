@@ -94,7 +94,6 @@ export const Menu: FC = () => {
           <Frame
             backgroundSrc={nightSkyBg}
             className="shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] overflow-hidden"
-            blurZIndex={200}
           >
             {/* Close Button */}
             <header className="max-w-[25rem] mx-auto relative w-full">
