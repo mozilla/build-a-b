@@ -1,9 +1,8 @@
 'use client';
 
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC } from 'react';
 import Image from 'next/image';
 import PoweredBy from '../PoweredBy';
-import { fallbackRocketLaunchDate } from '@/utils/constants';
 
 export interface RocketCountdownProps {
   isPhase2B: boolean;
@@ -11,44 +10,7 @@ export interface RocketCountdownProps {
   isPhase4: boolean;
 }
 
-const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C, isPhase4 }) => {
-  const targetDate = process.env.NEXT_PUBLIC_ROCKET_LAUNCH_DATE || fallbackRocketLaunchDate;
-
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    mins: 0,
-    secs: 0,
-  });
-
-  const isLaunchReady = useMemo(() => Object.values(timeLeft).every((v) => v === 0), [timeLeft]);
-
-  useEffect(() => {
-    const end = new Date(targetDate).getTime();
-
-    const tick = () => {
-      const now = Date.now();
-      const diff = end - now;
-
-      if (diff <= 0) {
-        setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const mins = Math.floor((diff / (1000 * 60)) % 60);
-      const secs = Math.floor((diff / 1000) % 60);
-
-      setTimeLeft({ days, hours, mins, secs });
-    };
-
-    tick();
-    const interval = setInterval(tick, 1000);
-
-    return () => clearInterval(interval);
-  }, [targetDate]);
-
+const RocketCountdown: FC<RocketCountdownProps> = () => {
   return (
     <div className="w-full flex flex-col items-end relative pr-12">
       <Image

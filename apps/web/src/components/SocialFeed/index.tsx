@@ -25,7 +25,8 @@ const SocialFeed: FC<SocialFeedProps> = ({ refId, src, title }) => {
           {/** Heading */}
           <h3 className="title-2 font-extrabold mb-4">{title}</h3>
           <p>
-            Follow us for Billionaire Blastoff highlights, TwitchCon recap reels and Data War updates.
+            Follow us for Billionaire Blastoff highlights, TwitchCon recap reels and Data War
+            updates.
           </p>
           {/** EmbedSocial feed */}
           <div className="embedsocial-hashtag" data-ref={refId} />

@@ -10,14 +10,12 @@ import LinkButton from '@/components/LinkButton';
 // import GetStarted, { type GetStartedProps } from '@/components/PrimaryFlow/GetStarted';
 import SocialFeed from '@/components/SocialFeed';
 import Window from '@/components/Window';
-import { avatarBentoData, COOKIE_NAME, FEED_REF_ID, FEED_SRC } from '@/utils/constants';
+import { FEED_REF_ID, FEED_SRC } from '@/utils/constants';
 import { evaluatePhase2Flag } from '@/utils/helpers/evaluate-phase2-flag';
 import { Metadata } from 'next';
 import Image from 'next/image';
 // import { Suspense } from 'react';
 import { evaluateFlag } from '@/app/flags';
-import { cookies } from 'next/headers';
-import { getUserAvatar } from '@/utils/actions/get-user-avatar';
 
 export const metadata: Metadata = {
   title: 'Firefox Billionaire Blast Off lands at TwitchCon',
@@ -43,15 +41,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [isAnyPhase2, isPhase2B, isPhase2C, isLaunchCompleted, showSocialFeed, isPhase4] =
-    await Promise.all([
-      evaluatePhase2Flag('a'),
-      evaluateFlag('showPhase2bFeatures'),
-      evaluateFlag('showPhase2cFeatures'),
-      evaluatePhase2Flag('c'),
-      evaluateFlag('showSocialFeed'),
-      evaluateFlag('showPhase4Features'),
-    ]);
+  const [isPhase2B, isPhase2C, isLaunchCompleted, showSocialFeed, isPhase4] = await Promise.all([
+    evaluateFlag('showPhase2bFeatures'),
+    evaluateFlag('showPhase2cFeatures'),
+    evaluatePhase2Flag('c'),
+    evaluateFlag('showSocialFeed'),
+    evaluateFlag('showPhase4Features'),
+  ]);
 
   const imagesForGallery = [
     {
@@ -75,12 +71,6 @@ export default async function Page() {
       isVideo: false,
     },
   ];
-
-  const cookieStore = await cookies();
-  const userCookie = cookieStore.get(COOKIE_NAME);
-  const userId = userCookie?.value;
-
-  const avatarData = userId ? await getUserAvatar(userId) : null;
 
   // const holoboxSection = (
   //   <section
@@ -132,13 +122,11 @@ export default async function Page() {
       className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
     >
       <Bento
-        image={isPhase4 ? "/assets/images/holoboxSection2.webp" : "/assets/images/doll.webp"}
+        image={isPhase4 ? '/assets/images/holoboxSection2.webp' : '/assets/images/doll.webp'}
         imageAlt="Billionaire in a box"
         className={`landscape:w-[30%] aspect-[377/275] border-none order-2`}
       />
-      <Bento
-        className={`border-none h-full landscape:flex-1 landscape:h-auto order-1`}
-      >
+      <Bento className={`border-none h-full landscape:flex-1 landscape:h-auto order-1`}>
         <Window className="bg-common-ash">
           <div className="p-4 landscape:p-12 flex flex-col gap-4">
             <h2 className="text-title-1 text-charcoal">The Billionaire Holobox</h2>
@@ -155,7 +143,13 @@ export default async function Page() {
                   className="flex items-center justify-center transition-opacity hover:opacity-70"
                   aria-label="Follow Firefox on TikTok"
                 >
-                  <img src="/assets/images/social/tiktok.svg" alt="TikTok" className="w-12 h-12" />
+                  <Image
+                    src="/assets/images/social/tiktok.svg"
+                    alt="TikTok"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12"
+                  />
                 </a>
                 <a
                   href="https://www.instagram.com/firefox/"
@@ -164,7 +158,13 @@ export default async function Page() {
                   className="flex items-center justify-center transition-opacity hover:opacity-70"
                   aria-label="Follow Firefox on Instagram"
                 >
-                  <img src="/assets/images/social/instagram.svg" alt="Instagram" className="w-12 h-12" />
+                  <Image
+                    src="/assets/images/social/instagram.svg"
+                    alt="Instagram"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12"
+                  />
                 </a>
                 <a
                   href="https://www.threads.net/@firefox"
@@ -173,7 +173,13 @@ export default async function Page() {
                   className="flex items-center justify-center transition-opacity hover:opacity-70"
                   aria-label="Follow Firefox on Threads"
                 >
-                  <img src="/assets/images/social/threads.svg" alt="Threads" className="w-12 h-12" />
+                  <Image
+                    src="/assets/images/social/threads.svg"
+                    alt="Threads"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12"
+                  />
                 </a>
                 <a
                   href="https://www.youtube.com/firefox"
@@ -182,7 +188,13 @@ export default async function Page() {
                   className="flex items-center justify-center transition-opacity hover:opacity-70"
                   aria-label="Follow Firefox on YouTube"
                 >
-                  <img src="/assets/images/social/youtube.svg" alt="YouTube" className="w-12 h-12" />
+                  <Image
+                    src="/assets/images/social/youtube.svg"
+                    alt="YouTube"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12"
+                  />
                 </a>
               </div>
             )}
@@ -208,7 +220,9 @@ export default async function Page() {
           <div className="p-4 landscape:p-12 flex flex-col gap-4">
             <h2 className="text-title-1 text-charcoal">Data War Digital is live!</h2>
             <p className="text-body-regular text-charcoal">
-              At TwitchCon, we launched Data War by launching egomaniacal, tantrum-prone little Billionaires to space. If you couldn&apos;t join us, you can now play the digital version right here in your browser.
+              At TwitchCon, we launched Data War by launching egomaniacal, tantrum-prone little
+              Billionaires to space. If you couldn&apos;t join us, you can now play the digital
+              version right here in your browser.
             </p>
             <div className="flex flex-wrap gap-4">
               <LinkButton
@@ -248,7 +262,7 @@ export default async function Page() {
         <LinkButton href="/" className="secondary-button flex">
           Watch the Launch!
         </LinkButton>
-       }
+      }
     />
   );
 
@@ -264,34 +278,36 @@ export default async function Page() {
                         bg-gradient-to-t from-black from-[20%] to-transparent
                         landscape:bg-gradient-to-r"
         >
-          <div className={`h-full flex flex-col gap-6 justify-end landscape:justify-center ${isPhase2C ? 'landscape:max-w-1/2' : ''} `}>
-              <div className="flex flex-col landscape:flex-row gap-6 landscape:gap-8 items-center">
-                <div className="flex-1">
-                  <h6 className="text-nav-item">THANK YOU, SAN DIEGO!</h6>
-                  <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom py-6">
-                    Billionaire Blast Off TwitchCon recap
-                  </h1>
-                  <p className="text-body-small">
-                    We brought the chaos, the cards, holographic dancing Billionaires, and a rocket
-                    countdown. It was a legitimate blast. Did you miss us at TwitchCon? We missed you!
-                    Catch up on all of the TwitchCon action right here!
-                  </p>
-                </div>
-                {isPhase4 && (
-                  <div className="w-full landscape:w-[40%]">
-                    <div className="w-full aspect-video">
-                      <iframe
-                        className="w-full h-full"
-                        src="https://www.youtube.com/embed/eqUxVAsA80k?playsinline=1&rel=0"
-                        title="YouTube video player"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                  </div>
-                )}
+          <div
+            className={`h-full flex flex-col gap-6 justify-end landscape:justify-center ${isPhase2C ? 'landscape:max-w-1/2' : ''} `}
+          >
+            <div className="flex flex-col landscape:flex-row gap-6 landscape:gap-8 items-center">
+              <div className="flex-1">
+                <h6 className="text-nav-item">THANK YOU, SAN DIEGO!</h6>
+                <h1 className="text-title-1 text-5xl-custom landscape:text-6xl-custom py-6">
+                  Billionaire Blast Off TwitchCon recap
+                </h1>
+                <p className="text-body-small">
+                  We brought the chaos, the cards, holographic dancing Billionaires, and a rocket
+                  countdown. It was a legitimate blast. Did you miss us at TwitchCon? We missed you!
+                  Catch up on all of the TwitchCon action right here!
+                </p>
               </div>
+              {isPhase4 && (
+                <div className="w-full landscape:w-[40%]">
+                  <div className="w-full aspect-video">
+                    <iframe
+                      className="w-full h-full"
+                      src="https://www.youtube.com/embed/eqUxVAsA80k?playsinline=1&rel=0"
+                      title="YouTube video player"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </Hero>
@@ -501,7 +517,9 @@ export default async function Page() {
         <SocialFeed
           refId={FEED_REF_ID}
           src={FEED_SRC}
-          title={isLaunchCompleted || isPhase4 ? 'TwitchCon highlights' : 'TwitchCon behind the scenes'}
+          title={
+            isLaunchCompleted || isPhase4 ? 'TwitchCon highlights' : 'TwitchCon behind the scenes'
+          }
         />
       )}
 

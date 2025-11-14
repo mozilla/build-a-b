@@ -75,6 +75,7 @@ export default async function Page() {
         <CountDown
           isPhase2B={isPhase2B}
           isPhase2C={isPhase2C}
+          isPhase4={isPhase4}
           cta={
             shouldDisplayLaunchCta ? (
               <LinkButton href="/" className="secondary-button flex">
