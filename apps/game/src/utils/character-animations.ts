@@ -262,12 +262,12 @@ export const getCharacterAnimation = (
   const cpu = cpuId as BillionaireId;
 
   // Try preferred format first
-  const preferredAnimation = ANIMATION_REGISTRIES[animationType][preferredFormat][player]?.[cpu];
+  const preferredAnimation = ANIMATION_REGISTRIES[animationType][preferredFormat][cpu]?.[player];
   if (preferredAnimation) return preferredAnimation;
 
   // Fall back to the other format
   const fallbackFormat: VideoFileType = preferredFormat === 'webm' ? 'mp4' : 'webm';
-  return ANIMATION_REGISTRIES[animationType][fallbackFormat][player]?.[cpu];
+  return ANIMATION_REGISTRIES[animationType][fallbackFormat][cpu]?.[player];
 };
 
 /**

@@ -20,6 +20,9 @@ export const CardCarousel = ({
   renderCardContent,
   className = '',
   faceDownCardIds,
+  swiperOptions = {},
+  cardClassName,
+  cardRotation = 'rotate-[-15deg]',
 }: CardCarouselProps) => {
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
@@ -31,12 +34,13 @@ export const CardCarousel = ({
         enabled: true,
         onlyInViewport: true,
       },
+      ...swiperOptions, // Allow custom options to override defaults
     }),
-    [],
+    [swiperOptions],
   );
 
   // Generate descriptive alt text for card images
-  const getCardAltText = (card: typeof cards[0]): string => {
+  const getCardAltText = (card: (typeof cards)[0]): string => {
     // Special cards display their name below, so just use type + value
     if (card.specialType) {
       return `${capitalize(card.specialType)} card`;
@@ -68,10 +72,12 @@ export const CardCarousel = ({
           return (
             <SwiperSlide key={card.id}>
               <div
-                className="flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 rotate-[-15deg]"
+                className={`flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 ${cardRotation} ${
+                  cardClassName || ''
+                }`}
                 onClick={() => onCardSelect(card)}
               >
-                <div className="relative w-[15.3125rem] h-[21.4375rem] max-w-[245px] max-h-[343px] rounded-lg overflow-hidden shadow-2xl">
+                <div className="relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl">
                   <img
                     src={cardImage}
                     alt={isFaceDown ? 'Face-down card' : getCardAltText(card)}

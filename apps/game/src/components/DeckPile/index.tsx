@@ -112,7 +112,7 @@ export const DeckPile: FC<DeckPileProps> = ({
     >
       <motion.div
         layout
-        className={cn('flex flex-col items-center gap-1 w-full', className)}
+        className={cn('flex flex-col items-center gap-1 w-full outline-0', className)}
         data-deck-owner={owner}
         transition={{
           layout: {
@@ -127,7 +127,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         */}
         <motion.div
           ref={deckRef}
-          className="relative p-2 w-full z-19"
+          className="relative p-2 w-full z-19 outline-0"
           onClick={cardCount > 0 && !isRunningWinAnimation ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}

@@ -1,59 +1,122 @@
 /**
  * Special Effect Animation Registry
  * Centralized mapping of special effects to their animation video files
+ *
+ * Animations are loaded from Supabase storage
  */
 
-import forcedEmpathyVideo from '@/assets/animations/effects/forced-empathy.webm';
-import dataGrabVideo from '@/assets/animations/effects/data-grab.webm';
-// Import more animations as they become available:
-// import hostileTakeoverVideo from '@/assets/animations/effects/hostile-takeover.webm';
-// import openWhatYouWantVideo from '@/assets/animations/effects/open-what-you-want.webm';
-// import launchStackVideo from '@/assets/animations/effects/launch-stack.webm';
+const SUPABASE_BASE_URL = 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
 
 export type SpecialEffectAnimationType =
   | 'forced_empathy'
   | 'open_what_you_want'
   | 'hostile_takeover'
   | 'launch_stack'
-  | 'data_grab';
+  | 'data_grab'
+  | 'firewall_recall'
+  | 'firewall_smacker'
+  | 'move_buyout'
+  | 'move_tantrum'
+  | 'move_theft';
 
 export interface SpecialEffectAnimation {
-  videoSrc: string;
+  videoSrc: string | { player: string; cpu: string };
   title: string;
   loop?: boolean;
 }
 
 /**
+ * Helper function to get the correct video source based on who played the card
+ * @param animation - The animation configuration
+ * @param isPlayerAction - Whether the action was performed by the player (true) or CPU (false)
+ * @returns The video source URL string
+ */
+export function getAnimationVideoSrc(
+  animation: SpecialEffectAnimation,
+  isPlayerAction: boolean = true,
+): string {
+  const { videoSrc } = animation;
+
+  // If videoSrc is a string, return it directly (used for both player and CPU)
+  if (typeof videoSrc === 'string') {
+    return videoSrc;
+  }
+
+  // If videoSrc is an object, return the appropriate version
+  return isPlayerAction ? videoSrc.player : videoSrc.cpu;
+}
+
+/**
  * Animation registry mapping effect types to their video files
- * Add new animations here as they become available
+ * Some animations have separate versions for player and CPU actions
  */
 export const SPECIAL_EFFECT_ANIMATIONS: Record<
   SpecialEffectAnimationType,
   SpecialEffectAnimation
 > = {
   forced_empathy: {
-    videoSrc: forcedEmpathyVideo,
+    videoSrc: `${SUPABASE_BASE_URL}firewall_empathy.webm`,
     title: 'Forced Empathy',
     loop: true,
   },
   open_what_you_want: {
-    videoSrc: forcedEmpathyVideo, // TODO: Replace with actual OWYW animation when available
+    videoSrc: `${SUPABASE_BASE_URL}firewall_owyw.webm`,
     title: 'Open What You Want',
     loop: true,
   },
   hostile_takeover: {
-    videoSrc: forcedEmpathyVideo, // TODO: Replace with actual Hostile Takeover animation when available
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+    },
     title: 'Hostile Takeover',
     loop: true,
   },
   launch_stack: {
-    videoSrc: forcedEmpathyVideo, // TODO: Replace with actual Launch Stack animation when available
+    videoSrc: `${SUPABASE_BASE_URL}launchstack.webm`,
     title: 'Launch Stack',
     loop: true,
   },
   data_grab: {
-    videoSrc: dataGrabVideo,
+    videoSrc: `${SUPABASE_BASE_URL}data_grab.webm`,
     title: 'Data Grab',
+    loop: true,
+  },
+  firewall_recall: {
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}firewall_recall_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}firewall_recall_cpu.webm`,
+    },
+    title: 'Firewall Recall',
+    loop: true,
+  },
+  firewall_smacker: {
+    videoSrc: `${SUPABASE_BASE_URL}firewall_smacker.webm`,
+    title: 'Firewall Smacker',
+    loop: true,
+  },
+  move_buyout: {
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}move_buyout_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}move_buyout_cpu.webm`,
+    },
+    title: 'Move Buyout',
+    loop: true,
+  },
+  move_tantrum: {
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}move_tantrum_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}move_tantrum_cpu.webm`,
+    },
+    title: 'Move Tantrum',
+    loop: true,
+  },
+  move_theft: {
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}move_theft_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}move_theft_cpu.webm`,
+    },
+    title: 'Move Theft',
     loop: true,
   },
 };

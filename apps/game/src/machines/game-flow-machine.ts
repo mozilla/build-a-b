@@ -7,6 +7,7 @@ import { assign, createMachine } from 'xstate';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import type { TooltipKey } from '../config/tooltip-config';
 import { useGameStore } from '../store/game-store';
+import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 
 export interface GameFlowContext {
   currentTurn: number;
@@ -231,12 +232,14 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: 'EMPTY', // Clear any previous tooltips
         }),
         // Give players time to see the revealed cards before resolving
+        // Only auto-transition if no animations are playing (animations will trigger events manually)
         after: {
           [ANIMATION_DURATIONS.CARD_COMPARISON]: [
-            { target: 'data_war', guard: 'isDataWar' },
-            { target: 'data_grab', guard: 'isDataGrab' },
-            { target: 'special_effect', guard: 'hasSpecialEffects' },
-            { target: 'resolving' },
+            { target: 'resolving', guard: 'shouldResolveWithoutChecks' },
+            { target: 'data_war', guard: 'isDataWarAndNotAnimating' },
+            { target: 'data_grab', guard: 'isDataGrabAndNotAnimating' },
+            { target: 'special_effect', guard: 'hasSpecialEffectsAndNotAnimating' },
+            { target: 'resolving', guard: 'notAnimating' },
           ],
         },
         on: {
@@ -500,6 +503,11 @@ export const gameFlowMachine = createMachine(
         const state = useGameStore.getState();
         return state.winner !== null && state.winCondition !== null;
       },
+      notAnimating: () => {
+        // Check if special card animations are NOT paused
+        const state = useGameStore.getState();
+        return !state.animationsPaused;
+      },
       isDataWar: () => {
         // Check if the current turn is a tie (Data War)
         // IMPORTANT: Defer Data War check if we're waiting for another play to complete
@@ -512,9 +520,24 @@ export const gameFlowMachine = createMachine(
 
         return state.checkForDataWar();
       },
+      isDataWarAndNotAnimating: () => {
+        const state = useGameStore.getState();
+        if (state.animationsPaused) return false;
+
+        if (state.anotherPlayExpected) {
+          return false;
+        }
+
+        return state.checkForDataWar();
+      },
       hasSpecialEffects: () => {
         // Check if there are pending special effects to show
         const state = useGameStore.getState();
+        return state.pendingEffects.length > 0;
+      },
+      hasSpecialEffectsAndNotAnimating: () => {
+        const state = useGameStore.getState();
+        if (state.animationsPaused) return false;
         return state.pendingEffects.length > 0;
       },
       hasPreRevealEffects: () => {
@@ -537,6 +560,68 @@ export const gameFlowMachine = createMachine(
         // Check if a Data Grab card was played and there are enough cards in play
         const state = useGameStore.getState();
         return state.checkForDataGrab();
+      },
+      isDataGrabAndNotAnimating: () => {
+        const state = useGameStore.getState();
+        if (state.animationsPaused) return false;
+        return state.checkForDataGrab();
+      },
+      shouldResolveWithoutChecks: () => {
+        // Check if we should skip data war/special effect checks and go directly to resolving
+        // This happens when:
+        // 1. Hostile Takeover data war is complete
+        // 2. We're waiting for "another play" to complete
+        // 3. A card triggers "another play"
+        const state = useGameStore.getState();
+
+        // Don't skip if animations are still playing
+        if (state.animationsPaused) return false;
+
+        // Check if we're waiting for another play to complete
+        if (state.anotherPlayExpected) {
+          return true;
+        }
+
+        // Check if either card triggers "another play"
+        const playerTriggersAnother =
+          state.player.playedCard &&
+          shouldTriggerAnotherPlay(state.player.playedCard) &&
+          !isEffectBlocked(state.trackerSmackerActive, 'player');
+
+        const cpuTriggersAnother =
+          state.cpu.playedCard &&
+          shouldTriggerAnotherPlay(state.cpu.playedCard) &&
+          !isEffectBlocked(state.trackerSmackerActive, 'cpu');
+
+        if (playerTriggersAnother || cpuTriggersAnother) {
+          return true;
+        }
+
+        // Check if Hostile Takeover data war is complete
+        const playerPlayedHt = state.player.playedCard?.specialType === 'hostile_takeover';
+        const cpuPlayedHt = state.cpu.playedCard?.specialType === 'hostile_takeover';
+        const hostileTakeoverPlayed = playerPlayedHt || cpuPlayedHt;
+
+        if (hostileTakeoverPlayed) {
+          const opponent = playerPlayedHt ? state.cpu : state.player;
+
+          // If opponent has played their 4 data war cards (5 total), data war is complete
+          if (opponent.playedCardsInHand.length >= 5) {
+            return true;
+          }
+
+          // If both players have played HT and both have 5 cards, data war is complete
+          if (
+            playerPlayedHt &&
+            cpuPlayedHt &&
+            state.player.playedCardsInHand.length >= 5 &&
+            state.cpu.playedCardsInHand.length >= 5
+          ) {
+            return true;
+          }
+        }
+
+        return false;
       },
     },
   },

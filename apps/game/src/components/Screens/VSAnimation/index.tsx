@@ -66,6 +66,7 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
           ref={videoRef}
           src={animationSrc}
           muted
+          loop
           playsInline
           className="w-full h-full object-cover"
           aria-label={`${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`}
