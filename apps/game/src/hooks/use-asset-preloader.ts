@@ -6,7 +6,7 @@
  * followed by gameplay assets in the background.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 /**
  * Global map of preloaded images to prevent duplicate downloads.
  * Keeps track of loaded images across component remounts.
@@ -75,6 +75,7 @@ export function useAssetPreloader(
 ) {
   const { enabled = true, batchDelay = 50 } = options;
   const loadingRef = useRef(false);
+  const [_loadCount, setLoadCount] = useState(0);
 
   useEffect(() => {
     if (!enabled) {
@@ -116,7 +117,32 @@ export function useAssetPreloader(
     }
 
     loadingRef.current = true;
+
+    // Track current priority tier being loaded
+    let currentPriority: keyof AssetPreloadPriority | null = null;
     let currentIndex = 0;
+
+    /**
+     * Checks if the current priority tier is fully loaded.
+     *
+     * This enforces strict priority ordering - lower priority assets
+     * won't start loading until higher priority assets complete.
+     * This prevents resource contention on slow connections.
+     *
+     * Example: Medium-priority cards won't load until all high-priority
+     * backgrounds are complete, ensuring faster progression through onboarding.
+     */
+    const isCurrentPriorityComplete = () => {
+      if (!currentPriority) return true;
+
+      // Find all assets of current priority
+      const currentPriorityAssets = urlsToPreload.filter(
+        ({ priority }) => priority === currentPriority,
+      );
+
+      // Check if all are loaded
+      return currentPriorityAssets.every(({ url }) => globalPreloadedImages.get(url)?.loaded);
+    };
 
     // Preload images one at a time with small delays
     // This prevents overwhelming slow connections
@@ -127,6 +153,33 @@ export function useAssetPreloader(
       }
 
       const { url, priority } = urlsToPreload[currentIndex];
+
+      /**
+       * Priority barrier: Enforce strict priority ordering
+       *
+       * When transitioning to a new priority tier (e.g., critical → high),
+       * we check if the previous tier is fully loaded. If not, we wait and
+       * retry. This ensures:
+       *
+       * - Critical assets complete before high-priority starts
+       * - High-priority (backgrounds) complete before medium (cards) starts
+       * - Medium assets complete before low-priority starts
+       *
+       * This prevents lower-priority assets from consuming bandwidth/resources
+       * while critical assets are still loading, improving perceived performance
+       * and allowing users to progress through the onboarding flow faster.
+       */
+      if (currentPriority !== priority) {
+        // If we have a previous priority, ensure it's complete before proceeding
+        if (currentPriority !== null && !isCurrentPriorityComplete()) {
+          // Wait a bit and check again
+          setTimeout(preloadNext, 50);
+          return;
+        }
+
+        currentPriority = priority;
+      }
+
       const img = new Image();
 
       const preloadedImage: PreloadedImage = {
@@ -162,6 +215,8 @@ export function useAssetPreloader(
             console.warn(`Preloaded but decode failed [${priority}]: ${url.split('/').pop()}`);
           }
         }
+
+        setLoadCount((prev) => prev + 1);
       };
 
       img.onerror = () => {
@@ -209,11 +264,26 @@ export function useAssetPreloader(
   const totalAssets = Object.values(stats).reduce((sum, { total }) => sum + total, 0);
   const totalLoaded = Object.values(stats).reduce((sum, { loaded }) => sum + loaded, 0);
 
+  // Check if essential assets (critical + high + medium) are ready
+  const essentialLoaded = stats.critical.loaded + stats.high.loaded + stats.medium.loaded;
+  const essentialTotal = stats.critical.total + stats.high.total + stats.medium.total;
+  const essentialReady = essentialLoaded === essentialTotal && essentialTotal > 0;
+
+  // Check if high-priority assets (critical + high) are ready (needed for background selection)
+  const highPriorityLoaded = stats.critical.loaded + stats.high.loaded;
+  const highPriorityTotal = stats.critical.total + stats.high.total;
+  const highPriorityReady = highPriorityLoaded === highPriorityTotal && highPriorityTotal > 0;
+
   return {
     isLoading: loadingRef.current,
     totalAssets,
     totalLoaded,
     stats,
     progress: totalAssets > 0 ? (totalLoaded / totalAssets) * 100 : 0,
+    essentialProgress: essentialTotal > 0 ? (essentialLoaded / essentialTotal) * 100 : 0,
+    highPriorityProgress:
+      highPriorityTotal > 0 ? (highPriorityLoaded / highPriorityTotal) * 100 : 0,
+    essentialReady,
+    highPriorityReady,
   };
 }

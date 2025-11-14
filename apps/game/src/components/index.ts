@@ -39,6 +39,9 @@ export type { AssetPreloaderProps } from './AssetPreloader';
 
 export { PreloadLinks } from './PreloadLinks';
 
+export { LoadingScreen } from './LoadingScreen';
+export type { LoadingScreenProps } from './LoadingScreen';
+
 // Debug Components
 export { DebugUI } from './DebugUI';
 

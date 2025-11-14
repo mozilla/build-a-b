@@ -13,7 +13,7 @@ export const ANIMATION_DURATIONS = {
   WIN_ANIMATION: 1200,
   OWYW_ANIMATION: 2000,
   SPECIAL_EFFECT_DISPLAY: 2000,
-  VS_ANIMATION_DURATION: 3000,
+  VS_ANIMATION_DURATION: 3000, // Approximate duration - actual transition triggered by video 'ended' event
 
   // Data war
   DATA_WAR_REVEAL: 1000,

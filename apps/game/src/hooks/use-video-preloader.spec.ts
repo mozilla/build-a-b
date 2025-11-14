@@ -7,10 +7,14 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { useVideoPreloader } from './use-video-preloader';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { clearPreloadedVideos, useVideoPreloader } from './use-video-preloader';
 
 describe('useVideoPreloader', () => {
+  // Clear global preloaded videos before each test to ensure isolation
+  beforeEach(() => {
+    clearPreloadedVideos();
+  });
   it('should return initial state when disabled', () => {
     const videoUrls = ['https://example.com/video1.webm'];
 
