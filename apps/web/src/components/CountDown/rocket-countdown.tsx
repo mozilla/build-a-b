@@ -12,20 +12,22 @@ export interface RocketCountdownProps {
 
 const RocketCountdown: FC<RocketCountdownProps> = () => {
   return (
-    <div className="w-full flex flex-col items-end relative pr-12">
+    <div className="w-full flex flex-0 flex-col items-end relative landscape:mt-12">
       <Image
         src="/assets/images/intro-modal/10.webp"
         alt={`Floating character 10`}
         sizes="(max-width: 768px) 30vw, 20vw"
         width={223}
         height={223}
-        className="absolute top-[-6rem] right-[-2rem] rotate-[-18deg] z-10 w-[10rem] h-[10rem]"
+        className="absolute -top-16 landscape:-top-24 -right-14 landscape:-right-20 rotate-[-18deg] z-10 w-30 landscape:w-[10rem] h-30 landscape:h-[10rem]"
       />
-      <div className="relative w-[calc(100%-2rem)] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6 landscape:w-fit">
+      <div className="relative w-[calc(100%-2rem)] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:py-7 landscape:w-[27.275rem]">
         {/* {(isPhase2B || (isLaunchReady && !isPhase2B && !isPhase2C && !isPhase4)) && (
           <p className="title-4 font-extrabold text-center">Watch the Launch!</p>
         )} */}
-        <p className="title-4 font-extrabold text-center">#BillionaireBlastOff</p>
+        <p className="title-4 font-extrabold text-center landscape:text-[2rem]">
+          #BillionaireBlastOff
+        </p>
         {/* {!isLaunchReady && !isPhase2B && !isPhase2C && !isPhase4 && (
           <dl className="flex justify-center gap-7 text-center" aria-live="polite">
             <div
@@ -66,7 +68,7 @@ const RocketCountdown: FC<RocketCountdownProps> = () => {
             </div>
           </dl>
         )} */}
-        <div className="absolute w-[4rem] h-[7rem] landscape:w-[6rem] landscape:h-[10rem] top-[-1.2rem] left-[-2rem] landscape:top-[-2.5rem] landscape:left-[-4rem] rotate-[16deg]">
+        <div className="absolute w-[4rem] h-[7rem] landscape:w-[6rem] landscape:h-[10rem] top-[-1.2rem] left-[-2rem] landscape:top-[-2.5rem] landscape:left-[-2rem] rotate-[16deg]">
           <Image src="/assets/images/rocket-countdown.webp" sizes="25vw" alt="Rocket" fill />
         </div>
       </div>
