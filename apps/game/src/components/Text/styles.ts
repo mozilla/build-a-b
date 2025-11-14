@@ -36,7 +36,7 @@ export const variantStyles: Record<TextVariant, string> = {
   'label-uppercase': 'text-[0.5rem] leading-normal font-extrabold uppercase tracking-[0.08em]', // 8px, 8% letter spacing (0.64px/8px = 0.08em)
   'label-medium': 'text-xs leading-[1.333] font-medium', // 12px / 16px (16/12 = 1.333)
   'label-semibold': 'text-xs leading-[1.333] font-semibold', // 12px / 16px (16/12 = 1.333)
-  'label-extrabold': 'text-xs leading-none font-extrabold', // 12px / 12px (12/12 = 1)
+  'label-extrabold': 'text-xs font-extrabold', // 12px / 12px (12/12 = 1)
 
   // Display text
   'display-large':

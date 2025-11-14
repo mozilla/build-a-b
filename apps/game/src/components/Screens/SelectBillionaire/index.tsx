@@ -46,7 +46,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({ send, className, childr
     <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
       <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
-      <div className="w-full relative z-10 flex flex-col items-center justify-start gap-8 px-9 py-8 pt-16 max-w-[25rem] mx-auto h-full">
+      <div className="w-full relative z-10 flex flex-col items-center justify-end gap-8 px-9 py-8 pt-16 max-w-[25rem] mx-auto h-full">
         {/* Title and Description */}
         <div className="flex flex-col items-center gap-4 w-full">
           <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">

@@ -1,5 +1,5 @@
 import { useGameStore } from '@/store';
-import { SPECIAL_EFFECT_ANIMATIONS } from '@/config/special-effect-animations';
+import { SPECIAL_EFFECT_ANIMATIONS, getAnimationVideoSrc } from '@/config/special-effect-animations';
 import { SpecialCardAnimation } from './index';
 
 /**
@@ -10,10 +10,16 @@ import { SpecialCardAnimation } from './index';
  * animation using the SpecialCardAnimation component.
  *
  * Animations managed:
- * - Open What You Want (pre-reveal, beginning of next turn)
+ * - Tracker Smacker (instant, when card is played)
  * - Forced Empathy (instant, when card is played)
- * - Hostile Takeover (instant, when card is played)
+ * - Hostile Takeover (instant, when card is played, unless blocked by tracker smacker)
+ * - Leveraged Buyout (when card is played, unless blocked by tracker smacker)
+ * - Patent Theft (when card is played, unless blocked by tracker smacker)
+ * - Temper Tantrum (when card is played, unless blocked by tracker smacker)
+ * - Mandatory Recall (when card is played)
  * - Launch Stack (post-turn, after collecting a launch stack)
+ * - Data Grab (during mini-game takeover)
+ * - Open What You Want (pre-reveal, beginning of next turn)
  */
 export const EffectAnimationOrchestrator = () => {
   const {
@@ -22,10 +28,37 @@ export const EffectAnimationOrchestrator = () => {
     showHostileTakeoverAnimation,
     showLaunchStackAnimation,
     showDataGrabTakeover,
+    showTrackerSmackerAnimation,
+    showLeveragedBuyoutAnimation,
+    showPatentTheftAnimation,
+    showTemperTantrumAnimation,
+    showMandatoryRecallAnimation,
+    activePlayer,
+    currentAnimationPlayer,
+    isPlayingQueuedAnimation,
   } = useGameStore();
 
+  // Determine if the current action is from the player
+  // Use currentAnimationPlayer when processing queued animations, otherwise use activePlayer
+  const isPlayerAction = isPlayingQueuedAnimation && currentAnimationPlayer
+    ? currentAnimationPlayer === 'player'
+    : activePlayer === 'player';
+
   // Priority order: Check animations in order of their display timing
-  // Instant effects (Forced Empathy, Hostile Takeover) > Post-turn (Launch Stack) > Pre-reveal (OWYW)
+  // Instant effects (Forced Empathy, Hostile Takeover, etc.) > Post-turn (Launch Stack) > Pre-reveal (OWYW)
+
+  // Tracker Smacker - Instant effect
+  if (showTrackerSmackerAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.firewall_smacker;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
 
   // Forced Empathy - Shows video overlay (separate from deck pile animation)
   if (showForcedEmpathyAnimation) {
@@ -33,7 +66,7 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={animation.videoSrc}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -46,7 +79,59 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={animation.videoSrc}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Leveraged Buyout - Move card
+  if (showLeveragedBuyoutAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.move_buyout;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Patent Theft - Move card
+  if (showPatentTheftAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.move_theft;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Temper Tantrum - Move card
+  if (showTemperTantrumAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.move_tantrum;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Mandatory Recall - Firewall card
+  if (showMandatoryRecallAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.firewall_recall;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -59,7 +144,7 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={animation.videoSrc}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -72,7 +157,7 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={animation.videoSrc}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -85,7 +170,7 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={animation.videoSrc}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
         title={animation.title}
         loop={animation.loop}
       />

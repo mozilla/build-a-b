@@ -103,7 +103,7 @@ export const ScreenRenderer: FC = () => {
           <ScreenComponent
             key="component"
             send={send}
-            className="flex flex-col items-center justify-center relative w-full h-full lg:rounded-xl overflow-clip"
+            className="flex flex-col items-center justify-start relative w-full h-full lg:rounded-xl overflow-auto"
           >
             {showCloseIcon && (
               <div className="absolute top-5 right-5 z-20">
