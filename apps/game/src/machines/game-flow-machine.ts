@@ -121,7 +121,10 @@ export const gameFlowMachine = createMachine(
 
       select_billionaire: {
         on: {
-          SELECT_BILLIONAIRE: 'select_background',
+          SELECT_BILLIONAIRE: {
+            target: 'select_background',
+            guard: 'backgroundAssetsPreloaded',
+          },
         },
       },
 
@@ -137,7 +140,10 @@ export const gameFlowMachine = createMachine(
         }),
         on: {
           SHOW_GUIDE: 'quick_start_guide',
-          SKIP_INSTRUCTIONS: 'vs_animation',
+          SKIP_INSTRUCTIONS: {
+            target: 'vs_animation',
+            guard: 'assetsPreloaded',
+          },
           SKIP_TO_GAME: 'ready', // Allow skipping directly to ready for testing
         },
       },
@@ -157,14 +163,14 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: 'YOUR_MISSION',
         }),
         on: {
-          START_PLAYING: 'vs_animation',
+          START_PLAYING: {
+            target: 'vs_animation',
+            guard: 'assetsPreloaded',
+          },
         },
       },
 
       vs_animation: {
-        after: {
-          [ANIMATION_DURATIONS.VS_ANIMATION_DURATION]: 'ready', // Auto-transition after animation
-        },
         on: {
           VS_ANIMATION_COMPLETE: 'ready',
         },
@@ -495,6 +501,16 @@ export const gameFlowMachine = createMachine(
   },
   {
     guards: {
+      backgroundAssetsPreloaded: () => {
+        // Check if high-priority assets (critical + high = backgrounds) are ready
+        const state = useGameStore.getState();
+        return state.highPriorityAssetsReady === true;
+      },
+      assetsPreloaded: () => {
+        // Check if all essential assets (critical + high + medium) and VS video are ready
+        const state = useGameStore.getState();
+        return state.preloadingComplete === true;
+      },
       hasWinCondition: () => {
         // Check Zustand store for win condition
         const state = useGameStore.getState();

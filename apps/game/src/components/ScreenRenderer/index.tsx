@@ -2,6 +2,7 @@ import blueGridBg from '@/assets/backgrounds/color_blue.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { STATE_BACKGROUND_CONFIG } from '@/components/ScreenRenderer/background-config';
 import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
@@ -11,6 +12,7 @@ import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
+import { usePreloading } from '@/hooks/use-preloading';
 import { useGameStore } from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
 import { Button } from '@heroui/react';
@@ -53,6 +55,16 @@ const SCREENS_WITH_CLOSE_ICON = [
 export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
   const { toggleMenu, selectedBackground, selectedBillionaire } = useGameStore();
+  const {
+    isReady,
+    loadedAssets,
+    totalAssets,
+    essentialAssetsReady,
+    highPriorityAssetsReady,
+    vsVideoReady,
+    highPriorityProgress,
+    essentialProgress,
+  } = usePreloading();
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -76,6 +88,32 @@ export const ScreenRenderer: FC = () => {
     backgroundImage = getBackgroundImage(selectedBackground || selectedBillionaire) || nightSkyBg;
   } else if (config?.variant === 'grid') {
     backgroundImage = blueGridBg;
+  }
+
+  // Show loading screen if we're waiting for assets
+  // - On select_billionaire: wait for backgrounds to load
+  // - On intro/your_mission: wait for all essential assets + VS video
+  const isWaitingForBackgrounds = phaseKey === 'select_billionaire' && !highPriorityAssetsReady;
+  const isWaitingForEssentialAssets =
+    !isReady && (phaseKey === 'intro' || phaseKey === 'your_mission');
+
+  if (isWaitingForBackgrounds || isWaitingForEssentialAssets) {
+    // Determine phase-specific progress
+    const phaseProgress = isWaitingForBackgrounds ? highPriorityProgress : essentialProgress;
+
+    return (
+      <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
+        <Frame backgroundSrc={nightSkyBg}>
+          <LoadingScreen
+            loadedCount={loadedAssets}
+            totalCount={totalAssets}
+            essentialAssetsReady={essentialAssetsReady}
+            vsVideoReady={vsVideoReady}
+            progress={phaseProgress}
+          />
+        </Frame>
+      </div>
+    );
   }
 
   // Pass send function and other common props to all screens

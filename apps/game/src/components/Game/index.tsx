@@ -4,6 +4,7 @@
 
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
   useCpuLaunchStacks,
@@ -14,12 +15,15 @@ import {
   useWinCondition,
   useWinner,
 } from '@/store';
+import { cn } from '@/utils/cn';
 import { getBackgroundImage } from '@/utils/selectors';
 import { useEffect } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useTooltip } from '../../hooks/use-tooltip';
 import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
+import { DataGrabMiniGame } from '../DataGrabMiniGame';
+import { DataGrabResultsModal } from '../DataGrabResultsModal';
 import { DataWarAnimation } from '../DataWarAnimation';
 import { DebugUI } from '../DebugUI';
 import { EffectNotificationModal } from '../EffectNotificationModal';
@@ -27,8 +31,6 @@ import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
-import { DataGrabMiniGame } from '../DataGrabMiniGame';
-import { DataGrabResultsModal } from '../DataGrabResultsModal';
 
 /**
  * Game Component - Main game container
@@ -47,6 +49,7 @@ export function Game() {
     resetGame,
     send,
   } = useGameLogic();
+  const { essentialAssetsReady } = usePreloading();
 
   // Convert tooltip key to actual message (with display count tracking)
   const tooltipMessage = useTooltip(tooltipKey);
@@ -171,7 +174,12 @@ export function Game() {
   }, [isDataWarPhase, player.playedCard?.specialType, tapDeck]);
 
   return (
-    <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
+    <div
+      className={cn(
+        'h-[100vh] w-[100vw] bg-black flex items-center justify-center',
+        essentialAssetsReady ? 'opacity-100' : 'opacity-0 pointer-events-none',
+      )}
+    >
       <Board bgSrc={backgroundImage}>
         <div className="grid max-w-[25rem] max-h-[54rem] grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-3 gap-x-2 h-full">
           <PlayerDeck

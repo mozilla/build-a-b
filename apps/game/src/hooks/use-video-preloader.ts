@@ -5,12 +5,19 @@
  * when they're needed. Uses the browser's video preload mechanism.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+/**
+ * Global map of preloaded videos to share across component instances.
+ * Prevents duplicate video elements and allows VSAnimation to use preloaded videos.
+ */
+const globalPreloadedVideos = new Map<string, PreloadedVideo>();
 
 interface PreloadedVideo {
   url: string;
   element: HTMLVideoElement;
   loaded: boolean;
+  canPlayThrough: boolean;
 }
 
 interface UseVideoPreloaderOptions {
@@ -30,6 +37,22 @@ interface UseVideoPreloaderOptions {
 }
 
 /**
+ * Get a preloaded video element by URL
+ * Returns the preloaded video element if available, null otherwise
+ */
+export function getPreloadedVideo(url: string): HTMLVideoElement | null {
+  return globalPreloadedVideos.get(url)?.element || null;
+}
+
+/**
+ * Clear all preloaded videos (useful for testing)
+ * @internal
+ */
+export function clearPreloadedVideos(): void {
+  globalPreloadedVideos.clear();
+}
+
+/**
  * Hook to preload video assets in the background
  *
  * @param videoUrls - Array of video URLs to preload
@@ -41,8 +64,8 @@ export function useVideoPreloader(
   options: UseVideoPreloaderOptions = {},
 ) {
   const { enabled = true, preloadStrategy = 'auto' } = options;
-  const preloadedVideosRef = useRef<Map<string, PreloadedVideo>>(new Map());
   const loadingRef = useRef(false);
+  const [_updateCount, setUpdateCount] = useState(0);
 
   useEffect(() => {
     if (!enabled || videoUrls.length === 0) {
@@ -52,9 +75,12 @@ export function useVideoPreloader(
     // Filter out undefined URLs and already preloaded videos
     const urlsToPreload = videoUrls
       .filter((url): url is string => Boolean(url))
-      .filter((url) => !preloadedVideosRef.current.has(url));
+      .filter((url) => !globalPreloadedVideos.has(url));
 
     if (urlsToPreload.length === 0) {
+      if (import.meta.env.DEV && loadingRef.current === false) {
+        console.log('Videos already preloaded (skipping duplicate preload)');
+      }
       return;
     }
 
@@ -71,30 +97,46 @@ export function useVideoPreloader(
         url,
         element: video,
         loaded: false,
+        canPlayThrough: false,
       };
 
       video.addEventListener('loadeddata', () => {
         preloadedVideo.loaded = true;
+        setUpdateCount((prev) => prev + 1); // Trigger re-render
+        if (import.meta.env.DEV) {
+          console.log(`📹 Video metadata loaded: ${url.split('/').pop()}`);
+        }
+      });
+
+      video.addEventListener('canplaythrough', () => {
+        preloadedVideo.canPlayThrough = true;
+        setUpdateCount((prev) => prev + 1); // Trigger re-render
+        if (import.meta.env.DEV) {
+          console.log(`✓ Video ready to play: ${url.split('/').pop()}`);
+        }
       });
 
       video.addEventListener('error', (e) => {
         console.error(`Failed to preload video: ${url.split('/').pop()}`, e);
       });
 
-      preloadedVideosRef.current.set(url, preloadedVideo);
+      globalPreloadedVideos.set(url, preloadedVideo);
     });
 
     return () => {
-      // Note: We intentionally keep preloaded videos in memory
-      // They're lightweight references and will be garbage collected
-      // when the component unmounts or URLs change
       loadingRef.current = false;
+      // Keep preloaded videos in global map across remounts
     };
   }, [videoUrls, enabled, preloadStrategy]);
 
   return {
     isLoading: loadingRef.current,
-    preloadedCount: Array.from(preloadedVideosRef.current.values()).filter((v) => v.loaded).length,
-    totalCount: preloadedVideosRef.current.size,
+    preloadedCount: Array.from(globalPreloadedVideos.values()).filter((v) => v.loaded).length,
+    readyToPlayCount: Array.from(globalPreloadedVideos.values()).filter((v) => v.canPlayThrough)
+      .length,
+    totalCount: globalPreloadedVideos.size,
+    allReady:
+      globalPreloadedVideos.size > 0 &&
+      Array.from(globalPreloadedVideos.values()).every((v) => v.canPlayThrough),
   };
 }

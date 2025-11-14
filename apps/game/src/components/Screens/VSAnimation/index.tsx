@@ -4,6 +4,7 @@ import { type FC, useEffect, useMemo, useRef } from 'react';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
+import { getPreloadedVideo } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
 import { cn } from '@/utils/cn';
@@ -13,12 +14,12 @@ import { cn } from '@/utils/cn';
  *
  * Displays a WebM video animation for the player vs CPU matchup.
  * Falls back to text-based display if no animation exists for the matchup.
- * Auto-transitions to gameplay after animation duration (~2 seconds).
+ * Auto-transitions to gameplay when video ends.
  */
-export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
+export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) => {
   const { selectedBillionaire } = useGameStore();
   const cpuBillionaireId = useCpuBillionaire();
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const playerBillionaire = useMemo(
     () => BILLIONAIRES.find((b) => b.id === selectedBillionaire),
@@ -42,14 +43,51 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
     [selectedBillionaire, cpuBillionaireId],
   );
 
-  // Auto-play video when component mounts
+  // Get preloaded video element or null
+  const preloadedVideo = useMemo(
+    () => (animationSrc ? getPreloadedVideo(animationSrc) : null),
+    [animationSrc],
+  );
+
+  // Mount the preloaded video element into the container
   useEffect(() => {
-    if (videoRef.current && animationSrc) {
-      videoRef.current.play().catch((error) => {
-        console.error('Failed to play VS animation:', error);
-      });
+    if (!containerRef.current || !preloadedVideo) {
+      return;
     }
-  }, [animationSrc]);
+
+    const container = containerRef.current; // Copy ref for cleanup
+
+    // Style the video for full coverage
+    preloadedVideo.className = 'w-full h-full object-cover';
+    preloadedVideo.setAttribute(
+      'aria-label',
+      `${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`,
+    );
+
+    // Listen for video end event to trigger state machine transition
+    const handleVideoEnd = () => {
+      send?.({ type: 'VS_ANIMATION_COMPLETE' });
+    };
+
+    preloadedVideo.addEventListener('ended', handleVideoEnd);
+
+    // Append to container
+    container.appendChild(preloadedVideo);
+
+    // Play the video
+    preloadedVideo.play().catch((error) => {
+      console.error('Failed to play VS animation:', error);
+    });
+
+    return () => {
+      preloadedVideo.removeEventListener('ended', handleVideoEnd);
+      // Don't remove the video from DOM - keep it in global preload cache
+      // Just remove from this specific container
+      if (preloadedVideo.parentElement === container) {
+        container.removeChild(preloadedVideo);
+      }
+    };
+  }, [preloadedVideo, playerBillionaire?.name, cpuBillionaire?.name, send]);
 
   return (
     <motion.div
@@ -60,13 +98,17 @@ export const VSAnimation: FC<BaseScreenProps> = ({ className, ...props }) => {
       className={cn('relative flex flex-col items-center justify-center w-full h-full', className)}
       {...props}
     >
-      {animationSrc ? (
-        // Video animation - fills full board dimensions
+      {preloadedVideo ? (
+        // Container for preloaded video element
+        <div ref={containerRef} className="w-full h-full" />
+      ) : animationSrc ? (
+        // Fallback: Create new video element if preloaded one not found
         <video
-          ref={videoRef}
           src={animationSrc}
+          autoPlay
           muted
           playsInline
+          onEnded={() => send?.({ type: 'VS_ANIMATION_COMPLETE' })}
           className="w-full h-full object-cover"
           aria-label={`${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`}
         />
