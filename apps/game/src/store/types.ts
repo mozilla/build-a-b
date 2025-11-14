@@ -2,9 +2,9 @@ import type { CardTypeId } from '@/config/game-config';
 import type {
   Card,
   EffectNotification,
+  PlayedCardState,
   Player,
   PlayerType,
-  PlayedCardState,
   PreRevealEffect,
   SpecialCardType,
   SpecialEffect,
@@ -116,6 +116,16 @@ export type GameStore = {
   musicEnabled: boolean;
   soundEffectsEnabled: boolean;
   showTooltip: boolean;
+
+  // Asset Preloading State
+  assetsLoaded: number; // Number of essential assets loaded (images + VS video)
+  assetsTotal: number; // Total essential assets to load
+  essentialAssetsReady: boolean; // Critical + High + Medium images loaded
+  highPriorityAssetsReady: boolean; // Critical + High images loaded (backgrounds)
+  vsVideoReady: boolean; // VS animation video ready to play
+  preloadingComplete: boolean; // All essential assets ready (gates progression)
+  highPriorityProgress: number; // Progress percentage for high-priority assets
+  essentialProgress: number; // Progress percentage for essential assets
 
   // Actions - Game Logic
   initializeGame: (
@@ -240,4 +250,15 @@ export type GameStore = {
     playerCustomOrder?: CardTypeId[],
     cpuCustomOrder?: CardTypeId[],
   ) => void;
+
+  // Actions - Asset Preloading
+  updatePreloadingProgress: (stats: {
+    assetsLoaded: number;
+    assetsTotal: number;
+    essentialAssetsReady: boolean;
+    highPriorityAssetsReady: boolean;
+    vsVideoReady: boolean;
+    highPriorityProgress: number;
+    essentialProgress: number;
+  }) => void;
 };

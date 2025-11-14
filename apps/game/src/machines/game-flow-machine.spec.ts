@@ -1,11 +1,51 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
-import { gameFlowMachine } from './game-flow-machine';
 import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { gameFlowMachine } from './game-flow-machine';
+
+// Create mock functions that can be overridden per test
+const mockCheckForDataWar = vi.fn(() => false);
+const mockHasPreRevealEffects = vi.fn(() => false);
+const mockHasUnseenEffectNotifications = vi.fn(() => false);
+
+// Mock the store to allow tests to bypass asset preloading guards
+vi.mock('../store/game-store', () => ({
+  useGameStore: {
+    getState: vi.fn(() => ({
+      preloadingComplete: true, // Allow transitions through asset-gated states
+      highPriorityAssetsReady: true, // Allow transitions through background selection
+      winner: null,
+      winCondition: null,
+      checkForDataWar: mockCheckForDataWar,
+      pendingEffects: [],
+      hasPreRevealEffects: mockHasPreRevealEffects,
+      hasUnseenEffectNotifications: mockHasUnseenEffectNotifications,
+      anotherPlayExpected: false,
+      player: {
+        playedCard: null,
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+      },
+      cpu: {
+        playedCard: null,
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+      },
+    })),
+    setState: vi.fn(),
+    subscribe: vi.fn(),
+  },
+}));
 
 describe('gameFlowMachine', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    // Reset mocks before each test
+    mockCheckForDataWar.mockReturnValue(false);
+    mockHasPreRevealEffects.mockReturnValue(false);
+    mockHasUnseenEffectNotifications.mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -66,7 +106,7 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should auto-transition from vs_animation to ready after 2 seconds', () => {
+    it('should transition from vs_animation to ready when VS_ANIMATION_COMPLETE event is sent', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -78,12 +118,12 @@ describe('gameFlowMachine', () => {
 
       expect(actor.getSnapshot().value).toBe('vs_animation');
 
-      // Wait for auto-transition (2000ms + buffer)
-      setTimeout(() => {
-        expect(actor.getSnapshot().value).toBe('ready');
-        expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
-        actor.stop();
-      }, 2100);
+      // Send VS_ANIMATION_COMPLETE event (triggered by video 'ended' event)
+      actor.send({ type: 'VS_ANIMATION_COMPLETE' });
+
+      expect(actor.getSnapshot().value).toBe('ready');
+      expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
+      actor.stop();
     });
   });
 
@@ -147,6 +187,9 @@ describe('gameFlowMachine', () => {
       // Wait for effect notification delay to complete
       vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      // Send TIE event which directly transitions to data_war (no guard)
       actor.send({ type: 'TIE' });
       expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
 
@@ -235,6 +278,10 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'CARDS_REVEALED' });
       // Wait for effect notification delay to complete
       vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
+
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      // Send TIE event to enter data_war
       actor.send({ type: 'TIE' });
 
       // Should start in animating substate
