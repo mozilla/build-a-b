@@ -27,16 +27,13 @@ const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C, i
               </div>
             </h2>
             <p className="text-body-regular">
-              Even if you didn't make it IRL or online for the launch, we've stashed the footage in a super secret place, on our home page, for everyone to see.
+              Even if you didn&apos;t make it IRL or online for the launch, we&apos;ve stashed the
+              footage in a super secret place, on our home page, for everyone to see.
             </p>
-            {!isPhase4 && (
-              <div className="hidden landscape:block">{cta}</div>
-            )}
+            {!isPhase4 && <div className="hidden landscape:block">{cta}</div>}
           </div>
           <RocketCountdown isPhase2B={isPhase2B} isPhase2C={isPhase2C} isPhase4={isPhase4} />
-          {!isPhase4 && (
-            <div className="landscape:hidden w-full">{cta}</div>
-          )}
+          {!isPhase4 && <div className="landscape:hidden w-full">{cta}</div>}
         </div>
       </Bento>
     </section>
