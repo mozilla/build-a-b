@@ -34,6 +34,11 @@ export type { TooltipProps } from './Tooltip/types';
 
 export { VideoPreloader } from './VideoPreloader';
 
+export { AssetPreloader } from './AssetPreloader';
+export type { AssetPreloaderProps } from './AssetPreloader';
+
+export { PreloadLinks } from './PreloadLinks';
+
 // Debug Components
 export { DebugUI } from './DebugUI';
 
