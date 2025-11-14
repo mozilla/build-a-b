@@ -9,7 +9,7 @@ import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { getRandomBillionaire, type BillionaireId } from '../config/billionaires';
 import { DATA_GRAB_CONFIG } from '../config/data-grab-config';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
-import type { Card, CardValue, Player, PlayerType, SpecialEffect } from '../types';
+import type { Card, CardValue, Player, PlayerType, SpecialCardType, SpecialEffect } from '../types';
 import {
   applyBlockerModifier,
   compareCards,
@@ -69,6 +69,19 @@ export const useGameStore = create<GameStore>()(
       showLaunchStackAnimation: false,
       showDataWarAnimation: false,
       dataWarVideoPlaying: false,
+      showTrackerSmackerAnimation: false,
+      showLeveragedBuyoutAnimation: false,
+      showPatentTheftAnimation: false,
+      showTemperTantrumAnimation: false,
+      showMandatoryRecallAnimation: false,
+
+      // Animation Queue System
+      animationQueue: [],
+      isPlayingQueuedAnimation: false,
+      animationsPaused: false,
+      currentAnimationPlayer: null,
+      animationCompletionCallback: null,
+      shownAnimationCardIds: new Set(),
 
       // Data Grab Mini-Game State
       dataGrabActive: false,
@@ -143,6 +156,18 @@ export const useGameStore = create<GameStore>()(
           showForcedEmpathyAnimation: false,
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
+          showHostileTakeoverAnimation: false,
+          showTrackerSmackerAnimation: false,
+          showLeveragedBuyoutAnimation: false,
+          showPatentTheftAnimation: false,
+          showTemperTantrumAnimation: false,
+          showMandatoryRecallAnimation: false,
+          animationQueue: [],
+          isPlayingQueuedAnimation: false,
+          animationsPaused: false,
+          currentAnimationPlayer: null,
+          animationCompletionCallback: null,
+          shownAnimationCardIds: new Set(),
         });
       },
 
@@ -284,6 +309,8 @@ export const useGameStore = create<GameStore>()(
               pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
               pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
             },
+            // Clear shown animation IDs when cards are collected
+            shownAnimationCardIds: new Set(),
             cardsInPlay: [],
             // Reset turn states for new turn
             playerTurnState: 'normal',
@@ -510,13 +537,10 @@ export const useGameStore = create<GameStore>()(
       checkForDataWar: () => {
         const { player, cpu } = get();
 
-        if (!player.playedCard || !cpu.playedCard) {
-          return false;
-        }
-
-        // Check if Hostile Takeover was played
-        const playerPlayedHt = player.playedCard.specialType === 'hostile_takeover';
-        const cpuPlayedHt = cpu.playedCard.specialType === 'hostile_takeover';
+        // Check for Hostile Takeover FIRST (before checking if both have cards)
+        // When HT is played, only the HT player has a card initially
+        const playerPlayedHt = player.playedCard?.specialType === 'hostile_takeover';
+        const cpuPlayedHt = cpu.playedCard?.specialType === 'hostile_takeover';
 
         if (playerPlayedHt || cpuPlayedHt) {
           // Determine who played HT and who is the opponent
@@ -531,6 +555,11 @@ export const useGameStore = create<GameStore>()(
 
           // Otherwise, this is the first time seeing HT - trigger Data War
           return true;
+        }
+
+        // For normal data war, both players must have played cards
+        if (!player.playedCard || !cpu.playedCard) {
+          return false;
         }
 
         // Normal tie logic for non-HT situations
@@ -589,6 +618,22 @@ export const useGameStore = create<GameStore>()(
             break;
           case 'tracker_smacker':
             get().setTrackerSmackerActive(playedBy);
+            // Animation will be queued and played sequentially
+            break;
+          case 'hostile_takeover':
+            // Animation will be queued and played sequentially
+            break;
+          case 'leveraged_buyout':
+            // Animation will be queued and played sequentially
+            break;
+          case 'patent_theft':
+            // Animation will be queued and played sequentially
+            break;
+          case 'temper_tantrum':
+            // Animation will be queued and played sequentially
+            break;
+          case 'mandatory_recall':
+            // Animation will be queued and played sequentially
             break;
           case 'forced_empathy':
             // Wait for card to settle on board before showing animation overlay
@@ -912,6 +957,177 @@ export const useGameStore = create<GameStore>()(
       },
       setShowDataWarAnimation: (show) => {
         set({ showDataWarAnimation: show });
+      },
+      setShowTrackerSmackerAnimation: (show) => {
+        set({ showTrackerSmackerAnimation: show });
+      },
+      setShowLeveragedBuyoutAnimation: (show) => {
+        set({ showLeveragedBuyoutAnimation: show });
+      },
+      setShowPatentTheftAnimation: (show) => {
+        set({ showPatentTheftAnimation: show });
+      },
+      setShowTemperTantrumAnimation: (show) => {
+        set({ showTemperTantrumAnimation: show });
+      },
+      setShowMandatoryRecallAnimation: (show) => {
+        set({ showMandatoryRecallAnimation: show });
+      },
+
+      // Animation Queue Actions
+      queueAnimation: (type, playedBy) => {
+        const queue = get().animationQueue;
+        set({
+          animationQueue: [...queue, { type, playedBy }],
+          animationsPaused: true, // Pause game flow when animations are queued
+        });
+
+        // If not currently playing an animation, start processing
+        if (!get().isPlayingQueuedAnimation) {
+          get().processNextAnimation();
+        }
+      },
+
+      processNextAnimation: () => {
+        const { animationQueue, animationCompletionCallback } = get();
+
+        // No more animations to process
+        if (animationQueue.length === 0) {
+          set({
+            isPlayingQueuedAnimation: false,
+            animationsPaused: false, // Resume game flow
+            currentAnimationPlayer: null,
+          });
+
+          // Call completion callback if set
+          if (animationCompletionCallback) {
+            const callback = animationCompletionCallback;
+            set({ animationCompletionCallback: null }); // Clear callback
+            callback(); // Execute callback to resume game flow
+          }
+          return;
+        }
+
+        // Get the next animation from the queue
+        const [nextAnimation, ...remainingQueue] = animationQueue;
+        set({
+          animationQueue: remainingQueue,
+          isPlayingQueuedAnimation: true,
+          currentAnimationPlayer: nextAnimation.playedBy, // Track which player's animation is playing
+        });
+
+        // Map animation type to the appropriate state flag
+        const animationTypeToSetter: Record<
+          string,
+          (show: boolean) => void
+        > = {
+          tracker_smacker: get().setShowTrackerSmackerAnimation,
+          forced_empathy: get().setShowForcedEmpathyAnimation,
+          hostile_takeover: get().setShowHostileTakeoverAnimation,
+          launch_stack: get().setShowLaunchStackAnimation,
+          leveraged_buyout: get().setShowLeveragedBuyoutAnimation,
+          patent_theft: get().setShowPatentTheftAnimation,
+          temper_tantrum: get().setShowTemperTantrumAnimation,
+          mandatory_recall: get().setShowMandatoryRecallAnimation,
+          open_what_you_want: get().setShowOpenWhatYouWantAnimation,
+          data_grab: (show) => set({ showDataGrabTakeover: show }),
+        };
+
+        const setter = animationTypeToSetter[nextAnimation.type];
+        if (setter) {
+          // Show the animation
+          setter(true);
+
+          // Hide after duration and process next
+          setTimeout(() => {
+            setter(false);
+            // Small delay before starting next animation
+            setTimeout(() => {
+              get().processNextAnimation();
+            }, 300);
+          }, ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
+        } else {
+          // If no setter found, continue to next animation
+          get().processNextAnimation();
+        }
+      },
+
+      clearAnimationQueue: () => {
+        set({
+          animationQueue: [],
+          isPlayingQueuedAnimation: false,
+          animationsPaused: false,
+          currentAnimationPlayer: null,
+          animationCompletionCallback: null,
+          shownAnimationCardIds: new Set(),
+        });
+      },
+
+      setAnimationCompletionCallback: (callback) => {
+        set({ animationCompletionCallback: callback });
+      },
+
+      // Check and queue animations for special cards played by both players
+      // Returns true if animations were queued
+      queueSpecialCardAnimations: () => {
+        const { player, cpu, trackerSmackerActive, shownAnimationCardIds } = get();
+
+        const playerCard = player.playedCard;
+        const cpuCard = cpu.playedCard;
+
+        const animationsToQueue: Array<{ type: SpecialCardType; playedBy: PlayerType }> = [];
+
+        // Helper to check if a card should show animation
+        const shouldShowAnimation = (card: Card | null, playedBy: PlayerType): boolean => {
+          if (!card || !card.specialType) return false;
+
+          // Skip if this card has already shown its animation
+          if (shownAnimationCardIds.has(card.id)) return false;
+
+          // Skip tracker and blocker - they don't have animations
+          if (card.specialType === 'tracker' || card.specialType === 'blocker') return false;
+
+          // Skip forced_empathy - it has custom animation handling in handleCardEffect
+          if (card.specialType === 'forced_empathy') return false;
+
+          // Check if blocked by opponent's tracker smacker (only for Move cards and Launch Stack)
+          const isMove =
+            card.specialType === 'hostile_takeover' ||
+            card.specialType === 'leveraged_buyout' ||
+            card.specialType === 'patent_theft' ||
+            card.specialType === 'temper_tantrum' ||
+            card.specialType === 'launch_stack';
+
+          if (isMove && trackerSmackerActive && trackerSmackerActive !== playedBy) {
+            return false; // Blocked by tracker smacker
+          }
+
+          return true;
+        };
+
+        // Queue player animation first (if applicable)
+        if (shouldShowAnimation(playerCard, 'player')) {
+          animationsToQueue.push({ type: playerCard!.specialType!, playedBy: 'player' });
+          // Mark this card as having shown its animation
+          shownAnimationCardIds.add(playerCard!.id);
+        }
+
+        // Then queue CPU animation
+        if (shouldShowAnimation(cpuCard, 'cpu')) {
+          animationsToQueue.push({ type: cpuCard!.specialType!, playedBy: 'cpu' });
+          // Mark this card as having shown its animation
+          shownAnimationCardIds.add(cpuCard!.id);
+        }
+
+        // Update the set in store
+        set({ shownAnimationCardIds });
+
+        // Queue all animations
+        animationsToQueue.forEach(({ type, playedBy }) => {
+          get().queueAnimation(type, playedBy);
+        });
+
+        return animationsToQueue.length > 0;
       },
 
       // Data Grab Actions
@@ -1415,6 +1631,15 @@ export const useGameStore = create<GameStore>()(
           showForcedEmpathyAnimation: false,
           forcedEmpathySwapping: false,
           deckSwapCount: 0,
+          showHostileTakeoverAnimation: false,
+          showTrackerSmackerAnimation: false,
+          showLeveragedBuyoutAnimation: false,
+          showPatentTheftAnimation: false,
+          showTemperTantrumAnimation: false,
+          showMandatoryRecallAnimation: false,
+          animationQueue: [],
+          isPlayingQueuedAnimation: false,
+          animationsPaused: false,
           // Reset Data Grab state
           dataGrabActive: false,
           dataGrabCards: [],
