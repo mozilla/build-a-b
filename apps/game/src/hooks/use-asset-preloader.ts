@@ -84,7 +84,7 @@ export function useAssetPreloader(
     /**
      * Implements a visually hidden container to hold preloaded images.
      *
-     * Desipte occurring within a useEffect, this block only runs once due to the
+     * Despite occurring within a useEffect, this block only runs once due to the
      * check for globalContainer. This prevents duplicate containers in StrictMode.
      */
     if (!globalContainer) {
