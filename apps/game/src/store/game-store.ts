@@ -105,6 +105,16 @@ export const useGameStore = create<GameStore>()(
       soundEffectsEnabled: true,
       showTooltip: false,
 
+      // Asset Preloading State
+      assetsLoaded: 0,
+      assetsTotal: 0,
+      essentialAssetsReady: false,
+      highPriorityAssetsReady: false,
+      vsVideoReady: false,
+      preloadingComplete: false,
+      highPriorityProgress: 0,
+      essentialProgress: 0,
+
       // Effect Notification System
       seenEffectTypes: JSON.parse(localStorage.getItem('seenEffectTypes') || '[]'),
       pendingEffectNotifications: [],
@@ -1593,6 +1603,46 @@ export const useGameStore = create<GameStore>()(
             activeEffects: [],
           },
         });
+      },
+
+      updatePreloadingProgress: (stats) => {
+        const shouldBeComplete = stats.essentialAssetsReady && stats.vsVideoReady;
+        const shouldHighPriorityBeReady = stats.highPriorityAssetsReady;
+        const currentState = get();
+        const wasComplete = currentState.preloadingComplete;
+        const wasHighPriorityReady = currentState.highPriorityAssetsReady;
+
+        // Update progress immediately (except for delayed flags)
+        set({
+          assetsLoaded: stats.assetsLoaded,
+          assetsTotal: stats.assetsTotal,
+          essentialAssetsReady: stats.essentialAssetsReady,
+          vsVideoReady: stats.vsVideoReady,
+          highPriorityProgress: stats.highPriorityProgress,
+          essentialProgress: stats.essentialProgress,
+        });
+
+        // Add delay before setting highPriorityAssetsReady to true
+        // This gives users time to see completion before transitioning to background selection
+        if (shouldHighPriorityBeReady && !wasHighPriorityReady) {
+          setTimeout(() => {
+            set({ highPriorityAssetsReady: true });
+          }, 800); // 800ms delay after backgrounds load
+        } else if (!shouldHighPriorityBeReady && wasHighPriorityReady) {
+          // If assets become incomplete (e.g., new billionaire selected), update immediately
+          set({ highPriorityAssetsReady: false });
+        }
+
+        // Add delay before setting preloadingComplete to true
+        // This gives users time to see 100% completion before transitioning
+        if (shouldBeComplete && !wasComplete) {
+          setTimeout(() => {
+            set({ preloadingComplete: true });
+          }, 800); // 800ms delay after reaching 100%
+        } else if (!shouldBeComplete && wasComplete) {
+          // If assets become incomplete (e.g., new billionaire selected), update immediately
+          set({ preloadingComplete: false });
+        }
       },
 
       resetGame: (
