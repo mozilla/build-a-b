@@ -6,6 +6,7 @@ import type {
   Player,
   PlayerType,
   PreRevealEffect,
+  SpecialCardType,
   SpecialEffect,
 } from '@/types';
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
@@ -56,6 +57,21 @@ export type GameStore = {
   showLaunchStackAnimation: boolean; // Shows after collecting a launch stack
   showDataWarAnimation: boolean; // Shows when data war occurs
   dataWarVideoPlaying: boolean; // True while the DATA WAR video is actively playing
+  showTrackerSmackerAnimation: boolean; // Shows when tracker smacker is played
+  showLeveragedBuyoutAnimation: boolean; // Shows when leveraged buyout is played
+  showPatentTheftAnimation: boolean; // Shows when patent theft is played
+  showTemperTantrumAnimation: boolean; // Shows when temper tantrum is played
+  showMandatoryRecallAnimation: boolean; // Shows when mandatory recall is played
+
+  // Animation Queue System
+  animationQueue: Array<{
+    type: SpecialCardType;
+    playedBy: PlayerType;
+  }>;
+  isPlayingQueuedAnimation: boolean; // True when processing queued animations
+  animationsPaused: boolean; // Pauses game flow during animations
+  currentAnimationPlayer: PlayerType | null; // Tracks which player's animation is currently playing
+  shownAnimationCardIds: Set<string>; // Track which card IDs have already shown animations (prevents duplicates)
 
   // Data Grab Mini-Game State
   dataGrabActive: boolean; // True when Data Grab is triggered
@@ -163,6 +179,19 @@ export type GameStore = {
   setShowHostileTakeoverAnimation: (show: boolean) => void;
   setShowLaunchStackAnimation: (show: boolean) => void;
   setShowDataWarAnimation: (show: boolean) => void;
+  setShowTrackerSmackerAnimation: (show: boolean) => void;
+  setShowLeveragedBuyoutAnimation: (show: boolean) => void;
+  setShowPatentTheftAnimation: (show: boolean) => void;
+  setShowTemperTantrumAnimation: (show: boolean) => void;
+  setShowMandatoryRecallAnimation: (show: boolean) => void;
+
+  // Animation Queue Actions
+  queueAnimation: (type: SpecialCardType, playedBy: PlayerType) => void;
+  processNextAnimation: () => void;
+  clearAnimationQueue: () => void;
+  queueSpecialCardAnimations: () => boolean; // Returns true if animations were queued
+  setAnimationCompletionCallback: (callback: (() => void) | null) => void;
+  animationCompletionCallback: (() => void) | null;
 
   // Data Grab Actions
   checkForDataGrab: () => boolean; // Check if Data Grab should trigger

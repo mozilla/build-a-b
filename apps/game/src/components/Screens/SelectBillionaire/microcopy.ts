@@ -1,4 +1,4 @@
 export const selectBillionaireMicrocopy = {
   title: 'First, pick your Billionaire',
-  description: 'Whose little face is going to space?',
+  description: 'Who needs to get out of your data and into the stratosphere?',
 };

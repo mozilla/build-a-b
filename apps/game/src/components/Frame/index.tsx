@@ -25,7 +25,7 @@ export const Frame: FC<PropsWithChildren<FrameProps>> = ({
   return (
     <div
       className={cn(
-        'h-[100dvh] w-[100vw] max-w-[25rem] max-h-[54rem] bg-cover bg-center bg-no-repeat relative lg:rounded-xl overflow-hidden',
+        'h-[100dvh] w-[100vw] max-w-[25rem] max-h-[54rem] bg-cover bg-center bg-no-repeat relative lg:rounded-xl overflow-hidden overflow-auto',
         className,
       )}
       style={{
