@@ -8,9 +8,10 @@ import { fallbackRocketLaunchDate } from '@/utils/constants';
 export interface RocketCountdownProps {
   isPhase2B: boolean;
   isPhase2C: boolean;
+  isPhase4: boolean;
 }
 
-const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C }) => {
+const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C, isPhase4 }) => {
   const targetDate = process.env.NEXT_PUBLIC_ROCKET_LAUNCH_DATE || fallbackRocketLaunchDate;
 
   const [timeLeft, setTimeLeft] = useState({
@@ -49,23 +50,21 @@ const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C }) => 
   }, [targetDate]);
 
   return (
-    <div className="w-full flex flex-col items-end relative">
-      {isPhase2C && (
-        <Image
-          src="/assets/images/intro-modal/10.webp"
-          alt={`Floating character 10`}
-          sizes="(max-width: 768px) 30vw, 20vw"
-          width={223}
-          height={223}
-          className="absolute top-[-7rem] right-[-5rem] rotate-[-18deg] z-10 w-[10rem] h-[10rem]"
-        />
-      )}
+    <div className="w-full flex flex-col items-end relative pr-12">
+      <Image
+        src="/assets/images/intro-modal/10.webp"
+        alt={`Floating character 10`}
+        sizes="(max-width: 768px) 30vw, 20vw"
+        width={223}
+        height={223}
+        className="absolute top-[-6rem] right-[-2rem] rotate-[-18deg] z-10 w-[10rem] h-[10rem]"
+      />
       <div className="relative w-[calc(100%-2rem)] bg-gradient-to-r from-secondary-blue to-secondary-purple rounded-lg p-4 pl-8 landscape:p-6 landscape:w-fit">
-        {(isPhase2B || (isLaunchReady && !isPhase2B && !isPhase2C)) && (
+        {/* {(isPhase2B || (isLaunchReady && !isPhase2B && !isPhase2C && !isPhase4)) && (
           <p className="title-4 font-extrabold text-center">Watch the Launch!</p>
-        )}
-        {isPhase2C && <p className="title-4 font-extrabold text-center">#BillionaireBlastOff</p>}
-        {!isLaunchReady && !isPhase2B && !isPhase2C && (
+        )} */}
+        <p className="title-4 font-extrabold text-center">#BillionaireBlastOff</p>
+        {/* {!isLaunchReady && !isPhase2B && !isPhase2C && !isPhase4 && (
           <dl className="flex justify-center gap-7 text-center" aria-live="polite">
             <div
               className="flex flex-col-reverse relative
@@ -104,7 +103,7 @@ const RocketCountdown: FC<RocketCountdownProps> = ({ isPhase2B, isPhase2C }) => 
               </dd>
             </div>
           </dl>
-        )}
+        )} */}
         <div className="absolute w-[4rem] h-[7rem] landscape:w-[6rem] landscape:h-[10rem] top-[-1.2rem] left-[-2rem] landscape:top-[-2.5rem] landscape:left-[-4rem] rotate-[16deg]">
           <Image src="/assets/images/rocket-countdown.webp" sizes="25vw" alt="Rocket" fill />
         </div>
