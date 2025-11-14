@@ -118,7 +118,9 @@ export default async function Home({
 
   return (
     <>
-      {isPhase2A && !isPhase4 && <CountDown isPhase2B={isPhase2B} isPhase2C={isPhase2C} />}
+      {isPhase2A && !isPhase4 && (
+        <CountDown isPhase2B={isPhase2B} isPhase2C={isPhase2C} isPhase4={isPhase4} />
+      )}
       {isPhase2B && <Livestream />}
       {isPhase2C && <LaunchRecording />}
 
@@ -567,6 +569,7 @@ export default async function Home({
               className="landscape:mb-0!"
               isPhase2B={isPhase2B}
               isPhase2C={isPhase2C}
+              isPhase4={isPhase4}
               cta={
                 <LinkButton
                   href="/twitchcon"

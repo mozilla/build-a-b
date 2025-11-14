@@ -37,7 +37,6 @@ export function useGameLogic() {
     playCard,
     resolveTurn,
     collectCardsAfterEffects,
-    checkForDataWar,
     checkWinCondition,
     handleCardEffect,
     setActivePlayer,
@@ -100,7 +99,7 @@ export function useGameLogic() {
     const {
       prepareOpenWhatYouWantCards,
       playSelectedCardFromOWYW,
-      setShowOpenWhatYouWantAnimation,
+      setShowOpenWhatYouWantModal,
       clearPreRevealEffects,
     } = useGameStore.getState();
 
@@ -124,9 +123,15 @@ export function useGameLogic() {
       // Transition to ready (no animation/modal for CPU)
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     } else {
-      // Player: Just show animation, DON'T clear effects yet
-      // Effects will be cleared when modal confirms
-      setShowOpenWhatYouWantAnimation(true);
+      // Player: Animation already shown when card was played (via animation queue)
+      // Show modal immediately and transition to ready
+      setShowOpenWhatYouWantModal(true);
+
+      // Clear pre-reveal effects (animation already shown)
+      clearPreRevealEffects();
+
+      // Skip pre-reveal flow and go to ready
+      actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     }
   };
 
@@ -200,28 +205,53 @@ export function useGameLogic() {
   const handleCompareTurn = () => {
     const store = useGameStore.getState();
 
-    // PRIORITY CHECK: Hostile Takeover ignores all trackers/blockers/ties
-    // If Hostile Takeover is played, skip straight to Data War
-    const hostileTakeoverPlayed =
-      store.player.playedCard?.specialType === 'hostile_takeover' ||
-      store.cpu.playedCard?.specialType === 'hostile_takeover';
+    // Queue animations for special cards played by both players
+    // This will play them sequentially (player first, then CPU) and pause the game
+    // Set callback to continue comparison after animations complete
+    store.setAnimationCompletionCallback(() => {
+      handleCompareTurnContinued();
+    });
 
-    if (hostileTakeoverPlayed) {
-      // Hostile Takeover always triggers Data War, ignoring all other effects
-      actorRef.send({ type: 'TIE' });
+    const hasAnimations = store.queueSpecialCardAnimations();
+
+    // If animations were queued, return early - callback will continue the flow
+    if (hasAnimations) {
       return;
     }
 
-    // IMPORTANT: Defer comparison until "another play" sequence is complete
+    // No animations, continue immediately
+    handleCompareTurnContinued();
+  };
+
+  const handleCompareTurnContinued = () => {
+    // After animations complete, wait for CARD_COMPARISON delay, then check conditions manually
+    // We check in priority order: resolve without checks > data war > data grab > special effects > normal resolving
+    const store = useGameStore.getState();
+
+    setTimeout(() => {
+      // Check all conditions in the same order as state machine guards
+      if (shouldResolveDirectly(store)) {
+        actorRef.send({ type: 'RESOLVE_TURN' });
+      } else if (store.checkForDataWar()) {
+        actorRef.send({ type: 'TIE' });
+      } else if (store.checkForDataGrab()) {
+        actorRef.send({ type: 'RESOLVE_TURN' }); // Data grab transitions via guards
+      } else if (store.pendingEffects.length > 0) {
+        actorRef.send({ type: 'SPECIAL_EFFECT' });
+      } else {
+        actorRef.send({ type: 'RESOLVE_TURN' });
+      }
+    }, ANIMATION_DURATIONS.CARD_COMPARISON);
+  };
+
+  // Helper function to check if we should resolve directly (skip data war/special effect checks)
+  const shouldResolveDirectly = (store: ReturnType<typeof useGameStore.getState>) => {
     // Check if we're waiting for another play to complete
     if (store.anotherPlayExpected) {
-      // Still waiting for another play - skip tie/Data War check
-      actorRef.send({ type: 'RESOLVE_TURN' });
-      return;
+      return true;
     }
 
-    // IMPORTANT: Check if either card triggers "another play"
-    // This must happen before checking for ties/Data War
+    // Check if either card triggers "another play"
     const playerTriggersAnother =
       store.player.playedCard &&
       shouldTriggerAnotherPlay(store.player.playedCard) &&
@@ -233,28 +263,34 @@ export function useGameLogic() {
       !isEffectBlocked(store.trackerSmackerActive, 'cpu');
 
     if (playerTriggersAnother || cpuTriggersAnother) {
-      // Skip Data War check - go straight to resolving to set up "another play"
-      actorRef.send({ type: 'RESOLVE_TURN' });
-      return;
+      return true;
     }
 
-    // Now check if this should trigger Data War (only if no "another play")
-    const isDataWar = checkForDataWar();
+    // Check if Hostile Takeover data war is complete
+    const playerPlayedHt = store.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuPlayedHt = store.cpu.playedCard?.specialType === 'hostile_takeover';
+    const hostileTakeoverPlayed = playerPlayedHt || cpuPlayedHt;
 
-    if (isDataWar) {
-      actorRef.send({ type: 'TIE' });
-      return;
+    if (hostileTakeoverPlayed) {
+      const opponent = playerPlayedHt ? store.cpu : store.player;
+
+      // If opponent has played their 4 data war cards (5 total), data war is complete
+      if (opponent.playedCardsInHand.length >= 5) {
+        return true;
+      }
+
+      // If both players have played HT and both have 5 cards, data war is complete
+      if (
+        playerPlayedHt &&
+        cpuPlayedHt &&
+        store.player.playedCardsInHand.length >= 5 &&
+        store.cpu.playedCardsInHand.length >= 5
+      ) {
+        return true;
+      }
     }
 
-    // Check if there are special effects to show
-    const { pendingEffects } = useGameStore.getState();
-    if (pendingEffects.length > 0) {
-      actorRef.send({ type: 'SPECIAL_EFFECT' });
-      return;
-    }
-
-    // Otherwise, resolve the turn directly
-    actorRef.send({ type: 'RESOLVE_TURN' });
+    return false;
   };
 
   /**
@@ -496,13 +532,16 @@ export function useGameLogic() {
       playCard('player');
     }
 
+    // Get fresh state after playing cards to access the newly played cards
+    const freshState = useGameStore.getState();
+
     // Handle special effects for the new cards
-    if (!playerHasHostileTakeover && player.playedCard) {
-      handleCardEffect(player.playedCard, 'player');
+    if (!playerHasHostileTakeover && freshState.player.playedCard) {
+      handleCardEffect(freshState.player.playedCard, 'player');
     }
 
-    if (!cpuHasHostileTakeover && cpu.playedCard) {
-      handleCardEffect(cpu.playedCard, 'cpu');
+    if (!cpuHasHostileTakeover && freshState.cpu.playedCard) {
+      handleCardEffect(freshState.cpu.playedCard, 'cpu');
     }
   };
 

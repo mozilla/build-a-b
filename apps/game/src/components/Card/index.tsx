@@ -34,10 +34,8 @@ export const Card: FC<CardProps> = ({
     <motion.div
       {...dataAttributes}
       className={cn(
-        'cursor-pointer origin-center perspective-distant',
-        isFullSize
-          ? 'max-w-[125px] w-[7.8125rem] max-h-[175px] h-[10.9375rem]'
-          : 'max-w-[86px] w-[5.375rem] max-h-[120px] h-[7.5rem]',
+        'cursor-pointer origin-center perspective-distant flex justify-center items-center',
+        isFullSize ? 'w-[7.8125rem] h-[10.9375rem]' : 'w-[5.375rem] h-[7.5rem]',
       )}
       onClick={handleClick}
       animate={{
@@ -48,7 +46,10 @@ export const Card: FC<CardProps> = ({
       transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
     >
       <motion.div
-        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden"
+        className={cn(
+          'relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden',
+          state === 'flipped' && 'max-w-[125px] max-h-[175px]',
+        )}
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}

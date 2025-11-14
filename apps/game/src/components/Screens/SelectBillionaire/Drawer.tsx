@@ -40,7 +40,7 @@ export const Drawer: FC<DrawerProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-cyan-900/70 z-40"
+            className="absolute inset-0 bg-cyan-900/70 z-40"
             onClick={onClose}
           />
 
@@ -53,7 +53,7 @@ export const Drawer: FC<DrawerProps> = ({
               ease: [0.35, 0, 0.15, 1],
               duration: 0.4,
             }}
-            className={cn('fixed bottom-0 left-0 right-0 z-50 w-full mx-auto', className)}
+            className={cn('absolute bottom-0 left-0 right-0 z-50 w-full mx-auto', className)}
             {...props}
           >
             {/* Drawer Content */}

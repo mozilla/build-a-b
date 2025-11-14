@@ -107,6 +107,7 @@ export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) 
           src={animationSrc}
           autoPlay
           muted
+          loop
           playsInline
           onEnded={() => send?.({ type: 'VS_ANIMATION_COMPLETE' })}
           className="w-full h-full object-cover"

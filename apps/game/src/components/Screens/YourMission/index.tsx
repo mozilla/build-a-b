@@ -43,13 +43,6 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) 
             <Text as="h1" variant="title-2" align="center" className="text-common-ash leading-9">
               {yourMissionMicrocopy.title}
             </Text>
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash leading-6"
-            >
-              {yourMissionMicrocopy.subtitle}
-            </Text>
           </div>
 
           <Text
