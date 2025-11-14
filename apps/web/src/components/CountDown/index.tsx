@@ -8,9 +8,10 @@ export interface CountDownProps {
   cta?: ReactNode;
   isPhase2B: boolean;
   isPhase2C: boolean;
+  isPhase4: boolean;
 }
 
-const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C }) => {
+const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C, isPhase4 }) => {
   return (
     <section className={clsx('mb-4 landscape:mb-8', className)}>
       <Bento image="/assets/images/space.webp">
@@ -20,24 +21,19 @@ const CountDown: FC<CountDownProps> = ({ className, cta, isPhase2B, isPhase2C })
         >
           <div className="flex flex-col gap-4 items-start">
             <h2 className="text-title-1 text-balance">
-              {isPhase2C ? (
-                <div className="flex flex-col items-left">
-                  <span>We already don&apos;t</span>
-                  <span> miss you, Billionaires.</span>
-                </div>
-              ) : (
-                'The countdown is on'
-              )}
+              <div className="flex flex-col items-left">
+                <span>We already don&apos;t</span>
+                <span> miss you, Billionaires.</span>
+              </div>
             </h2>
             <p className="text-body-regular">
-              {isPhase2C
-                ? `Even if you didn't make it IRL or online for the launch, we've stashed the footage in a super secret place, on our home page, for everyone to see.`
-                : `All the Billionaires, all the gameplay, all the satire — it all leads to this. A real rocket, built with Sent Into Space, carrying the absurd creations of a community that refused to play by Big Tech's rules.`}
+              Even if you didn&apos;t make it IRL or online for the launch, we&apos;ve stashed the
+              footage in a super secret place, on our home page, for everyone to see.
             </p>
-            <div className="hidden landscape:block">{cta}</div>
+            {!isPhase4 && <div className="hidden landscape:block">{cta}</div>}
           </div>
-          <RocketCountdown isPhase2B={isPhase2B} isPhase2C={isPhase2C} />
-          <div className="landscape:hidden w-full">{cta}</div>
+          <RocketCountdown isPhase2B={isPhase2B} isPhase2C={isPhase2C} isPhase4={isPhase4} />
+          {!isPhase4 && <div className="landscape:hidden w-full">{cta}</div>}
         </div>
       </Bento>
     </section>
