@@ -43,6 +43,7 @@ export function Game() {
     tapDeck,
     handlePreReveal,
     handleRevealCards,
+    handleCompareTurn,
     handleResolveTurn,
     resetGame,
     send,
@@ -142,8 +143,10 @@ export function Game() {
         handleRevealCards();
         break;
       case 'comparing':
-        // Don't call handleCompareTurn - let the state machine auto-transition after 1500ms delay
-        // This gives players time to see the cards before they're collected
+        // Call handleCompareTurn to queue animations and determine next step
+        // If animations are queued, callback will handle the transition
+        // Otherwise, state machine will auto-transition after 1500ms delay
+        handleCompareTurn();
         break;
       case 'resolving':
         handleResolveTurn();
@@ -186,7 +189,7 @@ export function Game() {
           />
 
           {/* Play Area - Center of board */}
-          <div className="flex flex-col items-center justify-around flex-1 relative mb-4 row-3 col-span-full">
+          <div className="flex flex-col items-center justify-around flex-1 relative mb-4 row-3 col-span-full gap-4">
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6">
               {/* CPU Cards */}

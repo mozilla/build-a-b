@@ -12,9 +12,7 @@ export const SpecialCardAnimation = ({
   videoSrc,
   title,
   className = '',
-  animationClassName = '',
   videoClassName = '',
-  titleClassName = '',
   loop = true,
   controls = false,
 }: SpecialCardAnimationProps) => {
@@ -32,9 +30,7 @@ export const SpecialCardAnimation = ({
   if (!show) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}
-    >
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}>
       {/* Board-constrained container matching game board dimensions */}
       <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 backdrop-blur-sm">
         {/* Video fills full board */}
@@ -48,14 +44,6 @@ export const SpecialCardAnimation = ({
           className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
           aria-label={title ? `${title} animation` : 'Special card animation'}
         />
-        {/* Optional title overlay */}
-        {title && (
-          <div className={`absolute bottom-8 left-0 right-0 flex justify-center ${animationClassName}`}>
-            <p className={`text-xl font-bold text-white drop-shadow-lg ${titleClassName}`}>
-              {title}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

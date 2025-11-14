@@ -40,7 +40,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
     <div className="max-w-[5.875rem] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20">
       {/* Stacked icons - similar to TurnValue with ~50% overlap */}
       <div
-        className={`relative h-[30px] flex items-center justify-center ${
+        className={`relative h-[1.875rem] flex items-center justify-center ${
           accumulatedEffects.length > 1 ? 'pl-4' : 0
         }`}
       >
@@ -51,13 +51,12 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
           return (
             <div
               key={`${effect.card.id}-${index}`}
-              className="w-[30px] h-[30px] shrink-0"
               style={{
                 zIndex: effectCount + index,
                 transform: index > 0 ? `translateX(-${index * 10}px)` : undefined, // Overlap by 15px per icon
               }}
             >
-              <Icon name={iconName} size={40} aria-label={`${effect.effectType} effect`} />
+              <Icon name={iconName} size={30} aria-label={`${effect.effectType} effect`} />
             </div>
           );
         })}

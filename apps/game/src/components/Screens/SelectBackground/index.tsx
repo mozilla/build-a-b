@@ -28,7 +28,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
     <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
       <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
-      <div className="w-full relative z-10 py-8 pt-16 h-full">
+      <div className="w-full relative z-10 py-8 pt-16 h-full overflow-auto">
         {/* Title and Description */}
         <div className="flex flex-col items-center justify-start gap-4 h-full">
           <div className="flex flex-col items-center gap-4 w-full px-[2.25rem] max-w-[25rem] mx-auto">
@@ -43,13 +43,6 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
                 className="text-common-ash max-w-[16.625rem]"
               >
                 {selectBackgroundMicrocopy.description}
-              </Text>
-              <Text
-                variant="body-large-semibold"
-                align="center"
-                className="text-common-ash max-w-[16.625rem] text-sm"
-              >
-                {selectBackgroundMicrocopy.disclaimer}
               </Text>
             </div>
           </div>
