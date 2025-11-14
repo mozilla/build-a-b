@@ -3,7 +3,7 @@ import SimpleItemCard from '@/components/DataWar/SimpleItemCard';
 import SocialNetwork from '@/components/SocialNetwork';
 import { socials } from '@/utils/constants';
 
-const FullInstructions = () => {
+const FullInstructions = ({ isPhase4 }: { isPhase4: boolean }) => {
   return (
     <section
       className="relative bg-[#F8F6F4] text-charcoal 
@@ -11,15 +11,17 @@ const FullInstructions = () => {
                 portrait:mt-8 mb-4 landscape:mb-8 pl-3 pr-4 pt-4 pb-4 landscape:pl-12 landscape:pr-12
                         landscape:pt-12 landscape:pb-12"
     >
-      <div className="flex flex-col landscape:flex-row">
+      <div className="flex flex-col landscape:flex-row landscape:justify-between">
         <div className="landscape:pr-8 order-2 landscape:order-1">
-          <h1 className="text-title-1 landscape:text-5xl-custom">Full Data War instructions</h1>
+          <h1 className="text-title-1 landscape:text-5xl-custom">
+            {isPhase4 ? 'Data War physical edition instructions' : 'Full Data War instructions'}
+          </h1>
           <p className="text-sm-custom mt-2">
             Some people learn by playing. Those people hate detailed instructions, but they&apos;ll
             love you for reading them when they have a question.
           </p>
         </div>
-        <div className="order-1 landscape:order-2 portrait:mb-5 portrait:flex portrait:justify-center">
+        <div className="order-1 landscape:order-2 portrait:mb-5 portrait:flex portrait:justify-center landscape:justify-end">
           <Image
             src="/assets/images/bbo-logo.webp"
             width={174}

@@ -1,8 +1,12 @@
 import Bento from '@/components/Bento';
 import Image from 'next/image';
 import ListItemCard from '@/components/DataWar/ListItemCard';
+import { evaluateFlag } from '@/app/flags';
+import LinkButton from '@/components/LinkButton';
 
-const BasicInstructions = () => {
+const BasicInstructions = async () => {
+  const isPhase4 = await evaluateFlag('showPhase4Features');
+
   return (
     <Bento
       className="bg-cover bg-[url(/assets/images/nebula-vertical.webp)] landscape:bg-[url(/assets/images/nebula.webp)] 
@@ -13,7 +17,7 @@ const BasicInstructions = () => {
         <div className="portrait:mt-40 landscape:order-1 order-2">
           <h6 className="text-nav-item">Data War Instructions</h6>
           <h1 className="text-title-1 landscape:text-5xl-custom landscape:text-6xl-custom">
-            This is Data War!
+            {isPhase4 ? 'Data War: Physical Edition' : 'This is Data War!'}
           </h1>
           <div className="flex flex-row justify-start flex-wrap content-end items-end gap-5 mt-2">
             <div className="border-common-ash border-1 rounded-xl p-2 text-sm-custom">
@@ -74,7 +78,7 @@ const BasicInstructions = () => {
         </div>
       </div>
 
-      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:items-center">
+      <div className="border-common-ash rounded-xl border-2 mt-4 landscape:mt-8 landscape:p-6 flex flex-col landscape:flex-row landscape:justify-between gap-4 landscape:gap-12 landscape:items-center">
         <div className="flex flex-col p-4 landscape:p-0 landscape:flex-row justify-start landscape:justify-between gap-4 landscape:content-center landscape:items-center landscape:w-2/3">
           <div className="w-20 h-20">
             <Image
@@ -86,28 +90,33 @@ const BasicInstructions = () => {
             />
           </div>
           <div>
-            <h3 className="font-bold text-title-3">Want a deck of your own?</h3>
+            <h3 className="font-bold text-title-3">Want to play Data War?</h3>
             <p className="text-sm-custom">
-              Right now, the only way to get a physical version of Data War is at TwitchCon 2025,
-              but there are other ways to play and new versions dropping soon!
+              The only way to get a physical copy of Data War was at TwitchCon 2025, but you can
+              download your own DIY deck to play at home!
             </p>
           </div>
         </div>
-        <div className="landscape:w-1/3 portrait:flex portrait:flex-col portrait:gap-4 portrait:p-4 portrait:mb-4">
-          <a
+        <div className="landscape:w-1/2 flex portrait:flex-col portrait:gap-4 portrait:p-4 portrait:mb-4 landscape:flex-row landscape:gap-4 landscape:justify-end">
+          <LinkButton
+            href={process.env.NEXT_PUBLIC_DATAWAR_PDF_URL || ''}
+            title="Get your own game cards"
+            target="_blank"
+            className='secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal landscape:w-fit
+                      before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
+                      before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
+                      before:mask-no-repeat before:mask-center before:mask-contain'
+            trackableEvent="click_download_deck_datawar_hero"
+          >
+            Download the Deck!
+          </LinkButton>
+          <LinkButton
             href="/datawar"
             title="Go to Data War Details"
             className="secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
           >
-            Data War Details
-          </a>
-          <a
-            href="/twitchcon"
-            title="Go to TwitchCon detail page"
-            className="landscape:ml-4 secondary-button border-common-ash text-common-ash hover:bg-common-ash hover:text-charcoal"
-          >
-            TwitchCon Details
-          </a>
+            See Game Details
+          </LinkButton>
         </div>
       </div>
     </Bento>
