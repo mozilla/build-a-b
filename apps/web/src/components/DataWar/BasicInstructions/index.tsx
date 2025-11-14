@@ -46,8 +46,8 @@ const BasicInstructions = async () => {
       <div className="mt-4">
         <p>
           Get ready for the most world-dominating, market-manipulating bonanza of boilerplate
-          Billionaire behavior ever packaged in a card game. Read below for full instructions, or go
-          to the Data War Detail page to learn how to get your official deck.
+          Billionaire behavior ever packaged in a card game. Read below for full physical edition
+          instructions, and play Data War Digital, live now and free to play in your browser!
         </p>
       </div>
 

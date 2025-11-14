@@ -12,11 +12,11 @@ const FullInstructions = ({ isPhase4 }: { isPhase4: boolean }) => {
                         landscape:pt-12 landscape:pb-12"
     >
       <div className="flex flex-col landscape:flex-row landscape:justify-between">
-        <div className="landscape:pr-8 order-2 landscape:order-1">
+        <div className="landscape:pr-14 order-2 landscape:order-1">
           <h1 className="text-title-1 landscape:text-5xl-custom">
             {isPhase4 ? 'Data War physical edition instructions' : 'Full Data War instructions'}
           </h1>
-          <p className="text-sm-custom mt-2">
+          <p className="text-lg-custom mt-2">
             Some people learn by playing. Those people hate detailed instructions, but they&apos;ll
             love you for reading them when they have a question.
           </p>
@@ -27,7 +27,7 @@ const FullInstructions = ({ isPhase4 }: { isPhase4: boolean }) => {
             width={174}
             height={85}
             alt="Billionaire Blast Off Logo"
-            className="aspect-[174/85]"
+            className="aspect-[174/85] w-[10.875rem] h-[5.3125rem]"
           />
         </div>
       </div>
