@@ -53,7 +53,6 @@ Assets are organized into 4 priority levels based on user journey timing. **Prio
 
 - Cannot start until critical assets complete
 - Must complete before medium-priority assets begin loading
-- State machine guard (`backgroundAssetsPreloaded`) prevents progression to `select_background` until ready
 
 #### Medium Priority (67 assets)
 
@@ -234,37 +233,32 @@ export function getPreloadedVideo(url: string): HTMLVideoElement | undefined {
 
 ### State Machine Integration
 
-The XState game flow machine has two guards that block progression until assets are ready:
+The XState game flow machine allows free navigation between setup screens. The `ScreenRenderer` component displays phase-specific loading screens **after** transitioning to each state when assets aren't ready yet.
 
-#### Guard 1: `backgroundAssetsPreloaded`
+#### Flow Architecture
 
-```typescript
-guards: {
-  backgroundAssetsPreloaded: ({ context }) => {
-    const { highPriorityAssetsReady } = useGameStore.getState();
-    return highPriorityAssetsReady;
-  };
-}
-```
+1. **Welcome → Select Billionaire**: Transition happens immediately. If `criticalPriorityAssetsReady` is false, `ScreenRenderer` shows critical LoadingScreen until avatars load.
 
-**Purpose:** Prevents entering `select_background` state until high-priority background images are loaded.
+2. **Select Billionaire → Select Background**: Transition happens immediately. If `highPriorityAssetsReady` is false, `ScreenRenderer` shows backgrounds LoadingScreen until backgrounds load.
 
-**Delay:** 800ms after reaching 100% before `highPriorityAssetsReady` becomes true, allowing users to see "Loading Complete!" message.
+3. **Intro/Mission → VS Animation**: Uses `assetsPreloaded` guard to block transition until all essential assets ready.
 
-#### Guard 2: `assetsPreloaded`
+#### Guard: `assetsPreloaded`
 
 ```typescript
 guards: {
-  assetsPreloaded: ({ context }) => {
+  assetsPreloaded: () => {
     const { preloadingComplete } = useGameStore.getState();
-    return preloadingComplete;
+    return preloadingComplete === true;
   };
 }
 ```
 
-**Purpose:** Prevents entering `vs_animation` state until essential assets (critical + high + medium) are loaded.
+**Purpose:** Prevents entering `vs_animation` state until essential assets (critical + high + medium) are loaded. This is the only guard needed since the VS animation cannot function without all assets.
 
-**Delay:** 800ms after reaching 100% before `preloadingComplete` becomes true, allowing users to see "Loading Complete!" message.
+**Delay:** 800ms after reaching 100% before `preloadingComplete` becomes true, **but only if the user actually saw the LoadingScreen**. If assets complete before the user attempts to transition (fast connections), they proceed immediately without delay.
+
+**Why other states don't need guards:** The `ScreenRenderer` handles displaying LoadingScreen for `select_billionaire` and `select_background` states, allowing users to see progress after transitioning rather than blocking the transition.
 
 ### Event-Driven VS Animation
 
@@ -293,7 +287,16 @@ useEffect(() => {
 
 ### Phase-Specific Progress Tracking
 
-The system tracks two distinct progress metrics:
+The system tracks three distinct progress metrics for different game phases:
+
+#### Critical Progress
+
+```typescript
+const criticalProgress =
+  stats.critical.total > 0 ? (stats.critical.loaded / stats.critical.total) * 100 : 0;
+```
+
+**Used for:** LoadingScreen after clicking START_GAME, before billionaire selection (only billionaire avatars)
 
 #### High-Priority Progress
 
@@ -303,7 +306,7 @@ const highPriorityTotal = stats.critical.total + stats.high.total;
 const highPriorityProgress = (highPriorityLoaded / highPriorityTotal) * 100;
 ```
 
-**Used for:** LoadingScreen during transition to background selection (only cares about backgrounds, not cards)
+**Used for:** LoadingScreen during transition to background selection (backgrounds only, not cards)
 
 #### Essential Progress
 
@@ -330,17 +333,19 @@ This prevents confusing UX where progress bar shows 20% when backgrounds are act
 
 2. **Phase-Specific Loading Screens**
 
-   - Different loading screens for different phases
-   - Background selection shows only background loading progress (highPriorityProgress)
-   - Intro/mission shows full essential asset progress (essentialProgress)
+   - Different loading screens for different phases:
+     - **Critical phase:** "Loading Billionaires..." (only billionaire avatars, `criticalProgress`)
+     - **Backgrounds phase:** "Loading Backgrounds..." (background images, `highPriorityProgress`)
+     - **Essential phase:** "Loading Cards..." (all gameplay assets, `essentialProgress`)
    - Progress bars accurately reach 100% when phase-specific assets complete
 
 3. **State Machine Guards**
 
-   - Prevents broken images by blocking transitions until assets ready
-   - `backgroundAssetsPreloaded` guard for background selection
-   - `assetsPreloaded` guard for VS animation
-   - 800ms delay after 100% allows "Loading Complete!" message visibility
+   - Only `assetsPreloaded` guard needed (for VS animation)
+   - Setup screens (`select_billionaire`, `select_background`) use post-transition LoadingScreen via `ScreenRenderer`
+   - Allows immediate navigation while showing progress after transition
+   - **Smart delays:** 800ms after 100% only if user saw LoadingScreen, otherwise 0ms
+   - Fast connections proceed immediately without artificial waiting
 
 4. **Batch Delays**
 
@@ -396,13 +401,20 @@ The game store tracks preloading state:
 
 ```typescript
 {
-  // High-priority flag (critical + high)
+  // Critical-priority flag (billionaire avatars only)
+  criticalPriorityAssetsReady: boolean,
+  criticalProgress: number, // 0-100
+  hasShownCriticalLoadingScreen: boolean, // Whether user saw billionaire loading screen
+
+  // High-priority flag (critical + high = backgrounds)
   highPriorityAssetsReady: boolean,
   highPriorityProgress: number, // 0-100
+  hasShownHighPriorityLoadingScreen: boolean, // Whether user saw background loading screen
 
   // Essential flag (critical + high + medium)
   preloadingComplete: boolean,
   essentialProgress: number, // 0-100
+  hasShownEssentialLoadingScreen: boolean, // Whether user saw essential assets loading screen
 
   // Overall progress (all tiers)
   isReady: boolean,
@@ -410,11 +422,18 @@ The game store tracks preloading state:
 }
 ```
 
+**Smart Delay Logic:**
+
+- The 800ms "Loading Complete!" delay only applies if the user actually saw the LoadingScreen
+- If assets finish loading before the user attempts to transition, they proceed immediately (0ms delay)
+- This ensures fast connections aren't penalized while slow connections still get visual feedback
+
 ### LoadingScreen Component
 
 ```typescript
 <LoadingScreen
-  progress={highPriorityProgress} // Optional: override calculated progress
+  phase="critical" | "backgrounds" | "essential" // Determines loading message
+  progress={criticalProgress} // Optional: override calculated progress
 />
 ```
 
@@ -477,7 +496,9 @@ The game store tracks preloading state:
 
 **Cause:** Assets already cached from previous play
 
-**Solution:** This is expected behavior. The 800ms delay provides visibility when assets aren't cached. For testing, clear browser cache or use incognito mode.
+**Solution:** This is expected behavior. For truly fast connections where assets load before the user attempts transition, there's now a 0ms delay (immediate progression). The 800ms delay only applies if the user actually saw the LoadingScreen.
+
+**Testing fresh loads:** Clear browser cache or use incognito mode.
 
 ### Issue: Medium assets loading too early on slow connections
 
@@ -489,13 +510,19 @@ The game store tracks preloading state:
 
 **Cause:** Guard delays (800ms) not yet complete
 
-**Solution:** Wait for store flags (`highPriorityAssetsReady` or `preloadingComplete`) to become true. These have intentional 800ms delays after reaching 100%.
+**Solution:** Wait for store flags (`criticalPriorityAssetsReady`, `highPriorityAssetsReady`, or `preloadingComplete`) to become true. These have intentional 800ms delays after reaching 100%, but only if the user saw the LoadingScreen.
+
+### Issue: Billionaire avatars not showing on select_billionaire screen
+
+**Cause:** Critical assets not categorized correctly or preloader not running
+
+**Solution:** Verify billionaire avatars are properly categorized as critical priority in asset configuration. Check console logs to ensure preloader is running.
 
 ### Issue: Background selection shows broken images
 
-**Cause:** `backgroundAssetsPreloaded` guard not working
+**Cause:** High-priority assets not categorized correctly or preloader not running
 
-**Solution:** Verify guard is checking `highPriorityAssetsReady` from store. Check that high-priority assets are properly categorized in asset configuration.
+**Solution:** Verify background images are properly categorized as high-priority in asset configuration. Check console logs to ensure preloader is running.
 
 ## Implementation Files
 
@@ -523,7 +550,7 @@ The fully implemented asset preloading system provides:
 ✅ **Global caching** - Prevents duplicate downloads and AbortErrors  
 ✅ **Reactive UI** - Real-time progress updates  
 ✅ **Mobile optimized** - Designed for slow connections  
-✅ **Completion delays** - 800ms visibility for "Loading Complete!" message  
-✅ **Fully tested** – comprehensive coverage of preloader hooks and state machine guards
+✅ **Smart completion delays** - 800ms visibility only if user saw LoadingScreen, 0ms for fast connections  
+✅ **Fully tested** - 24 passing tests (6 preloader + 18 state machine)
 
-This system ensures smooth, predictable loading behavior across all network conditions while providing clear feedback to users.
+This system ensures smooth, predictable loading behavior across all network conditions while providing clear feedback to users and never artificially delaying users on fast connections.

@@ -29,6 +29,10 @@ class MockImage {
       }
     }, 1);
   }
+
+  decode(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 describe('useAssetPreloader', () => {

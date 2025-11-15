@@ -3,6 +3,7 @@
  * All values in milliseconds
  */
 export const ANIMATION_DURATIONS = {
+  LOADING_SCREEN_COMPLETE_DELAY: 800, // Delay after reaching 100% before proceeding (if user saw LoadingScreen)
   // Card animations
   CARD_FLIP: 700, // Card flip animation duration (used by Card component)
   CARD_COMPARISON: 1800, // Increased for data war glow pause
