@@ -82,7 +82,14 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     const assetsLoaded = imagePreloadState.totalLoaded + videoPreloadState.readyToPlayCount;
     const essentialAssetsReady = imagePreloadState.essentialReady;
     const highPriorityAssetsReady = imagePreloadState.highPriorityReady;
+    const criticalPriorityAssetsReady =
+      imagePreloadState.stats.critical.loaded === imagePreloadState.stats.critical.total &&
+      imagePreloadState.stats.critical.total > 0;
     const vsVideoReady = videoPreloadState.readyToPlayCount > 0;
+    const criticalProgress =
+      imagePreloadState.stats.critical.total > 0
+        ? (imagePreloadState.stats.critical.loaded / imagePreloadState.stats.critical.total) * 100
+        : 0;
     const highPriorityProgress = imagePreloadState.highPriorityProgress;
     const essentialProgress = imagePreloadState.essentialProgress;
 
@@ -91,18 +98,23 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
       assetsTotal,
       essentialAssetsReady,
       highPriorityAssetsReady,
+      criticalPriorityAssetsReady,
       vsVideoReady,
+      criticalProgress,
       highPriorityProgress,
       essentialProgress,
     });
 
     // Log status in development
     if (import.meta.env.DEV) {
-      const preloadingComplete = essentialAssetsReady && (videoUrls.length === 0 || vsVideoReady);
+      const preloadingComplete = Boolean(
+        essentialAssetsReady && (videoUrls.length === 0 || vsVideoReady),
+      );
       console.log(
         `📦 Preloading: ${assetsLoaded}/${assetsTotal} (${Math.round(
           assetsTotal > 0 ? (assetsLoaded / assetsTotal) * 100 : 0,
         )}%) | ` +
+          `Critical: ${criticalPriorityAssetsReady ? '✓' : '⏳'} | ` +
           `High Priority: ${highPriorityAssetsReady ? '✓' : '⏳'} | ` +
           `Essential: ${essentialAssetsReady ? '✓' : '⏳'} | ` +
           `VS Video: ${vsVideoReady ? '✓' : '⏳'} | ` +
@@ -116,6 +128,8 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     imagePreloadState.highPriorityReady,
     imagePreloadState.highPriorityProgress,
     imagePreloadState.essentialProgress,
+    imagePreloadState.stats.critical.loaded,
+    imagePreloadState.stats.critical.total,
     videoPreloadState.totalCount,
     videoPreloadState.readyToPlayCount,
     videoUrls.length,

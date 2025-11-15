@@ -110,10 +110,15 @@ export const useGameStore = create<GameStore>()(
       assetsTotal: 0,
       essentialAssetsReady: false,
       highPriorityAssetsReady: false,
+      criticalPriorityAssetsReady: false,
       vsVideoReady: false,
       preloadingComplete: false,
+      criticalProgress: 0,
       highPriorityProgress: 0,
       essentialProgress: 0,
+      hasShownCriticalLoadingScreen: false,
+      hasShownHighPriorityLoadingScreen: false,
+      hasShownEssentialLoadingScreen: false,
 
       // Effect Notification System
       seenEffectTypes: JSON.parse(localStorage.getItem('seenEffectTypes') || '[]'),
@@ -1027,10 +1032,7 @@ export const useGameStore = create<GameStore>()(
         });
 
         // Map animation type to the appropriate state flag
-        const animationTypeToSetter: Record<
-          string,
-          (show: boolean) => void
-        > = {
+        const animationTypeToSetter: Record<string, (show: boolean) => void> = {
           tracker_smacker: get().setShowTrackerSmackerAnimation,
           forced_empathy: get().setShowForcedEmpathyAnimation,
           hostile_takeover: get().setShowHostileTakeoverAnimation,
@@ -1608,9 +1610,11 @@ export const useGameStore = create<GameStore>()(
       updatePreloadingProgress: (stats) => {
         const shouldBeComplete = stats.essentialAssetsReady && stats.vsVideoReady;
         const shouldHighPriorityBeReady = stats.highPriorityAssetsReady;
+        const shouldCriticalPriorityBeReady = stats.criticalPriorityAssetsReady;
         const currentState = get();
         const wasComplete = currentState.preloadingComplete;
         const wasHighPriorityReady = currentState.highPriorityAssetsReady;
+        const wasCriticalPriorityReady = currentState.criticalPriorityAssetsReady;
 
         // Update progress immediately (except for delayed flags)
         set({
@@ -1620,29 +1624,63 @@ export const useGameStore = create<GameStore>()(
           vsVideoReady: stats.vsVideoReady,
           highPriorityProgress: stats.highPriorityProgress,
           essentialProgress: stats.essentialProgress,
+          criticalProgress: stats.criticalProgress,
         });
 
+        if (shouldCriticalPriorityBeReady && !wasCriticalPriorityReady) {
+          const hasShownCriticalLoadingScreen = currentState.hasShownCriticalLoadingScreen;
+          const delay = hasShownCriticalLoadingScreen
+            ? ANIMATION_DURATIONS.LOADING_SCREEN_COMPLETE_DELAY
+            : 0;
+
+          setTimeout(() => {
+            set({ criticalPriorityAssetsReady: true });
+          }, delay);
+        }
+
         // Add delay before setting highPriorityAssetsReady to true
-        // This gives users time to see completion before transitioning to background selection
+        // Only delay if user has seen the loading screen - otherwise allow immediate progression
         if (shouldHighPriorityBeReady && !wasHighPriorityReady) {
+          const hasShownLoadingScreen = currentState.hasShownHighPriorityLoadingScreen;
+          const delay = hasShownLoadingScreen
+            ? ANIMATION_DURATIONS.LOADING_SCREEN_COMPLETE_DELAY
+            : 0; // 800ms only if user saw loading screen
+
           setTimeout(() => {
             set({ highPriorityAssetsReady: true });
-          }, 800); // 800ms delay after backgrounds load
+          }, delay);
         } else if (!shouldHighPriorityBeReady && wasHighPriorityReady) {
           // If assets become incomplete (e.g., new billionaire selected), update immediately
           set({ highPriorityAssetsReady: false });
         }
 
         // Add delay before setting preloadingComplete to true
-        // This gives users time to see 100% completion before transitioning
+        // Only delay if user has seen the loading screen - otherwise allow immediate progression
         if (shouldBeComplete && !wasComplete) {
+          const hasShownLoadingScreen = currentState.hasShownEssentialLoadingScreen;
+          const delay = hasShownLoadingScreen
+            ? ANIMATION_DURATIONS.LOADING_SCREEN_COMPLETE_DELAY
+            : 0; // 800ms only if user saw loading screen
+
           setTimeout(() => {
             set({ preloadingComplete: true });
-          }, 800); // 800ms delay after reaching 100%
+          }, delay);
         } else if (!shouldBeComplete && wasComplete) {
           // If assets become incomplete (e.g., new billionaire selected), update immediately
           set({ preloadingComplete: false });
         }
+      },
+
+      setHasShownHighPriorityLoadingScreen: (shown) => {
+        set({ hasShownHighPriorityLoadingScreen: shown });
+      },
+
+      setHasShownEssentialLoadingScreen: (shown) => {
+        set({ hasShownEssentialLoadingScreen: shown });
+      },
+
+      setHasShownCriticalLoadingScreen: (shown) => {
+        set({ hasShownCriticalLoadingScreen: shown });
       },
 
       resetGame: (
@@ -1698,6 +1736,10 @@ export const useGameStore = create<GameStore>()(
           showDataGrabTakeover: false,
           dataGrabGameActive: false,
           showDataGrabResults: false,
+          // Reset Asset Preloading State
+          hasShownCriticalLoadingScreen: false,
+          hasShownHighPriorityLoadingScreen: false,
+          hasShownEssentialLoadingScreen: false,
         });
       },
     }),
