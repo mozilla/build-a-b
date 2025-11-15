@@ -15,7 +15,7 @@ export type LoadingScreenPhase = 'critical' | 'backgrounds' | 'essential';
 
 export interface LoadingScreenProps {
   /**
-   * Text displayed prior to phase completion
+   * Current loading phase. Determines the loading message displayed.
    */
   phase: LoadingScreenPhase;
   /**
