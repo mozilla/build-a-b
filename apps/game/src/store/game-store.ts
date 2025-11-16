@@ -97,6 +97,14 @@ export const useGameStore = create<GameStore>()(
       showDataGrabResults: false,
       showDataGrabCookies: false, // Debug option - disabled by default
 
+      // Temper Tantrum Card Selection State
+      showTemperTantrumModal: false,
+      temperTantrumAvailableCards: [],
+      temperTantrumSelectedCards: [],
+      temperTantrumMaxSelections: 2,
+      temperTantrumWinner: null,
+      temperTantrumLoserCards: [],
+
       selectedBillionaire: '',
       cpuBillionaire: '',
       selectedBackground: '',
@@ -492,6 +500,12 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
+        // Don't collect cards if Temper Tantrum modal is active
+        // Cards will be distributed manually after user selection
+        if (get().showTemperTantrumModal) {
+          return;
+        }
+
         // Collect remaining cards in play after effects have been processed
         const { cardsInPlay } = get();
         if (cardsInPlay.length > 0) {
@@ -795,17 +809,41 @@ export const useGameStore = create<GameStore>()(
             case 'temper_tantrum':
               // If the player who played this card LOST, steal 2 cards from winner's win pile
               if (winner !== 'tie' && winner !== effect.playedBy) {
-                // Steal from the cards that were just won (cardsInPlay)
-                const cardsToSteal = get().cardsInPlay.slice(0, 2);
-                if (cardsToSteal.length > 0) {
-                  // Add stolen cards to loser's deck
-                  const loser = get()[effect.playedBy];
+                const loser = effect.playedBy;
+
+                // Different behavior for player vs CPU
+                if (loser === 'player') {
+                  // PLAYER LOSES: Show modal for card selection from winner's cards
+                  get().initializeTemperTantrumSelection(winner);
+                  // Note: Game will pause here (blockTransitions remains true)
+                  // Cards will be stolen after player confirms selection
+                } else {
+                  // CPU LOSES: Automatic selection (first 2 cards from player's pile)
+                  const currentState = get();
+                  // Extract Card objects from PlayedCardState
+                  const playerCards = currentState.player.playedCardsInHand.map((pcs) => pcs.card);
+                  const cpuCards = currentState.cpu.playedCardsInHand.map((pcs) => pcs.card);
+
+                  // Steal up to 2 cards from winner's pile (player in this case)
+                  const cardsToSteal = playerCards.slice(0, 2);
+
+                  // Distribute cards:
+                  // - CPU (loser) gets: ONLY stolen cards (doesn't keep their own cards)
+                  // - Player (winner) gets: remaining cards from their pile + CPU's cards
+                  const remainingPlayerCards = playerCards.slice(cardsToSteal.length);
+
                   set({
-                    [effect.playedBy]: {
-                      ...loser,
-                      deck: [...loser.deck, ...cardsToSteal],
+                    player: {
+                      ...currentState.player,
+                      deck: [...currentState.player.deck, ...remainingPlayerCards, ...cpuCards],
+                      playedCardsInHand: [],
                     },
-                    cardsInPlay: get().cardsInPlay.slice(2), // Remove stolen cards
+                    cpu: {
+                      ...currentState.cpu,
+                      deck: [...currentState.cpu.deck, ...cardsToSteal],
+                      playedCardsInHand: [],
+                    },
+                    cardsInPlay: [], // All cards distributed
                   });
                 }
               }
@@ -1345,6 +1383,123 @@ export const useGameStore = create<GameStore>()(
         set({ showDataGrabCookies: show });
       },
 
+      // Temper Tantrum Actions
+      initializeTemperTantrumSelection: (winner) => {
+        const state = get();
+        const loser = winner === 'player' ? 'cpu' : 'player';
+
+        // Get cards from BOTH players (extract Card from PlayedCardState)
+        const winnerCards = state[winner].playedCardsInHand.map((pcs) => pcs.card);
+        const loserCards = state[loser].playedCardsInHand.map((pcs) => pcs.card);
+        const maxSelections = Math.min(2, winnerCards.length);
+
+        set({
+          showTemperTantrumModal: true,
+          temperTantrumAvailableCards: [...winnerCards], // Only winner's cards shown in modal
+          temperTantrumSelectedCards: [],
+          temperTantrumMaxSelections: maxSelections,
+          temperTantrumWinner: winner,
+          temperTantrumLoserCards: [...loserCards], // Store loser's cards for later distribution
+          blockTransitions: true, // Pause game while modal is open
+        });
+      },
+
+      selectTemperTantrumCard: (card) => {
+        const { temperTantrumSelectedCards, temperTantrumMaxSelections } = get();
+
+        // Check if card is already selected
+        const isSelected = temperTantrumSelectedCards.some((c) => c.id === card.id);
+
+        if (isSelected) {
+          // Deselect card
+          const newSelected = temperTantrumSelectedCards.filter((c) => c.id !== card.id);
+          set({ temperTantrumSelectedCards: newSelected });
+        } else {
+          // Select card (if not at max)
+          if (temperTantrumSelectedCards.length < temperTantrumMaxSelections) {
+            set({
+              temperTantrumSelectedCards: [...temperTantrumSelectedCards, card],
+            });
+          }
+        }
+      },
+
+      confirmTemperTantrumSelection: () => {
+        const {
+          temperTantrumSelectedCards,
+          temperTantrumWinner,
+          temperTantrumAvailableCards,
+          temperTantrumLoserCards,
+        } = get();
+
+        if (!temperTantrumWinner) return;
+
+        // Player is the loser (since they're selecting cards)
+        const winner = temperTantrumWinner;
+
+        // Use stored cards (since playedCardsInHand may have been cleared)
+        const loserCards = temperTantrumLoserCards;
+        const winnerCards = temperTantrumAvailableCards;
+
+        // Stolen cards from winner's pile
+        const stolenCards = temperTantrumSelectedCards;
+
+        // Remaining winner's cards (not stolen)
+        const remainingWinnerCards = winnerCards.filter(
+          (card) => !stolenCards.some((stolen) => stolen.id === card.id),
+        );
+
+        // Capture card arrays before setTimeout (so they don't get cleared)
+        const stolenCardsCaptured = [...stolenCards];
+        const loserCardsCaptured = [...loserCards];
+        const remainingWinnerCardsCaptured = [...remainingWinnerCards];
+
+        // Close modal and trigger collection animation
+        set({
+          showTemperTantrumModal: false,
+          temperTantrumAvailableCards: [],
+          temperTantrumSelectedCards: [],
+          temperTantrumLoserCards: [],
+          collecting: { winner, cards: [...remainingWinnerCards, ...loserCards] },
+        });
+
+        // Wait for animation to complete, then distribute cards
+        setTimeout(() => {
+          const currentState = get();
+          // Distribute cards:
+          // - Loser gets: ONLY stolen cards (doesn't keep their own cards)
+          // - Winner gets: remaining cards from their pile + loser's cards
+          const newPlayerDeck = [...currentState.player.deck, ...stolenCardsCaptured];
+          const newCpuDeck = [...currentState.cpu.deck, ...remainingWinnerCardsCaptured, ...loserCardsCaptured];
+
+          set({
+            player: {
+              ...currentState.player,
+              deck: newPlayerDeck,
+              playedCardsInHand: [],
+              currentTurnValue: 0, // Reset turn value
+              activeEffects: [], // Clear active effects
+            },
+            cpu: {
+              ...currentState.cpu,
+              deck: newCpuDeck,
+              playedCardsInHand: [],
+              currentTurnValue: 0, // Reset turn value
+              activeEffects: [], // Clear active effects
+            },
+            cardsInPlay: [], // All cards distributed
+            collecting: null,
+            temperTantrumWinner: null,
+            blockTransitions: false, // Resume game
+            showEffectNotificationBadge: false, // Clear effect badge
+          });
+        }, ANIMATION_DURATIONS.CARD_COLLECTION);
+      },
+
+      setShowTemperTantrumModal: (show) => {
+        set({ showTemperTantrumModal: show });
+      },
+
       // UI Actions
       selectBillionaire: (billionaire) => {
         const cpuBillionaire = getRandomBillionaire(billionaire as BillionaireId);
@@ -1787,6 +1942,13 @@ export const useGameStore = create<GameStore>()(
           showDataGrabTakeover: false,
           dataGrabGameActive: false,
           showDataGrabResults: false,
+          // Reset Temper Tantrum state
+          showTemperTantrumModal: false,
+          temperTantrumAvailableCards: [],
+          temperTantrumSelectedCards: [],
+          temperTantrumMaxSelections: 2,
+          temperTantrumWinner: null,
+          temperTantrumLoserCards: [],
           // Reset Asset Preloading State
           hasShownCriticalLoadingScreen: false,
           hasShownHighPriorityLoadingScreen: false,

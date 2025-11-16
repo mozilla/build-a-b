@@ -86,6 +86,14 @@ export type GameStore = {
   showDataGrabResults: boolean; // Show results in hand viewer
   showDataGrabCookies: boolean; // Debug option to show floating cookie decorations
 
+  // Temper Tantrum Card Selection State
+  showTemperTantrumModal: boolean; // Show modal for player card selection
+  temperTantrumAvailableCards: Card[]; // Cards player can choose from (winner's cards only)
+  temperTantrumSelectedCards: Card[]; // Cards player has selected (max 2)
+  temperTantrumMaxSelections: number; // Always 2 (or less if fewer cards available)
+  temperTantrumWinner: 'player' | 'cpu' | null; // Who won the turn (to return remaining cards)
+  temperTantrumLoserCards: Card[]; // Loser's cards (stored to preserve for distribution)
+
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
   pendingEffectNotifications: EffectNotification[]; // Queue of notifications to show
@@ -214,6 +222,12 @@ export type GameStore = {
   setDataGrabGameActive: (active: boolean) => void;
   setShowDataGrabResults: (show: boolean) => void;
   setShowDataGrabCookies: (show: boolean) => void; // Toggle cookie decorations (debug)
+
+  // Temper Tantrum Actions
+  initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void; // Prepare modal state with winner info
+  selectTemperTantrumCard: (card: Card) => void; // Player selects/deselects a card
+  confirmTemperTantrumSelection: () => void; // Player confirms final selection
+  setShowTemperTantrumModal: (show: boolean) => void;
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;

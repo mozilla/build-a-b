@@ -803,8 +803,21 @@ describe('Turn Resolution', () => {
         };
 
         const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
+        const initialCpuDeckSize = useGameStore.getState().cpu.deck.length;
 
+        // Set up playedCardsInHand for both players
         useGameStore.setState({
+          player: {
+            ...useGameStore.getState().player,
+            playedCardsInHand: [{ card: tantrumCard, isFaceDown: false }],
+          },
+          cpu: {
+            ...useGameStore.getState().cpu,
+            playedCardsInHand: [
+              { card: card1, isFaceDown: false },
+              { card: card2, isFaceDown: false },
+            ],
+          },
           cardsInPlay: [card1, card2, tantrumCard],
           pendingEffects: [
             {
@@ -816,11 +829,29 @@ describe('Turn Resolution', () => {
           ],
         });
 
-        useGameStore.getState().processPendingEffects('cpu'); // Player lost
+        useGameStore.getState().processPendingEffects('cpu'); // CPU wins, player loses
 
-        // Player should have stolen 2 cards from cardsInPlay
+        // Modal should be open with available cards to steal
+        expect(useGameStore.getState().showTemperTantrumModal).toBe(true);
+        expect(useGameStore.getState().temperTantrumAvailableCards).toEqual([card1, card2]);
+        expect(useGameStore.getState().temperTantrumWinner).toBe('cpu');
+
+        // Simulate player selecting 2 cards
+        useGameStore.getState().selectTemperTantrumCard(card1);
+        useGameStore.getState().selectTemperTantrumCard(card2);
+
+        // Confirm selection
+        useGameStore.getState().confirmTemperTantrumSelection();
+
+        // Wait for animation to complete (CARD_COLLECTION duration is 1200ms)
+        vi.advanceTimersByTime(1200);
+
+        // New behavior: Player (loser) steals 2 cards from CPU's pile
+        // CPU (winner) gets: 0 remaining (both stolen) + player's 1 card = 1 card
+        // Player gets: 2 stolen cards (doesn't keep their own tantrum card)
         expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 2);
-        expect(useGameStore.getState().cardsInPlay.length).toBe(1); // Only tantrum card left
+        expect(useGameStore.getState().cpu.deck.length).toBe(initialCpuDeckSize + 1);
+        expect(useGameStore.getState().cardsInPlay.length).toBe(0); // All cards distributed
       });
 
       it('should not steal when player wins', () => {
