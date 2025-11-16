@@ -27,6 +27,7 @@ export type GameStore = {
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+  showingWinEffect: PlayerType | null; // Player currently showing win celebration (before collection)
   collecting: {
     winner: PlayerType | null;
     cards: Card[];
@@ -63,11 +64,14 @@ export type GameStore = {
   showTemperTantrumAnimation: boolean; // Shows when temper tantrum is played
   showMandatoryRecallAnimation: boolean; // Shows when mandatory recall is played
   showTheftWonAnimation: boolean; // Shows when patent theft wins and steals Launch Stack
+  showRecallWonAnimation: boolean; // Shows when mandatory recall wins and returns Launch Stacks
+  recallReturnCount: number; // Number of launch stacks being returned by Mandatory Recall
 
   // Animation Queue System
   animationQueue: Array<{
     type: SpecialEffectAnimationType;
     playedBy: PlayerType;
+    params?: Record<string, string>;
   }>;
   isPlayingQueuedAnimation: boolean; // True when processing queued animations
   animationsPaused: boolean; // Internal: Animation queue is processing
@@ -84,6 +88,14 @@ export type GameStore = {
   dataGrabGameActive: boolean; // True during active gameplay (~1.5 seconds)
   showDataGrabResults: boolean; // Show results in hand viewer
   showDataGrabCookies: boolean; // Debug option to show floating cookie decorations
+
+  // Temper Tantrum Card Selection State
+  showTemperTantrumModal: boolean; // Show modal for player card selection
+  temperTantrumAvailableCards: Card[]; // Cards player can choose from (winner's cards only)
+  temperTantrumSelectedCards: Card[]; // Cards player has selected (max 2)
+  temperTantrumMaxSelections: number; // Always 2 (or less if fewer cards available)
+  temperTantrumWinner: 'player' | 'cpu' | null; // Who won the turn (to return remaining cards)
+  temperTantrumLoserCards: Card[]; // Loser's cards (stored to preserve for distribution)
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -194,6 +206,7 @@ export type GameStore = {
   setShowTemperTantrumAnimation: (show: boolean) => void;
   setShowMandatoryRecallAnimation: (show: boolean) => void;
   setShowTheftWonAnimation: (show: boolean) => void;
+  setShowRecallWonAnimation: (show: boolean) => void;
 
   // Animation Queue Actions
   queueAnimation: (type: SpecialEffectAnimationType, playedBy: PlayerType) => void;
@@ -213,6 +226,12 @@ export type GameStore = {
   setDataGrabGameActive: (active: boolean) => void;
   setShowDataGrabResults: (show: boolean) => void;
   setShowDataGrabCookies: (show: boolean) => void; // Toggle cookie decorations (debug)
+
+  // Temper Tantrum Actions
+  initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void; // Prepare modal state with winner info
+  selectTemperTantrumCard: (card: Card) => void; // Player selects/deselects a card
+  confirmTemperTantrumSelection: () => void; // Player confirms final selection
+  setShowTemperTantrumModal: (show: boolean) => void;
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;

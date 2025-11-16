@@ -17,9 +17,12 @@ export const CardCarousel = ({
   cards,
   selectedCard,
   onCardSelect,
+  onCardClick,
   renderCardContent,
   className = '',
   faceDownCardIds,
+  glowCardIds,
+  scaleSelectedCards = false,
   swiperOptions = {},
   cardClassName,
   cardRotation = 'rotate-[-15deg]',
@@ -67,6 +70,7 @@ export const CardCarousel = ({
       >
         {cards.map((card) => {
           const isFaceDown = faceDownCardIds?.has(card.id) ?? false;
+          const isSelected = glowCardIds?.has(card.id) ?? false;
           const cardImage = isFaceDown ? CARD_BACK_IMAGE : card.imageUrl;
 
           return (
@@ -74,10 +78,12 @@ export const CardCarousel = ({
               <div
                 className={`flex flex-col items-center justify-center h-full cursor-pointer transition-transform duration-200 ${cardRotation} ${
                   cardClassName || ''
-                }`}
-                onClick={() => onCardSelect(card)}
+                } ${scaleSelectedCards ? (isSelected ? 'scale-100' : 'scale-[0.8]') : ''}`}
+                onClick={() => (onCardClick ? onCardClick(card) : onCardSelect(card))}
               >
-                <div className="relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl">
+                <div className={`relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl`}
+                     style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 8px #49C1B4' } : undefined}
+                >
                   <img
                     src={cardImage}
                     alt={isFaceDown ? 'Face-down card' : getCardAltText(card)}

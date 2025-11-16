@@ -98,7 +98,10 @@ export const DataGrabResultsModal: FC = () => {
         <ModalBody className="flex flex-col items-center justify-center gap-6">
           {/* Title */}
           <Text variant="title-2" className="text-white">
-            Data Grab Results
+            Data Grabbed!
+          </Text>
+          <Text variant="body-large" className="text-white">
+            Cards added to each deck.
           </Text>
 
           {/* Player/Opponent Tabs */}
@@ -134,9 +137,12 @@ export const DataGrabResultsModal: FC = () => {
               faceDownCardIds={faceDownCardIds}
             />
           ) : (
-            <div className="h-[400px] flex items-center justify-center">
-              <Text variant="title-3" className="text-white/70">
-                No cards collected
+            <div className="h-[400px] flex flex-col items-center justify-center">
+              <Text variant="title-2" className="text-common-ash">
+                Nada.Zip.Zilch
+              </Text>
+              <Text variant="body-large" className="text-common-ash">
+                {viewMode === 'player' ? 'You didn’t collect any data.' : 'No data left for them.'}
               </Text>
             </div>
           )}

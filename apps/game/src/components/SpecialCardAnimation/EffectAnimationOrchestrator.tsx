@@ -1,5 +1,8 @@
 import { useGameStore } from '@/store';
-import { SPECIAL_EFFECT_ANIMATIONS, getAnimationVideoSrc } from '@/config/special-effect-animations';
+import {
+  SPECIAL_EFFECT_ANIMATIONS,
+  getAnimationVideoSrc,
+} from '@/config/special-effect-animations';
 import { SpecialCardAnimation } from './index';
 
 /**
@@ -35,10 +38,14 @@ export const EffectAnimationOrchestrator = () => {
     showTemperTantrumAnimation,
     showMandatoryRecallAnimation,
     showTheftWonAnimation,
+    showRecallWonAnimation,
     activePlayer,
     currentAnimationPlayer,
     isPlayingQueuedAnimation,
     effectAccumulationPaused,
+    cpuLaunchStacks,
+    playerLaunchStacks,
+    recallReturnCount,
   } = useGameStore();
 
   // Hide all animations when effect modal is open (game is paused)
@@ -48,9 +55,10 @@ export const EffectAnimationOrchestrator = () => {
 
   // Determine if the current action is from the player
   // Use currentAnimationPlayer when processing queued animations, otherwise use activePlayer
-  const isPlayerAction = isPlayingQueuedAnimation && currentAnimationPlayer
-    ? currentAnimationPlayer === 'player'
-    : activePlayer === 'player';
+  const isPlayerAction =
+    isPlayingQueuedAnimation && currentAnimationPlayer
+      ? currentAnimationPlayer === 'player'
+      : activePlayer === 'player';
 
   // Priority order: Check animations in order of their display timing
   // Instant effects (Forced Empathy, Hostile Takeover, etc.) > Post-turn (Launch Stack) > Pre-reveal (OWYW)
@@ -146,13 +154,31 @@ export const EffectAnimationOrchestrator = () => {
     );
   }
 
-  // Theft Won - Shows when Patent Theft steals a Launch Stack
-  if (showTheftWonAnimation) {
-    const animation = SPECIAL_EFFECT_ANIMATIONS.theft_won;
+  // Recall Won - Shows when Mandatory Recall returns Launch Stacks to opponent
+  if (showRecallWonAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.mandatory_recall_won;
+    // The count represents how many launch stacks are being returned
+    const count = recallReturnCount || 1;
+
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction, count.toString())}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Theft Won - Shows when Patent Theft steals a Launch Stack
+  if (showTheftWonAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.theft_won;
+    const launchStackCounter = isPlayerAction ? playerLaunchStacks.length : cpuLaunchStacks.length;
+
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction, launchStackCounter.toString())}
         title={animation.title}
         loop={animation.loop}
       />
