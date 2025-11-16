@@ -41,7 +41,7 @@ interface UseVideoPreloaderOptions {
  * Returns the preloaded video element if available, null otherwise
  */
 export function getPreloadedVideo(url: string): HTMLVideoElement | null {
-  return globalPreloadedVideos.get(url)?.element || null;
+  return globalPreloadedVideos.get(url)?.element ?? null;
 }
 
 /**

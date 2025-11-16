@@ -14,6 +14,7 @@ vi.mock('../store/game-store', () => ({
     getState: vi.fn(() => ({
       preloadingComplete: true, // Allow transitions through asset-gated states
       highPriorityAssetsReady: true, // Allow transitions through background selection
+      criticalPriorityAssetsReady: true, // Allow transitions through billionaire selection
       winner: null,
       winCondition: null,
       checkForDataWar: mockCheckForDataWar,

@@ -14,6 +14,18 @@ import { useEffect, useRef, useState } from 'react';
 const globalPreloadedImages = new Map<string, PreloadedImage>();
 let globalContainer: HTMLDivElement | null = null;
 
+/**
+ * Currently unused, but may be necessary to clear cache in long-running sessions or for
+ * testing purposes.
+ */
+export function clearAssetCache(): void {
+  globalPreloadedImages.clear();
+  if (globalContainer) {
+    globalContainer.remove();
+    globalContainer = null;
+  }
+}
+
 export interface AssetPreloadPriority {
   /**
    * Critical assets - Load immediately (highest priority)

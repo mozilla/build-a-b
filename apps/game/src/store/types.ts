@@ -122,10 +122,15 @@ export type GameStore = {
   assetsTotal: number; // Total essential assets to load
   essentialAssetsReady: boolean; // Critical + High + Medium images loaded
   highPriorityAssetsReady: boolean; // Critical + High images loaded (backgrounds)
+  criticalPriorityAssetsReady: boolean; // Critical images loaded (billionaire avatars)
   vsVideoReady: boolean; // VS animation video ready to play
   preloadingComplete: boolean; // All essential assets ready (gates progression)
+  criticalProgress: number; // Progress percentage for critical assets (billionaire avatars)
   highPriorityProgress: number; // Progress percentage for high-priority assets
   essentialProgress: number; // Progress percentage for essential assets
+  hasShownCriticalLoadingScreen: boolean; // Whether user saw the billionaire loading screen
+  hasShownHighPriorityLoadingScreen: boolean; // Whether user saw the background loading screen
+  hasShownEssentialLoadingScreen: boolean; // Whether user saw the essential assets loading screen
 
   // Actions - Game Logic
   initializeGame: (
@@ -257,8 +262,13 @@ export type GameStore = {
     assetsTotal: number;
     essentialAssetsReady: boolean;
     highPriorityAssetsReady: boolean;
+    criticalPriorityAssetsReady: boolean;
     vsVideoReady: boolean;
+    criticalProgress: number;
     highPriorityProgress: number;
     essentialProgress: number;
   }) => void;
+  setHasShownCriticalLoadingScreen: (shown: boolean) => void;
+  setHasShownHighPriorityLoadingScreen: (shown: boolean) => void;
+  setHasShownEssentialLoadingScreen: (shown: boolean) => void;
 };
