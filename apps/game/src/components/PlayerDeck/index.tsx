@@ -1,4 +1,4 @@
-import { Text } from '@/components';
+import { SpecialCardAnimation, Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { useGameStore, usePlayer } from '@/store';
 import type { PlayerType } from '@/types';
@@ -12,6 +12,7 @@ import { LaunchStackIndicator } from '../LaunchStackIndicator';
 import { LottieAnimation } from '../LottieAnimation';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
+import { SUPABASE_BASE_URL } from '@/config/special-effect-animations';
 
 type Containers = {
   avatar: string;
@@ -33,6 +34,11 @@ const gridLayoutMap: Record<PlayerType, Containers> = {
     deck: 'row-2',
     turnValue: 'row-2 col-3',
   },
+};
+
+const launchStackAnimations: Record<PlayerType, string> = {
+  player: `${SUPABASE_BASE_URL}won_launchstack_player.webm`,
+  cpu: `${SUPABASE_BASE_URL}won_launchstack_cpu.webm`,
 };
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
@@ -135,16 +141,74 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     };
   }, []);
 
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animatedLaunchStackCount, setAnimatedLaunchStackCount] = useState(currentPlayer.launchStackCount);
+  const prevLaunchStackCount = useRef(currentPlayer.launchStackCount);
+  const animationTimersRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    const currentCount = currentPlayer.launchStackCount;
+    const previousCount = prevLaunchStackCount.current;
+    const wonCount = currentCount - previousCount;
+
+    // Clear any existing animation timers
+    animationTimersRef.current.forEach(timer => clearTimeout(timer));
+    animationTimersRef.current = [];
+
+    // If Launch Stacks were won, queue up animations
+    if (wonCount > 0) {
+      const ANIMATION_DURATION = ANIMATION_DURATIONS.LAUNCH_STACK_WON_TOKEN_DURATION;
+      const GAP_BETWEEN_ANIMATIONS = 200;
+
+      // Play animations sequentially with 200ms gap between each
+      for (let i = 0; i < wonCount; i++) {
+        const startDelay = i * (ANIMATION_DURATION + GAP_BETWEEN_ANIMATIONS);
+
+        // Show animation
+        const showTimer = setTimeout(() => {
+          setShowAnimation(true);
+        }, startDelay);
+        animationTimersRef.current.push(showTimer);
+
+        // Hide animation and increment animated count
+        const hideTimer = setTimeout(() => {
+          setShowAnimation(false);
+          // Increment the animated count when animation finishes
+          setAnimatedLaunchStackCount(prev => prev + 1);
+        }, startDelay + ANIMATION_DURATION);
+        animationTimersRef.current.push(hideTimer);
+      }
+    } else if (wonCount < 0) {
+      // If Launch Stacks were lost, update animated count immediately (no animation)
+      setAnimatedLaunchStackCount(currentCount);
+    }
+
+    // Update previous count
+    prevLaunchStackCount.current = currentCount;
+
+    // Cleanup timers on unmount or when effect reruns
+    return () => {
+      animationTimersRef.current.forEach(timer => clearTimeout(timer));
+      animationTimersRef.current = [];
+    };
+  }, [currentPlayer.launchStackCount]);
+
   return (
     <>
+      <SpecialCardAnimation
+        removeBlur
+        show={showAnimation}
+        videoSrc={launchStackAnimations[currentPlayer.id]}
+        className="z-1!"
+      />
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
         <div className={cn('flex flex-col items-center gap-1', gridLayoutMap[owner].avatar)}>
           {/* Launch Stack Rocket Indicators */}
-          <LaunchStackIndicator launchStackCount={currentPlayer.launchStackCount} />
+          <LaunchStackIndicator launchStackCount={animatedLaunchStackCount} />
 
           {/* Avatar */}
-          <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px]">
+          <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px] z-2">
             {/* Avatar with scale animation */}
             <motion.div
               className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
@@ -167,7 +231,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
             <AnimatePresence>
               {showWinEffect && (
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none z-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

@@ -23,6 +23,7 @@ import {
   shouldShowEffectNotification,
 } from '../utils/effect-helpers';
 import type { GameStore } from './types';
+import type { SpecialEffectAnimationType } from '@/config/special-effect-animations';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
   id,
@@ -74,11 +75,13 @@ export const useGameStore = create<GameStore>()(
       showPatentTheftAnimation: false,
       showTemperTantrumAnimation: false,
       showMandatoryRecallAnimation: false,
+      showTheftWonAnimation: false,
 
       // Animation Queue System
       animationQueue: [],
       isPlayingQueuedAnimation: false,
       animationsPaused: false,
+      blockTransitions: false,
       currentAnimationPlayer: null,
       animationCompletionCallback: null,
       shownAnimationCardIds: new Set(),
@@ -91,6 +94,7 @@ export const useGameStore = create<GameStore>()(
       showDataGrabTakeover: false,
       dataGrabGameActive: false,
       showDataGrabResults: false,
+      showDataGrabCookies: false, // Debug option - disabled by default
 
       selectedBillionaire: '',
       cpuBillionaire: '',
@@ -131,6 +135,7 @@ export const useGameStore = create<GameStore>()(
       // Effect Notification - Accumulation System
       accumulatedEffects: [],
       effectAccumulationPaused: false,
+      awaitingResolution: false,
 
       // Progress Timer for Effect Badge
       effectBadgeTimerDuration: 0, // Set to 0 for now (disabled)
@@ -177,9 +182,11 @@ export const useGameStore = create<GameStore>()(
           showPatentTheftAnimation: false,
           showTemperTantrumAnimation: false,
           showMandatoryRecallAnimation: false,
+          showTheftWonAnimation: false,
           animationQueue: [],
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
+          blockTransitions: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -192,11 +199,6 @@ export const useGameStore = create<GameStore>()(
 
         if (!card) {
           // This shouldn't happen - win condition should have caught it before calling playCard
-          if (import.meta.env.DEV) {
-            console.error(
-              `[BUG] playCard called for ${playerId} with empty deck - win condition should have prevented this`,
-            );
-          }
           return;
         }
 
@@ -235,17 +237,13 @@ export const useGameStore = create<GameStore>()(
         // APPLY PENDING BLOCKER PENALTY FROM EARLIER IN SAME TURN
         // If in anotherPlayMode (second+ card), apply any pending blocker penalty
         if (get().anotherPlayMode && playerState.pendingBlockerPenalty > 0) {
-          effectiveCardValue = Math.max(
-            0,
-            effectiveCardValue - playerState.pendingBlockerPenalty,
-          ) as CardValue;
+          effectiveCardValue = (effectiveCardValue -
+            playerState.pendingBlockerPenalty) as CardValue;
         }
 
         // In "another play" mode, ADD to existing value
         // In normal mode, SET the value
-        const newTurnValue = get().anotherPlayMode
-          ? playerState.currentTurnValue + effectiveCardValue
-          : effectiveCardValue;
+        const newTurnValue = playerState.currentTurnValue + effectiveCardValue;
 
         const newPlayedCardsInHand = [
           ...playerState.playedCardsInHand,
@@ -312,6 +310,10 @@ export const useGameStore = create<GameStore>()(
         const winner = get()[winnerId];
         set({ collecting: { winner: winnerId, cards } });
 
+        // Clear accumulated effects immediately when collection starts
+        // This ensures effects are cleared before the next turn begins
+        get().clearAccumulatedEffects();
+
         setTimeout(() => {
           set({
             [winnerId]: {
@@ -348,9 +350,6 @@ export const useGameStore = create<GameStore>()(
             },
           });
 
-          // Clear accumulated effects when turn ends
-          get().clearAccumulatedEffects();
-
           set({ collecting: null });
         }, ANIMATION_DURATIONS.CARD_COLLECTION);
       },
@@ -361,7 +360,6 @@ export const useGameStore = create<GameStore>()(
 
         // Validate that this is actually a Launch Stack card
         if (!launchStackCard || launchStackCard.specialType !== 'launch_stack') {
-          console.error('addLaunchStack called without a Launch Stack card');
           return;
         }
 
@@ -563,9 +561,14 @@ export const useGameStore = create<GameStore>()(
           const opponent = playerPlayedHt ? cpu : player;
 
           // If opponent has MORE cards than HT player, they've already played their Data War cards
-          // This means we're RETURNING from the HT Data War and should NOT retrigger
+          // This means we're RETURNING from the HT Data War
           if (opponent.playedCardsInHand.length > htPlayer.playedCardsInHand.length) {
-            return false; // Don't retrigger - opponent already played their Data War cards
+            // Check if there's a normal tie (values equal) that should trigger another Data War
+            // NOTE: We check for normal tie only, NOT Hostile Takeover's special "always trigger" rule
+            if (player.playedCard && cpu.playedCard) {
+              return player.currentTurnValue === cpu.currentTurnValue;
+            }
+            return false; // Don't retrigger if no valid comparison
           }
 
           // Otherwise, this is the first time seeing HT - trigger Data War
@@ -803,6 +806,8 @@ export const useGameStore = create<GameStore>()(
                 const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
                 if (get()[opponentId].launchStackCount > 0) {
                   get().stealLaunchStack(opponentId, effect.playedBy);
+                  // Queue "theft won" animation showing Launch Stack card going to winner's deck
+                  get().queueAnimation('theft_won', effect.playedBy);
                 }
               }
               break;
@@ -819,9 +824,11 @@ export const useGameStore = create<GameStore>()(
               // If the player who played this card won the turn, add it to their collection
               if (winner === effect.playedBy) {
                 get().addLaunchStack(effect.playedBy, effect.card);
+              } else {
+                // If they lost, the Launch Stack goes to the winner's collection
+                const winnerId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                get().addLaunchStack(winnerId, effect.card);
               }
-              // If they lost, the launch stack card goes to the winner with other cards
-              // (it stays in cardsInPlay and will be collected normally)
               break;
 
             case 'data_grab': {
@@ -858,11 +865,21 @@ export const useGameStore = create<GameStore>()(
       stealLaunchStack: (from, to) => {
         const fromPlayer = get()[from];
         const toPlayer = get()[to];
+        const fromLaunchStackKey = from === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const fromLaunchStacks = get()[fromLaunchStackKey];
 
-        if (fromPlayer.launchStackCount > 0) {
+        // Only steal if opponent has Launch Stack cards
+        if (fromPlayer.launchStackCount > 0 && fromLaunchStacks.length > 0) {
+          // Take the first Launch Stack card from opponent's collection
+          const stolenCard = fromLaunchStacks[0];
+          const remainingFromStacks = fromLaunchStacks.slice(1);
+
+          // Add stolen card to TOP of winner's deck (not their Launch Stack collection)
+          // Winner's Launch Stack counter does NOT increase
           set({
             [from]: { ...fromPlayer, launchStackCount: fromPlayer.launchStackCount - 1 },
-            [to]: { ...toPlayer, launchStackCount: toPlayer.launchStackCount + 1 },
+            [to]: { ...toPlayer, deck: [stolenCard, ...toPlayer.deck] }, // Add to TOP of deck
+            [fromLaunchStackKey]: remainingFromStacks,
           });
         }
       },
@@ -988,13 +1005,17 @@ export const useGameStore = create<GameStore>()(
       setShowMandatoryRecallAnimation: (show) => {
         set({ showMandatoryRecallAnimation: show });
       },
+      setShowTheftWonAnimation: (show) => {
+        set({ showTheftWonAnimation: show });
+      },
 
       // Animation Queue Actions
       queueAnimation: (type, playedBy) => {
         const queue = get().animationQueue;
         set({
           animationQueue: [...queue, { type, playedBy }],
-          animationsPaused: true, // Pause game flow when animations are queued
+          animationsPaused: true, // Internal: Animation queue is processing
+          blockTransitions: true, // External: Block state machine transitions during animations
         });
 
         // If not currently playing an animation, start processing
@@ -1010,7 +1031,8 @@ export const useGameStore = create<GameStore>()(
         if (animationQueue.length === 0) {
           set({
             isPlayingQueuedAnimation: false,
-            animationsPaused: false, // Resume game flow
+            animationsPaused: false, // Internal: Queue is free
+            blockTransitions: false, // External: Resume game logic (allow state transitions)
             currentAnimationPlayer: null,
           });
 
@@ -1043,6 +1065,7 @@ export const useGameStore = create<GameStore>()(
           mandatory_recall: get().setShowMandatoryRecallAnimation,
           open_what_you_want: get().setShowOpenWhatYouWantAnimation,
           data_grab: (show) => set({ showDataGrabTakeover: show }),
+          theft_won: get().setShowTheftWonAnimation,
         };
 
         const setter = animationTypeToSetter[nextAnimation.type];
@@ -1069,6 +1092,7 @@ export const useGameStore = create<GameStore>()(
           animationQueue: [],
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
+          blockTransitions: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -1102,15 +1126,17 @@ export const useGameStore = create<GameStore>()(
           // Skip forced_empathy - it has custom animation handling in handleCardEffect
           if (card.specialType === 'forced_empathy') return false;
 
-          // Check if blocked by opponent's tracker smacker (only for Move cards and Launch Stack)
-          const isMove =
+          // Skip data_grab - it has its own mini-game flow, no separate animation needed
+          if (card.specialType === 'data_grab') return false;
+
+          // Check if blocked by opponent's tracker smacker (only for Billionaire Move cards)
+          const isBillionaireMove =
             card.specialType === 'hostile_takeover' ||
             card.specialType === 'leveraged_buyout' ||
             card.specialType === 'patent_theft' ||
-            card.specialType === 'temper_tantrum' ||
-            card.specialType === 'launch_stack';
+            card.specialType === 'temper_tantrum';
 
-          if (isMove && trackerSmackerActive && trackerSmackerActive !== playedBy) {
+          if (isBillionaireMove && trackerSmackerActive && trackerSmackerActive !== playedBy) {
             return false; // Blocked by tracker smacker
           }
 
@@ -1136,7 +1162,7 @@ export const useGameStore = create<GameStore>()(
 
         // Queue all animations
         animationsToQueue.forEach(({ type, playedBy }) => {
-          get().queueAnimation(type, playedBy);
+          get().queueAnimation(type as SpecialEffectAnimationType, playedBy);
         });
 
         return animationsToQueue.length > 0;
@@ -1302,6 +1328,10 @@ export const useGameStore = create<GameStore>()(
             dataGrabCollectedByCPU: [],
           });
         }
+      },
+
+      setShowDataGrabCookies: (show) => {
+        set({ showDataGrabCookies: show });
       },
 
       // UI Actions
@@ -1479,9 +1509,11 @@ export const useGameStore = create<GameStore>()(
       addEffectToAccumulation: (notification) => {
         const { accumulatedEffects } = get();
 
-        // Prevent duplicate effect types in the same turn
+        // Prevent duplicate effects in the same turn (check both type and player)
         const isAlreadyAccumulated = accumulatedEffects.some(
-          (effect) => effect.effectType === notification.effectType,
+          (effect) =>
+            effect.effectType === notification.effectType &&
+            effect.playedBy === notification.playedBy,
         );
 
         if (!isAlreadyAccumulated) {
@@ -1498,6 +1530,8 @@ export const useGameStore = create<GameStore>()(
           showEffectNotificationBadge: false,
           effectAccumulationPaused: false, // Resume game if modal was open
           showEffectNotificationModal: false, // Close modal if open
+          blockTransitions: false, // Ensure transitions are unblocked
+          awaitingResolution: false, // Clear resolution wait flag
         });
       },
 
@@ -1505,16 +1539,18 @@ export const useGameStore = create<GameStore>()(
         set({
           showEffectNotificationModal: true,
           effectAccumulationPaused: true, // Pause game
+          blockTransitions: true, // Block state machine transitions while modal is open
         });
       },
 
       closeEffectModal: () => {
-        // No longer marking effects as seen - badge/modal will always show
+        // Close modal but keep accumulated effects visible (badge stays)
+        // Effects are only cleared when turn ends (in collectCards)
         set({
           showEffectNotificationModal: false,
           effectAccumulationPaused: false, // Resume game
-          accumulatedEffects: [], // Clear after viewing
-          showEffectNotificationBadge: false,
+          blockTransitions: false, // Resume state machine transitions
+          // Do NOT clear accumulatedEffects or badge - they persist until turn ends
         });
       },
 
@@ -1725,9 +1761,11 @@ export const useGameStore = create<GameStore>()(
           showPatentTheftAnimation: false,
           showTemperTantrumAnimation: false,
           showMandatoryRecallAnimation: false,
+          showTheftWonAnimation: false,
           animationQueue: [],
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
+          blockTransitions: false,
           // Reset Data Grab state
           dataGrabActive: false,
           dataGrabCards: [],

@@ -289,8 +289,8 @@ describe('Turn Resolution', () => {
 
       useGameStore.getState().applyBlockerEffect('player', blockerCard);
 
-      // Should stay at 0, not go negative
-      expect(useGameStore.getState().cpu.currentTurnValue).toBe(0);
+      // Should go negative
+      expect(useGameStore.getState().cpu.currentTurnValue).toBe(-1);
     });
 
     it('should apply blocker effect even when Tracker Smacker is active', () => {

@@ -15,6 +15,7 @@ export const SpecialCardAnimation = ({
   videoClassName = '',
   loop = true,
   controls = false,
+  removeBlur = false,
 }: SpecialCardAnimationProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -32,7 +33,11 @@ export const SpecialCardAnimation = ({
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}>
       {/* Board-constrained container matching game board dimensions */}
-      <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 backdrop-blur-sm">
+      <div
+        className={`relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 ${
+          removeBlur ? '' : 'backdrop-blur-sm'
+        }`}
+      >
         {/* Video fills full board */}
         <video
           ref={videoRef}

@@ -30,6 +30,7 @@ export type GameFlowEvent =
   | { type: 'CARDS_REVEALED' }
   | { type: 'TIE' }
   | { type: 'NO_TIE' }
+  | { type: 'DATA_GRAB' }
   | { type: 'SPECIAL_EFFECT' }
   | { type: 'NO_SPECIAL_EFFECT' }
   | { type: 'RESOLVE_TURN' }
@@ -234,19 +235,19 @@ export const gameFlowMachine = createMachine(
         entry: assign({
           tooltipMessage: 'EMPTY', // Clear any previous tooltips
         }),
-        // Give players time to see the revealed cards before resolving
-        // Only auto-transition if no animations are playing (animations will trigger events manually)
+        // Automatic transitions for special game states (Data War, Data Grab)
+        // Normal resolution is handled manually via handleCompareTurnContinued to allow badge interaction
         after: {
           [ANIMATION_DURATIONS.CARD_COMPARISON]: [
-            { target: 'resolving', guard: 'shouldResolveWithoutChecks' },
+            // Data War and Data Grab have automatic transitions (must check modal not open)
             { target: 'data_war', guard: 'isDataWarAndNotAnimating' },
             { target: 'data_grab', guard: 'isDataGrabAndNotAnimating' },
-            { target: 'special_effect', guard: 'hasSpecialEffectsAndNotAnimating' },
-            { target: 'resolving', guard: 'notAnimating' },
+            // Normal resolution is handled manually (no automatic transition here)
           ],
         },
         on: {
           TIE: 'data_war',
+          DATA_GRAB: 'data_grab',
           SPECIAL_EFFECT: 'special_effect',
           RESOLVE_TURN: 'resolving',
         },
@@ -512,9 +513,9 @@ export const gameFlowMachine = createMachine(
         return state.winner !== null && state.winCondition !== null;
       },
       notAnimating: () => {
-        // Check if special card animations are NOT paused
+        // Check if game is NOT blocked (not paused by animations or modals)
         const state = useGameStore.getState();
-        return !state.animationsPaused;
+        return !state.blockTransitions;
       },
       isDataWar: () => {
         // Check if the current turn is a tie (Data War)
@@ -530,7 +531,8 @@ export const gameFlowMachine = createMachine(
       },
       isDataWarAndNotAnimating: () => {
         const state = useGameStore.getState();
-        if (state.animationsPaused) return false;
+
+        if (state.blockTransitions) return false;
 
         if (state.anotherPlayExpected) {
           return false;
@@ -545,7 +547,7 @@ export const gameFlowMachine = createMachine(
       },
       hasSpecialEffectsAndNotAnimating: () => {
         const state = useGameStore.getState();
-        if (state.animationsPaused) return false;
+        if (state.blockTransitions) return false;
         return state.pendingEffects.length > 0;
       },
       hasPreRevealEffects: () => {
@@ -571,7 +573,7 @@ export const gameFlowMachine = createMachine(
       },
       isDataGrabAndNotAnimating: () => {
         const state = useGameStore.getState();
-        if (state.animationsPaused) return false;
+        if (state.blockTransitions) return false;
         return state.checkForDataGrab();
       },
       shouldResolveWithoutChecks: () => {
@@ -582,8 +584,8 @@ export const gameFlowMachine = createMachine(
         // 3. A card triggers "another play"
         const state = useGameStore.getState();
 
-        // Don't skip if animations are still playing
-        if (state.animationsPaused) return false;
+        // Don't skip if game is blocked (animations/modals)
+        if (state.blockTransitions) return false;
 
         // Check if we're waiting for another play to complete
         if (state.anotherPlayExpected) {

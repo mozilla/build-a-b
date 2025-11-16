@@ -19,9 +19,13 @@ export const EffectNotificationModal: FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   // Set the first card as selected when effects become available
+  // Reset if current selected card is not in the accumulated effects (stale from previous turn)
   useEffect(() => {
-    if (accumulatedEffects.length > 0 && !selectedCard) {
-      setSelectedCard(accumulatedEffects[0].card);
+    if (accumulatedEffects.length > 0) {
+      const isSelectedCardValid = selectedCard && accumulatedEffects.some((effect) => effect.card.id === selectedCard.id);
+      if (!isSelectedCardValid) {
+        setSelectedCard(accumulatedEffects[0].card);
+      }
     }
   }, [accumulatedEffects, selectedCard]);
 

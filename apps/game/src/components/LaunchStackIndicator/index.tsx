@@ -2,11 +2,11 @@
  * LaunchStackIndicator - Displays rocket indicators for launch stack collection
  */
 
-import { type FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import type { LaunchStackIndicatorProps } from './types';
-import RocketEmpty from '../../assets/icons/rocket.svg';
+import { type FC } from 'react';
 import RocketFilled from '../../assets/icons/rocket-filled.svg';
+import RocketEmpty from '../../assets/icons/rocket.svg';
+import type { LaunchStackIndicatorProps } from './types';
 
 const getTransformClasses = (position: number) => {
   switch (position) {

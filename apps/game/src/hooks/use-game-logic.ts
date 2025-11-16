@@ -143,6 +143,21 @@ export function useGameLogic() {
   const handleRevealCards = () => {
     const store = useGameStore.getState();
 
+    // Safety: Only clear BLOCKING states that prevent transitions
+    // Do NOT clear effect notification states - those are managed by the effect system
+    const currentState = useGameStore.getState();
+    if (
+      currentState.animationsPaused ||
+      currentState.effectAccumulationPaused ||
+      currentState.blockTransitions
+    ) {
+      useGameStore.setState({
+        animationsPaused: false,
+        effectAccumulationPaused: false,
+        blockTransitions: false,
+      });
+    }
+
     if (store.anotherPlayMode) {
       // "Another play" mode - only active player plays
       playCard(store.activePlayer);
@@ -205,43 +220,97 @@ export function useGameLogic() {
   const handleCompareTurn = () => {
     const store = useGameStore.getState();
 
-    // Queue animations for special cards played by both players
-    // This will play them sequentially (player first, then CPU) and pause the game
-    // Set callback to continue comparison after animations complete
-    store.setAnimationCompletionCallback(() => {
+    // Wait for cards to settle on the board before triggering special card animations
+    // This is especially important when there are multiple cards in the tableau
+    setTimeout(() => {
+      // Queue animations for special cards played by both players
+      // This will play them sequentially (player first, then CPU) and pause the game
+      // Set callback to continue comparison after animations complete
+      store.setAnimationCompletionCallback(() => {
+        handleCompareTurnContinued();
+      });
+
+      const hasAnimations = store.queueSpecialCardAnimations();
+
+      // If animations were queued, return early - callback will continue the flow
+      if (hasAnimations) {
+        return;
+      }
+
+      // No animations, continue immediately
       handleCompareTurnContinued();
-    });
-
-    const hasAnimations = store.queueSpecialCardAnimations();
-
-    // If animations were queued, return early - callback will continue the flow
-    if (hasAnimations) {
-      return;
-    }
-
-    // No animations, continue immediately
-    handleCompareTurnContinued();
+    }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY);
   };
 
   const handleCompareTurnContinued = () => {
-    // After animations complete, wait for CARD_COMPARISON delay, then check conditions manually
-    // We check in priority order: resolve without checks > data war > data grab > special effects > normal resolving
+    // After animations complete, check for special game states and trigger transitions
+    // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
+    // but animations take 3000ms. By the time blockTransitions is cleared, the automatic
+    // transition window has passed. However, we ALWAYS check guard conditions to preserve logic.
     const store = useGameStore.getState();
 
-    setTimeout(() => {
-      // Check all conditions in the same order as state machine guards
-      if (shouldResolveDirectly(store)) {
-        actorRef.send({ type: 'RESOLVE_TURN' });
-      } else if (store.checkForDataWar()) {
+    // PRIORITY 1: Data Grab ALWAYS interrupts (even during "another play")
+    if (store.checkForDataGrab()) {
+      actorRef.send({ type: 'DATA_GRAB' });
+      return;
+    }
+
+    // PRIORITY 2: Hostile Takeover ALWAYS triggers Data War immediately
+    // checkForDataWar() includes re-trigger prevention (checks if opponent already played)
+    const playerPlayedHt = store.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuPlayedHt = store.cpu.playedCard?.specialType === 'hostile_takeover';
+    if (playerPlayedHt || cpuPlayedHt) {
+      if (store.checkForDataWar()) {
+        // Trigger Data War immediately
         actorRef.send({ type: 'TIE' });
-      } else if (store.checkForDataGrab()) {
-        actorRef.send({ type: 'RESOLVE_TURN' }); // Data grab transitions via guards
-      } else if (store.pendingEffects.length > 0) {
+
+        // Special handling for Hostile Takeover: Show badge after Data War animation completes
+        // This gives player time to view the HT effect without interrupting Data War flow
+        setTimeout(() => {
+          store.prepareEffectNotification();
+        }, ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION);
+
+        return;
+      }
+    }
+
+    // PRIORITY 3: Normal Data War (tie) - only if NOT expecting another play
+    if (!store.anotherPlayExpected) {
+      if (store.checkForDataWar()) {
+        actorRef.send({ type: 'TIE' });
+        return;
+      }
+    }
+
+    // No Data War or Data Grab - prepare effect notification badge (non-blocking)
+    store.prepareEffectNotification();
+
+    // Wait briefly to give user time to click badge, then trigger normal resolution
+    const delay = ANIMATION_DURATIONS.CARD_COMPARISON;
+
+    setTimeout(() => {
+      const currentStore = useGameStore.getState();
+
+      // If game is blocked (modal open), set flag and wait for modal to close
+      if (currentStore.blockTransitions) {
+        useGameStore.setState({ awaitingResolution: true });
+        return;
+      }
+
+      // Handle normal resolution (no tie, no data grab)
+      const shouldResolve = shouldResolveDirectly(currentStore);
+
+      // Ensure flag is cleared
+      useGameStore.setState({ awaitingResolution: false });
+
+      if (shouldResolve) {
+        actorRef.send({ type: 'RESOLVE_TURN' });
+      } else if (currentStore.pendingEffects.length > 0) {
         actorRef.send({ type: 'SPECIAL_EFFECT' });
       } else {
         actorRef.send({ type: 'RESOLVE_TURN' });
       }
-    }, ANIMATION_DURATIONS.CARD_COMPARISON);
+    }, delay);
   };
 
   // Helper function to check if we should resolve directly (skip data war/special effect checks)
@@ -252,15 +321,18 @@ export function useGameLogic() {
     }
 
     // Check if either card triggers "another play"
+    // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
+    const playerCard = store.player.playedCard;
     const playerTriggersAnother =
-      store.player.playedCard &&
-      shouldTriggerAnotherPlay(store.player.playedCard) &&
-      !isEffectBlocked(store.trackerSmackerActive, 'player');
+      playerCard &&
+      shouldTriggerAnotherPlay(playerCard) &&
+      (playerCard.specialType === 'launch_stack' || !isEffectBlocked(store.trackerSmackerActive, 'player'));
 
+    const cpuCard = store.cpu.playedCard;
     const cpuTriggersAnother =
-      store.cpu.playedCard &&
-      shouldTriggerAnotherPlay(store.cpu.playedCard) &&
-      !isEffectBlocked(store.trackerSmackerActive, 'cpu');
+      cpuCard &&
+      shouldTriggerAnotherPlay(cpuCard) &&
+      (cpuCard.specialType === 'launch_stack' || !isEffectBlocked(store.trackerSmackerActive, 'cpu'));
 
     if (playerTriggersAnother || cpuTriggersAnother) {
       return true;
@@ -316,15 +388,16 @@ export function useGameLogic() {
       }
     } else {
       // Normal mode - check both players
+      // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
       const playerTriggersAnother =
         p.playedCard &&
         shouldTriggerAnotherPlay(p.playedCard) &&
-        !checkIfBlocked('player');
+        (p.playedCard.specialType === 'launch_stack' || !checkIfBlocked('player'));
 
       const cpuTriggersAnother =
         c.playedCard &&
         shouldTriggerAnotherPlay(c.playedCard) &&
-        !checkIfBlocked('cpu');
+        (c.playedCard.specialType === 'launch_stack' || !checkIfBlocked('cpu'));
 
       // Handle "another play" logic:
       // - If BOTH trigger: Both play at the same time (stay in normal mode)
@@ -566,13 +639,9 @@ export function useGameLogic() {
     actorRef.send({ type: 'QUIT_GAME' });
   };
 
-  // Prepare effect notification when entering checking substate
-  useEffect(() => {
-    if (phase === 'effect_notification.checking') {
-      const { prepareEffectNotification } = useGameStore.getState();
-      prepareEffectNotification();
-    }
-  }, [phase]);
+  // Effect notification is now prepared AFTER animations complete (in handleCompareTurnContinued)
+  // This ensures badge only appears after all animations finish
+  // Removed from here to prevent badge showing during animations
 
   // Reset pre-reveal guard when leaving pre_reveal phase
   useEffect(() => {
@@ -583,6 +652,28 @@ export function useGameLogic() {
       }
     }
   }, [phase]);
+
+  // Continue game flow when modal closes if we were waiting for it
+  useEffect(() => {
+    const store = useGameStore.getState();
+
+    // If modal just closed and we were waiting to resolve, continue now
+    if (!effectAccumulationPaused && store.awaitingResolution) {
+      // Clear the flag
+      useGameStore.setState({ awaitingResolution: false });
+
+      // Continue with resolution
+      const shouldResolve = shouldResolveDirectly(store);
+
+      if (shouldResolve) {
+        actorRef.send({ type: 'RESOLVE_TURN' });
+      } else if (store.pendingEffects.length > 0) {
+        actorRef.send({ type: 'SPECIAL_EFFECT' });
+      } else {
+        actorRef.send({ type: 'RESOLVE_TURN' });
+      }
+    }
+  }, [effectAccumulationPaused, actorRef]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
   // Pass isPaused flag to prevent CPU from playing while effect modal is open

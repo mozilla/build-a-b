@@ -140,12 +140,9 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
     >
       {renderedCards}
 
-      {/* Effect notification badge - positioned over top card */}
+      {/* Effect notification badge - positioned over top card (always on the right side) */}
       {shouldShowBadge && (
-        <div
-          className="absolute top-1/2 -translate-y-[5rem] -right-29 z-[50] cursor-pointer animate-badge-scale-in"
-          onClick={handleBadgeClick}
-        >
+        <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-[50] animate-badge-scale-in">
           <Tooltip
             content={effectTooltipConfig.message}
             placement="bottom"
@@ -156,7 +153,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
               content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
             }}
           >
-            <div>
+            <div className="cursor-pointer" onClick={handleBadgeClick}>
               <EffectNotificationBadge accumulatedEffects={ownerEffects} showProgressBar={false} />
             </div>
           </Tooltip>
