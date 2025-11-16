@@ -27,11 +27,13 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
 
   return (
     <motion.div
-      className={cn('relative flex flex-col max-w-[25rem] mx-auto', className)}
+      className={cn('relative flex flex-col sm:max-w-[25rem] mx-auto', className)}
       {...props}
     >
       {/* Main content container */}
-      <header className="relative w-full max-w-[25rem] mx-auto">{children}</header>
+      <header className="fixed top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto">
+        {children}
+      </header>
       <div className="w-full relative z-10 flex flex-col items-center justify-between py-8 pt-16 h-full">
         {/* Billionaire Avatar - centered at top */}
         <div className="flex items-center justify-center pt-8 pb-4">

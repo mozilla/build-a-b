@@ -12,17 +12,29 @@ import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { usePreloading } from '@/hooks/use-preloading';
 import { useGameStore } from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
-import { useEffect, type FC, type PropsWithChildren } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useState,
+  type FC,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
 
 export interface BaseScreenProps
   extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
   send?: ReturnType<typeof useGameMachine>['send'];
+  isMobile: boolean;
+  drawerOpen: boolean;
+  setDrawerOpen: (isOpen: boolean) => void;
+  setDrawerNode: (node: React.ReactNode) => void;
 }
 
 // Screen registry mapping state machine phases to components
@@ -74,6 +86,9 @@ export const ScreenRenderer: FC = () => {
     highPriorityProgress,
     essentialProgress,
   } = usePreloading();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerNode, setDrawerNode] = useState<ReactNode | null>(null);
+  const isMobile = useMediaQuery('(max-width: 40rem)');
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -137,7 +152,7 @@ export const ScreenRenderer: FC = () => {
     }
 
     return (
-      <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
+      <div className="absolute top-0 left-0 h-[100dvh] w-[100vw] flex items-center justify-center z-100">
         <Frame backgroundSrc={nightSkyBg}>
           <LoadingScreen
             phase={phase as LoadingScreenPhase}
@@ -152,43 +167,50 @@ export const ScreenRenderer: FC = () => {
     );
   }
 
-  // Pass send function and other common props to all screens
   return (
-    <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
-      <AnimatePresence>
-        <Frame
-          key="screen-frame"
-          backgroundSrc={backgroundImage}
-          className="flex flex-col"
-          overlay={
-            <>
-              {/* Dark overlay for blurred backgrounds */}
-              {config?.overlay && (
-                <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.2)] to-[rgba(0,0,0,0.2)] pointer-events-none" />
-              )}
+    <div className="absolute top-0 left-0 h-[100dvh] w-[100vw] flex items-center justify-center z-100">
+      <div className="size-full grid place-content-center">
+        <AnimatePresence>
+          <Frame
+            key="screen-frame"
+            backgroundSrc={backgroundImage}
+            className="flex flex-col"
+            variant="screen-renderer"
+            overlay={
+              <>
+                {/* Dark overlay for blurred backgrounds */}
+                {config?.overlay && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.2)] to-[rgba(0,0,0,0.2)] pointer-events-none" />
+                )}
 
-              {/* Grid overlay for quick start guide */}
-              {config?.gridOverlay && (
-                <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0px_32px_0px_#53ffbc]" />
-              )}
-            </>
-          }
-        >
-          <ScreenComponent
-            key="component"
-            send={send}
-            className="flex flex-col items-center justify-start relative w-full h-full lg:rounded-xl overflow-auto"
+                {/* Grid overlay for quick start guide */}
+                {config?.gridOverlay && (
+                  <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0px_32px_0px_#53ffbc]" />
+                )}
+              </>
+            }
           >
-            {showCloseIcon && (
-              <div className="absolute top-5 right-5 z-20">
-                <Button onPress={toggleMenu}>
-                  <Icon name="pause" label="pause" />
-                </Button>
-              </div>
-            )}
-          </ScreenComponent>
-        </Frame>
-      </AnimatePresence>
+            <ScreenComponent
+              key="component"
+              send={send}
+              isMobile={isMobile}
+              drawerOpen={drawerOpen}
+              setDrawerOpen={setDrawerOpen}
+              setDrawerNode={setDrawerNode}
+              className="flex flex-col items-center justify-start relative w-full h-full lg:rounded-xl overflow-auto overscroll-none"
+            >
+              {showCloseIcon && (
+                <div className="absolute top-5 right-5 z-20">
+                  <Button onPress={toggleMenu}>
+                    <Icon name="pause" label="pause" />
+                  </Button>
+                </div>
+              )}
+            </ScreenComponent>
+          </Frame>
+          {isMobile && drawerOpen && <Fragment key="drawer">{drawerNode}</Fragment>}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

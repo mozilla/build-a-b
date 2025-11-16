@@ -89,7 +89,7 @@ export const Menu: FC = () => {
             duration: 0.3,
             ease: [0.4, 0, 0.2, 1],
           }}
-          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100vh] w-[100vw]"
+          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100dvh] w-[100vw]"
         >
           <Frame
             backgroundSrc={nightSkyBg}

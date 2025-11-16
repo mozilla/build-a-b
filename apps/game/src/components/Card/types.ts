@@ -1,6 +1,7 @@
 export type CardState = 'initial' | 'flipped' | 'final';
 
 export type CardProps = {
+  variant?: 'deck-pile' | 'animated-card';
   cardFrontSrc?: string;
   state?: CardState;
   onBackClick?: () => void;

@@ -41,6 +41,18 @@
   }
 }
 
+@custom-variant min-frame-height {
+  @media (min-height: 865px) {
+    @slot;
+  }
+}
+
+@custom-variant landscape-frame-height {
+  @media (orientation: landscape) and (min-height: 59.99vw) {
+    @slot;
+  }
+}
+
 @layer components {
   .site-container {
     @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
@@ -69,6 +81,10 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+}
+
+html {
+  overscroll-behavior: none;
 }
 
 body {
