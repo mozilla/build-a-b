@@ -17,6 +17,7 @@ import { SpecialCardAnimation } from './index';
  * - Patent Theft (when card is played, unless blocked by tracker smacker)
  * - Temper Tantrum (when card is played, unless blocked by tracker smacker)
  * - Mandatory Recall (when card is played)
+ * - Theft Won (post-effect, when Patent Theft steals a Launch Stack)
  * - Launch Stack (post-turn, after collecting a launch stack)
  * - Data Grab (during mini-game takeover)
  * - Open What You Want (pre-reveal, beginning of next turn)
@@ -33,10 +34,17 @@ export const EffectAnimationOrchestrator = () => {
     showPatentTheftAnimation,
     showTemperTantrumAnimation,
     showMandatoryRecallAnimation,
+    showTheftWonAnimation,
     activePlayer,
     currentAnimationPlayer,
     isPlayingQueuedAnimation,
+    effectAccumulationPaused,
   } = useGameStore();
+
+  // Hide all animations when effect modal is open (game is paused)
+  if (effectAccumulationPaused) {
+    return null;
+  }
 
   // Determine if the current action is from the player
   // Use currentAnimationPlayer when processing queued animations, otherwise use activePlayer
@@ -128,6 +136,19 @@ export const EffectAnimationOrchestrator = () => {
   // Mandatory Recall - Firewall card
   if (showMandatoryRecallAnimation) {
     const animation = SPECIAL_EFFECT_ANIMATIONS.firewall_recall;
+    return (
+      <SpecialCardAnimation
+        show={true}
+        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        title={animation.title}
+        loop={animation.loop}
+      />
+    );
+  }
+
+  // Theft Won - Shows when Patent Theft steals a Launch Stack
+  if (showTheftWonAnimation) {
+    const animation = SPECIAL_EFFECT_ANIMATIONS.theft_won;
     return (
       <SpecialCardAnimation
         show={true}

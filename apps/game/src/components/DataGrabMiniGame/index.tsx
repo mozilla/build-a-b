@@ -93,6 +93,7 @@ export const DataGrabMiniGame: FC = () => {
   const collectDataGrabCard = useGameStore((state) => state.collectDataGrabCard);
   const collectedByPlayer = useGameStore((state) => state.dataGrabCollectedByPlayer);
   const collectedByCPU = useGameStore((state) => state.dataGrabCollectedByCPU);
+  const showDataGrabCookies = useGameStore((state) => state.showDataGrabCookies);
 
   // Generate positions once when cards are loaded
   const cardPositions = useMemo(
@@ -136,16 +137,18 @@ export const DataGrabMiniGame: FC = () => {
           }}
         />
 
-        {/* Floating Data Cookies - DISABLED but kept for future use */}
-        <div className="absolute inset-0 z-10">
-          {Array.from({ length: DATA_GRAB_CONFIG.COOKIE_COUNT }).map((_, index) => (
-            <DataCookie
-              key={`cookie-${index}`}
-              index={index}
-              totalCookies={DATA_GRAB_CONFIG.COOKIE_COUNT}
-            />
-          ))}
-        </div>
+        {/* Floating Data Cookies - Controlled by debug toggle */}
+        {showDataGrabCookies && (
+          <div className="absolute inset-0 z-10">
+            {Array.from({ length: DATA_GRAB_CONFIG.COOKIE_COUNT }).map((_, index) => (
+              <DataCookie
+                key={`cookie-${index}`}
+                index={index}
+                totalCookies={DATA_GRAB_CONFIG.COOKIE_COUNT}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Falling Cards (Layer 3) - Cards in animated wrapper */}
         <motion.div

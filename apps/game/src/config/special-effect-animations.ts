@@ -5,7 +5,7 @@
  * Animations are loaded from Supabase storage
  */
 
-const SUPABASE_BASE_URL = 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
+export const SUPABASE_BASE_URL = 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
 
 export type SpecialEffectAnimationType =
   | 'forced_empathy'
@@ -17,7 +17,8 @@ export type SpecialEffectAnimationType =
   | 'firewall_smacker'
   | 'move_buyout'
   | 'move_tantrum'
-  | 'move_theft';
+  | 'move_theft'
+  | 'theft_won';
 
 export interface SpecialEffectAnimation {
   videoSrc: string | { player: string; cpu: string };
@@ -118,5 +119,13 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<
     },
     title: 'Move Theft',
     loop: true,
+  },
+  theft_won: {
+    videoSrc: {
+      player: `${SUPABASE_BASE_URL}theft_won_player.webm`,
+      cpu: `${SUPABASE_BASE_URL}theft_won_cpu.webm`,
+    },
+    title: 'Launch Stack Stolen',
+    loop: false,
   },
 };

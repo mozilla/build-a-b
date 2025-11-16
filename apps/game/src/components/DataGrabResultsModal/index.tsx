@@ -146,7 +146,7 @@ export const DataGrabResultsModal: FC = () => {
             onPress={handleCollectCards}
             className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center"
           >
-            Collect Cards
+            {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
           </Button>
         </ModalBody>
       </ModalContent>

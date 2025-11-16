@@ -1,4 +1,3 @@
-
 export type SpecialCardAnimationProps = {
   /** Controls visibility of the animation */
   show: boolean;
@@ -18,4 +17,6 @@ export type SpecialCardAnimationProps = {
   loop?: boolean;
   /** Whether to show controls (default: false) */
   controls?: boolean;
+  /** Remove bg blur */
+  removeBlur?: boolean;
 };

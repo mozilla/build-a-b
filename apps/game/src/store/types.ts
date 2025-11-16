@@ -1,4 +1,5 @@
 import type { CardTypeId } from '@/config/game-config';
+import type { SpecialEffectAnimationType } from '@/config/special-effect-animations';
 import type {
   Card,
   EffectNotification,
@@ -6,7 +7,6 @@ import type {
   Player,
   PlayerType,
   PreRevealEffect,
-  SpecialCardType,
   SpecialEffect,
 } from '@/types';
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
@@ -62,14 +62,16 @@ export type GameStore = {
   showPatentTheftAnimation: boolean; // Shows when patent theft is played
   showTemperTantrumAnimation: boolean; // Shows when temper tantrum is played
   showMandatoryRecallAnimation: boolean; // Shows when mandatory recall is played
+  showTheftWonAnimation: boolean; // Shows when patent theft wins and steals Launch Stack
 
   // Animation Queue System
   animationQueue: Array<{
-    type: SpecialCardType;
+    type: SpecialEffectAnimationType;
     playedBy: PlayerType;
   }>;
   isPlayingQueuedAnimation: boolean; // True when processing queued animations
-  animationsPaused: boolean; // Pauses game flow during animations
+  animationsPaused: boolean; // Internal: Animation queue is processing
+  blockTransitions: boolean; // External: Game is paused (blocks state machine transitions during animations OR modals)
   currentAnimationPlayer: PlayerType | null; // Tracks which player's animation is currently playing
   shownAnimationCardIds: Set<string>; // Track which card IDs have already shown animations (prevents duplicates)
 
@@ -81,6 +83,7 @@ export type GameStore = {
   showDataGrabTakeover: boolean; // Show intro animation and countdown
   dataGrabGameActive: boolean; // True during active gameplay (~1.5 seconds)
   showDataGrabResults: boolean; // Show results in hand viewer
+  showDataGrabCookies: boolean; // Debug option to show floating cookie decorations
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -93,6 +96,7 @@ export type GameStore = {
   // Effect Notification - Accumulation System
   accumulatedEffects: EffectNotification[]; // Effects accumulated during current turn
   effectAccumulationPaused: boolean; // True when modal is open (pauses game)
+  awaitingResolution: boolean; // True when waiting to send RESOLVE_TURN but blocked by modal
 
   // Progress Timer for Effect Badge (future feature)
   effectBadgeTimerDuration: number; // Milliseconds to wait before auto-play (0 = disabled)
@@ -189,9 +193,10 @@ export type GameStore = {
   setShowPatentTheftAnimation: (show: boolean) => void;
   setShowTemperTantrumAnimation: (show: boolean) => void;
   setShowMandatoryRecallAnimation: (show: boolean) => void;
+  setShowTheftWonAnimation: (show: boolean) => void;
 
   // Animation Queue Actions
-  queueAnimation: (type: SpecialCardType, playedBy: PlayerType) => void;
+  queueAnimation: (type: SpecialEffectAnimationType, playedBy: PlayerType) => void;
   processNextAnimation: () => void;
   clearAnimationQueue: () => void;
   queueSpecialCardAnimations: () => boolean; // Returns true if animations were queued
@@ -207,6 +212,7 @@ export type GameStore = {
   setShowDataGrabTakeover: (show: boolean) => void;
   setDataGrabGameActive: (active: boolean) => void;
   setShowDataGrabResults: (show: boolean) => void;
+  setShowDataGrabCookies: (show: boolean) => void; // Toggle cookie decorations (debug)
 
   // Effect Notification Actions
   markEffectAsSeen: (effectType: string) => void;

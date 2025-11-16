@@ -5,20 +5,33 @@
 
 import { type FC } from 'react';
 import { motion } from 'framer-motion';
-import { DATA_GRAB_ASSETS, DATA_GRAB_ANIMATIONS } from '@/config/data-grab-config';
+import { DATA_GRAB_ASSETS } from '@/config/data-grab-config';
 
 interface DataCookieProps {
   index: number; // Used to offset animation timing
   totalCookies: number; // Total number of cookies for positioning
 }
 
-export const DataCookie: FC<DataCookieProps> = ({ index, totalCookies }) => {
-  // Distribute cookies across the screen width and height
-  const leftPosition = (index / totalCookies) * 100;
-  const topPosition = Math.random() * 80 + 10; // 10% to 90% from top
+// Deterministic pseudo-random function based on index (always returns same value for same input)
+const seededRandom = (seed: number, min: number, max: number): number => {
+  const x = Math.sin(seed * 12.9898 + seed * 78.233) * 43758.5453;
+  const normalized = x - Math.floor(x);
+  return min + normalized * (max - min);
+};
 
-  // Random size variation (80% to 120% of base size)
-  const sizeScale = 1.2 + Math.random() * 0.4;
+export const DataCookie: FC<DataCookieProps> = ({ index, totalCookies }) => {
+  // Use deterministic values based on index (will always be the same for this index)
+  const zoneWidth = 100 / totalCookies;
+  const zoneStart = index * zoneWidth;
+
+  // Deterministic "random" values that never change for this index
+  const leftPosition = zoneStart + seededRandom(index * 7, 0, zoneWidth * 1.5);
+  const topPosition = seededRandom(index * 11, 5, 90);
+  const sizeScale = seededRandom(index * 13, 1.0, 1.8);
+  const floatDistance = seededRandom(index * 17, 40, 70);
+  const horizontalDrift = seededRandom(index * 19, -15, 15);
+  const animationDuration = seededRandom(index * 23, 3, 5);
+  const animationDelay = index * 0.3;
 
   return (
     <motion.div
@@ -29,15 +42,17 @@ export const DataCookie: FC<DataCookieProps> = ({ index, totalCookies }) => {
         width: `${48 * sizeScale}px`,
         height: `${48 * sizeScale}px`,
       }}
-      initial={{ y: 0 }}
+      initial={{ y: 0, x: 0 }}
       animate={{
-        y: [0, -20, 0],
+        y: [0, -floatDistance, 0],
+        x: [0, horizontalDrift, 0],
       }}
       transition={{
-        duration: parseFloat(DATA_GRAB_ANIMATIONS.COOKIE_FLOAT.duration),
-        ease: 'easeInOut', // Framer Motion uses camelCase
+        duration: animationDuration,
+        ease: 'easeInOut',
         repeat: Infinity,
-        repeatType: 'reverse', // alternate = reverse in Framer Motion
+        repeatType: 'reverse',
+        delay: animationDelay,
       }}
     >
       <img

@@ -43,7 +43,7 @@ export const BILLIONAIRES: Billionaire[] = [
     id: 'savannah',
     name: 'Savannah Blaire',
     imageSrc: savannahImg,
-    description: 'asteoid-mining, vanity-juiced, influence-chasing',
+    description: 'asteroid-mining, vanity-juiced, influence-chasing',
   },
   {
     id: 'walter',

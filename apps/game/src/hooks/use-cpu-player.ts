@@ -25,7 +25,7 @@ export function useCpuPlayer(
   currentPhase: GamePhase,
   activePlayer: 'player' | 'cpu',
   onCPUTurn: () => void,
-  options: useCpuPlayerOptions = {}
+  options: useCpuPlayerOptions = {},
 ) {
   const { enabled = true, delay = ANIMATION_DURATIONS.CPU_TURN_DELAY, isPaused = false } = options;
 
