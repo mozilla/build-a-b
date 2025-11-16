@@ -2,14 +2,13 @@
  * EffectNotificationModal - Modal displaying accumulated special card effects via carousel
  */
 
-import { useState, useEffect, type FC } from 'react';
-import { Modal, ModalBody, ModalContent, Button } from '@heroui/react';
-import { useGameStore } from '../../store';
 import { Text } from '@/components';
-import { capitalize } from '@/utils/capitalize';
+import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
+import { useEffect, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
-import { CardCarousel } from '../CardCarousel';
+import { useGameStore } from '../../store';
 import type { Card } from '../../types';
+import { CardCarousel } from '../CardCarousel';
 
 export const EffectNotificationModal: FC = () => {
   const accumulatedEffects = useGameStore((state) => state.accumulatedEffects);
@@ -22,7 +21,8 @@ export const EffectNotificationModal: FC = () => {
   // Reset if current selected card is not in the accumulated effects (stale from previous turn)
   useEffect(() => {
     if (accumulatedEffects.length > 0) {
-      const isSelectedCardValid = selectedCard && accumulatedEffects.some((effect) => effect.card.id === selectedCard.id);
+      const isSelectedCardValid =
+        selectedCard && accumulatedEffects.some((effect) => effect.card.id === selectedCard.id);
       if (!isSelectedCardValid) {
         setSelectedCard(accumulatedEffects[0].card);
       }
@@ -111,9 +111,9 @@ export const EffectNotificationModal: FC = () => {
           />
 
           {/* Effect Details for selected card - fixed height to prevent layout shift */}
-          <div className="text-center max-w-md h-[10rem] flex flex-col overflow-y-auto">
+          <div className="text-center max-w-md h-[10rem] flex flex-col overflow-y-auto px-4">
             <Text variant="title-2" className="mb-4 text-white">
-              {capitalize(effectName)}
+              {effectName}
             </Text>
             {effectDescription && (
               <Text variant="title-3" className="text-white/90 font-normal">
