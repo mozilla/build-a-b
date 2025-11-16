@@ -6,11 +6,18 @@
  * Blocks user interaction until all critical, high, and medium priority assets are loaded.
  */
 
+import { loadingMicrocopy } from '@/components/LoadingScreen/microcopy';
 import { Text } from '@/components/Text';
 import { motion } from 'framer-motion';
 import type { FC } from 'react';
 
+export type LoadingScreenPhase = 'critical' | 'backgrounds' | 'essential';
+
 export interface LoadingScreenProps {
+  /**
+   * Current loading phase. Determines the loading message displayed.
+   */
+  phase: LoadingScreenPhase;
   /**
    * Number of assets currently loaded
    */
@@ -39,6 +46,7 @@ export interface LoadingScreenProps {
 }
 
 export const LoadingScreen: FC<LoadingScreenProps> = ({
+  phase,
   loadedCount,
   totalCount,
   progress: providedProgress,
@@ -53,12 +61,13 @@ export const LoadingScreen: FC<LoadingScreenProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
     >
       <div className="flex flex-col items-center gap-6 px-8 text-center">
         {/* Loading message */}
         <Text variant="title-2" className="text-common-ash">
-          {isComplete ? 'Loading Complete!' : 'Loading Game Assets'}
+          {isComplete ? loadingMicrocopy.complete : loadingMicrocopy[phase] || 'Loading'}
         </Text>
 
         {/* Progress bar */}
@@ -72,7 +81,7 @@ export const LoadingScreen: FC<LoadingScreenProps> = ({
         </div>
 
         {/* File count */}
-        <Text variant="body-medium" className="text-common-ash/70">
+        <Text variant="body-large-semibold" className="text-common-ash">
           {progress.toFixed(0)}%
         </Text>
       </div>

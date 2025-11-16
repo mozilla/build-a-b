@@ -2,7 +2,7 @@ import blueGridBg from '@/assets/backgrounds/color_blue.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
-import { LoadingScreen } from '@/components/LoadingScreen';
+import { LoadingScreen, type LoadingScreenPhase } from '@/components/LoadingScreen';
 import { STATE_BACKGROUND_CONFIG } from '@/components/ScreenRenderer/background-config';
 import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
@@ -17,7 +17,7 @@ import { useGameStore } from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
 import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
-import type { FC, PropsWithChildren } from 'react';
+import { useEffect, type FC, type PropsWithChildren } from 'react';
 import { useGameMachine } from '../../hooks/use-game-machine';
 
 export interface BaseScreenProps
@@ -54,7 +54,16 @@ const SCREENS_WITH_CLOSE_ICON = [
 
 export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
-  const { toggleMenu, selectedBackground, selectedBillionaire } = useGameStore();
+  const {
+    toggleMenu,
+    selectedBackground,
+    selectedBillionaire,
+    criticalPriorityAssetsReady,
+    criticalProgress,
+    setHasShownCriticalLoadingScreen,
+    setHasShownHighPriorityLoadingScreen,
+    setHasShownEssentialLoadingScreen,
+  } = useGameStore();
   const {
     isReady,
     loadedAssets,
@@ -73,6 +82,31 @@ export const ScreenRenderer: FC = () => {
   const ScreenComponent = SCREEN_REGISTRY[phaseKey];
   const showCloseIcon = SCREENS_WITH_CLOSE_ICON.includes(phaseKey);
 
+  // Show loading screen if we're waiting for assets
+  const isWaitingForCritical = phaseKey === 'select_billionaire' && !criticalPriorityAssetsReady;
+  const isWaitingForBackgrounds = phaseKey === 'select_background' && !highPriorityAssetsReady;
+  const isWaitingForEssentialAssets =
+    !isReady && (phaseKey === 'intro' || phaseKey === 'your_mission');
+
+  // Track that user has seen the loading screen
+  useEffect(() => {
+    if (isWaitingForCritical) {
+      setHasShownCriticalLoadingScreen(true);
+    }
+  }, [isWaitingForCritical, setHasShownCriticalLoadingScreen]);
+
+  useEffect(() => {
+    if (isWaitingForBackgrounds) {
+      setHasShownHighPriorityLoadingScreen(true);
+    }
+  }, [isWaitingForBackgrounds, setHasShownHighPriorityLoadingScreen]);
+
+  useEffect(() => {
+    if (isWaitingForEssentialAssets) {
+      setHasShownEssentialLoadingScreen(true);
+    }
+  }, [isWaitingForEssentialAssets, setHasShownEssentialLoadingScreen]);
+
   // Fallback if phase not found
   if (!ScreenComponent) {
     // console.warn(`No screen component found for phase: ${phaseKey}`);
@@ -90,21 +124,23 @@ export const ScreenRenderer: FC = () => {
     backgroundImage = blueGridBg;
   }
 
-  // Show loading screen if we're waiting for assets
-  // - On select_billionaire: wait for backgrounds to load
-  // - On intro/your_mission: wait for all essential assets + VS video
-  const isWaitingForBackgrounds = phaseKey === 'select_billionaire' && !highPriorityAssetsReady;
-  const isWaitingForEssentialAssets =
-    !isReady && (phaseKey === 'intro' || phaseKey === 'your_mission');
+  if (isWaitingForCritical || isWaitingForBackgrounds || isWaitingForEssentialAssets) {
+    let phaseProgress = essentialProgress;
+    let phase = 'essential';
 
-  if (isWaitingForBackgrounds || isWaitingForEssentialAssets) {
-    // Determine phase-specific progress
-    const phaseProgress = isWaitingForBackgrounds ? highPriorityProgress : essentialProgress;
+    if (isWaitingForCritical) {
+      phaseProgress = criticalProgress;
+      phase = 'critical';
+    } else if (isWaitingForBackgrounds) {
+      phaseProgress = highPriorityProgress;
+      phase = 'backgrounds';
+    }
 
     return (
       <div className="absolute top-0 left-0 h-[100vh] w-[100vw] flex items-center justify-center z-100">
         <Frame backgroundSrc={nightSkyBg}>
           <LoadingScreen
+            phase={phase as LoadingScreenPhase}
             loadedCount={loadedAssets}
             totalCount={totalAssets}
             essentialAssetsReady={essentialAssetsReady}

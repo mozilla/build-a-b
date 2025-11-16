@@ -122,10 +122,7 @@ export const gameFlowMachine = createMachine(
 
       select_billionaire: {
         on: {
-          SELECT_BILLIONAIRE: {
-            target: 'select_background',
-            guard: 'backgroundAssetsPreloaded',
-          },
+          SELECT_BILLIONAIRE: 'select_background',
         },
       },
 
@@ -504,11 +501,6 @@ export const gameFlowMachine = createMachine(
   },
   {
     guards: {
-      backgroundAssetsPreloaded: () => {
-        // Check if high-priority assets (critical + high = backgrounds) are ready
-        const state = useGameStore.getState();
-        return state.highPriorityAssetsReady === true;
-      },
       assetsPreloaded: () => {
         // Check if all essential assets (critical + high + medium) and VS video are ready
         const state = useGameStore.getState();
