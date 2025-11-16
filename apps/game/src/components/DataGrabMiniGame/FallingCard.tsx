@@ -80,7 +80,7 @@ export const FallingCard: FC<FallingCardProps> = ({
     <>
       {/* Card positioned within wrapper - larger clickable area to account for rotation */}
       <motion.div
-        className="absolute cursor-pointer w-[10rem] h-[13rem] flex items-center justify-center origin-center transition-opacity duration-150"
+        className="absolute cursor-pointer w-[10rem] h-[13rem] flex items-center justify-center origin-center"
         style={{
           left: `${position.x}rem`,
           top: `${position.y}rem`,
@@ -105,7 +105,7 @@ export const FallingCard: FC<FallingCardProps> = ({
           <AnimatePresence>
             {showBurst && (
               <motion.div
-                className="fixed pointer-events-none w-[150px] h-[150px] -translate-x-1/2 -translate-y-1/2 z-[9999]"
+                className="fixed pointer-events-none w-[300px] h-[300px] -translate-x-1/2 -translate-y-1/2 z-[9999]"
                 style={{
                   left: `${clickPosition.x}px`,
                   top: `${clickPosition.y}px`,
@@ -118,8 +118,8 @@ export const FallingCard: FC<FallingCardProps> = ({
                   animationData={burstAnimation}
                   loop={false}
                   autoplay={true}
-                  width={100}
-                  height={100}
+                  width={200}
+                  height={200}
                 />
               </motion.div>
             )}

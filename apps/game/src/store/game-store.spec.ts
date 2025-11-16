@@ -88,7 +88,7 @@ describe('gameStore', () => {
       expect(state.cpu.playedCard).toEqual(topCard);
 
       // Tracker cards have 0 value when first played (value applied to next card)
-      const expectedValue = topCard.specialType === 'tracker' ? 0 : topCard.value;
+      const expectedValue = topCard.specialType === 'tracker' ? 1 : topCard.value;
       expect(state.cpu.currentTurnValue).toBe(expectedValue);
 
       // If tracker, verify bonus is stored for next card

@@ -92,13 +92,12 @@ export function Game() {
   // During data war, only player deck is clickable (one click reveals both)
   // During pre_reveal.awaiting_interaction, player can tap to see modal
   // Disable clicking during card collection animation and during settling
+  // IMPORTANT: Only the PLAYER's deck is ever clickable - CPU plays are automated
   const canClickPlayerDeck =
     !collecting &&
     ((phase === 'ready' && activePlayer === 'player') ||
       phase === 'pre_reveal.awaiting_interaction' ||
       (isClickableDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover'));
-
-  const canClickCpuDeck = !collecting && phase === 'ready' && activePlayer === 'cpu';
 
   const handleDeckClick = () => {
     tapDeck();
@@ -106,19 +105,22 @@ export function Game() {
 
   // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
   // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
-  // Need to swap click handlers to match visual positions
-  // Tooltip ALWAYS shows on the visually bottom deck (player's position)
-  const topDeckCanClick = isSwapped ? canClickPlayerDeck : canClickCpuDeck;
-  const bottomDeckCanClick = isSwapped ? canClickCpuDeck : canClickPlayerDeck;
-  // Top deck only shows tooltip when swapped AND player can click, because it's visually bottom
+  // IMPORTANT: Only player's deck is clickable (CPU is automated)
+  // When NOT swapped: player's deck is at bottom (normal position)
+  // When swapped: player's deck is at top (swapped position)
+  const topDeckCanClick = isSwapped ? canClickPlayerDeck : false;
+  const bottomDeckCanClick = isSwapped ? false : canClickPlayerDeck;
+
+  // Tooltip ALWAYS shows on the player's deck (which moves based on swap state)
   const topDeckTooltip = isSwapped && canClickPlayerDeck ? tooltipMessage : '';
-  // Bottom deck shows tooltip when NOT swapped AND player can click, because it's visually bottom
   const bottomDeckTooltip = !isSwapped && canClickPlayerDeck ? tooltipMessage : '';
 
-  // Active indicator (heartbeat) shows on the active player's position
-  // Player always plays from bottom visually, CPU from top, regardless of deck swap
-  const topDeckActiveIndicator = activePlayer === 'cpu' && topDeckCanClick;
-  const bottomDeckActiveIndicator = activePlayer === 'player' && bottomDeckCanClick;
+  // Active indicator (glow) only shows for player's deck (when clickable)
+  // CPU deck never glows
+  // When NOT swapped: player at bottom, CPU at top
+  // When swapped: player at top, CPU at bottom
+  const topDeckActiveIndicator = isSwapped ? canClickPlayerDeck : false;
+  const bottomDeckActiveIndicator = !isSwapped ? canClickPlayerDeck : false;
 
   useEffect(() => {
     switch (phase) {
@@ -158,7 +160,7 @@ export function Game() {
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, send]);
+  }, [phase]);
 
   useEffect(() => {
     // Handle special effect phase - auto-dismiss after a brief delay
