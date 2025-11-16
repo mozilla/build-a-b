@@ -24,15 +24,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 
   // Initialize game on mount
   useEffect(() => {
-    // Patent Theft test scenario:
-    // Turn 1: CPU plays Launch Stack (6), Player plays common-1 → CPU wins → CPU gets 1 Launch Stack
-    // Turn 2: Player plays Patent Theft (6), CPU plays common-3 → Player wins → Player steals Launch Stack
-    initializeGame(
-      'custom',
-      'custom',
-      ['common-1', 'move-theft', 'common-2'], // Player: common-1 (lose), Patent Theft (win), extra card
-      ['ls-ai-platform', 'common-3', 'common-4'], // CPU: Launch Stack (win), common-3 (lose), extra card
-    );
+    initializeGame();
   }, [initializeGame]);
 
   return (
