@@ -1,5 +1,6 @@
 import { SpecialCardAnimation, Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { SUPABASE_BASE_URL } from '@/config/special-effect-animations';
 import { useGameStore, usePlayer } from '@/store';
 import type { PlayerType } from '@/types';
 import { cn } from '@/utils/cn';
@@ -12,7 +13,6 @@ import { LaunchStackIndicator } from '../LaunchStackIndicator';
 import { LottieAnimation } from '../LottieAnimation';
 import { TurnValue } from '../TurnValue';
 import type { PlayerDeckProps } from './types';
-import { SUPABASE_BASE_URL } from '@/config/special-effect-animations';
 
 type Containers = {
   avatar: string;
@@ -26,10 +26,10 @@ const gridLayoutMap: Record<PlayerType, Containers> = {
     avatar: 'row-4 col-1',
     deck: 'row-4 col-2',
     turnValue: 'row-4 col-3',
-    cardCount: 'row-5 col-2 self-center',
+    cardCount: 'row-5 col-span-full self-center',
   },
   cpu: {
-    cardCount: 'row-1 col-2 self-center',
+    cardCount: 'row-1 col-span-full self-center',
     avatar: 'row-2 col-1',
     deck: 'row-2',
     turnValue: 'row-2 col-3',
@@ -114,7 +114,9 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   }, []);
 
   const [showAnimation, setShowAnimation] = useState(false);
-  const [animatedLaunchStackCount, setAnimatedLaunchStackCount] = useState(currentPlayer.launchStackCount);
+  const [animatedLaunchStackCount, setAnimatedLaunchStackCount] = useState(
+    currentPlayer.launchStackCount,
+  );
   const prevLaunchStackCount = useRef(currentPlayer.launchStackCount);
   const animationTimersRef = useRef<number[]>([]);
 
@@ -124,7 +126,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     const wonCount = currentCount - previousCount;
 
     // Clear any existing animation timers
-    animationTimersRef.current.forEach(timer => clearTimeout(timer));
+    animationTimersRef.current.forEach((timer) => clearTimeout(timer));
     animationTimersRef.current = [];
 
     // If Launch Stacks were won, queue up animations
@@ -146,7 +148,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         const hideTimer = setTimeout(() => {
           setShowAnimation(false);
           // Increment the animated count when animation finishes
-          setAnimatedLaunchStackCount(prev => prev + 1);
+          setAnimatedLaunchStackCount((prev) => prev + 1);
         }, startDelay + ANIMATION_DURATION);
         animationTimersRef.current.push(hideTimer);
       }
@@ -160,7 +162,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
 
     // Cleanup timers on unmount or when effect reruns
     return () => {
-      animationTimersRef.current.forEach(timer => clearTimeout(timer));
+      animationTimersRef.current.forEach((timer) => clearTimeout(timer));
       animationTimersRef.current = [];
     };
   }, [currentPlayer.launchStackCount]);
@@ -175,15 +177,20 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       />
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
-        <div className={cn('flex flex-col items-center gap-1', gridLayoutMap[owner].avatar)}>
+        <div
+          className={cn(
+            'flex flex-col items-center gap-[4px] sm:gap-1',
+            gridLayoutMap[owner].avatar,
+          )}
+        >
           {/* Launch Stack Rocket Indicators */}
           <LaunchStackIndicator launchStackCount={animatedLaunchStackCount} />
 
           {/* Avatar */}
-          <div className="relative w-[6.5rem] h-[6.5rem] max-w-[104px] max-h-[104px] z-2">
+          <div className="relative aspect-square w-[6.5rem] z-2">
             {/* Avatar with scale animation */}
             <motion.div
-              className="w-full h-full rounded-full overflow-hidden border-2 border-transparent"
+              className="w-full h-full rounded-full overflow-hidden"
               animate={{
                 scale: showWinEffect ? 1.2 : 1,
               }}
@@ -249,7 +256,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       {/** Deck - wrapped in motion for swap animation */}
       {owner === 'cpu' && (
         <Text
-          className={cn('tracking-[0.08em] text-center', gridLayoutMap[owner].cardCount)}
+          className={cn('tracking-[0.08em] text-center mb-2', gridLayoutMap[owner].cardCount)}
           color="text-common-ash"
           variant="badge-xs"
           transform="uppercase"
@@ -277,7 +284,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       />
       {owner === 'player' && (
         <Text
-          className={cn('tracking-[0.08em] text-center', gridLayoutMap[owner].cardCount)}
+          className={cn('tracking-[0.08em] text-center mt-2', gridLayoutMap[owner].cardCount)}
           color="text-common-ash"
           variant="badge-xs"
           transform="uppercase"

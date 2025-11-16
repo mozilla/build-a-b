@@ -2,6 +2,7 @@
  * LaunchStackIndicator - Displays rocket indicators for launch stack collection
  */
 
+import { cn } from '@/utils/cn';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FC } from 'react';
 import RocketFilled from '../../assets/icons/rocket-filled.svg';
@@ -11,11 +12,11 @@ import type { LaunchStackIndicatorProps } from './types';
 const getTransformClasses = (position: number) => {
   switch (position) {
     case 0:
-      return 'rotate-[-46deg] translate-x-[-1.5rem] translate-y-[1.3rem]';
+      return 'rotate-[-46deg] translate-x-[-24px] translate-y-[20.8px] sm:translate-x-[-1.5rem] sm:translate-y-[1.3rem]';
     case 1:
-      return 'rotate-[-25deg] translate-x-[-1.6rem] translate-y-[0.5rem]';
+      return 'rotate-[-25deg] translate-x-[-25.6px] translate-y-[8px] sm:translate-x-[-1.6rem] sm:translate-y-[0.5rem]';
     case 2:
-      return 'rotate-[-5deg] translate-x-[-1.5rem] translate-y-[0.1rem]';
+      return 'rotate-[-5deg] translate-x-[-24px] translate-y-[1.6px] sm:translate-x-[-1.5rem] sm:translate-y-[0.1rem]';
     default:
       return '';
   }
@@ -27,12 +28,15 @@ export const LaunchStackIndicator: FC<LaunchStackIndicatorProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex justify-center ${className}`}>
+    <div className={cn('flex justify-center', className)}>
       {Array.from({ length: maxStacks }).map((_, index) => {
         const isFilled = index < launchStackCount;
 
         return (
-          <div key={index} className={`w-5 h-5 ${getTransformClasses(index)}`}>
+          <div
+            key={index}
+            className={cn('aspect-square w-[20px] sm:w-5', getTransformClasses(index))}
+          >
             <AnimatePresence mode="wait">
               {isFilled ? (
                 <motion.img

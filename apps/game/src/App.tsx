@@ -10,11 +10,17 @@ import { PreloadingProvider } from './providers/PreloadingProvider';
  * This is the main container of the application.
  */
 function App() {
+  /**
+   * TODO - Should we have a 'beforeunload'-like handler to warn users about losing game progress?
+   * concerns:
+   *  - not all mobile browsers support it, so it will need a cross-browser solution
+   *  - only trigger if a game is in progress
+   */
   return (
     <HeroUIProvider>
       <GameProvider>
         <PreloadingProvider>
-          <div className="h-[100vh] w-[100vw] bg-black flex items-center justify-center">
+          <div className="h-[100dvh] w-[100vw] bg-black flex items-center justify-center overscroll-none">
             <BlurredBackground />
             <Game />
             <ScreenRenderer />

@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import { useGameStore } from '../../store';
 import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
+import { useGameStore } from '../../store';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
 import { Tooltip } from '../Tooltip';
 import { AnimatedCard } from './AnimatedCard';
@@ -136,13 +136,16 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   return (
     <div
       ref={playAreaRef}
-      className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative"
+      className="w-full aspect-130/175 sm:w-[8.125rem] flex items-center justify-center relative"
     >
       {renderedCards}
 
       {/* Effect notification badge - positioned over top card (always on the right side) */}
       {shouldShowBadge && (
-        <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-[50] animate-badge-scale-in">
+        <div
+          className="absolute top-1/2 -translate-y-[80px] -right-[-116px] sm:-translate-y-[5rem] sm:-right-29 z-[50] cursor-pointer animate-badge-scale-in"
+          onClick={handleBadgeClick}
+        >
           <Tooltip
             content={effectTooltipConfig.message}
             placement="bottom"

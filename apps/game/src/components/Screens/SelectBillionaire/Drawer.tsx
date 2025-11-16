@@ -7,7 +7,7 @@ import { cn } from '@/utils/cn';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion';
 import { type FC } from 'react';
 
-interface DrawerProps
+export interface DrawerProps
   extends Omit<
     HTMLMotionProps<'div'>,
     'children' | 'onClick' | 'initial' | 'animate' | 'exit' | 'transition'
@@ -68,7 +68,7 @@ export const Drawer: FC<DrawerProps> = ({
               <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0.5rem_1.875rem_0px_rgba(0,166,249,1)]" />
 
               {/* Content Container */}
-              <div className="relative flex flex-col items-center gap-6 sm:gap-4 md:gap-6 pt-12 sm:pt-16 md:pt-20 px-4 sm:px-6 md:px-8 max-h-[90vh] overflow-y-auto">
+              <div className="relative flex flex-col items-center gap-6 sm:gap-4 md:gap-6 pt-12 sm:pt-16 md:pt-20 px-4 sm:px-6 md:px-8 max-h-[90dvh] overflow-y-auto">
                 {/* Billionaire Image */}
                 <div className="relative w-[12.1875rem] h-[12.1875rem] flex-shrink-0">
                   <img

@@ -127,7 +127,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         */}
         <motion.div
           ref={deckRef}
-          className="relative p-2 w-full z-19 outline-0"
+          className="relative size-full z-19 outline-0"
           onClick={cardCount > 0 && !isRunningWinAnimation ? onClick : undefined}
           role={cardCount > 0 ? 'button' : undefined}
           tabIndex={cardCount > 0 ? 0 : undefined}
@@ -139,26 +139,26 @@ export const DeckPile: FC<DeckPileProps> = ({
         >
           {/* Show stacked effect if cards > 0 */}
           {cardCount > 0 ? (
-            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
+            <div className={cn('relative -translate-y-1', activeIndicator && 'animate-heartbeat')}>
               {/* Back cards for stacking effect */}
 
               {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
               {cardCount >= 4 && (
                 <motion.div
                   data-new
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
                     opacity: playingCard ? [0, 1] : 1,
-                    x: -8,
-                    y: -8,
+                    x: playingCard ? [-4, 0] : 0,
+                    y: playingCard ? [-4, 0] : 0,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: 'easeOut',
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
@@ -166,18 +166,18 @@ export const DeckPile: FC<DeckPileProps> = ({
               {cardCount >= 3 && (
                 <motion.div
                   data-bottom
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
-                    x: playingCard ? [-8, -4] : -4,
-                    y: playingCard ? [-8, -4] : -4,
+                    x: playingCard ? [0, 4] : 0,
+                    y: playingCard ? [0, 4] : 0,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: 'easeOut',
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
@@ -185,24 +185,24 @@ export const DeckPile: FC<DeckPileProps> = ({
               {cardCount >= 2 && (
                 <motion.div
                   data-mid
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
-                    x: playingCard ? [-4, 0] : 0,
-                    y: playingCard ? [-4, 0] : 0,
+                    x: playingCard ? [4, 8] : 4,
+                    y: playingCard ? [4, 8] : 4,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: [0.43, 0.13, 0.23, 0.96],
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
               {/* Top card - animated when played */}
               <motion.div
-                className="relative"
+                className="relative size-full"
                 initial={false}
                 animate={{
                   // For multi-card plays, stagger fade-outs
@@ -210,9 +210,9 @@ export const DeckPile: FC<DeckPileProps> = ({
                     ? cardsPlayedThisTurn > 1
                       ? [1, 0.7, 0] // Multi-card: gradual fade
                       : [1, 0] // Single card: direct fade
-                    : 0,
-                  x: 0,
-                  y: 0,
+                    : 1, // ← Should be 1 when not playing
+                  x: 8,
+                  y: 8,
                 }}
                 transition={{
                   duration: playingCard
@@ -223,7 +223,12 @@ export const DeckPile: FC<DeckPileProps> = ({
                   ease: [0.43, 0.13, 0.23, 0.96],
                 }}
               >
-                <Card data-measure-target={owner} cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                <Card
+                  data-measure-target={owner}
+                  cardFrontSrc={CARD_BACK_IMAGE}
+                  state="initial"
+                  variant="deck-pile"
+                />
               </motion.div>
             </div>
           ) : (
