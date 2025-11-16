@@ -28,6 +28,7 @@ import { DataWarAnimation } from '../DataWarAnimation';
 import { DebugUI } from '../DebugUI';
 import { EffectNotificationModal } from '../EffectNotificationModal';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
+import { TemperTantrumModal } from '../TemperTantrumModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
@@ -263,6 +264,9 @@ export function Game() {
 
         {/* Data Grab Results Modal */}
         <DataGrabResultsModal />
+
+        {/* Temper Tantrum Card Selection Modal */}
+        <TemperTantrumModal />
 
         {/* Debug UI */}
         <DebugUI />
