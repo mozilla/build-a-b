@@ -77,6 +77,8 @@ export const useGameStore = create<GameStore>()(
       showTemperTantrumAnimation: false,
       showMandatoryRecallAnimation: false,
       showTheftWonAnimation: false,
+      showRecallWonAnimation: false,
+      recallReturnCount: 0,
 
       // Animation Queue System
       animationQueue: [],
@@ -194,6 +196,8 @@ export const useGameStore = create<GameStore>()(
           showTemperTantrumAnimation: false,
           showMandatoryRecallAnimation: false,
           showTheftWonAnimation: false,
+          showRecallWonAnimation: false,
+          recallReturnCount: 0,
           animationQueue: [],
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
@@ -802,7 +806,19 @@ export const useGameStore = create<GameStore>()(
               // If the player who played this card won, opponents shuffle Launch Stacks back
               if (winner === effect.playedBy) {
                 const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                get().removeLaunchStacks(opponentId, get()[opponentId].launchStackCount);
+                const launchStackCount = get()[opponentId].launchStackCount;
+
+                // Only process if opponent has launch stacks
+                if (launchStackCount > 0) {
+                  // Capture the count BEFORE removing (for animation)
+                  set({ recallReturnCount: launchStackCount });
+
+                  // Remove the launch stacks
+                  get().removeLaunchStacks(opponentId, launchStackCount);
+
+                  // Queue animation showing Launch Stacks returning to opponent's deck
+                  get().queueAnimation('mandatory_recall_won', effect.playedBy);
+                }
               }
               break;
 
@@ -1057,6 +1073,9 @@ export const useGameStore = create<GameStore>()(
       setShowTheftWonAnimation: (show) => {
         set({ showTheftWonAnimation: show });
       },
+      setShowRecallWonAnimation: (show) => {
+        set({ showRecallWonAnimation: show });
+      },
 
       // Animation Queue Actions
       queueAnimation: (type, playedBy) => {
@@ -1115,6 +1134,7 @@ export const useGameStore = create<GameStore>()(
           open_what_you_want: get().setShowOpenWhatYouWantAnimation,
           data_grab: (show) => set({ showDataGrabTakeover: show }),
           theft_won: get().setShowTheftWonAnimation,
+          mandatory_recall_won: get().setShowRecallWonAnimation,
         };
 
         const setter = animationTypeToSetter[nextAnimation.type];
@@ -1470,7 +1490,11 @@ export const useGameStore = create<GameStore>()(
           // - Loser gets: ONLY stolen cards (doesn't keep their own cards)
           // - Winner gets: remaining cards from their pile + loser's cards
           const newPlayerDeck = [...currentState.player.deck, ...stolenCardsCaptured];
-          const newCpuDeck = [...currentState.cpu.deck, ...remainingWinnerCardsCaptured, ...loserCardsCaptured];
+          const newCpuDeck = [
+            ...currentState.cpu.deck,
+            ...remainingWinnerCardsCaptured,
+            ...loserCardsCaptured,
+          ];
 
           set({
             player: {

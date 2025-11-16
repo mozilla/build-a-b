@@ -1003,6 +1003,214 @@ describe('Turn Resolution', () => {
 
         expect(useGameStore.getState().cpu.launchStackCount).toBe(2);
       });
+
+      it('should queue recall animation with correct count when player wins', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        // Spy on queueAnimation
+        const queueAnimationSpy = vi.spyOn(useGameStore.getState(), 'queueAnimation');
+
+        // Give CPU 3 launch stacks
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 3,
+            deck: [],
+          },
+          cpuLaunchStacks: [launchStackCard, launchStackCard, launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('player');
+
+        // Verify animation was queued with correct type and player
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'player');
+
+        // Verify count was captured BEFORE removal
+        expect(useGameStore.getState().recallReturnCount).toBe(3);
+
+        // Verify launch stacks were removed
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
+        expect(useGameStore.getState().cpu.deck.length).toBe(3);
+
+        queueAnimationSpy.mockRestore();
+      });
+
+      it('should queue recall animation with count 1 when opponent has 1 launch stack', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        // Spy on queueAnimation
+        const queueAnimationSpy = vi.spyOn(useGameStore.getState(), 'queueAnimation');
+
+        // CPU plays recall, player has 1 launch stack
+        useGameStore.setState({
+          player: {
+            ...useGameStore.getState().player,
+            launchStackCount: 1,
+            deck: [],
+          },
+          playerLaunchStacks: [launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'cpu',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('cpu');
+
+        // Verify animation was queued for CPU
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'cpu');
+
+        // Verify count is 1
+        expect(useGameStore.getState().recallReturnCount).toBe(1);
+
+        // Verify launch stack was removed from player
+        expect(useGameStore.getState().player.launchStackCount).toBe(0);
+        expect(useGameStore.getState().player.deck.length).toBe(1);
+
+        queueAnimationSpy.mockRestore();
+      });
+
+      it('should not queue animation when opponent has 0 launch stacks', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 0,
+            deck: [],
+          },
+          cpuLaunchStacks: [],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          animationQueue: [],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('player');
+
+        // Verify NO animation was queued
+        const animationQueue = useGameStore.getState().animationQueue;
+        expect(animationQueue.length).toBe(0);
+
+        // Verify count remains 0
+        expect(useGameStore.getState().recallReturnCount).toBe(0);
+
+        // CPU still has 0 launch stacks
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
+      });
+
+      it('should not queue animation when player loses with mandatory recall', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 2,
+          },
+          cpuLaunchStacks: [launchStackCard, launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          animationQueue: [],
+        });
+
+        // Player loses (CPU wins)
+        useGameStore.getState().processPendingEffects('cpu');
+
+        // Verify NO animation was queued
+        const animationQueue = useGameStore.getState().animationQueue;
+        expect(animationQueue.length).toBe(0);
+
+        // CPU keeps launch stacks (player lost)
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(2);
+      });
     });
 
     describe('Open What You Want', () => {
