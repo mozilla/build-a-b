@@ -64,11 +64,14 @@ export type GameStore = {
   showTemperTantrumAnimation: boolean; // Shows when temper tantrum is played
   showMandatoryRecallAnimation: boolean; // Shows when mandatory recall is played
   showTheftWonAnimation: boolean; // Shows when patent theft wins and steals Launch Stack
+  showRecallWonAnimation: boolean; // Shows when mandatory recall wins and returns Launch Stacks
+  recallReturnCount: number; // Number of launch stacks being returned by Mandatory Recall
 
   // Animation Queue System
   animationQueue: Array<{
     type: SpecialEffectAnimationType;
     playedBy: PlayerType;
+    params?: Record<string, string>;
   }>;
   isPlayingQueuedAnimation: boolean; // True when processing queued animations
   animationsPaused: boolean; // Internal: Animation queue is processing
@@ -203,6 +206,7 @@ export type GameStore = {
   setShowTemperTantrumAnimation: (show: boolean) => void;
   setShowMandatoryRecallAnimation: (show: boolean) => void;
   setShowTheftWonAnimation: (show: boolean) => void;
+  setShowRecallWonAnimation: (show: boolean) => void;
 
   // Animation Queue Actions
   queueAnimation: (type: SpecialEffectAnimationType, playedBy: PlayerType) => void;
