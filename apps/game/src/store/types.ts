@@ -27,6 +27,7 @@ export type GameStore = {
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+  showingWinEffect: PlayerType | null; // Player currently showing win celebration (before collection)
   collecting: {
     winner: PlayerType | null;
     cards: Card[];

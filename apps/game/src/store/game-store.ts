@@ -44,6 +44,7 @@ export const useGameStore = create<GameStore>()(
       // Initial State
       player: createInitialPlayer('player'),
       cpu: createInitialPlayer('cpu'),
+      showingWinEffect: null,
       collecting: null,
       cardsInPlay: [],
       activePlayer: 'player',
@@ -166,6 +167,8 @@ export const useGameStore = create<GameStore>()(
           cardsInPlay: [],
           winner: null,
           winCondition: null,
+          showingWinEffect: null,
+          collecting: null,
           activePlayer: 'player',
           anotherPlayMode: false,
           anotherPlayExpected: false,
@@ -307,51 +310,59 @@ export const useGameStore = create<GameStore>()(
       },
 
       collectCards: (winnerId, cards) => {
-        const winner = get()[winnerId];
-        set({ collecting: { winner: winnerId, cards } });
+        // STAGE 1: Show win effect (billionaire celebration) FIRST
+        set({ showingWinEffect: winnerId });
 
         // Clear accumulated effects immediately when collection starts
         // This ensures effects are cleared before the next turn begins
         get().clearAccumulatedEffects();
 
+        // Wait for win animation to complete
         setTimeout(() => {
+          // STAGE 2: Start card collection animation (cards fly to deck)
           set({
-            [winnerId]: {
-              ...winner,
-              deck: [...winner.deck, ...(cards || [])], // Add to bottom of deck
-              playedCard: null,
-              playedCardsInHand: [], // Clear hand stack
-              currentTurnValue: 0,
-              activeEffects: [], // Clear active effects
-              pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-              pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-            },
-            // Clear shown animation IDs when cards are collected
-            shownAnimationCardIds: new Set(),
-            cardsInPlay: [],
-            // Reset turn states for new turn
-            playerTurnState: 'normal',
-            cpuTurnState: 'normal',
-            anotherPlayExpected: false, // Clear flag (turn is over)
+            showingWinEffect: null, // Clear win effect
+            collecting: { winner: winnerId, cards }, // Start collection animation
           });
 
-          // Also clear the loser's played card and hand stack
-          const loserId = winnerId === 'player' ? 'cpu' : 'player';
-          const loser = get()[loserId];
-          set({
-            [loserId]: {
-              ...loser,
-              playedCard: null,
-              playedCardsInHand: [], // Clear hand stack
-              currentTurnValue: 0,
-              activeEffects: [], // Clear active effects
-              pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-              pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-            },
-          });
+          // Wait for card collection animation to complete
+          setTimeout(() => {
+            const currentWinner = get()[winnerId];
+            const loserId = winnerId === 'player' ? 'cpu' : 'player';
+            const loser = get()[loserId];
 
-          set({ collecting: null });
-        }, ANIMATION_DURATIONS.CARD_COLLECTION);
+            // STAGE 3: Add cards to deck and clear all states
+            set({
+              [winnerId]: {
+                ...currentWinner,
+                deck: [...currentWinner.deck, ...(cards || [])], // Add to bottom of deck
+                playedCard: null,
+                playedCardsInHand: [], // Clear hand stack
+                currentTurnValue: 0,
+                activeEffects: [], // Clear active effects
+                pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+                pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
+              },
+              [loserId]: {
+                ...loser,
+                playedCard: null,
+                playedCardsInHand: [], // Clear hand stack
+                currentTurnValue: 0,
+                activeEffects: [], // Clear active effects
+                pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
+                pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
+              },
+              // Clear shown animation IDs when cards are collected
+              shownAnimationCardIds: new Set(),
+              cardsInPlay: [],
+              // Reset turn states for new turn
+              playerTurnState: 'normal',
+              cpuTurnState: 'normal',
+              anotherPlayExpected: false, // Clear flag (turn is over)
+              collecting: null, // Clear collecting state after cards are added
+            });
+          }, ANIMATION_DURATIONS.CARD_COLLECTION);
+        }, ANIMATION_DURATIONS.WIN_ANIMATION);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {
@@ -1745,6 +1756,8 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,
+          showingWinEffect: null,
+          collecting: null,
           playerLaunchStacks: [],
           cpuLaunchStacks: [],
           isPaused: false,
