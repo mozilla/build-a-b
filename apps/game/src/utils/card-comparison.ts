@@ -155,7 +155,7 @@ export function applyTrackerModifier(currentValue: number, trackerCard: Card): n
  *
  * @param opponentValue - Opponent's current turn value
  * @param blockerCard - The blocker card being played
- * @returns Updated opponent value (minimum 0)
+ * @returns Updated opponent value (can be negative)
  */
 export function applyBlockerModifier(opponentValue: number, blockerCard: Card): number {
   if (blockerCard.specialType !== 'blocker') {
@@ -171,8 +171,8 @@ export function applyBlockerModifier(opponentValue: number, blockerCard: Card): 
     console.warn(`Unknown blocker typeId: ${blockerCard.typeId}`);
   }
 
-  // Subtract from opponent, but don't go below 0
-  return Math.max(0, opponentValue - blockerValue);
+  // Subtract from opponent (can go negative)
+  return opponentValue - blockerValue;
 }
 
 /**

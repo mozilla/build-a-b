@@ -10,7 +10,8 @@ import { DEFAULT_GAME_CONFIG, type CardTypeId } from '@/config/game-config';
 import { useGameStore } from '@/store/game-store';
 import { Autocomplete, AutocompleteItem } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface CardOption {
   typeId: CardTypeId;
@@ -39,8 +40,10 @@ export function DebugUI() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [playerCards, setPlayerCards] = useState<CardTypeId[]>([]);
   const [cpuCards, setCpuCards] = useState<CardTypeId[]>([]);
-  const [keySequence, setKeySequence] = useState('');
+  const keySequenceRef = useRef('');
   const initializeGame = useGameStore((state) => state.initializeGame);
+  const showDataGrabCookies = useGameStore((state) => state.showDataGrabCookies);
+  const setShowDataGrabCookies = useGameStore((state) => state.setShowDataGrabCookies);
 
   // Card options from config
   const cardOptions: CardOption[] = DEFAULT_GAME_CONFIG.deckComposition.map((card) => ({
@@ -58,8 +61,8 @@ export function DebugUI() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only track arrow keys
       if (e.key.startsWith('Arrow')) {
-        const newSequence = keySequence + e.key + ',';
-        setKeySequence(newSequence);
+        const prev = keySequenceRef.current;
+        const newSequence = prev + e.key + ',';
 
         // Check if sequence matches the target
         const currentKeys = newSequence.split(',').filter((k) => k);
@@ -67,13 +70,15 @@ export function DebugUI() {
 
         if (isMatch && currentKeys.length === targetSequence.length) {
           setIsOpen((prev) => !prev);
-          setKeySequence(''); // Reset after trigger
+          keySequenceRef.current = ''; // Reset after trigger
+        } else {
+          keySequenceRef.current = newSequence;
         }
 
         // Reset sequence after 3 seconds of inactivity
         clearTimeout(resetTimer);
         resetTimer = setTimeout(() => {
-          setKeySequence('');
+          keySequenceRef.current = '';
         }, 3000);
       }
     };
@@ -83,7 +88,7 @@ export function DebugUI() {
       window.removeEventListener('keydown', handleKeyDown);
       clearTimeout(resetTimer);
     };
-  }, [keySequence]);
+  }, []); // Empty dependency array - only set up once
 
   const handleAddPlayerCard = (typeId: CardTypeId) => {
     setPlayerCards((prev) => [...prev, typeId]);
@@ -127,16 +132,15 @@ export function DebugUI() {
     setIsExpanded(false);
   };
 
-  if (!isOpen) return null;
-
-  return (
+  const debugUI = (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-4 right-4 z-[100] font-sans md:bottom-4 md:right-4 isolate"
-      >
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed bottom-4 right-4 z-[100] font-sans md:bottom-4 md:right-4 isolate"
+        >
         {!isExpanded ? (
           // Collapsed state - small floating button
           <Button onPress={() => setIsExpanded(true)} title="Open Debug UI">
@@ -178,6 +182,20 @@ export function DebugUI() {
                   <li>Leave empty for fully random decks</li>
                   <li>Press ↑ ↑ ↓ ↓ to toggle this panel</li>
                 </ul>
+              </div>
+
+              {/* Debug Options */}
+              <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                <p className="font-semibold mb-2 text-cyan-300">🍪 Visual Options:</p>
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={showDataGrabCookies}
+                    onChange={(e) => setShowDataGrabCookies(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <span className="text-sm">Show floating cookies during Data Grab</span>
+                </label>
               </div>
 
               {/* Player Deck */}
@@ -301,8 +319,12 @@ export function DebugUI() {
           </motion.div>
         )}
       </motion.div>
+      )}
     </AnimatePresence>
   );
+
+  // Render using portal to bypass overflow-hidden on parent containers
+  return typeof document !== 'undefined' ? createPortal(debugUI, document.body) : null;
 }
 
 interface CardSelectorProps {

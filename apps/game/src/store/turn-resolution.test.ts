@@ -186,9 +186,7 @@ describe('Turn Resolution', () => {
       const tracker2Value = useGameStore.getState().player.playedCard!.value;
 
       // Second tracker value is added to the first tracker's value
-      expect(useGameStore.getState().player.currentTurnValue).toBe(
-        tracker1Value + tracker2Value,
-      );
+      expect(useGameStore.getState().player.currentTurnValue).toBe(tracker1Value + tracker2Value);
       expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
       // Play third card (common-3) - adds to accumulated tracker values
@@ -289,8 +287,8 @@ describe('Turn Resolution', () => {
 
       useGameStore.getState().applyBlockerEffect('player', blockerCard);
 
-      // Should stay at 0, not go negative
-      expect(useGameStore.getState().cpu.currentTurnValue).toBe(0);
+      // Should go negative
+      expect(useGameStore.getState().cpu.currentTurnValue).toBe(-1);
     });
 
     it('should apply blocker effect even when Tracker Smacker is active', () => {
@@ -567,12 +565,23 @@ describe('Turn Resolution', () => {
           name: 'Patent Theft',
         };
 
-        // Give CPU a launch stack
+        // Give CPU a launch stack (both counter and actual card)
+        const cpuLaunchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 6,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+          imageUrl: 'test.webp',
+          isSpecial: false,
+        };
+
         useGameStore.setState({
           cpu: {
             ...useGameStore.getState().cpu,
             launchStackCount: 1,
           },
+          cpuLaunchStacks: [cpuLaunchStackCard], // Add actual card to collection
           pendingEffects: [
             {
               type: 'patent_theft',
@@ -585,11 +594,17 @@ describe('Turn Resolution', () => {
 
         const initialPlayerCount = useGameStore.getState().player.launchStackCount;
         const initialCpuCount = useGameStore.getState().cpu.launchStackCount;
+        const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
 
         useGameStore.getState().processPendingEffects('player');
 
-        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
+        // Player's Launch Stack counter should NOT increase (card goes to deck)
+        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount);
+        // CPU's Launch Stack counter should decrease
         expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
+        // Stolen card should be added to TOP of player's deck
+        expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 1);
+        expect(useGameStore.getState().player.deck[0]).toEqual(cpuLaunchStackCard);
       });
 
       it('should not steal when player loses', () => {
