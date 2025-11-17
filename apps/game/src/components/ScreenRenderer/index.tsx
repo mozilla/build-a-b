@@ -175,7 +175,7 @@ export const ScreenRenderer: FC = () => {
             key="screen-frame"
             backgroundSrc={backgroundImage}
             className="flex flex-col"
-            variant="scrollable"
+            variant="screen-renderer"
             overlay={
               <>
                 {/* Dark overlay for blurred backgrounds */}
