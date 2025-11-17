@@ -114,6 +114,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         layout
         className={cn('flex flex-col items-center gap-1 w-full outline-0', className)}
         data-deck-owner={owner}
+        data-deck={owner}
         transition={{
           layout: {
             duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,

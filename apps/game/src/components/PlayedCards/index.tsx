@@ -11,7 +11,7 @@ import { calculateRenderOrder, generateLandedKey, getBatchCardIndices } from './
 
 export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
-  const winner = useGameStore((state) => state.collecting?.winner ?? null);
+  const winner = useGameStore((state) => state.collecting?.primaryWinner ?? null);
 
   // Effect notification badge state
   const showEffectNotificationBadge = useGameStore((state) => state.showEffectNotificationBadge);
@@ -29,12 +29,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   const shouldCollect = winner !== null;
 
   // Custom hooks for measurements and batch tracking
-  const { playAreaRef, deckOffset, collectionOffset } = useDeckMeasurements(
-    owner,
-    isSwapped,
-    cards.length,
-    winner,
-  );
+  const { playAreaRef, deckOffset, playerCollectionOffset, cpuCollectionOffset } =
+    useDeckMeasurements(owner, isSwapped, cards.length, winner);
 
   const { batchIdRef, cardBatchMapRef, elementRefs, settledZRef, landedMap, setLandedMap } =
     useBatchTracking(cards);
@@ -117,8 +113,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
           playIndex={playIndex}
           deckOffset={deckOffset}
           shouldCollect={shouldCollect}
-          collectionOffset={collectionOffset}
-          isSwapped={isSwapped}
+          playerCollectionOffset={playerCollectionOffset}
+          cpuCollectionOffset={cpuCollectionOffset}
           winner={winner}
           isCPU={isCPU}
           owner={owner}
