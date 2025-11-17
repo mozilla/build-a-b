@@ -64,7 +64,7 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       </div>
 
       {/* Powered by Firefox - in document flow at bottom with padding */}
-      <div className="relative z-10 flex justify-center pb-[clamp(1rem,3.79dvh,4rem)] pt-4">
+      <div className="relative z-10 flex justify-center pb-[3.79dvh] pt-4">
         <PoweredByFirefox />
       </div>
     </motion.div>
