@@ -81,16 +81,16 @@ export const DataGrabResultsModal: FC = () => {
         wrapper: 'z-[9999]',
         backdrop: 'z-[9998]',
         base: 'bg-[rgba(0,0,0,0.9)] z-[9999]',
-        body: 'py-8 px-6',
+        body: 'py-8 px-0',
       }}
     >
-      <ModalContent className="relative h-[100dvh] w-[100vw] flex items-center justify-center">
-        <Frame>
+      <ModalContent className="relative h-dvh w-screen flex items-center justify-center">
+        <Frame className="overflow-y-auto">
           {/* Custom Close Button */}
           <Button
             isIconOnly
             onPress={handleClose}
-            className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex"
+            className="absolute top-4 right-4 z-65 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex"
             aria-label="Close"
           >
             <img src={CloseIcon} alt="Close" />
@@ -106,7 +106,7 @@ export const DataGrabResultsModal: FC = () => {
             </Text>
 
             {/* Player/Opponent Tabs */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 px-6">
               <button
                 onClick={() => setViewMode('player')}
                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
@@ -138,7 +138,7 @@ export const DataGrabResultsModal: FC = () => {
                 faceDownCardIds={faceDownCardIds}
               />
             ) : (
-              <div className="h-[25rem] flex flex-col items-center justify-center">
+              <div className="h-[25rem] flex flex-col items-center justify-center px-6">
                 <Text variant="title-2" className="text-common-ash">
                   Nada.Zip.Zilch
                 </Text>
@@ -153,7 +153,7 @@ export const DataGrabResultsModal: FC = () => {
             {/* Collect Cards Button */}
             <Button
               onPress={handleCollectCards}
-              className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center"
+              className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center px-6"
             >
               {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
             </Button>
