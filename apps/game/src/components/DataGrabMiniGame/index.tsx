@@ -6,10 +6,10 @@
 
 import { DATA_GRAB_ASSETS, DATA_GRAB_CONFIG } from '@/config/data-grab-config';
 import { useGameStore } from '@/store';
-import { type FC, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FallingCard } from './FallingCard';
+import { type FC, useMemo } from 'react';
 import { DataCookie } from './DataCookie';
+import { FallingCard } from './FallingCard';
 
 // Board dimensions (in rem)
 const BOARD_WIDTH_REM = 25; // 25rem

@@ -217,7 +217,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       }}
       key={landedKey}
       className={cn(
-        'absolute backface-hidden',
+        'absolute backface-hidden size-full',
         rotationClass,
         glowClasses,
         isTopCard && shouldShowBadge && 'cursor-pointer',
@@ -258,6 +258,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       onClick={handleCardClick}
     >
       <Card
+        variant="animated-card"
         cardFrontSrc={cardImage}
         state={
           shouldCollect

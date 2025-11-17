@@ -11,7 +11,7 @@ import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { yourMissionMicrocopy } from './microcopy';
 
-export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire } = useGameStore();
 
   const handleContinue = () => {
@@ -24,6 +24,9 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) 
 
   return (
     <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
+      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
+        {children}
+      </header>
       {/* Main content container */}
       <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-5">
         {/* Billionaire Avatar in Porthole - centered at top */}

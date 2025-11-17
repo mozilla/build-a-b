@@ -182,12 +182,12 @@ export function Game() {
   return (
     <div
       className={cn(
-        'h-[100vh] w-[100vw] bg-black flex items-center justify-center',
+        'h-[100dvh] w-[100vw] bg-black flex items-center justify-center',
         essentialAssetsReady ? 'opacity-100' : 'opacity-0 pointer-events-none',
       )}
     >
       <Board bgSrc={backgroundImage}>
-        <div className="grid max-w-[25rem] max-h-[54rem] grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-3 gap-x-2 h-full">
+        <div className="w-full mx-auto grid grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-[30.4%_1fr_26.6%] gap-x-[24px] framed:gap-x-6 h-full items-center">
           <PlayerDeck
             deckLength={cpuTotalCards}
             handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
@@ -200,15 +200,15 @@ export function Game() {
           />
 
           {/* Play Area - Center of board */}
-          <div className="flex flex-col items-center justify-around flex-1 relative mb-4 row-3 col-span-full gap-4">
+          <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[18px] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
             {/* CPU Played Card Area */}
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center gap-6 col-2 self-end">
               {/* CPU Cards */}
               <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" />
             </div>
 
             {/* Player Played Card Area */}
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center gap-6 col-2 self-start">
               {/* Player Cards */}
               <PlayedCards cards={player.playedCardsInHand} owner="player" />
             </div>

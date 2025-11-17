@@ -1,6 +1,7 @@
+import { motion } from 'framer-motion';
 import type { FC } from 'react';
-import { useGameStore } from '../../store';
 import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
+import { useGameStore } from '../../store';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
 import { Tooltip } from '../Tooltip';
 import { AnimatedCard } from './AnimatedCard';
@@ -136,20 +137,26 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
   return (
     <div
       ref={playAreaRef}
-      className="h-[10.9375rem] w-[8.125rem] max-w-[125px] max-h-[175px] flex items-center justify-center relative"
+      className="w-full aspect-130/175 flex items-center justify-center relative"
     >
       {renderedCards}
 
       {/* Effect notification badge - positioned over top card (always on the right side) */}
       {shouldShowBadge && (
-        <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-[50] animate-badge-scale-in">
+        <motion.div
+          initial={{ scale: 0, opacity: 0, x: '100%', y: '-66%' }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="absolute top-1/2 -right-3 cursor-pointer z-[50] "
+          onClick={handleBadgeClick}
+        >
           <Tooltip
             content={effectTooltipConfig.message}
             placement="bottom"
             arrowDirection="left"
             isOpen={!showEffectNotificationModal && shouldShowEffectTooltip ? true : undefined}
             classNames={{
-              base: ['translate-x-1', 'translate-y-[2rem]'],
+              base: ['translate-x-1'],
               content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
             }}
           >
@@ -157,7 +164,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
               <EffectNotificationBadge accumulatedEffects={ownerEffects} showProgressBar={false} />
             </div>
           </Tooltip>
-        </div>
+        </motion.div>
       )}
     </div>
   );

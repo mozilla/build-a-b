@@ -7,7 +7,7 @@ import type { ButtonProps } from './types';
 const baseTypography = variantStyles['body-large-semibold'];
 
 const baseClasses =
-  'cursor-pointer flex items-center justify-center px-6 py-3 rounded-full transition-colors';
+  'cursor-pointer flex items-center justify-center px-6 py-3 rounded-full transition-colors h-12';
 
 const variantClasses = {
   primary:
@@ -15,6 +15,11 @@ const variantClasses = {
   secondary:
     'bg-transparent border-2 border-common-ash text-common-ash hover:bg-[rgba(248,246,244,0.1)]',
 };
+
+const variantSizes = {
+  primary: 'lg',
+  secondary: 'lg',
+} as const;
 
 export const Button: FC<ButtonProps> = ({
   children,
@@ -36,6 +41,7 @@ export const Button: FC<ButtonProps> = ({
         disabledClasses,
         className,
       )}
+      size={props.size || variantSizes[variant]}
     >
       {children}
     </HeroButton>
