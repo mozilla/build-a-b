@@ -6,24 +6,24 @@ type UseMediaQueryOptions = {
 
 export const QUERIES = {
   /** Width-constrained by height - matches Frame's .39*100dvh width calculation */
-  framedX: '(min-width: 450px) and (min-aspect-ratio: 390/844)',
+  framedX: '(min-width: 28.125rem) and (min-aspect-ratio: 390/844)',
 
   /** Height-constrained by width - matches Frame's 100vw width with aspect ratio cap */
-  framedY: '(min-width: 450px) and (min-height: 866px) and (max-aspect-ratio: 390/843)',
+  framedY: '(min-width: 28.125rem) and (min-height: 54.125rem) and (max-aspect-ratio: 390/843)',
 
   /** Either framed-x OR framed-y conditions */
   framed:
-    '(min-width: 450px) and (min-aspect-ratio: 390/844), (min-width: 450px) and (min-height: 866px) and (max-aspect-ratio: 390/843)',
+    '(min-width: 28.125rem) and (min-aspect-ratio: 390/844), (min-width: 28.125rem) and (min-height: 54.125rem) and (max-aspect-ratio: 390/843)',
 
   /** Neither framed-x nor framed-y - full viewport mode */
   frameless:
-    '(max-width: 449.98px), ((min-width: 450px) and (max-aspect-ratio: 389/844) and (not ((min-height: 866px) and (max-aspect-ratio: 390/843))))',
+    '(max-width: 28.12375rem), ((min-width: 28.125rem) and (max-aspect-ratio: 389/844) and (not ((min-height: 54.125rem) and (max-aspect-ratio: 390/843))))',
 
   /** Landscape orientation or wider viewports */
-  landscape: '(orientation: landscape), (min-width: 1024px)',
+  landscape: '(orientation: landscape), (min-width: 64rem)',
 
   /** Portrait orientation on smaller viewports */
-  portrait: '(orientation: portrait) and (max-width: 1023.98px)',
+  portrait: '(orientation: portrait) and (max-width: 63.99875rem)',
 } as const;
 
 export function useMediaQuery(

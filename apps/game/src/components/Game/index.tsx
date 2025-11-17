@@ -187,7 +187,7 @@ export function Game() {
       )}
     >
       <Board bgSrc={backgroundImage}>
-        <div className="w-full mx-auto grid grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-[30.4%_1fr_26.6%] gap-x-[24px] framed:gap-x-6 h-full items-center">
+        <div className="w-full mx-auto grid grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-[30.4%_1fr_26.6%] gap-x-[1.5rem] framed:gap-x-6 h-full items-center">
           <PlayerDeck
             deckLength={cpuTotalCards}
             handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
@@ -200,7 +200,7 @@ export function Game() {
           />
 
           {/* Play Area - Center of board */}
-          <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[18px] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
+          <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[1.125rem] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6 col-2 self-end">
               {/* CPU Cards */}

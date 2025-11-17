@@ -153,7 +153,7 @@ export function DebugUI() {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             className="bg-gray-900 text-white rounded-t-lg md:rounded-lg shadow-2xl 
                        fixed bottom-0 left-0 right-0 h-[80dvh] z-[10000]
-                       md:relative md:w-[600px] md:max-h-[80dvh] md:bottom-auto md:left-auto md:right-auto
+                       md:relative md:w-[37.5rem] md:max-h-[80dvh] md:bottom-auto md:left-auto md:right-auto
                        overflow-hidden flex flex-col"
           >
             {/* Header */}
