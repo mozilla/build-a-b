@@ -11,6 +11,28 @@ import type {
 } from '@/types';
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
 
+/**
+ * Card Distribution - Defines where a card should animate to and from
+ * Used by the enhanced collection system to support both board-to-deck and deck-to-deck animations
+ */
+export interface CardDistribution {
+  card: Card;
+  destination: PlayerType; // Which player's deck to animate to
+  source?: {
+    type: 'board' | 'deck'; // Where the card is coming from
+    owner?: PlayerType; // Which player's deck (required for deck-to-deck animations)
+  };
+}
+
+/**
+ * Collecting State - Enhanced collection system that supports per-card destinations
+ * Replaces the old { winner, cards } format with explicit per-card routing
+ */
+export interface CollectingState {
+  distributions: CardDistribution[]; // Each card has its own destination and source
+  primaryWinner?: PlayerType; // Who won the turn (for win effect animation)
+}
+
 export type GameStore = {
   // Player State
   player: Player;
@@ -28,10 +50,7 @@ export type GameStore = {
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
   showingWinEffect: PlayerType | null; // Player currently showing win celebration (before collection)
-  collecting: {
-    winner: PlayerType | null;
-    cards: Card[];
-  } | null;
+  collecting: CollectingState | null; // Enhanced collection system with per-card destinations
 
   // Launch Stack Collections - Cards removed from playable decks when collected
   // These count towards player's total cards but cannot be played
@@ -84,6 +103,9 @@ export type GameStore = {
   dataGrabCards: PlayedCardState[]; // Cards currently falling in mini-game (preserves face-up/down state)
   dataGrabCollectedByPlayer: PlayedCardState[]; // Cards player has collected
   dataGrabCollectedByCPU: PlayedCardState[]; // Cards CPU has collected
+  dataGrabDistributions: CardDistribution[]; // Card distributions for animation after modal closes
+  dataGrabPlayerLaunchStacks: PlayedCardState[]; // Launch Stacks collected by player (processed after modal)
+  dataGrabCPULaunchStacks: PlayedCardState[]; // Launch Stacks collected by CPU (processed after modal)
   showDataGrabTakeover: boolean; // Show intro animation and countdown
   dataGrabGameActive: boolean; // True during active gameplay (~1.5 seconds)
   showDataGrabResults: boolean; // Show results in hand viewer
@@ -156,7 +178,8 @@ export type GameStore = {
     cpuCustomOrder?: CardTypeId[],
   ) => void;
   playCard: (playerId: PlayerType) => void;
-  collectCards: (winnerId: PlayerType, cards: Card[]) => void;
+  collectCards: (winnerId: PlayerType, cards: Card[]) => void; // Backward compatibility wrapper
+  collectCardsDistributed: (distributions: CardDistribution[], primaryWinner?: PlayerType, visualOnly?: boolean) => void; // New enhanced collection
   addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
   stealCards: (from: PlayerType, to: PlayerType, count: number) => void;

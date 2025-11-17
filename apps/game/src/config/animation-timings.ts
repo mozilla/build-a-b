@@ -36,6 +36,7 @@ export const ANIMATION_DURATIONS = {
   CARD_SETTLE_DELAY: 1000, // Delay after card lands before effect overlay triggers (matches CARD_PLAY_FROM_DECK + 200ms pause)
   FORCED_EMPATHY_SWAP_DURATION: 1000, // Deck swap animation duration
   FORCED_EMPATHY_VIDEO_DURATION: 5000, // How long the video overlay stays visible (total effect time)
+  FORCED_EMPATHY_SETTLE_DELAY: 1000, // Delay after deck swap completes before continuing game flow (prevents overlap with subsequent animations)
   DATA_WAR_ANIMATION_DURATION: 2000, // Data war character animation duration
   DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 3000,
 

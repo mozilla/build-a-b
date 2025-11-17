@@ -1,6 +1,6 @@
 import { SpecialCardAnimation, Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
-import { SUPABASE_BASE_URL } from '@/config/special-effect-animations';
+import { SPECIAL_EFFECT_ANIMATIONS, getAnimationVideoSrc } from '@/config/special-effect-animations';
 import { useGameStore, usePlayer } from '@/store';
 import type { PlayerType } from '@/types';
 import { cn } from '@/utils/cn';
@@ -34,11 +34,6 @@ const gridLayoutMap: Record<PlayerType, Containers> = {
     deck: 'row-2',
     turnValue: 'row-2 col-3 self-center',
   },
-};
-
-const launchStackAnimations: Record<PlayerType, string> = {
-  player: `${SUPABASE_BASE_URL}won_launchstack_player.webm`,
-  cpu: `${SUPABASE_BASE_URL}won_launchstack_cpu.webm`,
 };
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
@@ -167,12 +162,19 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     };
   }, [currentPlayer.launchStackCount]);
 
+  // Get Launch Stack Won animation from config
+  const launchStackWonAnimation = SPECIAL_EFFECT_ANIMATIONS.launch_stack_won;
+  const animationVideoSrc = getAnimationVideoSrc(
+    launchStackWonAnimation,
+    currentPlayer.id === 'player'
+  );
+
   return (
     <>
       <SpecialCardAnimation
         removeBlur
         show={showAnimation}
-        videoSrc={launchStackAnimations[currentPlayer.id]}
+        videoSrc={animationVideoSrc}
         className="z-1!"
       />
       {/** Avatar with Launch Stack Indicators */}
