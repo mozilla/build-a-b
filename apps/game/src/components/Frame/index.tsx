@@ -11,7 +11,7 @@ export interface FrameProps {
   className?: string;
   style?: CSSProperties;
   overlay?: React.ReactNode;
-  variant?: 'scrollable';
+  variant?: 'scrollable' | 'screen-renderer';
 }
 
 export const Frame: FC<PropsWithChildren<FrameProps>> = ({
