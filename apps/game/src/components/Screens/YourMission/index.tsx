@@ -24,7 +24,7 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
 
   return (
     <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
-      <header className="fixed top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto">
+      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
         {children}
       </header>
       {/* Main content container */}

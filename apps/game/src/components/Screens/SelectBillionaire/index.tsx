@@ -19,7 +19,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
   drawerOpen,
   setDrawerOpen,
   setDrawerNode,
-  isMobile,
+  isFramed,
   ...props
 }) => {
   const { selectedBillionaire, selectBillionaire } = useGameStore();
@@ -56,7 +56,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
   const ConfirmationDrawer = useMemo(
     () => (
       <Drawer
-        className="max-w-[25rem] mx-auto"
+        className="framed::max-w-[25rem] mx-auto"
         isOpen={drawerOpen}
         billionaire={selectedBillionaireData}
         onClose={handleDrawerClose}
@@ -72,7 +72,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
 
   return (
     <motion.div className={cn(className)} {...props}>
-      <header className="fixed top-0 landscape:relative w-full max-w-[25rem] mx-auto">
+      <header className="absolute top-0 landscape:relative w-full max-w-[25rem] mx-auto z-20">
         {children}
       </header>
       {/* Main content container */}
@@ -101,7 +101,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
           ))}
         </div>
       </div>
-      {!isMobile && drawerOpen && <>{ConfirmationDrawer}</>}
+      {!isFramed && drawerOpen && <>{ConfirmationDrawer}</>}
     </motion.div>
   );
 };

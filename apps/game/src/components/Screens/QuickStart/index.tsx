@@ -28,7 +28,7 @@ export const QuickStart: FC<
     >
       {/* Main content container - scrollable */}
       <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto">
-        <header className="fixed top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto">
+        <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
           {children}
         </header>
         {/* Title Section */}

@@ -11,7 +11,7 @@ export interface FrameProps {
   className?: string;
   style?: CSSProperties;
   overlay?: React.ReactNode;
-  variant?: 'screen-renderer';
+  variant?: 'scrollable';
 }
 
 export const Frame: FC<PropsWithChildren<FrameProps>> = ({
@@ -27,7 +27,7 @@ export const Frame: FC<PropsWithChildren<FrameProps>> = ({
   return (
     <div
       className={cn(
-        'h-[100dvh] w-[100vw] sm:max-w-[25rem] sm:max-h-[54rem] bg-cover bg-center bg-no-repeat relative portrait:min-frame-height:rounded-[12px] landscape-frame-height:rounded-xl overflow-hidden grid',
+        'framed-x:rounded-xl size-full framed-y:max-h-[calc(100vw_*_(844/390))] framed-x:w-[calc(.39*100dvh)] framed-x:max-h-[calc(.844*100dvh)] bg-cover bg-center bg-no-repeat relative overflow-hidden grid',
       )}
       style={{
         ...style,
@@ -36,8 +36,8 @@ export const Frame: FC<PropsWithChildren<FrameProps>> = ({
     >
       <div
         className={cn(
-          'size-full max-w-[25rem] max-h-[54rem] overscroll-none place-self-center',
-          variant === 'screen-renderer' && 'overflow-auto',
+          'size-full overscroll-none place-self-center min-w-0 min-h-0',
+          variant === 'scrollable' && 'overflow-auto',
         )}
       >
         <div className={cn('relative size-full', className)}>

@@ -12,11 +12,12 @@ import type { LaunchStackIndicatorProps } from './types';
 const getTransformClasses = (position: number) => {
   switch (position) {
     case 0:
-      return 'rotate-[-46deg] translate-x-[-24px] translate-y-[20.8px] sm:translate-x-[-1.5rem] sm:translate-y-[1.3rem]';
+      // return 'rotate-[-46deg] translate-x-[-1.5rem] translate-y-[1.3rem]';
+      return 'translate-y-1/4 rotate-[-25deg]';
     case 1:
-      return 'rotate-[-25deg] translate-x-[-25.6px] translate-y-[8px] sm:translate-x-[-1.6rem] sm:translate-y-[0.5rem]';
+      return '';
     case 2:
-      return 'rotate-[-5deg] translate-x-[-24px] translate-y-[1.6px] sm:translate-x-[-1.5rem] sm:translate-y-[0.1rem]';
+      return 'rotate-[25deg] translate-y-1/4';
     default:
       return '';
   }
@@ -28,14 +29,19 @@ export const LaunchStackIndicator: FC<LaunchStackIndicatorProps> = ({
   className = '',
 }) => {
   return (
-    <div className={cn('flex justify-center', className)}>
+    <div
+      className={cn(
+        'flex justify-between rotate-[-17.5deg] -translate-x-1/4 translate-y-[10%] mx-[12.5%]',
+        className,
+      )}
+    >
       {Array.from({ length: maxStacks }).map((_, index) => {
         const isFilled = index < launchStackCount;
 
         return (
           <div
             key={index}
-            className={cn('aspect-square w-[20px] sm:w-5', getTransformClasses(index))}
+            className={cn('aspect-square flex-[1_1_19%]', getTransformClasses(index))}
           >
             <AnimatePresence mode="wait">
               {isFilled ? (

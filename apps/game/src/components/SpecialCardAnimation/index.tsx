@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { cn } from '@/utils/cn';
+import { useEffect, useRef } from 'react';
 import type { SpecialCardAnimationProps } from './types';
 
 /**
@@ -31,7 +32,12 @@ export const SpecialCardAnimation = ({
   if (!show) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}>
+    <div
+      className={cn(
+        'fixed inset-0 z-50 flex items-center justify-center framed-x:rounded-xl',
+        className,
+      )}
+    >
       {/* Board-constrained container matching game board dimensions */}
       <div
         className={`relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 ${

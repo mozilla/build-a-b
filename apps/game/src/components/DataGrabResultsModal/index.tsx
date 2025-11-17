@@ -3,14 +3,14 @@
  * Shows cards collected by Player vs Opponent in a carousel format
  */
 
-import { useState, useEffect, type FC } from 'react';
-import { Modal, ModalBody, ModalContent, Button } from '@heroui/react';
-import { useGameStore } from '../../store';
-import { Text } from '@/components';
+import { Frame, Text } from '@/components';
+import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
+import { useEffect, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
-import { CardCarousel } from '../CardCarousel';
-import type { Card } from '../../types';
 import { GameMachineContext } from '../../providers/GameProvider';
+import { useGameStore } from '../../store';
+import type { Card } from '../../types';
+import { CardCarousel } from '../CardCarousel';
 
 type ViewMode = 'player' | 'opponent';
 
@@ -84,77 +84,81 @@ export const DataGrabResultsModal: FC = () => {
         body: 'py-8 px-6',
       }}
     >
-      <ModalContent className="relative">
-        {/* Custom Close Button */}
-        <Button
-          isIconOnly
-          onPress={handleClose}
-          className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          aria-label="Close"
-        >
-          <img src={CloseIcon} alt="Close" />
-        </Button>
-
-        <ModalBody className="flex flex-col items-center justify-center gap-6">
-          {/* Title */}
-          <Text variant="title-2" className="text-white">
-            Data Grabbed!
-          </Text>
-          <Text variant="body-large" className="text-white">
-            Cards added to each deck.
-          </Text>
-
-          {/* Player/Opponent Tabs */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => setViewMode('player')}
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
-                viewMode === 'player'
-                  ? 'bg-accent text-black'
-                  : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
-              }`}
-            >
-              Your Cards
-            </button>
-            <button
-              onClick={() => setViewMode('opponent')}
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
-                viewMode === 'opponent'
-                  ? 'bg-accent text-black'
-                  : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
-              }`}
-            >
-              Opponent's Cards
-            </button>
-          </div>
-
-          {/* Card Carousel */}
-          {currentCards.length > 0 ? (
-            <CardCarousel
-              cards={currentCards.map((pcs) => pcs.card)}
-              selectedCard={selectedCard}
-              onCardSelect={handleCardSelect}
-              faceDownCardIds={faceDownCardIds}
-            />
-          ) : (
-            <div className="h-[400px] flex flex-col items-center justify-center">
-              <Text variant="title-2" className="text-common-ash">
-                Nada.Zip.Zilch
-              </Text>
-              <Text variant="body-large" className="text-common-ash">
-                {viewMode === 'player' ? 'You didn’t collect any data.' : 'No data left for them.'}
-              </Text>
-            </div>
-          )}
-
-          {/* Collect Cards Button */}
+      <ModalContent className="relative h-[100dvh] w-[100vw] flex items-center justify-center">
+        <Frame>
+          {/* Custom Close Button */}
           <Button
-            onPress={handleCollectCards}
-            className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center"
+            isIconOnly
+            onPress={handleClose}
+            className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex"
+            aria-label="Close"
           >
-            {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
+            <img src={CloseIcon} alt="Close" />
           </Button>
-        </ModalBody>
+
+          <ModalBody className="flex flex-col items-center justify-center gap-6">
+            {/* Title */}
+            <Text variant="title-2" className="text-white">
+              Data Grabbed!
+            </Text>
+            <Text variant="body-large" className="text-white">
+              Cards added to each deck.
+            </Text>
+
+            {/* Player/Opponent Tabs */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setViewMode('player')}
+                className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
+                  viewMode === 'player'
+                    ? 'bg-accent text-black'
+                    : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
+                }`}
+              >
+                Your Cards
+              </button>
+              <button
+                onClick={() => setViewMode('opponent')}
+                className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
+                  viewMode === 'opponent'
+                    ? 'bg-accent text-black'
+                    : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
+                }`}
+              >
+                Opponent's Cards
+              </button>
+            </div>
+
+            {/* Card Carousel */}
+            {currentCards.length > 0 ? (
+              <CardCarousel
+                cards={currentCards.map((pcs) => pcs.card)}
+                selectedCard={selectedCard}
+                onCardSelect={handleCardSelect}
+                faceDownCardIds={faceDownCardIds}
+              />
+            ) : (
+              <div className="h-[400px] flex flex-col items-center justify-center">
+                <Text variant="title-2" className="text-common-ash">
+                  Nada.Zip.Zilch
+                </Text>
+                <Text variant="body-large" className="text-common-ash">
+                  {viewMode === 'player'
+                    ? 'You didn’t collect any data.'
+                    : 'No data left for them.'}
+                </Text>
+              </div>
+            )}
+
+            {/* Collect Cards Button */}
+            <Button
+              onPress={handleCollectCards}
+              className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center"
+            >
+              {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
+            </Button>
+          </ModalBody>
+        </Frame>
       </ModalContent>
     </Modal>
   );

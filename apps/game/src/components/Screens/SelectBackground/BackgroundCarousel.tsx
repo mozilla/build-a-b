@@ -1,80 +1,90 @@
-import { Carousel } from '@/components/Carousel';
 import { useGameStore } from '@/store';
-import { type FC, useEffect, useRef } from 'react';
+import { type FC, useMemo } from 'react';
+import { A11y, Keyboard } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { SwiperOptions } from 'swiper/types';
 import { BackgroundCard } from './BackgroundCard';
 import { BACKGROUNDS } from './backgrounds';
+
+import { QUERIES, useMediaQuery } from '@/hooks/use-media-query';
+import { cn } from '@/utils/cn';
+import 'swiper/css';
 
 interface BackgroundCarouselProps {
   onSelect?: (backgroundId: string) => void;
   className?: string;
+  variant?: 'menu';
 }
 
-export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({ onSelect, className }) => {
-  const { selectedBackground, selectBackground } = useGameStore();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+/**
+ * Convert rem to pixels based on current scaling context
+ */
+const remToPx = (rem: number): number => {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+};
 
-  // Auto-scroll to selected background on mount
-  useEffect(() => {
-    if (scrollContainerRef.current && selectedBackground) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === selectedBackground);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          // Center the selected card
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }
-  }, [selectedBackground]);
+export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
+  onSelect,
+  variant,
+  className,
+}) => {
+  const { selectedBackground, selectBackground } = useGameStore();
+  const isFramedX = useMediaQuery(QUERIES.framedX);
+  const isFramedY = useMediaQuery(QUERIES.framedY);
+
+  const swiperOptions: Partial<SwiperOptions> = useMemo(
+    () => ({
+      modules: [A11y, Keyboard],
+      centeredSlides: true,
+      // Convert rem values to pixels based on current scaling
+      // 3rem (48px at base) for normal, 2.25rem (36px at base) for menu
+      spaceBetween: remToPx(variant !== 'menu' ? 3 : 2.25),
+      slidesPerView: 'auto',
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true,
+      },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [variant, isFramedX, isFramedY],
+  );
 
   const handleBackgroundSelect = (backgroundId: string) => {
     selectBackground(backgroundId);
     onSelect?.(backgroundId);
-
-    // Scroll to center the selected background
-    if (scrollContainerRef.current) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === backgroundId);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }
   };
+
+  // Get initial slide index based on selectedBackground
+  const initialSlide = selectedBackground
+    ? BACKGROUNDS.findIndex((bg) => bg.id === selectedBackground)
+    : 0;
 
   return (
     <div className={className}>
-      <Carousel
-        containerRef={scrollContainerRef}
-        scrollerAttributes={{ className: 'px-[calc(50%-4.375rem)] gap-12 py-16' }}
+      <Swiper
+        {...swiperOptions}
+        initialSlide={Math.max(0, initialSlide)}
+        onSlideChange={(swiper) => {
+          const currentBackground = BACKGROUNDS[swiper.activeIndex];
+          if (currentBackground) handleBackgroundSelect(currentBackground.id);
+        }}
+        className="w-full"
       >
         {BACKGROUNDS.map((background) => (
-          <BackgroundCard
+          <SwiperSlide
             key={background.id}
-            imageSrc={background.imageSrc}
-            name={background.name}
-            isSelected={selectedBackground === background.id}
-            onPress={() => handleBackgroundSelect(background.id)}
-          />
+            className={cn(variant !== 'menu' ? '!w-[8.75rem] py-18' : '!w-[6.25rem] py-12')}
+          >
+            <BackgroundCard
+              className={cn(variant === 'menu' && 'w-[6.25rem] h-[13.75rem]')}
+              imageSrc={background.imageSrc}
+              name={background.name}
+              isSelected={selectedBackground === background.id}
+              onPress={() => handleBackgroundSelect(background.id)}
+            />
+          </SwiperSlide>
         ))}
-      </Carousel>
+      </Swiper>
     </div>
   );
 };
