@@ -1,21 +1,35 @@
 /* ============================= */
 /* Responsive Typography Setup   */
 /* ============================= */
-
 /* 
-  Define custom properties for font sizes based on viewport width.
-  4.10256410256vw: 16px / 390px * 100vw for portrait
-  1.11111111111vw: 16px / 1440px * 100vw for landscape
+  Figma viewport: 390px × 844px
+  Base font size: 16px at 390px width
+  
+  Scaling strategy:
+  - frameless: fluid scaling based on viewport width (100vw)
+  - framed-x: fluid scaling based on viewport height (matches Frame component's .39*100dvh width)
+  - framed-y: fluid scaling based on viewport width (matches Frame's component's 100vw width)
 */
 :root {
-  --font-size-portrait: 4.10256410256vw; /* 16px / 390px * 100vw */
-  --font-size-landscape: 1.11111111111vw; /* 16px / 1440px * 100vw */
+  /* Frameless: Scale based on viewport width relative to 390px design */
+  --font-size-frameless: calc(16px * (100vw / 390px));
+
+  /* Framed-x: Width-constrained by height - scale based on .39*100dvh */
+  --font-size-framed-x: calc(16px * (0.39 * 100dvh / 390px));
+
+  /* Framed-y: Height-constrained by width - scale based on 100vw */
+  --font-size-framed-y: calc(16px * (100vw / 390px));
 }
 
 html {
-  font-size: var(--font-size-portrait);
-  @variant landscape {
-    font-size: var(--font-size-landscape);
+  font-size: var(--font-size-frameless);
+
+  @variant framed-x {
+    font-size: var(--font-size-framed-x);
+  }
+
+  @variant framed-y {
+    font-size: var(--font-size-framed-y);
   }
 }
 

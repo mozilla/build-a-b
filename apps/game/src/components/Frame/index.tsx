@@ -11,6 +11,7 @@ export interface FrameProps {
   className?: string;
   style?: CSSProperties;
   overlay?: React.ReactNode;
+  variant?: 'scrollable';
 }
 
 export const Frame: FC<PropsWithChildren<FrameProps>> = ({
@@ -19,22 +20,31 @@ export const Frame: FC<PropsWithChildren<FrameProps>> = ({
   className,
   style,
   overlay,
+  variant,
 }) => {
   useBlurredBackground(backgroundSrc);
 
   return (
     <div
       className={cn(
-        'h-[100dvh] w-[100vw] max-w-[25rem] max-h-[54rem] bg-cover bg-center bg-no-repeat relative lg:rounded-xl overflow-hidden overflow-auto',
-        className,
+        'framed-x:rounded-xl size-full framed-y:max-h-[calc(100vw_*_(844/390))] framed-x:w-[calc(.39*100dvh)] framed-x:max-h-[calc(.844*100dvh)] bg-cover bg-center bg-no-repeat relative overflow-hidden grid',
       )}
       style={{
         ...style,
         backgroundImage: backgroundSrc ? `url(${backgroundSrc})` : undefined,
       }}
     >
-      {overlay}
-      {children}
+      <div
+        className={cn(
+          'size-full overscroll-none place-self-center min-w-0 min-h-0',
+          variant === 'scrollable' && 'overflow-auto',
+        )}
+      >
+        <div className={cn('relative size-full', className)}>
+          {overlay}
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
