@@ -121,9 +121,9 @@ export function getGlowClasses(type: GlowType): string {
  */
 export function getGlowStyle(config: GlowConfig): React.CSSProperties {
   const intensityMap = {
-    low: '10px',
-    medium: '20px',
-    high: '30px',
+    low: '0.625rem',
+    medium: '1.25rem',
+    high: '1.875rem',
   };
 
   const blur = intensityMap[config.intensity];

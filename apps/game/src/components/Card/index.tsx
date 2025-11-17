@@ -39,7 +39,7 @@ export const Card: FC<CardProps> = ({
         variant !== 'deck-pile'
           ? isFullSize
             ? 'w-full aspect-125/175'
-            : 'w-[86px] aspect-86/120'
+            : 'w-[5.375rem] aspect-86/120'
           : '',
         variant === 'deck-pile' && 'aspect-[86/120] w-[87.75%]',
         variant === 'animated-card' && 'w-full h-full',
@@ -55,7 +55,7 @@ export const Card: FC<CardProps> = ({
       <motion.div
         className={cn(
           'relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden',
-          state === 'flipped' && !isFullSize && 'sm:max-w-[125px] sm:max-h-[175px]',
+          state === 'flipped' && !isFullSize && 'sm:max-w-[7.8125rem] sm:max-h-[10.9375rem]',
         )}
         animate={{
           rotateY: isFrontVisible ? 180 : 0,

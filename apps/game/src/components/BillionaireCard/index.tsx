@@ -25,7 +25,7 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
     >
       <div
         className={cn(
-          'w-[114px] aspect-square sm:w-[7.125rem] rounded-full overflow-hidden border-2 border-transparent',
+          'w-[7.125rem] aspect-square rounded-full overflow-hidden border-2 border-transparent',
           isSelected && 'border-accent',
         )}
       >

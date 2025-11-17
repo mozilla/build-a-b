@@ -15,7 +15,7 @@ export const PoweredByFirefox: FC<PoweredByFirefoxProps> = ({ className = '' }) 
         Powered by
       </Text>
       <div className="h-8 w-24">
-        <Icon name="logoWordmark" />
+        <Icon name="logoWordmark" className="w-[5.9375rem] h-[2.0625rem]" />
       </div>
     </a>
   );
