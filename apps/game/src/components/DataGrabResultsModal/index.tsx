@@ -138,13 +138,13 @@ export const DataGrabResultsModal: FC = () => {
                 faceDownCardIds={faceDownCardIds}
               />
             ) : (
-              <div className="h-[400px] flex flex-col items-center justify-center">
+              <div className="h-[25rem] flex flex-col items-center justify-center">
                 <Text variant="title-2" className="text-common-ash">
                   Nada.Zip.Zilch
                 </Text>
                 <Text variant="body-large" className="text-common-ash">
                   {viewMode === 'player'
-                    ? 'You didn’t collect any data.'
+                    ? "You didn't collect any data."
                     : 'No data left for them.'}
                 </Text>
               </div>

@@ -3,7 +3,7 @@
  * Wraps HeroUI Tooltip with custom default styling
  */
 
-import { Tooltip as HeroUITooltip } from '@heroui/tooltip';
+import { Tooltip as HeroUITooltip } from '@heroui/react';
 import { type FC } from 'react';
 import type { TooltipProps } from './types';
 
@@ -78,7 +78,7 @@ export const Tooltip: FC<TooltipProps> = ({
       'rounded-[0.625rem]',
       'border-2 border-zinc-400',
       'bg-zinc-600/30',
-      'backdrop-blur-[2px]',
+      'backdrop-blur-[0.125rem]',
     ],
   };
 
