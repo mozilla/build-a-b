@@ -76,7 +76,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
         {children}
       </header>
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-start gap-y-[clamp(16px,-191.48925px_+_25.5319vh,40px)] px-9 py-8 pt-[clamp(32px,-223.3px_+_34.04vh,64px)] max-w-[25rem] mx-auto h-full">
+      <div className="w-full relative z-10 flex flex-col items-center justify-start gap-y-[clamp(1rem,-11.9681rem_+_25.5319vh,2.5rem)] px-9 py-8 pt-[clamp(2rem,-13.9563rem_+_34.04vh,4rem)] max-w-[25rem] mx-auto h-full">
         {/* Title and Description */}
         <div className="flex flex-col items-center gap-4 w-full">
           <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">

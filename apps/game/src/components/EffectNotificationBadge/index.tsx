@@ -53,7 +53,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
               key={`${effect.card.id}-${index}`}
               style={{
                 zIndex: effectCount + index,
-                transform: index > 0 ? `translateX(-${index * 10}px)` : undefined, // Overlap by 15px per icon
+                transform: index > 0 ? `translateX(-${index * 0.625}rem)` : undefined, // Overlap by 0.625rem per icon
               }}
             >
               <Icon name={iconName} size={30} aria-label={`${effect.effectType} effect`} />

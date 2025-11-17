@@ -185,7 +185,7 @@ export const ScreenRenderer: FC = () => {
 
                 {/* Grid overlay for quick start guide */}
                 {config?.gridOverlay && (
-                  <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0px_32px_0px_#53ffbc]" />
+                  <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_2rem_0_#53ffbc]" />
                 )}
               </>
             }

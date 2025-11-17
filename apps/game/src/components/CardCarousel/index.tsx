@@ -66,7 +66,7 @@ export const CardCarousel = ({
             onCardSelect(currentCard);
           }
         }}
-        className="w-full h-[400px]"
+        className="w-full h-[25rem]"
       >
         {cards.map((card) => {
           const isFaceDown = faceDownCardIds?.has(card.id) ?? false;
@@ -82,7 +82,7 @@ export const CardCarousel = ({
                 onClick={() => (onCardClick ? onCardClick(card) : onCardSelect(card))}
               >
                 <div className={`relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl`}
-                     style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 8px #49C1B4' } : undefined}
+                     style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' } : undefined}
                 >
                   <img
                     src={cardImage}

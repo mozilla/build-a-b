@@ -58,7 +58,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
         ref={containerRef}
         key={animationKey}
         className={cn(
-          'isolate relative aspect-square w-[88px] sm:w-[5.5rem] sm:h-[5.5rem] flex flex-col items-center justify-center',
+          'isolate relative aspect-square w-[5.5rem] sm:h-[5.5rem] flex flex-col items-center justify-center',
           className,
         )}
         initial={{ scale: 1 }}
@@ -80,13 +80,13 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
             // No effects - show neutral circle with glow animation
             <motion.div
               className="w-full h-full rounded-full bg-[rgba(255,255,255,0.1)] border-2 border-[rgba(255,255,255,0.3)]"
-              initial={{ filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0))' }}
+              initial={{ filter: 'drop-shadow(0 0 0 rgba(255, 255, 255, 0))' }}
               animate={{
                 filter: [
-                  'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
-                  'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
-                  'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
-                  'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+                  'drop-shadow(0 0 0 rgba(255, 255, 255, 0))',
+                  'drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8))',
+                  'drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8))',
+                  'drop-shadow(0 0 0 rgba(255, 255, 255, 0))',
                 ],
               }}
               transition={{
@@ -104,13 +104,13 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                 activeEffects[0].type === 'blocker' &&
                   'bg-[rgba(252,233,120,0.3)] border-[#FCE978]',
               )}
-              initial={{ filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0))' }}
+              initial={{ filter: 'drop-shadow(0 0 0 rgba(255, 255, 255, 0))' }}
               animate={{
                 filter: [
-                  'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
-                  'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
-                  'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
-                  'drop-shadow(0 0 0px rgba(255, 255, 255, 0))',
+                  'drop-shadow(0 0 0 rgba(255, 255, 255, 0))',
+                  'drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8))',
+                  'drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8))',
+                  'drop-shadow(0 0 0 rgba(255, 255, 255, 0))',
                 ],
               }}
               transition={{
@@ -163,13 +163,13 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
             <div
               className="absolute -bottom-2 flex flex-row-reverse z-2 isolate"
               style={{
-                right: `${-1 * 4 + 4 * (activeEffects.length - 1)}px`,
+                right: `${-1 * 0.25 + 0.25 * (activeEffects.length - 1)}rem`,
               }}
             >
               {activeEffects.map((effect, index) => (
                 <motion.div
                   key={`${effect.type}-${index}`}
-                  className="w-[32px] sm:w-8 aspect-square shrink-0"
+                  className="w-8 aspect-square shrink-0"
                   style={{
                     zIndex: activeEffects.length - index,
                     color: 'initial', // Prevent color inheritance
@@ -178,7 +178,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                   animate={{
                     scale: 1,
                     rotate: 0,
-                    x: index > 0 ? index * 16 : 0, // 16px offset per icon
+                    x: index > 0 ? index * 16 : 0, // 1rem offset per icon
                   }}
                   transition={{
                     type: 'spring',
@@ -205,7 +205,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
           <AnimatePresence>
             {showBurst && (
               <motion.div
-                className="fixed pointer-events-none w-[200px] h-[200px] -translate-x-1/2 -translate-y-1/2"
+                className="fixed pointer-events-none w-[12.5rem] h-[12.5rem] -translate-x-1/2 -translate-y-1/2"
                 style={{
                   left: `${burstPosition.x}px`,
                   top: `${burstPosition.y}px`,

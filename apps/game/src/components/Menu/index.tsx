@@ -93,11 +93,11 @@ export const Menu: FC = () => {
         >
           <Frame
             backgroundSrc={nightSkyBg}
-            className="shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)]"
+            className="shadow-[0_1.25rem_1.5625rem_-0.3125rem_rgba(0,0,0,0.1),0_0.5rem_0.625rem_-0.375rem_rgba(0,0,0,0.1)]"
             variant="screen-renderer"
           >
             {/* Menu Content */}
-            <div className="relative h-full flex flex-col items-center frameless:pt-[clamp(24px,-295.1475px_+_42.553vh,64px)] framed:pt-16 pb-8 overflow-auto">
+            <div className="relative h-full flex flex-col items-center frameless:pt-[clamp(1.5rem,-18.4467rem_+_42.553vh,4rem)] framed:pt-16 pb-8 overflow-auto">
               {/* Close Button */}
               <header className="mx-auto relative w-full">
                 <Button
@@ -112,15 +112,15 @@ export const Menu: FC = () => {
               <Text
                 variant="title-2"
                 align="center"
-                className="text-common-ash mb-[clamp(12px,-83.74px+12.77vh,24px)] framed:mb-8 mx-auto"
+                className="text-common-ash mb-[clamp(0.75rem,-5.2338rem+12.77vh,1.5rem)] framed:mb-8 mx-auto"
               >
                 {menuMicrocopy.title}
               </Text>
 
               {/* Menu Items */}
-              <div className="w-full flex flex-col gap-[clamp(12px,-83.74px_+_12.77vh,24px)] framed:gap-6">
+              <div className="w-full flex flex-col gap-[clamp(0.75rem,-5.2338rem_+_12.77vh,1.5rem)] framed:gap-6">
                 {/* Quick Launch Guide Button */}
-                <div className="w-full px-9 flex flex-col gap-y-[clamp(16px,-111.66px_+_17.02vh,32px)] framed:gap-y-8 mx-auto">
+                <div className="w-full px-9 flex flex-col gap-y-[clamp(1rem,-6.9788rem_+_17.02vh,2rem)] framed:gap-y-8 mx-auto">
                   <button
                     onClick={handleQuickGuide}
                     className={cn(
@@ -159,7 +159,7 @@ export const Menu: FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 w-full pb-[clamp(16px,-111.66px_+_17.02vh,32px)] framed:max-w-[25rem] mx-auto px-9 framed:pb-8">
+                <div className="flex gap-4 w-full pb-[clamp(1rem,-6.9788rem_+_17.02vh,2rem)] framed:max-w-[25rem] mx-auto px-9 framed:pb-8">
                   <Button
                     onPress={handleRestart}
                     variant="primary"
@@ -190,7 +190,7 @@ export const Menu: FC = () => {
                     <img
                       src={blueGridBg}
                       alt=""
-                      className="w-full h-full object-cover fixed inset-0 shadow-[inset_0px_0px_32px_0px_#53ffbc]"
+                      className="w-full h-full object-cover fixed inset-0 shadow-[inset_0_0_2rem_0_#53ffbc]"
                       role="presentation"
                     />
                     <div className="max-w-[25rem] mx-auto">
@@ -240,7 +240,7 @@ export const Menu: FC = () => {
                         style={{ backgroundImage: `url(${nightSkyBg})` }}
                       >
                         {/* Inner glow effect */}
-                        <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0.5rem_1.875rem_0px_rgba(0,166,249,1)]" />
+                        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0.5rem_1.875rem_0_rgba(0,166,249,1)]" />
 
                         {/* Content Container */}
                         <div className="relative flex flex-col items-center gap-6 sm:gap-4 md:gap-6 pt-12 sm:pt-16 md:pt-20 px-4 sm:px-6 md:px-8">
@@ -321,7 +321,7 @@ export const Menu: FC = () => {
                         style={{ backgroundImage: `url(${nightSkyBg})` }}
                       >
                         {/* Inner glow effect */}
-                        <div className="absolute inset-0 pointer-events-none shadow-[inset_0px_0.5rem_1.875rem_0px_rgba(0,166,249,1)]" />
+                        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0.5rem_1.875rem_0_rgba(0,166,249,1)]" />
 
                         {/* Content Container */}
                         <div className="relative flex flex-col items-center gap-6 sm:gap-4 md:gap-6 pt-12 sm:pt-16 md:pt-20 px-4 sm:px-6 md:px-8">

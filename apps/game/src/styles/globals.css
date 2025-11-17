@@ -329,11 +329,11 @@ body {
 /* Card animations for game - cards slide from deck position to center */
 @keyframes slide-from-top {
   0% {
-    transform: translateY(-180px) translateZ(30px) scale(0.68);
+    transform: translateY(-11.25rem) translateZ(1.875rem) scale(0.68);
     opacity: 1;
   }
   30% {
-    transform: translateY(-120px) translateZ(20px) scale(0.75);
+    transform: translateY(-7.5rem) translateZ(1.25rem) scale(0.75);
     opacity: 1;
   }
   100% {
@@ -344,11 +344,11 @@ body {
 
 @keyframes slide-from-bottom {
   0% {
-    transform: translateY(180px) translateZ(30px) scale(0.68);
+    transform: translateY(11.25rem) translateZ(1.875rem) scale(0.68);
     opacity: 1;
   }
   30% {
-    transform: translateY(120px) translateZ(20px) scale(0.75);
+    transform: translateY(7.5rem) translateZ(1.25rem) scale(0.75);
     opacity: 1;
   }
   100% {
@@ -370,15 +370,15 @@ body {
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
   }
   30% {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    filter: drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8));
   }
   90% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
   }
 }
 
@@ -392,10 +392,10 @@ body {
 @keyframes tracker-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(73, 193, 180, 0));
+    filter: drop-shadow(0 0 0 rgba(73, 193, 180, 0));
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(73, 193, 180, 0.8));
+    filter: drop-shadow(0 0 1.25rem rgba(73, 193, 180, 0.8));
   }
 }
 
@@ -407,10 +407,10 @@ body {
 @keyframes firewall-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(254, 197, 96, 0));
+    filter: drop-shadow(0 0 0 rgba(254, 197, 96, 0));
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(254, 197, 96, 0.8));
+    filter: drop-shadow(0 0 1.25rem rgba(254, 197, 96, 0.8));
   }
 }
 
@@ -422,10 +422,10 @@ body {
 @keyframes blocker-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(252, 233, 120, 0));
+    filter: drop-shadow(0 0 0 rgba(252, 233, 120, 0));
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(252, 233, 120, 0.8));
+    filter: drop-shadow(0 0 1.25rem rgba(252, 233, 120, 0.8));
   }
 }
 
@@ -437,10 +437,10 @@ body {
 @keyframes move-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(128, 144, 208, 0));
+    filter: drop-shadow(0 0 0 rgba(128, 144, 208, 0));
   }
   50% {
-    filter: drop-shadow(0 0 25px rgba(128, 144, 208, 0.9));
+    filter: drop-shadow(0 0 1.5625rem rgba(128, 144, 208, 0.9));
   }
 }
 
@@ -452,10 +452,10 @@ body {
 @keyframes launch-stack-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(199, 125, 184, 0));
+    filter: drop-shadow(0 0 0 rgba(199, 125, 184, 0));
   }
   50% {
-    filter: drop-shadow(0 0 25px rgba(199, 125, 184, 0.9));
+    filter: drop-shadow(0 0 1.5625rem rgba(199, 125, 184, 0.9));
   }
 }
 
@@ -467,10 +467,10 @@ body {
 @keyframes data-grab-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(0, 136, 204, 0));
+    filter: drop-shadow(0 0 0 rgba(0, 136, 204, 0));
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(0, 136, 204, 0.8));
+    filter: drop-shadow(0 0 1.25rem rgba(0, 136, 204, 0.8));
   }
 }
 
@@ -482,10 +482,10 @@ body {
 @keyframes data-war-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
   }
   50% {
-    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.9));
+    filter: drop-shadow(0 0 1.875rem rgba(255, 255, 255, 0.9));
   }
 }
 
