@@ -20,7 +20,7 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={cn('relative flex flex-col min-h-full sm:max-w-[25rem] mx-auto', className)}
+      className={cn('relative flex flex-col min-h-full mx-auto', className)}
       {...props}
     >
       {/* Decorative floating billionaires background - simplified for now */}
@@ -30,7 +30,7 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       {children && <header>{children}</header>}
 
       {/* Main content container - centered with flex-grow */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-9 py-8 flex-grow">
+      <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-[9.2%] py-8 flex-grow">
         <Icon className="max-w-[16.25rem]" name="blastoff" width="100%" />
 
         {/* Title */}

@@ -59,19 +59,19 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
     useGameStore.setState({ dataWarVideoPlaying: false });
   };
 
-  if (!show || !animationSrc) return null;
+  // if (!show || !animationSrc) return null;
 
   return (
     <AnimatePresence>
       <motion.div
+        style={{ pointerEvents: show ? 'auto' : 'none' }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        animate={{ opacity: show ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+        className="absolute inset-0 z-50 flex items-center justify-center bg-black"
       >
         {/* Board-constrained container matching game board dimensions */}
-        <div className="relative w-full h-full max-w-[25rem] max-h-[54rem]">
+        <div className="relative w-full h-full">
           {/* Video fills full board - no blur, no overlay */}
           <video
             ref={videoRef}

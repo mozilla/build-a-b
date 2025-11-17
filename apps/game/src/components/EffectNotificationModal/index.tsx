@@ -2,7 +2,7 @@
  * EffectNotificationModal - Modal displaying accumulated special card effects via carousel
  */
 
-import { Text } from '@/components';
+import { Frame, Text } from '@/components';
 import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
 import { useEffect, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
@@ -69,59 +69,64 @@ export const EffectNotificationModal: FC = () => {
         body: 'py-8 px-6',
       }}
     >
-      <ModalContent onClick={handleClose} className="cursor-pointer relative">
-        {/* Custom Close Button */}
-        <Button
-          isIconOnly
-          onPress={handleClose}
-          className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          aria-label="Close"
-        >
-          <img src={CloseIcon} alt="Close" />
-        </Button>
+      <ModalContent
+        onClick={handleClose}
+        className="cursor-pointer relative h-[100dvh] w-[100vw] flex items-center justify-center"
+      >
+        <Frame variant="scrollable" className="flex flex-col">
+          {/* Custom Close Button */}
+          <Button
+            isIconOnly
+            onPress={handleClose}
+            className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            aria-label="Close"
+          >
+            <img src={CloseIcon} alt="Close" />
+          </Button>
 
-        <ModalBody className="flex flex-col items-center justify-center gap-10">
-          {/* Player Indicator - updates with carousel */}
-          <div className="flex gap-3">
-            <button
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
-                isPlayerCard
-                  ? 'bg-accent text-black'
-                  : 'bg-transparent border-2 border-white text-white'
-              }`}
-            >
-              Your Play
-            </button>
-            <button
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
-                !isPlayerCard
-                  ? 'bg-accent text-black'
-                  : 'bg-transparent border-2 border-white text-white'
-              }`}
-            >
-              Opponent's Play
-            </button>
-          </div>
+          <ModalBody className="flex flex-col items-center justify-center gap-10 size-full">
+            {/* Player Indicator - updates with carousel */}
+            <div className="flex gap-3">
+              <button
+                className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+                  isPlayerCard
+                    ? 'bg-accent text-black'
+                    : 'bg-transparent border-2 border-white text-white'
+                }`}
+              >
+                Your Play
+              </button>
+              <button
+                className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+                  !isPlayerCard
+                    ? 'bg-accent text-black'
+                    : 'bg-transparent border-2 border-white text-white'
+                }`}
+              >
+                Opponent's Play
+              </button>
+            </div>
 
-          {/* Card Carousel */}
-          <CardCarousel
-            cards={accumulatedEffects.map((e) => e.card)}
-            selectedCard={selectedCard}
-            onCardSelect={handleCardSelect}
-          />
+            {/* Card Carousel */}
+            <CardCarousel
+              cards={accumulatedEffects.map((e) => e.card)}
+              selectedCard={selectedCard}
+              onCardSelect={handleCardSelect}
+            />
 
-          {/* Effect Details for selected card - fixed height to prevent layout shift */}
-          <div className="text-center max-w-md h-[10rem] flex flex-col overflow-y-auto px-4">
-            <Text variant="title-2" className="mb-4 text-white">
-              {effectName}
-            </Text>
-            {effectDescription && (
-              <Text variant="title-3" className="text-white/90 font-normal">
-                {effectDescription}
+            {/* Effect Details for selected card - fixed height to prevent layout shift */}
+            <div className="max-w-md flex flex-col overflow-y-auto px-4">
+              <Text variant="card-modal-title" color="text-common-ash" className="mb-4">
+                {effectName}
               </Text>
-            )}
-          </div>
-        </ModalBody>
+              {effectDescription && (
+                <Text variant="title-4" color="text-common-ash" weight="extrabold">
+                  {effectDescription}
+                </Text>
+              )}
+            </div>
+          </ModalBody>
+        </Frame>
       </ModalContent>
     </Modal>
   );

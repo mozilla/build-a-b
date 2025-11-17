@@ -12,7 +12,7 @@ import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { QUERIES, useMediaQuery } from '@/hooks/use-media-query';
 import { usePreloading } from '@/hooks/use-preloading';
 import { useGameStore } from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
@@ -31,7 +31,7 @@ import { useGameMachine } from '../../hooks/use-game-machine';
 export interface BaseScreenProps
   extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
   send?: ReturnType<typeof useGameMachine>['send'];
-  isMobile: boolean;
+  isFramed: boolean;
   drawerOpen: boolean;
   setDrawerOpen: (isOpen: boolean) => void;
   setDrawerNode: (node: React.ReactNode) => void;
@@ -88,7 +88,7 @@ export const ScreenRenderer: FC = () => {
   } = usePreloading();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerNode, setDrawerNode] = useState<ReactNode | null>(null);
-  const isMobile = useMediaQuery('(max-width: 40rem)');
+  const isFramed = useMediaQuery(QUERIES.framed);
 
   // Convert state value to string for registry lookup
   const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
@@ -168,14 +168,14 @@ export const ScreenRenderer: FC = () => {
   }
 
   return (
-    <div className="absolute top-0 left-0 h-[100dvh] w-[100vw] flex items-center justify-center z-100">
-      <div className="size-full grid place-content-center">
+    <div className="absolute inset-0 flex items-center justify-center z-100 overflow-clip">
+      <div className="h-[100dvh] w-[100vw] flex items-center justify-center">
         <AnimatePresence>
           <Frame
             key="screen-frame"
             backgroundSrc={backgroundImage}
             className="flex flex-col"
-            variant="screen-renderer"
+            variant="scrollable"
             overlay={
               <>
                 {/* Dark overlay for blurred backgrounds */}
@@ -193,22 +193,22 @@ export const ScreenRenderer: FC = () => {
             <ScreenComponent
               key="component"
               send={send}
-              isMobile={isMobile}
+              isFramed={isFramed}
               drawerOpen={drawerOpen}
               setDrawerOpen={setDrawerOpen}
               setDrawerNode={setDrawerNode}
-              className="flex flex-col items-center justify-start relative w-full h-full lg:rounded-xl overflow-auto overscroll-none"
+              className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
             >
               {showCloseIcon && (
-                <div className="absolute top-5 right-5 z-20">
+                <div className="absolute top-5 right-5">
                   <Button onPress={toggleMenu}>
                     <Icon name="pause" label="pause" />
                   </Button>
                 </div>
               )}
             </ScreenComponent>
+            {isFramed && drawerOpen && <Fragment key="drawer">{drawerNode}</Fragment>}
           </Frame>
-          {isMobile && drawerOpen && <Fragment key="drawer">{drawerNode}</Fragment>}
         </AnimatePresence>
       </div>
     </div>

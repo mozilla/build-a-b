@@ -27,11 +27,11 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
 
   return (
     <motion.div
-      className={cn('relative flex flex-col sm:max-w-[25rem] mx-auto', className)}
+      className={cn('relative flex flex-col framed::max-w-[25rem] mx-auto', className)}
       {...props}
     >
       {/* Main content container */}
-      <header className="fixed top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto">
+      <header className="absolute top-0 landscape:relative w-full framed::max-w-[25rem] mx-auto z-20">
         {children}
       </header>
       <div className="w-full relative z-10 flex flex-col items-center justify-between py-8 pt-16 h-full">

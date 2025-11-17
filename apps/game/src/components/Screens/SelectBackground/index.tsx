@@ -27,7 +27,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
   return (
     <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
-      <header className="fixed top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto">
+      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
         {children}
       </header>
       <div className="w-full relative z-10 py-8 pt-[clamp(32px,-223.3px_+_34.04vh,64px)] h-full">

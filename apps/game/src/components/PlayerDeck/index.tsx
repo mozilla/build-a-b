@@ -25,14 +25,14 @@ const gridLayoutMap: Record<PlayerType, Containers> = {
   player: {
     avatar: 'row-4 col-1',
     deck: 'row-4 col-2',
-    turnValue: 'row-4 col-3',
+    turnValue: 'row-4 col-3 self-center',
     cardCount: 'row-5 col-span-full self-center',
   },
   cpu: {
     cardCount: 'row-1 col-span-full self-center',
     avatar: 'row-2 col-1',
     deck: 'row-2',
-    turnValue: 'row-2 col-3',
+    turnValue: 'row-2 col-3 self-center',
   },
 };
 
@@ -177,17 +177,12 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       />
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
-        <div
-          className={cn(
-            'flex flex-col items-center gap-[4px] sm:gap-1',
-            gridLayoutMap[owner].avatar,
-          )}
-        >
+        <div className={cn('flex flex-col items-center gap-1', gridLayoutMap[owner].avatar)}>
           {/* Launch Stack Rocket Indicators */}
           <LaunchStackIndicator launchStackCount={animatedLaunchStackCount} />
 
           {/* Avatar */}
-          <div className="relative aspect-square w-[6.5rem] z-2">
+          <div className="relative aspect-square z-2">
             {/* Avatar with scale animation */}
             <motion.div
               className="w-full h-full rounded-full overflow-hidden"

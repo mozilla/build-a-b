@@ -12,6 +12,8 @@ export const variantStyles: Record<TextVariant, string> = {
   'title-4': 'text-xl leading-[1.4] font-extrabold', // 20px / 28px (28/20 = 1.4)
   'title-5': 'text-base leading-[1.5] font-extrabold', // 16px / 24px (24/16 = 1.5)
 
+  'card-modal-title': 'text-[1.75rem] leading-none font-extrabold', // 28px / 28px (28/28 = 1)
+
   // Body text - Large
   'body-large-semibold': 'text-lg leading-[1.333] font-semibold', // 18px / 24px (24/18 = 1.333)
   'body-large-medium': 'text-lg leading-[1.333] font-medium', // 18px / 24px (24/18 = 1.333)
@@ -29,8 +31,8 @@ export const variantStyles: Record<TextVariant, string> = {
   'body-xs': 'text-xs leading-[1.333] font-normal', // 12px / 16px (16/12 = 1.333)
 
   // Badge text
-  'badge-xl': 'text-[42px] sm:text-[2.625rem] leading-none font-extrabold', // 42px, normal line-height
-  'badge-xs': 'text-[8px] sm:text-[0.5rem] leading-[1.5] font-extrabold', // 8px / 12px (12/8 = 1.5)
+  'badge-xl': 'text-[2.625rem] leading-none font-extrabold', // 42px, normal line-height
+  'badge-xs': 'text-[0.5rem] leading-[1.5] font-extrabold', // 8px / 12px (12/8 = 1.5)
 
   // Labels
   'label-uppercase': 'text-[0.5rem] leading-normal font-extrabold uppercase tracking-[0.08em]', // 8px, 8% letter spacing (0.64px/8px = 0.08em)

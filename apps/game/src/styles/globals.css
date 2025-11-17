@@ -41,14 +41,28 @@
   }
 }
 
-@custom-variant min-frame-height {
-  @media (min-height: 865px) {
+@custom-variant framed-x {
+  @media (min-width: 450px) and (min-aspect-ratio: 390/844) {
     @slot;
   }
 }
 
-@custom-variant landscape-frame-height {
-  @media (orientation: landscape) and (min-height: 59.99vw) {
+@custom-variant framed-y {
+  @media (min-width: 450px) and (min-height: 866px) and (max-aspect-ratio: 390/843) {
+    @slot;
+  }
+}
+
+@custom-variant framed {
+  @media (min-width: 450px) and (min-aspect-ratio: 390/844),
+    (min-width: 450px) and (min-height: 866px) and (max-aspect-ratio: 390/843) {
+    @slot;
+  }
+}
+
+@custom-variant frameless {
+  @media (max-width: 449.98px),
+    ((min-width: 450px) and (max-aspect-ratio: 389/844) and (not ((min-height: 866px) and (max-aspect-ratio: 390/843)))) {
     @slot;
   }
 }
@@ -349,22 +363,6 @@ body {
 
 @utility animate-slide-from-bottom {
   animation: slide-from-bottom 0.5s ease-out forwards;
-}
-
-/* Effect badge scale in - only animates on mount */
-@keyframes badge-scale-in {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@utility animate-badge-scale-in {
-  animation: badge-scale-in 0.5s ease-out forwards;
 }
 
 /* Heartbeat animation for active deck indicator */
