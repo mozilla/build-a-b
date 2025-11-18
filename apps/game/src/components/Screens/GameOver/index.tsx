@@ -10,6 +10,7 @@ import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { BILLIONAIRES } from '@/config/billionaires';
+import { useShare } from '@/hooks/use-share';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 
@@ -27,6 +28,7 @@ export const GameOver: FC<BaseScreenProps> = ({ className, send, ...props }) => 
   const cpuBillionaireId = useCpuBillionaire();
   const [shareButtonText, setShareButtonText] = useState('Share with Friends');
   const [isRocketRevealed, setIsRocketRevealed] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   // Determine which billionaire won
   const winnerBillionaireId = winner === 'player' ? selectedBillionaire : cpuBillionaireId;
@@ -36,39 +38,45 @@ export const GameOver: FC<BaseScreenProps> = ({ className, send, ...props }) => 
     [winnerBillionaireId],
   );
 
+  // Share hook
+  const { handleShare: shareNatively, isShareSupported } = useShare({
+    shareText: 'Make Earth a better place. Launch a billionaire.',
+  });
+
   // Handle share functionality
   const handleShare = async () => {
-    const url = window.location.href;
-
-    try {
-      // Try native share API first
-      if (navigator.share && navigator.canShare({ url })) {
-        await navigator.share({
-          url,
-          title: 'Data War - Billionaire Blast Off',
-          text: `I just sent ${winnerBillionaire?.name} to space! Play Data War and launch your billionaire.`,
-        });
-        return;
-      }
-    } catch (error) {
-      // User cancelled share or share failed
-      if (error instanceof Error && error.name === 'AbortError') {
-        return;
-      }
-      console.error('Share failed:', error);
+    // Prevent multiple simultaneous share attempts
+    if (isSharing) {
+      return;
     }
 
-    // Fallback to clipboard
-    try {
-      await navigator.clipboard.writeText(url);
-      setShareButtonText('Copied!');
+    setIsSharing(true);
 
-      // Reset button text after 2 seconds
-      setTimeout(() => {
-        setShareButtonText('Share with Friends');
-      }, 2000);
-    } catch (error) {
-      console.error('Clipboard write failed:', error);
+    try {
+      const url = window.location.href;
+
+      // Try native share first
+      if (isShareSupported) {
+        const success = await shareNatively();
+        if (success) {
+          return;
+        }
+      }
+
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareButtonText('Copied!');
+
+        // Reset button text after 2 seconds
+        setTimeout(() => {
+          setShareButtonText('Share with Friends');
+        }, 2000);
+      } catch (error) {
+        console.error('Clipboard write failed:', error);
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
 
