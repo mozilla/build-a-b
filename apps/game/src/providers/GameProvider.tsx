@@ -24,12 +24,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 
   // Initialize game on mount
   useEffect(() => {
-    initializeGame(
-      'custom',
-      'custom',
-      ['move-takeover', 'common-2', 'common-3', 'common-4', 'common-2'],
-      ['common-1', 'firewall-open', 'common-3', 'common-2', 'move-tantrum'],
-    );
+    initializeGame('custom', 'custom', ['common-5'], ['common-5']);
   }, [initializeGame]);
 
   return (

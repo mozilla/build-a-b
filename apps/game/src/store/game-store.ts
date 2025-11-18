@@ -220,14 +220,6 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        const currentCardsInPlay = get().cardsInPlay.length;
-        console.log(`[playCard] ${playerId} playing "${card.name}" (${card.id.slice(0, 8)})`, {
-          deckBefore: playerState.deck.length,
-          deckAfter: remainingDeck.length,
-          cardsInPlayBefore: currentCardsInPlay,
-          playerCardsInHandBefore: playerState.playedCardsInHand.length
-        });
-
         const opponentId = playerId === 'player' ? 'cpu' : 'player';
 
         /**
@@ -330,13 +322,6 @@ export const useGameStore = create<GameStore>()(
         }
 
         set(updates);
-
-        const afterState = get();
-        console.log(`[playCard] ${playerId} card added`, {
-          cardsInPlayAfter: afterState.cardsInPlay.length,
-          playerCardsInHandAfter: afterState[playerId].playedCardsInHand.length,
-          totalCardsInPlay: afterState.cardsInPlay.length
-        });
       },
 
       /**
@@ -346,44 +331,25 @@ export const useGameStore = create<GameStore>()(
       collectCardsDistributed: (distributions, primaryWinner, visualOnly = false) => {
         const winnerId = primaryWinner || distributions[0]?.destination;
 
-        console.log('[collectCardsDistributed] Called with:', {
-          distributionsCount: distributions.length,
-          primaryWinner,
-          winnerId,
-          visualOnly
-        });
-
         // STAGE 1: Show win effect for primary winner (if specified)
         if (winnerId) {
           set({ showingWinEffect: winnerId });
           get().clearAccumulatedEffects();
-          console.log('[collectCardsDistributed] STAGE 1: Showing win effect for', winnerId);
         }
 
         setTimeout(() => {
           // STAGE 2: Start card collection animation
-          console.log('[collectCardsDistributed] STAGE 2: Setting collecting state');
           set({
             showingWinEffect: null,
             collecting: { distributions, primaryWinner: winnerId },
           });
-          console.log('[collectCardsDistributed] Collecting state set:', get().collecting);
 
           // STAGE 3: Wait for animation, then distribute cards (or just clear states if visual-only)
           setTimeout(() => {
             const state = get();
 
-            console.log('[collectCardsDistributed] STAGE 3: Distributing cards', {
-              visualOnly,
-              distributionsCount: distributions.length,
-              playerDeckBefore: state.player.deck.length,
-              cpuDeckBefore: state.cpu.deck.length,
-              totalBefore: state.player.deck.length + state.cpu.deck.length
-            });
-
             if (visualOnly) {
               // Visual-only mode: Decks already updated, just clear board states
-              console.log('[collectCardsDistributed] STAGE 3: Visual-only mode - clearing board states only');
               set({
                 player: {
                   ...state.player,
@@ -426,11 +392,6 @@ export const useGameStore = create<GameStore>()(
                 }
               });
 
-              console.log('[collectCardsDistributed] STAGE 3: Normal mode - adding cards to decks', {
-                playerCardsToAdd: playerCards.length,
-                cpuCardsToAdd: cpuCards.length
-              });
-
               // Add cards to respective decks and clear all states
               set({
                 player: {
@@ -462,14 +423,6 @@ export const useGameStore = create<GameStore>()(
                 anotherPlayExpected: false,
                 collecting: null,
               });
-
-              const afterState = get();
-              console.log('[collectCardsDistributed] STAGE 3: Cards added', {
-                playerDeckAfter: afterState.player.deck.length,
-                cpuDeckAfter: afterState.cpu.deck.length,
-                totalAfter: afterState.player.deck.length + afterState.cpu.deck.length,
-                difference: (afterState.player.deck.length + afterState.cpu.deck.length) - (state.player.deck.length + state.cpu.deck.length)
-              });
             }
           }, ANIMATION_DURATIONS.CARD_COLLECTION);
         }, ANIMATION_DURATIONS.WIN_ANIMATION);
@@ -479,16 +432,6 @@ export const useGameStore = create<GameStore>()(
        * Backward compatibility wrapper - Converts old format to new CardDistribution format
        */
       collectCards: (winnerId, cards) => {
-        console.log('[collectCards] Called with:', {
-          winnerId,
-          cardsCount: cards.length,
-          cardIds: cards.map(c => c.id).slice(0, 5) // First 5 IDs for debugging
-        });
-
-        // Log current deck counts BEFORE collection
-        const state = get();
-        console.log('[collectCards] BEFORE - Player deck:', state.player.deck.length, 'CPU deck:', state.cpu.deck.length);
-
         // Convert to new format - all cards from board go to winner
         const distributions: CardDistribution[] = cards.map((card) => ({
           card,
@@ -497,10 +440,6 @@ export const useGameStore = create<GameStore>()(
         }));
 
         get().collectCardsDistributed(distributions, winnerId);
-
-        // Log AFTER collection
-        const afterState = get();
-        console.log('[collectCards] AFTER - Player deck:', afterState.player.deck.length, 'CPU deck:', afterState.cpu.deck.length);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {
@@ -557,10 +496,36 @@ export const useGameStore = create<GameStore>()(
         const stolenCards = fromPlayer.deck.slice(0, count);
         const remainingCards = fromPlayer.deck.slice(count);
 
+        // Update source deck and destination deck
         set({
           [from]: { ...fromPlayer, deck: remainingCards },
           [to]: { ...toPlayer, deck: [...toPlayer.deck, ...stolenCards] },
         });
+
+        // Temporarily add stolen cards to the FROM player's playedCardsInHand (face-down)
+        // This makes them visible on the board so they can be animated to the winner's deck
+        // NOTE: We don't add to cardsInPlay because collectCardsAfterEffects would collect them again
+        const tempPlayedCards = stolenCards.map((card) => ({ card, isFaceDown: true }));
+
+        set({
+          [from]: {
+            ...get()[from],
+            playedCardsInHand: [...get()[from].playedCardsInHand, ...tempPlayedCards],
+          },
+        });
+
+        // Create card distributions for animation
+        const distributions: CardDistribution[] = stolenCards.map((card) => ({
+          card,
+          destination: to,
+          source: {
+            type: 'board' as const,
+          },
+        }));
+
+        // Trigger visual-only collection animation (decks already updated above)
+        // This will animate the cards from the board to the destination deck
+        get().collectCardsDistributed(distributions, to, true);
       },
 
       checkWinCondition: () => {
@@ -1372,11 +1337,15 @@ export const useGameStore = create<GameStore>()(
           shownAnimationCardIds.add(playerCard!.id);
         }
 
-        // Then queue CPU animation
-        if (shouldShowAnimation(cpuCard, 'cpu')) {
+        // Then queue CPU animation (skip if both players played the same card type)
+        const bothPlayedSameCard = playerCard?.specialType === cpuCard?.specialType;
+        if (shouldShowAnimation(cpuCard, 'cpu') && !bothPlayedSameCard) {
           animationsToQueue.push({ type: cpuCard!.specialType!, playedBy: 'cpu' });
           // Mark this card as having shown its animation
           shownAnimationCardIds.add(cpuCard!.id);
+        } else if (bothPlayedSameCard && cpuCard) {
+          // Both played same card - mark CPU's card as shown even though we skip its animation
+          shownAnimationCardIds.add(cpuCard.id);
         }
 
         // Update the set in store
@@ -1494,10 +1463,18 @@ export const useGameStore = create<GameStore>()(
         });
 
         // Separate Launch Stacks from regular cards for each player
-        const playerLaunchStacks = updatedPlayerCards.filter(pcs => pcs.card.specialType === 'launch_stack');
-        const playerRegularCards = updatedPlayerCards.filter(pcs => pcs.card.specialType !== 'launch_stack');
-        const cpuLaunchStacks = updatedCPUCards.filter(pcs => pcs.card.specialType === 'launch_stack');
-        const cpuRegularCards = updatedCPUCards.filter(pcs => pcs.card.specialType !== 'launch_stack');
+        const playerLaunchStacks = updatedPlayerCards.filter(
+          (pcs) => pcs.card.specialType === 'launch_stack',
+        );
+        const playerRegularCards = updatedPlayerCards.filter(
+          (pcs) => pcs.card.specialType !== 'launch_stack',
+        );
+        const cpuLaunchStacks = updatedCPUCards.filter(
+          (pcs) => pcs.card.specialType === 'launch_stack',
+        );
+        const cpuRegularCards = updatedCPUCards.filter(
+          (pcs) => pcs.card.specialType !== 'launch_stack',
+        );
 
         // Extract Card objects for main deck updates (excluding Launch Stacks)
         const playerCards = playerRegularCards.map((pcs) => pcs.card);
@@ -1521,13 +1498,6 @@ export const useGameStore = create<GameStore>()(
             destination: 'cpu' as const,
           })),
         ];
-
-        console.log('[finalizeDataGrabResults] Card separation:');
-        console.log('  updatedPlayerCards:', updatedPlayerCards.length);
-        console.log('  updatedCPUCards:', updatedCPUCards.length);
-        console.log('  playerLaunchStacks:', playerLaunchStacks.length);
-        console.log('  cpuLaunchStacks:', cpuLaunchStacks.length);
-        console.log('  distributions:', distributions.length);
 
         // UPDATE MAIN DECKS IMMEDIATELY (math/logic happens now)
         // Cards will be shown on tableau AFTER modal closes, then animated (visual only)
@@ -1562,17 +1532,13 @@ export const useGameStore = create<GameStore>()(
           dataGrabCPULaunchStacks: cpuLaunchStacks,
         });
 
-        console.log('[finalizeDataGrabResults] State set, stored collections:');
-        console.log('  dataGrabCollectedByPlayer:', get().dataGrabCollectedByPlayer.length);
-        console.log('  dataGrabCollectedByCPU:', get().dataGrabCollectedByCPU.length);
-
         // Remove Data Grab AND collected Launch Stacks from pending effects
         // (Launch Stacks will be processed after modal, not in processPendingEffects)
         const allLaunchStacks = [...playerLaunchStacks, ...cpuLaunchStacks];
-        const launchStackIds = new Set(allLaunchStacks.map(pcs => pcs.card.id));
+        const launchStackIds = new Set(allLaunchStacks.map((pcs) => pcs.card.id));
         const updatedEffects = get().pendingEffects.filter(
-          e => e.type !== 'data_grab' &&
-               !(e.type === 'launch_stack' && launchStackIds.has(e.card.id))
+          (e) =>
+            e.type !== 'data_grab' && !(e.type === 'launch_stack' && launchStackIds.has(e.card.id)),
         );
         set({ pendingEffects: updatedEffects });
       },
@@ -1661,8 +1627,12 @@ export const useGameStore = create<GameStore>()(
 
         // Separate stolen cards into Launch Stacks and regular cards
         const stolenCards = temperTantrumSelectedCards;
-        const stolenLaunchStacks = stolenCards.filter(card => card.specialType === 'launch_stack');
-        const stolenRegularCards = stolenCards.filter(card => card.specialType !== 'launch_stack');
+        const stolenLaunchStacks = stolenCards.filter(
+          (card) => card.specialType === 'launch_stack',
+        );
+        const stolenRegularCards = stolenCards.filter(
+          (card) => card.specialType !== 'launch_stack',
+        );
 
         const remainingWinnerCards = temperTantrumAvailableCards.filter(
           (card) => !stolenCards.some((stolen) => stolen.id === card.id),
@@ -1694,7 +1664,7 @@ export const useGameStore = create<GameStore>()(
 
         // Process stolen Launch Stacks FIRST - add to loser's Launch Stacks collection
         // The PlayerDeck component will automatically show the animation when launchStackCount changes
-        stolenLaunchStacks.forEach(launchStack => {
+        stolenLaunchStacks.forEach((launchStack) => {
           get().addLaunchStack(loser, launchStack);
         });
 
@@ -1708,15 +1678,17 @@ export const useGameStore = create<GameStore>()(
         set({
           player: {
             ...state.player,
-            deck: winner === 'player'
-              ? [...state.player.deck, ...winnerRegularCards]
-              : [...state.player.deck, ...loserRegularCards],
+            deck:
+              winner === 'player'
+                ? [...state.player.deck, ...winnerRegularCards]
+                : [...state.player.deck, ...loserRegularCards],
           },
           cpu: {
             ...state.cpu,
-            deck: winner === 'cpu'
-              ? [...state.cpu.deck, ...winnerRegularCards]
-              : [...state.cpu.deck, ...loserRegularCards],
+            deck:
+              winner === 'cpu'
+                ? [...state.cpu.deck, ...winnerRegularCards]
+                : [...state.cpu.deck, ...loserRegularCards],
           },
         });
 
@@ -1732,10 +1704,11 @@ export const useGameStore = create<GameStore>()(
 
         // Remove Tantrum AND processed Launch Stacks from pending effects
         // This prevents duplicate processing
-        const stolenLaunchStackIds = new Set(stolenLaunchStacks.map(ls => ls.id));
+        const stolenLaunchStackIds = new Set(stolenLaunchStacks.map((ls) => ls.id));
         const updatedEffects = get().pendingEffects.filter(
-          (e) => e.type !== 'temper_tantrum' &&
-                 !(e.type === 'launch_stack' && stolenLaunchStackIds.has(e.card.id))
+          (e) =>
+            e.type !== 'temper_tantrum' &&
+            !(e.type === 'launch_stack' && stolenLaunchStackIds.has(e.card.id)),
         );
         set({ pendingEffects: updatedEffects });
 

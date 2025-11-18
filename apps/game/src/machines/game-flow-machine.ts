@@ -392,28 +392,21 @@ export const gameFlowMachine = createMachine(
                     dataGrabPlayerLaunchStacks,
                     dataGrabCPULaunchStacks,
                     dataGrabCollectedByPlayer,
-                    dataGrabCollectedByCPU
+                    dataGrabCollectedByCPU,
                   } = useGameStore.getState();
 
-                  console.log('[Data Grab] Modal closing, starting animation sequence');
-                  console.log('[Data Grab] Distributions:', dataGrabDistributions.length);
-                  console.log('[Data Grab] Player cards:', dataGrabCollectedByPlayer.length);
-                  console.log('[Data Grab] CPU cards:', dataGrabCollectedByCPU.length);
-
                   // Process Launch Stacks FIRST (triggers win animation)
-                  dataGrabPlayerLaunchStacks.forEach(pcs => {
+                  dataGrabPlayerLaunchStacks.forEach((pcs) => {
                     useGameStore.getState().addLaunchStack('player', pcs.card);
                   });
-                  dataGrabCPULaunchStacks.forEach(pcs => {
+                  dataGrabCPULaunchStacks.forEach((pcs) => {
                     useGameStore.getState().addLaunchStack('cpu', pcs.card);
                   });
 
                   // Wait for modal to fully close, then restore cards to tableau and animate
                   if (dataGrabDistributions.length > 0) {
-                    console.log('[Data Grab] Waiting 400ms for modal to close...');
                     // Delay to let modal fully close (modal animations typically ~300ms)
                     setTimeout(() => {
-                      console.log('[Data Grab] Restoring cards to tableau');
                       // FIRST: Restore cards to tableau (so they're visible on board)
                       const state = useGameStore.getState();
                       useGameStore.setState({
@@ -425,21 +418,17 @@ export const gameFlowMachine = createMachine(
                           ...state.cpu,
                           playedCardsInHand: dataGrabCollectedByCPU,
                         },
-                        cardsInPlay: [...dataGrabCollectedByPlayer, ...dataGrabCollectedByCPU].map(pcs => pcs.card),
+                        cardsInPlay: [...dataGrabCollectedByPlayer, ...dataGrabCollectedByCPU].map(
+                          (pcs) => pcs.card,
+                        ),
                       });
-                      console.log('[Data Grab] Cards restored to tableau');
-                      console.log('[Data Grab] Player playedCardsInHand:', state.player.playedCardsInHand.length);
-                      console.log('[Data Grab] CPU playedCardsInHand:', state.cpu.playedCardsInHand.length);
 
                       // THEN: Trigger collection animation after brief delay (let cards render)
                       setTimeout(() => {
-                        console.log('[Data Grab] Triggering collection animation');
                         // Visual-only animation - decks already have correct counts
-                        useGameStore.getState().collectCardsDistributed(dataGrabDistributions, undefined, true);
-
-                        const collectingState = useGameStore.getState().collecting;
-                        console.log('[Data Grab] Collecting state:', collectingState);
-                        console.log('[Data Grab] Primary winner:', collectingState?.primaryWinner);
+                        useGameStore
+                          .getState()
+                          .collectCardsDistributed(dataGrabDistributions, undefined, true);
 
                         useGameStore.setState({
                           dataGrabDistributions: [],

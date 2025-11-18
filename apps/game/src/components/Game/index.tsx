@@ -180,22 +180,19 @@ export function Game() {
       isFirstHTDataWar &&
       (phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up.ready');
 
-    console.log('[HT Auto-Advance]', {
-      phase,
-      playerPlayedHT,
-      cpuPlayedHT,
-      playerCards: player.playedCardsInHand.length,
-      cpuCards: cpu.playedCardsInHand.length,
-      isFirstHTDataWar,
-      shouldAutoAdvance,
-      canClickPlayerDeck
-    });
-
     if (shouldAutoAdvance) {
-      console.log('[HT Auto-Advance] Calling tapDeck()');
       tapDeck();
     }
-  }, [phase, isFirstHTDataWar, canClickPlayerDeck, playerPlayedHT, cpuPlayedHT, player.playedCardsInHand.length, cpu.playedCardsInHand.length, tapDeck]);
+  }, [
+    phase,
+    isFirstHTDataWar,
+    canClickPlayerDeck,
+    playerPlayedHT,
+    cpuPlayedHT,
+    player.playedCardsInHand.length,
+    cpu.playedCardsInHand.length,
+    tapDeck,
+  ]);
 
   return (
     <div
