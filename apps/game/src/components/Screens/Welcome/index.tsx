@@ -30,7 +30,7 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       </div>
       <header>
         <Link href="/" className="absolute top-5 left-5 z-20">
-          <Icon name="return" label="Back" />
+          <Icon name="return" label="Back" className="w-[2.125rem] h-[2.125rem]" />
         </Link>
         {children}
       </header>

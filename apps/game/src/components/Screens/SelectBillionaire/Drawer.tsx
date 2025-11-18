@@ -137,7 +137,7 @@ export const Drawer: FC<DrawerProps> = ({
                 className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                 aria-label="Close drawer"
               >
-                <Icon name="close" width={8} height={8} />
+                <Icon name="close" width={8} height={8} className="w-2 h-2" />
               </Button>
             </div>
           </motion.div>
