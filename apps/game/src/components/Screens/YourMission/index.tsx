@@ -59,9 +59,9 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
 
         {/* Launch Stack Icons */}
         <div className="flex items-start justify-center gap-2 pb-8">
-          <Icon name="rocket" className="-rotate-z-21 mt-3" />
-          <Icon name="rocket" />
-          <Icon name="rocket" className="rotate-z-21 mt-3" />
+          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem] -rotate-z-21 mt-3" />
+          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem]"/>
+          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem] rotate-z-21 mt-3" />
         </div>
 
         {/* Action Button - at bottom */}
