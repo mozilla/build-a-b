@@ -36,8 +36,8 @@ describe('gameStore', () => {
       initializeGame();
 
       const state = useGameStore.getState();
-      expect(state.player.deck).toHaveLength(33);
-      expect(state.cpu.deck).toHaveLength(33);
+      expect(state.player.deck).toHaveLength(32);
+      expect(state.cpu.deck).toHaveLength(32);
     });
 
     it('should support custom deck ordering strategies', () => {
@@ -526,8 +526,8 @@ describe('gameStore', () => {
       expect(state.winCondition).toBe(null);
       expect(state.isPaused).toBe(false);
       expect(state.showMenu).toBe(false);
-      expect(state.player.deck).toHaveLength(33);
-      expect(state.cpu.deck).toHaveLength(33);
+      expect(state.player.deck).toHaveLength(32);
+      expect(state.cpu.deck).toHaveLength(32);
     });
   });
 

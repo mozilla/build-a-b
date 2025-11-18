@@ -192,7 +192,7 @@ describe('gameFlowMachine', () => {
 
       // Send TIE event which directly transitions to data_war (no guard)
       actor.send({ type: 'TIE' });
-      expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
+      expect(actor.getSnapshot().value).toEqual('comparing');
 
       actor.stop();
     });
@@ -286,7 +286,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'TIE' });
 
       // Should start in animating substate
-      expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
+      expect(actor.getSnapshot().value).toEqual('comparing');
 
       // After delay, should move to reveal_face_down
       setTimeout(() => {

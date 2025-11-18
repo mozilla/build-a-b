@@ -13,6 +13,7 @@ export type SpecialEffectAnimationType =
   | 'open_what_you_want'
   | 'hostile_takeover'
   | 'launch_stack'
+  | 'launch_stack_won'
   | 'data_grab'
   | 'firewall_recall'
   | 'firewall_smacker'
@@ -83,6 +84,14 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
       videoSrc: `${SUPABASE_BASE_URL}launchstack.webm`,
       title: 'Launch Stack',
       loop: true,
+    },
+    launch_stack_won: {
+      videoSrc: {
+        player: `${SUPABASE_BASE_URL}won_launchstack_player.webm`,
+        cpu: `${SUPABASE_BASE_URL}won_launchstack_cpu.webm`,
+      },
+      title: 'Launch Stack Won',
+      loop: false,
     },
     data_grab: {
       videoSrc: `${SUPABASE_BASE_URL}data_grab.webm`,
