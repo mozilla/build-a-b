@@ -3,10 +3,10 @@ import Text from '@/components/Text';
 import { type FC } from 'react';
 import type { PoweredByFirefoxProps } from './types';
 
-export const PoweredByFirefox: FC<PoweredByFirefoxProps> = ({ className = '' }) => {
+export const PoweredByFirefox: FC<PoweredByFirefoxProps> = ({ className = '', href }) => {
   return (
     <a
-      href="https://www.firefox.com/en-US/"
+      href={href || 'https://www.firefox.com/en-US/'}
       target="_blank"
       rel="noopener noreferrer"
       className={`flex items-center justify-end gap-1.5 cursor-pointer ${className}`}
