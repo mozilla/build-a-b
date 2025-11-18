@@ -123,9 +123,11 @@ export function useGameLogic() {
       // Transition to ready (no animation/modal for CPU)
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     } else {
-      // Player: Animation already shown when card was played (via animation queue)
-      // Show modal immediately and transition to ready
-      setShowOpenWhatYouWantModal(true);
+      // Player: Wait for previous turn's animations to complete before showing modal
+      // This includes win confetti and card collection animations
+      setTimeout(() => {
+        setShowOpenWhatYouWantModal(true);
+      }, ANIMATION_DURATIONS.WIN_EFFECT_DURATION);
 
       // Clear pre-reveal effects (animation already shown)
       clearPreRevealEffects();
@@ -280,15 +282,24 @@ export function useGameLogic() {
       }
     }
 
-    // PRIORITY 3: Normal Data War (tie) - only if NOT expecting another play
-    if (!store.anotherPlayExpected) {
-      if (store.checkForDataWar()) {
-        // Clear any existing badges when entering a new data war
-        // Badges will be shown again after all data wars are resolved
-        store.clearAccumulatedEffects();
-        actorRef.send({ type: 'TIE' });
-        return;
-      }
+    // PRIORITY 3: Normal Data War (tie)
+    // Skip data war if:
+    // 1. We're in another play mode and expecting more cards (one player playing), OR
+    // 2. Both players will play again (both cards trigger another play)
+    const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
+    const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
+    const bothTriggerAnother = playerTriggersAnother && cpuTriggersAnother;
+
+    const skipDataWarCheck =
+      (store.anotherPlayMode && store.anotherPlayExpected) || // Single player playing again
+      bothTriggerAnother; // Both players will play again
+
+    if (!skipDataWarCheck && store.checkForDataWar()) {
+      // Clear any existing badges when entering a new data war
+      // Badges will be shown again after all data wars are resolved
+      store.clearAccumulatedEffects();
+      actorRef.send({ type: 'TIE' });
+      return;
     }
 
     // No Data War or Data Grab - prepare effect notification badge (non-blocking)
