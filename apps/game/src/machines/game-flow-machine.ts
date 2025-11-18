@@ -528,10 +528,27 @@ export const gameFlowMachine = createMachine(
       },
 
       game_over: {
-        type: 'final',
         entry: assign({
           tooltipMessage: 'GAME_OVER',
         }),
+        on: {
+          QUIT_GAME: {
+            target: 'welcome',
+            actions: assign({
+              currentTurn: 0,
+              trackerSmackerActive: null,
+              tooltipMessage: 'EMPTY',
+            }),
+          },
+          RESTART_GAME: {
+            target: 'vs_animation',
+            actions: assign({
+              currentTurn: 0,
+              trackerSmackerActive: null,
+              tooltipMessage: 'EMPTY',
+            }),
+          },
+        },
       },
     },
 

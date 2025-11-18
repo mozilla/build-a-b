@@ -4,12 +4,14 @@ import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
 import { LoadingScreen, type LoadingScreenPhase } from '@/components/LoadingScreen';
 import { STATE_BACKGROUND_CONFIG } from '@/components/ScreenRenderer/background-config';
+import { GameOver } from '@/components/Screens/GameOver';
 import { Intro } from '@/components/Screens/Intro';
 import { QuickStart } from '@/components/Screens/QuickStart';
 import { SelectBackground } from '@/components/Screens/SelectBackground';
 import { SelectBillionaire } from '@/components/Screens/SelectBillionaire';
 import { VSAnimation } from '@/components/Screens/VSAnimation';
 import { Welcome } from '@/components/Screens/Welcome';
+import { WinnerAnimation } from '@/components/Screens/WinnerAnimation';
 import { YourMission } from '@/components/Screens/YourMission';
 import { useGameLogic } from '@/hooks/use-game-logic';
 import { QUERIES, useMediaQuery } from '@/hooks/use-media-query';
@@ -35,6 +37,9 @@ export interface BaseScreenProps
   drawerOpen: boolean;
   setDrawerOpen: (isOpen: boolean) => void;
   setDrawerNode: (node: React.ReactNode) => void;
+  // Optional callbacks for WinnerAnimation screen
+  onGameOverCrossfadeStart?: () => void;
+  onGameOverCrossfadeComplete?: () => void;
 }
 
 // Screen registry mapping state machine phases to components
@@ -46,13 +51,13 @@ const SCREEN_REGISTRY: Record<string, FC<BaseScreenProps>> = {
   quick_start_guide: QuickStart as FC<BaseScreenProps>,
   your_mission: YourMission,
   vs_animation: VSAnimation,
+  game_over: WinnerAnimation,
   // ready: Welcome,
   // revealing: Welcome,
   // comparing: Welcome,
   // data_war: Welcome,
   // special_effect: Welcome,
   // resolving: Welcome,
-  // game_over: Welcome,
 };
 
 // Screens that should show the pause/close icon
@@ -76,6 +81,9 @@ export const ScreenRenderer: FC = () => {
     setHasShownHighPriorityLoadingScreen,
     setHasShownEssentialLoadingScreen,
   } = useGameStore();
+
+  // State for GameOver screen crossfade
+  const [showGameOverCrossfade, setShowGameOverCrossfade] = useState(false);
   const {
     isReady,
     loadedAssets,
@@ -121,6 +129,13 @@ export const ScreenRenderer: FC = () => {
       setHasShownEssentialLoadingScreen(true);
     }
   }, [isWaitingForEssentialAssets, setHasShownEssentialLoadingScreen]);
+
+  // Reset crossfade state when leaving game_over phase
+  useEffect(() => {
+    if (phaseKey !== 'game_over') {
+      setShowGameOverCrossfade(false);
+    }
+  }, [phaseKey]);
 
   // Fallback if phase not found
   if (!ScreenComponent) {
@@ -190,23 +205,58 @@ export const ScreenRenderer: FC = () => {
               </>
             }
           >
-            <ScreenComponent
-              key="component"
-              send={send}
-              isFramed={isFramed}
-              drawerOpen={drawerOpen}
-              setDrawerOpen={setDrawerOpen}
-              setDrawerNode={setDrawerNode}
-              className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
-            >
-              {showCloseIcon && (
-                <div className="absolute top-5 right-5">
-                  <Button onPress={toggleMenu}>
-                    <Icon name="pause" label="pause" className="w-[1.5rem] h-[1.375rem]" />
-                  </Button>
-                </div>
-              )}
-            </ScreenComponent>
+            {/* Special dual-screen rendering for game_over phase */}
+            {phaseKey === 'game_over' ? (
+              <>
+                {/* Winner video - always rendered, fades out during crossfade */}
+                <ScreenComponent
+                  key="winner-video"
+                  send={send}
+                  isFramed={isFramed}
+                  drawerOpen={drawerOpen}
+                  setDrawerOpen={setDrawerOpen}
+                  setDrawerNode={setDrawerNode}
+                  onGameOverCrossfadeStart={() => setShowGameOverCrossfade(true)}
+                  className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
+                  style={{
+                    opacity: showGameOverCrossfade ? 0 : 1,
+                    transition: 'opacity 3s ease-in-out',
+                  }}
+                />
+
+                {/* GameOver screen - rendered when crossfade starts */}
+                {showGameOverCrossfade && (
+                  <GameOver
+                    key="game-over-screen"
+                    send={send}
+                    isFramed={isFramed}
+                    drawerOpen={drawerOpen}
+                    setDrawerOpen={setDrawerOpen}
+                    setDrawerNode={setDrawerNode}
+                    className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none"
+                  />
+                )}
+              </>
+            ) : (
+              /* Normal single-screen rendering for all other phases */
+              <ScreenComponent
+                key="component"
+                send={send}
+                isFramed={isFramed}
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+                setDrawerNode={setDrawerNode}
+                className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
+              >
+                {showCloseIcon && (
+                  <div className="absolute top-5 right-5">
+                    <Button onPress={toggleMenu}>
+                      <Icon name="pause" label="pause" className="w-[1.5rem] h-[1.375rem]" />
+                    </Button>
+                  </div>
+                )}
+              </ScreenComponent>
+            )}
             {isFramed && drawerOpen && <Fragment key="drawer">{drawerNode}</Fragment>}
           </Frame>
         </AnimatePresence>

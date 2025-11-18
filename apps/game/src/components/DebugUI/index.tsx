@@ -6,7 +6,9 @@
 
 import { Button } from '@/components/Button';
 import Text from '@/components/Text';
+import { BILLIONAIRES, type BillionaireId } from '@/config/billionaires';
 import { DEFAULT_GAME_CONFIG, type CardTypeId } from '@/config/game-config';
+import { GameMachineContext } from '@/providers/GameProvider';
 import { useGameStore } from '@/store/game-store';
 import { Autocomplete, AutocompleteItem } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -40,7 +42,10 @@ export function DebugUI() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [playerCards, setPlayerCards] = useState<CardTypeId[]>([]);
   const [cpuCards, setCpuCards] = useState<CardTypeId[]>([]);
+  const [winnerSelection, setWinnerSelection] = useState<'player' | 'cpu'>('player');
+  const [winnerBillionaire, setWinnerBillionaire] = useState<BillionaireId>('chaz');
   const keySequenceRef = useRef('');
+  const actorRef = GameMachineContext.useActorRef();
   const initializeGame = useGameStore((state) => state.initializeGame);
   const showDataGrabCookies = useGameStore((state) => state.showDataGrabCookies);
   const setShowDataGrabCookies = useGameStore((state) => state.setShowDataGrabCookies);
@@ -132,6 +137,24 @@ export function DebugUI() {
     setIsExpanded(false);
   };
 
+  const handleInstantWin = () => {
+    const store = useGameStore.getState();
+
+    // Set the winner and winCondition in the store
+    store.winner = winnerSelection;
+    store.winCondition = 'all_cards';
+
+    // Set the appropriate billionaire based on winner
+    if (winnerSelection === 'player') {
+      store.selectedBillionaire = winnerBillionaire;
+    } else {
+      store.cpuBillionaire = winnerBillionaire;
+    }
+
+    // Trigger the game_over phase transition
+    actorRef.send({ type: 'WIN' });
+  };
+
   const debugUI = (
     <AnimatePresence>
       {isOpen && (
@@ -141,184 +164,227 @@ export function DebugUI() {
           exit={{ opacity: 0, y: 20 }}
           className="fixed bottom-4 right-4 z-[100] font-sans md:bottom-4 md:right-4 isolate"
         >
-        {!isExpanded ? (
-          // Collapsed state - small floating button
-          <Button onPress={() => setIsExpanded(true)} title="Open Debug UI">
-            Debug
-          </Button>
-        ) : (
-          // Expanded state - drawer on mobile, panel on desktop
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 100 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="bg-gray-900 text-white rounded-t-lg md:rounded-lg shadow-2xl 
+          {!isExpanded ? (
+            // Collapsed state - small floating button
+            <Button onPress={() => setIsExpanded(true)} title="Open Debug UI">
+              Debug
+            </Button>
+          ) : (
+            // Expanded state - drawer on mobile, panel on desktop
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 100 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              className="bg-gray-900 text-white rounded-t-lg md:rounded-lg shadow-2xl 
                        fixed bottom-0 left-0 right-0 h-[80dvh] z-[10000]
                        md:relative md:w-[37.5rem] md:max-h-[80dvh] md:bottom-auto md:left-auto md:right-auto
                        overflow-hidden flex flex-col"
-          >
-            {/* Header */}
-            <div className="bg-neutral-700 px-4 py-2 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <h2 className="font-bold text-lg">Debug Panel</h2>
-              </div>
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="hover:bg-purple-700 rounded p-1 transition-colors"
-                title="Minimize"
-              >
-                <XIcon />
-              </button>
-            </div>
-
-            {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {/* Instructions */}
-              <div className="bg-gray-800 rounded-lg p-3 text-sm text-gray-300 border border-gray-700">
-                <p className="font-semibold mb-2 text-purple-300">💡 Card Deck Builder:</p>
-                <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Select cards in the order you want them in each deck</li>
-                  <li>Selected cards will be at the top of the deck</li>
-                  <li>Remaining deck slots will be filled randomly</li>
-                  <li>Leave empty for fully random decks</li>
-                  <li>Press ↑ ↑ ↓ ↓ to toggle this panel</li>
-                </ul>
+            >
+              {/* Header */}
+              <div className="bg-neutral-700 px-4 py-2 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold text-lg">Debug Panel</h2>
+                </div>
+                <button
+                  onClick={() => setIsExpanded(false)}
+                  className="hover:bg-purple-700 rounded p-1 transition-colors"
+                  title="Minimize"
+                >
+                  <XIcon />
+                </button>
               </div>
 
-              {/* Debug Options */}
-              <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                <p className="font-semibold mb-2 text-cyan-300">🍪 Visual Options:</p>
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={showDataGrabCookies}
-                    onChange={(e) => setShowDataGrabCookies(e.target.checked)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span className="text-sm">Show floating cookies during Data Grab</span>
-                </label>
-              </div>
+              {/* Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {/* Instructions */}
+                <div className="bg-gray-800 rounded-lg p-3 text-sm text-gray-300 border border-gray-700">
+                  <p className="font-semibold mb-2 text-purple-300">💡 Card Deck Builder:</p>
+                  <ul className="list-disc list-inside space-y-1 text-xs">
+                    <li>Select cards in the order you want them in each deck</li>
+                    <li>Selected cards will be at the top of the deck</li>
+                    <li>Remaining deck slots will be filled randomly</li>
+                    <li>Leave empty for fully random decks</li>
+                    <li>Press ↑ ↑ ↓ ↓ to toggle this panel</li>
+                  </ul>
+                </div>
 
-              {/* Player Deck */}
-              <div className="space-y-3 bg-purple-900/20 rounded-lg p-2 border border-purple-700/50">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-purple-300">👤 Player Deck ({playerCards.length} cards)</h3>
+                {/* Debug Options */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <p className="font-semibold mb-2 text-cyan-300">🍪 Visual Options:</p>
+                  <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={showDataGrabCookies}
+                      onChange={(e) => setShowDataGrabCookies(e.target.checked)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-sm">Show floating cookies during Data Grab</span>
+                  </label>
+                </div>
+
+                {/* Instant Win Controls */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <p className="font-semibold mb-3 text-yellow-300">🏆 Instant Win:</p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm text-gray-400 mb-1 block">Winner:</label>
+                      <select
+                        value={winnerSelection}
+                        onChange={(e) => setWinnerSelection(e.target.value as 'player' | 'cpu')}
+                        className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm cursor-pointer"
+                      >
+                        <option value="player">Player</option>
+                        <option value="cpu">CPU</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-400 mb-1 block">Billionaire:</label>
+                      <select
+                        value={winnerBillionaire}
+                        onChange={(e) => setWinnerBillionaire(e.target.value as BillionaireId)}
+                        className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm cursor-pointer"
+                      >
+                        {BILLIONAIRES.map((billionaire) => (
+                          <option key={billionaire.id} value={billionaire.id}>
+                            {billionaire.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={handleInstantWin}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded transition-colors"
+                      title="Instantly trigger game win with selected winner and billionaire"
+                    >
+                      Trigger Win
+                    </button>
+                  </div>
+                </div>
+
+                {/* Player Deck */}
+                <div className="space-y-3 bg-purple-900/20 rounded-lg p-2 border border-purple-700/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-purple-300">👤 Player Deck ({playerCards.length} cards)</h3>
+                    {playerCards.length > 0 && (
+                      <button
+                        onClick={handleClearPlayer}
+                        className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
+                        title="Remove all player cards"
+                      >
+                        <TrashIcon />
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  <CardSelector options={cardOptions} onSelect={handleAddPlayerCard} />
+
+                  {/* Selected cards */}
                   {playerCards.length > 0 && (
-                    <button
-                      onClick={handleClearPlayer}
-                      className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
-                      title="Remove all player cards"
-                    >
-                      <TrashIcon />
-                      Clear All
-                    </button>
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-400 font-medium">
+                        Selected cards (in order):
+                      </p>
+                      <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
+                        {playerCards.map((typeId, index) => {
+                          const card = cardOptions.find((c) => c.typeId === typeId);
+                          return (
+                            <div
+                              key={`player-${index}`}
+                              className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
+                            >
+                              <span className="font-medium">
+                                <span className="text-purple-400">#{index + 1}</span> {card?.name}{' '}
+                                <span className="text-gray-400">(Val: {card?.value})</span>
+                              </span>
+                              <button
+                                onClick={() => handleRemovePlayerCard(index)}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                title="Remove this card"
+                              >
+                                <XIcon />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <CardSelector options={cardOptions} onSelect={handleAddPlayerCard} />
-
-                {/* Selected cards */}
-                {playerCards.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-gray-400 font-medium">Selected cards (in order):</p>
-                    <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
-                      {playerCards.map((typeId, index) => {
-                        const card = cardOptions.find((c) => c.typeId === typeId);
-                        return (
-                          <div
-                            key={`player-${index}`}
-                            className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
-                          >
-                            <span className="font-medium">
-                              <span className="text-purple-400">#{index + 1}</span> {card?.name}{' '}
-                              <span className="text-gray-400">(Val: {card?.value})</span>
-                            </span>
-                            <button
-                              onClick={() => handleRemovePlayerCard(index)}
-                              className="text-red-400 hover:text-red-300 transition-colors p-1"
-                              title="Remove this card"
-                            >
-                              <XIcon />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
+                {/* CPU Deck */}
+                <div className="space-y-3 bg-blue-900/20 rounded-lg p-2 border border-blue-700/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-blue-300">🤖 CPU Deck ({cpuCards.length} cards)</h3>
+                    {cpuCards.length > 0 && (
+                      <button
+                        onClick={handleClearCpu}
+                        className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
+                        title="Remove all CPU cards"
+                      >
+                        <TrashIcon />
+                        Clear All
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* CPU Deck */}
-              <div className="space-y-3 bg-blue-900/20 rounded-lg p-2 border border-blue-700/50">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-blue-300">🤖 CPU Deck ({cpuCards.length} cards)</h3>
+                  {/* Add card selector - at top for easy access */}
+                  <CardSelector options={cardOptions} onSelect={handleAddCpuCard} />
+
+                  {/* Selected cards */}
                   {cpuCards.length > 0 && (
-                    <button
-                      onClick={handleClearCpu}
-                      className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
-                      title="Remove all CPU cards"
-                    >
-                      <TrashIcon />
-                      Clear All
-                    </button>
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-400 font-medium">
+                        Selected cards (in order):
+                      </p>
+                      <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
+                        {cpuCards.map((typeId, index) => {
+                          const card = cardOptions.find((c) => c.typeId === typeId);
+                          return (
+                            <div
+                              key={`cpu-${index}`}
+                              className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
+                            >
+                              <span className="font-medium">
+                                <span className="text-blue-400">#{index + 1}</span> {card?.name}{' '}
+                                <span className="text-gray-400">(Val: {card?.value})</span>
+                              </span>
+                              <button
+                                onClick={() => handleRemoveCpuCard(index)}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                title="Remove this card"
+                              >
+                                <XIcon />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                {/* Add card selector - at top for easy access */}
-                <CardSelector options={cardOptions} onSelect={handleAddCpuCard} />
-
-                {/* Selected cards */}
-                {cpuCards.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-gray-400 font-medium">Selected cards (in order):</p>
-                    <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
-                      {cpuCards.map((typeId, index) => {
-                        const card = cardOptions.find((c) => c.typeId === typeId);
-                        return (
-                          <div
-                            key={`cpu-${index}`}
-                            className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
-                          >
-                            <span className="font-medium">
-                              <span className="text-blue-400">#{index + 1}</span> {card?.name}{' '}
-                              <span className="text-gray-400">(Val: {card?.value})</span>
-                            </span>
-                            <button
-                              onClick={() => handleRemoveCpuCard(index)}
-                              className="text-red-400 hover:text-red-300 transition-colors p-1"
-                              title="Remove this card"
-                            >
-                              <XIcon />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
 
-            {/* Footer - Fixed at bottom */}
-            <div className="border-t border-gray-700 px-4 py-4 flex items-stretch justify-end bg-gray-800 shrink-0">
-              <Button
-                disabled
-                // onPress={handleSkipToGame}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-3 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2 mr-4 disabled:grayscale-100"
-                title="Skip all intro/setup screens and start gameplay immediately"
-              >
-                Skip to Game
-              </Button>
-              <button
-                onClick={handleApply}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-2.5 rounded-lg transition-all shadow-lg"
-                title="Start a new game with the selected cards"
-              >
-                Initialize Game
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </motion.div>
+              {/* Footer - Fixed at bottom */}
+              <div className="border-t border-gray-700 px-4 py-4 flex items-stretch justify-end bg-gray-800 shrink-0">
+                <Button
+                  disabled
+                  // onPress={handleSkipToGame}
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-3 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2 mr-4 disabled:grayscale-100"
+                  title="Skip all intro/setup screens and start gameplay immediately"
+                >
+                  Skip to Game
+                </Button>
+                <button
+                  onClick={handleApply}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-2.5 rounded-lg transition-all shadow-lg"
+                  title="Start a new game with the selected cards"
+                >
+                  Initialize Game
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
       )}
     </AnimatePresence>
   );

@@ -68,7 +68,11 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     return [
       getCharacterAnimation(selectedBillionaire, cpuBillionaire, 'vs'),
       getCharacterAnimation(selectedBillionaire, cpuBillionaire, 'datawar'),
-    ];
+      // Winner animations: player wins (showing "You win" with selected billionaire)
+      getCharacterAnimation(selectedBillionaire, 'player', 'winner'),
+      // Winner animations: CPU wins (showing "[CPU billionaire] wins")
+      getCharacterAnimation(cpuBillionaire, 'cpu', 'winner'),
+    ].filter((url): url is string => url !== undefined);
   }, [selectedBillionaire, cpuBillionaire]);
 
   const videoPreloadState = useVideoPreloader(videoUrls, {
