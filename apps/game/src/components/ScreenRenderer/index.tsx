@@ -22,6 +22,7 @@ import { Button } from '@heroui/react';
 import { AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import {
   Fragment,
+  useCallback,
   useEffect,
   useState,
   type FC,
@@ -33,7 +34,7 @@ import { useGameMachine } from '../../hooks/use-game-machine';
 export interface BaseScreenProps
   extends PropsWithChildren<Omit<HTMLMotionProps<'div'>, 'children'>> {
   send?: ReturnType<typeof useGameMachine>['send'];
-  isFramed: boolean;
+  isFramed?: boolean;
   drawerOpen: boolean;
   setDrawerOpen: (isOpen: boolean) => void;
   setDrawerNode: (node: React.ReactNode) => void;
@@ -137,6 +138,15 @@ export const ScreenRenderer: FC = () => {
     }
   }, [phaseKey]);
 
+  // Memoize callbacks to prevent WinnerAnimation from re-rendering
+  const handleGameOverCrossfadeStart = useCallback(() => {
+    setShowGameOverCrossfade(true);
+  }, []);
+
+  const handleGameOverCrossfadeComplete = useCallback(() => {
+    // Optional: Add any cleanup or state updates when crossfade completes
+  }, []);
+
   // Fallback if phase not found
   if (!ScreenComponent) {
     // console.warn(`No screen component found for phase: ${phaseKey}`);
@@ -212,11 +222,11 @@ export const ScreenRenderer: FC = () => {
                 <ScreenComponent
                   key="winner-video"
                   send={send}
-                  isFramed={isFramed}
                   drawerOpen={drawerOpen}
                   setDrawerOpen={setDrawerOpen}
                   setDrawerNode={setDrawerNode}
-                  onGameOverCrossfadeStart={() => setShowGameOverCrossfade(true)}
+                  onGameOverCrossfadeStart={handleGameOverCrossfadeStart}
+                  onGameOverCrossfadeComplete={handleGameOverCrossfadeComplete}
                   className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
                   style={{
                     opacity: showGameOverCrossfade ? 0 : 1,

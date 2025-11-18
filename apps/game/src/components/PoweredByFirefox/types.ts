@@ -1,5 +1,4 @@
-import type { PropsWithChildren } from 'react';
-
-export interface PoweredByFirefoxProps extends PropsWithChildren {
+export interface PoweredByFirefoxProps {
   className?: string;
+  href?: string;
 }
