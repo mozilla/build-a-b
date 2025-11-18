@@ -106,7 +106,6 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
           src={src}
           poster={videoThumbnail}
           muted
-          loop
           playsInline
           preload="metadata"
           className="absolute inset-0 w-full h-full object-cover rounded-[0.75rem]"
