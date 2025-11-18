@@ -34,8 +34,8 @@ interface AnimatedCardProps {
   // Animation state
   deckOffset: { x: number; y: number };
   shouldCollect: boolean;
-  collectionOffset: { x: number; y: number };
-  isSwapped: boolean;
+  playerCollectionOffset: { x: number; y: number };
+  cpuCollectionOffset: { x: number; y: number };
   winner: 'player' | 'cpu' | null;
   isCPU: boolean;
   owner: 'player' | 'cpu';
@@ -65,8 +65,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   playIndex,
   deckOffset,
   shouldCollect,
-  collectionOffset,
-  isSwapped,
+  playerCollectionOffset,
+  cpuCollectionOffset,
   winner,
   isCPU,
   owner,
@@ -88,6 +88,16 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const cpu = useGameStore((state) => state.cpu);
   const dataWarVideoPlaying = useGameStore((state) => state.dataWarVideoPlaying);
   const anotherPlayExpected = useGameStore((state) => state.anotherPlayExpected);
+  const collectingState = useGameStore((state) => state.collecting);
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
+  const showDataGrabResults = useGameStore((state) => state.showDataGrabResults);
+
+  // Find this card's specific destination from the distribution system
+  const cardDistribution = collectingState?.distributions?.find(
+    (d) => d.card.id === playedCardState.card.id,
+  );
+  const cardDestination = cardDistribution?.destination || winner;
+  const isSwappedNow = deckSwapCount % 2 === 1;
   const isTiedInComparing =
     phase === 'comparing' &&
     player.playedCard &&
@@ -96,8 +106,13 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     !anotherPlayExpected;
   const shouldShowDataWarGlow = isTiedInComparing;
 
+  // Use faster animation for Data Grab cards (restoring to tableau behind modal)
+  const playDuration = showDataGrabResults
+    ? ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE
+    : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK;
+
   // Calculate stagger delay for sequential play
-  const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK : 0;
+  const staggerDelay = isNewCard ? playIndex * playDuration : 0;
 
   // Get rotation class for visual variety
   const rotationClass = getRotationClass(
@@ -134,14 +149,23 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const spreadRotation = isNewCard ? (cardIndexInBatch - 1) * 4 : 0;
   const initialRotate = baseInitialRotation + spreadRotation;
 
+  // Determine which collection offset to use based on this card's destination
+  const cardSpecificCollectionOffset = shouldCollect
+    ? cardDestination === 'player'
+      ? playerCollectionOffset
+      : cpuCollectionOffset
+    : { x: 0, y: 0 };
+
   // Animation endpoints
-  const finalX = shouldCollect ? collectionOffset.x : 0;
-  const finalY = shouldCollect ? collectionOffset.y : 0;
+  const finalX = shouldCollect ? cardSpecificCollectionOffset.x : 0;
+  const finalY = shouldCollect ? cardSpecificCollectionOffset.y : 0;
   const finalScale = shouldCollect ? SCALE.DECK : SCALE.TABLE;
 
-  // Collection rotation based on visual position
-  const winnerIsVisuallyAtBottom = isSwapped ? winner === 'cpu' : winner === 'player';
-  const collectionRotation = winnerIsVisuallyAtBottom
+  // Collection rotation based on visual position (use cardDestination instead of winner)
+  const destinationIsVisuallyAtBottom = isSwappedNow
+    ? cardDestination === 'cpu'
+    : cardDestination === 'player';
+  const collectionRotation = destinationIsVisuallyAtBottom
     ? COLLECTION_ROTATION.BOTTOM
     : COLLECTION_ROTATION.TOP;
   const finalRotate = shouldCollect ? collectionRotation : 0;
@@ -157,7 +181,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     ? Z_INDEX_CONFIG.FINAL_BASE + playIndex
     : Z_INDEX_CONFIG.FINAL_BASE + index;
 
-  const isWinnerCard = shouldCollect && owner === winner;
+  // Check if this card is going to its owner's deck (winner) or opponent's deck (loser)
+  const isWinnerCard = shouldCollect && owner === cardDestination;
   const collectionZIndex = shouldCollect
     ? isWinnerCard
       ? Z_INDEX_CONFIG.COLLECTION_WINNER_BASE + index
@@ -247,7 +272,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       transition={{
         duration: shouldCollect
           ? ANIMATION_DURATIONS.CARD_COLLECTION / 1000
-          : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
+          : playDuration / 1000,
         ease: [0.43, 0.13, 0.23, 0.96],
         delay: shouldCollect
           ? index * 0.05

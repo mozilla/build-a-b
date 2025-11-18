@@ -36,6 +36,7 @@ export const ANIMATION_DURATIONS = {
   CARD_SETTLE_DELAY: 1000, // Delay after card lands before effect overlay triggers (matches CARD_PLAY_FROM_DECK + 200ms pause)
   FORCED_EMPATHY_SWAP_DURATION: 1000, // Deck swap animation duration
   FORCED_EMPATHY_VIDEO_DURATION: 5000, // How long the video overlay stays visible (total effect time)
+  FORCED_EMPATHY_SETTLE_DELAY: 1000, // Delay after deck swap completes before continuing game flow (prevents overlap with subsequent animations)
   DATA_WAR_ANIMATION_DURATION: 2000, // Data war character animation duration
   DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 3000,
 
@@ -43,6 +44,8 @@ export const ANIMATION_DURATIONS = {
   DATA_GRAB_TAKEOVER: 5000, // Takeover intro animation
   DATA_GRAB_GAME: 4500, // Active gameplay duration (matches card fall speed)
   DATA_GRAB_HAND_VIEWER: 1000, // Minimum results display time (reduced from 3000ms)
+  DATA_GRAB_CARD_RESTORE: 1, // Fast card restore to tableau (hidden behind modal)
+  DATA_GRAB_CARD_RESTORE_DELAY: 200, // Fast card restore to tableau delay (hidden behind modal)
 
   // LaunchStack
   LAUNCH_STACK_WON_TOKEN_DURATION: 1500
