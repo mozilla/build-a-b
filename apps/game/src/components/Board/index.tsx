@@ -15,7 +15,7 @@ export const Board: FC<PropsWithChildren<BoardProps>> = ({ children, bgSrc }) =>
     >
       <header className="absolute top-[2.25%] left-0 w-full bg-transparent flex items-center justify-end gap-[0.375rem]">
         <Button onPress={toggleMenu} className="px-0 mr-[5%] sm:mr-5">
-          <Icon name="pause" />
+          <Icon name="pause" className="w-[1.5rem] h-[1.375rem]"/>
         </Button>
       </header>
       {children}

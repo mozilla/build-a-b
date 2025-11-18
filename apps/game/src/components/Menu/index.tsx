@@ -105,7 +105,7 @@ export const Menu: FC = () => {
                   className="absolute top-0 right-8 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                   aria-label={menuMicrocopy.closeMenu}
                 >
-                  <Icon name="close" width={8} height={8} />
+                  <Icon name="close" width={8} height={8} className="w-2 h-2" />
                 </Button>
               </header>
               {/* Title */}
@@ -166,7 +166,7 @@ export const Menu: FC = () => {
                     className="flex-1 flex items-center gap-2"
                     disabled={isNonGameplayPhase}
                   >
-                    <Icon name="restart" size={12} />
+                    <Icon name="restart" size={12} className="w-3 h-3" />
                     {menuMicrocopy.restartButton}
                   </Button>
                   <Button
@@ -174,7 +174,7 @@ export const Menu: FC = () => {
                     variant="primary"
                     className="flex-1 flex items-center gap-2"
                   >
-                    <Icon name="close" size={12} />
+                    <Icon name="close" size={12} className="w-3 h-3" />
                     {menuMicrocopy.quitButton}
                   </Button>
                 </div>
@@ -200,7 +200,7 @@ export const Menu: FC = () => {
                             className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                             onPress={() => setShowGuide(false)}
                           >
-                            <Icon name="close" width={8} height={8} label="close" />
+                            <Icon name="close" width={8} height={8} label="close" className="w-2 h-2" />
                           </Button>
                         </div>
                       </QuickStart>
@@ -270,7 +270,7 @@ export const Menu: FC = () => {
                               variant="primary"
                               className="flex-1 flex items-center gap-2"
                             >
-                              <Icon name="close" size={12} />
+                              <Icon name="close" size={12} className="w-3 h-3" />
                               {menuMicrocopy.quitButton}
                             </Button>
                           </div>
@@ -282,7 +282,7 @@ export const Menu: FC = () => {
                           className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                           aria-label={menuMicrocopy.closeDrawer}
                         >
-                          <Icon name="close" width={8} height={8} />
+                          <Icon name="close" width={8} height={8} className="w-2 h-2" />
                         </Button>
                       </div>
                     </motion.div>
@@ -360,7 +360,7 @@ export const Menu: FC = () => {
                               variant="primary"
                               className="flex-1 flex items-center gap-2"
                             >
-                              <Icon name="restart" size={12} />
+                              <Icon name="restart" size={12} className="w-3 h-3" />
                               {menuMicrocopy.restartButton}
                             </Button>
                           </div>
@@ -372,7 +372,7 @@ export const Menu: FC = () => {
                           className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                           aria-label={menuMicrocopy.closeDrawer}
                         >
-                          <Icon name="close" width={8} height={8} />
+                          <Icon name="close" width={8} height={8} className="w-2 h-2" />
                         </Button>
                       </div>
                     </motion.div>
