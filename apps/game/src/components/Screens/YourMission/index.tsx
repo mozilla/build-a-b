@@ -1,18 +1,30 @@
-import { type FC } from 'react';
+import { type FC, useState, useEffect } from 'react';
 
 import { Button } from '@/components/Button';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
+import { LottieAnimation } from '@/components/LottieAnimation';
 import { useGameStore } from '@/store';
 import { getBillionaireImage } from '@/utils/selectors';
 
-import { Icon } from '@/components/Icon';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { yourMissionMicrocopy } from './microcopy';
+import { AnimatedRocket } from './AnimatedRocket';
+import burstAnimation from '@/assets/animations/effects/burst.json';
 
 export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire } = useGameStore();
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Start confetti after third rocket completes its pulse (1.3s delay + 0.8s duration = 2.1s)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowConfetti(true);
+    }, 2100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleContinue = () => {
     send?.({ type: 'START_PLAYING' });
@@ -58,10 +70,39 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
         </div>
 
         {/* Launch Stack Icons */}
-        <div className="flex items-start justify-center gap-2 pb-8">
-          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem] -rotate-z-21 mt-3" />
-          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem]"/>
-          <Icon name="rocket" className="w-[3.3125rem] h-[3.3125rem] rotate-z-21 mt-3" />
+        <div className="flex items-start justify-center gap-2 pb-8 relative">
+          {/* Confetti burst animation behind rockets */}
+          {showConfetti && (
+            <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+              <LottieAnimation
+                animationData={burstAnimation}
+                loop={true}
+                autoplay={true}
+                width="12.5rem"
+                height="12.5rem"
+                className="scale-150"
+              />
+            </div>
+          )}
+          
+          <AnimatedRocket
+            delay={0.5}
+            gradientId="rocket-gradient-1"
+            rotation={-21}
+            className="w-[3.3125rem] h-[3.3125rem] mt-3"
+          />
+          <AnimatedRocket
+            delay={0.9}
+            gradientId="rocket-gradient-2"
+            rotation={0}
+            className="w-[3.3125rem] h-[3.3125rem]"
+          />
+          <AnimatedRocket
+            delay={1.3}
+            gradientId="rocket-gradient-3"
+            rotation={21}
+            className="w-[3.3125rem] h-[3.3125rem] mt-3"
+          />
         </div>
 
         {/* Action Button - at bottom */}
