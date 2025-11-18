@@ -37,6 +37,8 @@ export const CardCarousel: FC = () => {
           <SwiperSlide key={card.cardTitle}>
             <div className="flex items-center justify-center h-full px-4">
               <CardFeature
+                cardTotalNumber={card.cardTotalNumber}
+                cardType={card.cardType}
                 cardTitle={card.cardTitle}
                 cardImgSrc={card.cardImgSrc}
                 cardDesc={card.cardDesc}
