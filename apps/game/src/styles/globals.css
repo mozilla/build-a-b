@@ -143,6 +143,22 @@ body {
   }
 }
 
+@keyframes rocket-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
 .animate-scroll-without-pause {
   animation: ticker-horizontal-infinite-scroll 20s linear infinite;
 }
@@ -153,6 +169,10 @@ body {
 
 .animate-shimmer {
   animation: shimmer 2s linear infinite;
+}
+
+.animate-rocket-float {
+  animation: rocket-float 4s ease-in-out infinite;
 }
 
 /* Pause on hover */

@@ -10,8 +10,6 @@ import {
   useDeckSwapCount,
   useSelectedBackground,
   useSelectedBillionaire,
-  useWinCondition,
-  useWinner,
 } from '@/store';
 import { cn } from '@/utils/cn';
 import { getBackgroundImage } from '@/utils/selectors';
@@ -26,10 +24,10 @@ import { DataWarAnimation } from '../DataWarAnimation';
 import { DebugUI } from '../DebugUI';
 import { EffectNotificationModal } from '../EffectNotificationModal';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
-import { TemperTantrumModal } from '../TemperTantrumModal';
 import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
+import { TemperTantrumModal } from '../TemperTantrumModal';
 
 /**
  * Game Component - Main game container
@@ -46,7 +44,6 @@ export function Game() {
     handleRevealCards,
     handleCompareTurn,
     handleResolveTurn,
-    resetGame,
     send,
   } = useGameLogic();
   const { essentialAssetsReady } = usePreloading();
@@ -58,8 +55,6 @@ export function Game() {
   const selectedBackground = useSelectedBackground();
   const selectedBillionaire = useSelectedBillionaire();
   const cpuBillionaire = useCpuBillionaire();
-  const winner = useWinner();
-  const winCondition = useWinCondition();
   const collecting = useGameStore((state) => state.collecting);
 
   // Deck counter shows only the main deck
@@ -239,28 +234,6 @@ export function Game() {
             activeIndicator={bottomDeckActiveIndicator}
           />
         </div>
-
-        {/* Game Over Overlay */}
-        {phase === 'game_over' && winner && (
-          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-8 text-center max-w-md mx-4">
-              <h1 className="text-4xl font-bold mb-4">
-                {winner === 'player' ? '🎉 You Win!' : '😔 CPU Wins!'}
-              </h1>
-              <p className="text-xl mb-6">
-                {winCondition === 'launch_stacks'
-                  ? '3 Launch Stacks Collected!'
-                  : 'All Cards Collected!'}
-              </p>
-              <button
-                onClick={resetGame}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-              >
-                Play Again
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Data War Animation */}
         <DataWarAnimation show={phase === 'data_war.animating'} />
