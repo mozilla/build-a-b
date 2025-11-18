@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { type FC, useMemo, useState } from 'react';
 
-// import smokeAnimation from '@/assets/animations/effects/smoke.json';
+import smokeAnimation from '@/assets/animations/effects/smoke.json';
 import blankRocket from '@/assets/special-effects/rocket-blank.webp';
+import zoomRocket from '@/assets/special-effects/rocket-zoom.webp';
 import { Button } from '@/components/Button';
-// import { LottieAnimation } from '@/components/LottieAnimation';
-import smokeGif from '@/assets/special-effects/smoke.gif';
+import { LottieAnimation } from '@/components/LottieAnimation';
 import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
@@ -26,7 +26,7 @@ export const GameOver: FC<BaseScreenProps> = ({ className, send, ...props }) => 
   const { selectedBillionaire, winner } = useGameStore();
   const cpuBillionaireId = useCpuBillionaire();
   const [shareButtonText, setShareButtonText] = useState('Share with Friends');
-  const [isRocketHovered, setIsRocketHovered] = useState(false);
+  const [isRocketRevealed, setIsRocketRevealed] = useState(false);
 
   // Determine which billionaire won
   const winnerBillionaireId = winner === 'player' ? selectedBillionaire : cpuBillionaireId;
@@ -83,26 +83,23 @@ export const GameOver: FC<BaseScreenProps> = ({ className, send, ...props }) => 
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 3 }}
-      className={cn('relative flex flex-col items-center justify-between w-full h-full', className)}
+      className={cn(
+        'relative flex flex-col items-center justify-between w-full h-full overflow-x-clip',
+        className,
+      )}
       {...props}
     >
-      {/* Top section - Rocket with billionaire portrait and smoke */}
+      {/* Top section - Rocket container */}
       <div className="flex-1 flex items-center justify-center w-full">
         <div className="relative w-[22.1875rem] aspect-square animate-rocket-float">
-          {/* Smoke animation - rotated with hard-light blend */}
+          {/* Smoke animation */}
           <div className="absolute flex items-center justify-center w-full aspect-square -left-48 top-15 rotate-[253.107deg] mix-blend-hard-light">
-            <img
-              className="size-full object-cover"
-              role="presentation"
-              src={smokeGif}
-              alt="Smoke animation"
-            />
-            {/* <LottieAnimation
+            <LottieAnimation
               animationData={smokeAnimation}
               loop={true}
               autoplay={true}
               className="w-full h-full"
-            /> */}
+            />
           </div>
 
           {/* Rocket */}
@@ -146,35 +143,70 @@ export const GameOver: FC<BaseScreenProps> = ({ className, send, ...props }) => 
           </Button>
         </div>
       </div>
-
-      {/* Firefox branding with rocket flyby animation */}
-      <motion.div
-        onHoverStart={() => setIsRocketHovered(true)}
-        onHoverEnd={() => setIsRocketHovered(false)}
-        className="relative pb-12"
-      >
-        <PoweredByFirefox className="relative">
+      <MotionConfig transition={{ duration: 1, ease: 'easeInOut' }}>
+        {/* Firefox branding with rocket flyby animation */}
+        <motion.div
+          onMouseEnter={() => setIsRocketRevealed(true)}
+          className="relative pb-12 w-full justify-center grid"
+        >
+          <div className="grid row-span-full col-span-full items-center">
+            <AnimatePresence>
+              {!isRocketRevealed && (
+                <motion.div
+                  key="powered-by-firefox"
+                  style={{ pointerEvents: isRocketRevealed ? 'none' : 'auto' }}
+                  initial={{ opacity: 1 }}
+                  animate={{
+                    opacity: isRocketRevealed ? [1, 0] : 1,
+                  }}
+                  className="row-span-full col-span-full"
+                >
+                  <PoweredByFirefox
+                    className="relative"
+                    href="https://www.firefox.com/en-US/?utm_source=bbomicrosite&utm_medium=data-war-game&utm_campaign=fx-owyw&utm_content=download-button"
+                  />
+                </motion.div>
+              )}
+              <motion.div
+                key="download-firefox-button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isRocketRevealed ? 1 : 0 }}
+                className={cn(
+                  'row-span-full col-span-full',
+                  !isRocketRevealed ? 'pointer-events-none' : '',
+                )}
+              >
+                <Button
+                  as="a"
+                  href="https://www.firefox.com/en-US/?utm_source=bbomicrosite&utm_medium=data-war-game&utm_campaign=fx-owyw&utm_content=download-button"
+                  variant="primary"
+                  target="_blank"
+                >
+                  Download Firefox
+                </Button>
+              </motion.div>
+            </AnimatePresence>
+          </div>
           {/* Rocket flyby animation on hover */}
-          {isRocketHovered && (
-            <></>
-            // <motion.div
-            //   initial={{ x: '', y: 20, rotate: -45, opacity: 0 }}
-            //   // animate={{ x: 200, y: -20, rotate: 15, opacity: [0, 1, 1, 0] }}
-            //   transition={{ duration: 0.8, ease: 'easeInOut' }}
-            //   className="absolute top-1/2 right-0 pointer-events-none w-[4.5rem] h-[5.8125rem]"
-            //   style={{ zIndex: 1000 }}
-            // >
-            //   <img
-            //     src={zoomRocket}
-            //     alt=""
-            //     className="object-cover size-full"
-            //     aria-hidden="true"
-            //     role="presentation"
-            //   />
-            // </motion.div>
+          {isRocketRevealed && (
+            <motion.div
+              initial={{ x: '18rem', y: '-50%', rotate: -15 }}
+              animate={{ x: '-15rem', y: '-50%', rotate: 15, opacity: [0, 1, 1, 0] }}
+              transition={{ duration: 1.25, ease: 'easeInOut' }}
+              className="absolute pointer-events-none w-[4.5rem] h-[5.8125rem] row-span-full col-span-full"
+              style={{ zIndex: 1000 }}
+            >
+              <img
+                src={zoomRocket}
+                alt=""
+                className="object-cover size-full -translate-x-1/2"
+                aria-hidden="true"
+                role="presentation"
+              />
+            </motion.div>
           )}
-        </PoweredByFirefox>
-      </motion.div>
+        </motion.div>
+      </MotionConfig>
     </motion.div>
   );
 };
