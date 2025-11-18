@@ -11,7 +11,7 @@
   - framed-y: fluid scaling based on viewport width (matches Frame's component's 100vw width)
 */
 :root {
-  /* Frameless: Scale based on viewport width relative to 390px design */
+  /* Frameless: Scale based on viewport height relative to 844px design */
   --font-size-frameless: 1.895734597dvh;
 
   /* Frameless: Scale based on viewport width relative to 390px design */
