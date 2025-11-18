@@ -41,6 +41,10 @@ export const EffectNotificationModal: FC = () => {
   // Find the effect for the currently selected card
   const selectedEffect = accumulatedEffects.find((effect) => effect.card.id === selectedCard?.id);
 
+  // Find the first cards that the player and the opponent played
+  const firstPlayerCard = accumulatedEffects.find((effect) => effect.playedBy === 'player');
+  const firstOpponentCard = accumulatedEffects.find((effect) => effect.playedBy === 'cpu');
+
   if (!selectedEffect) return null;
 
   const { playedBy, effectName, effectDescription } = selectedEffect;
@@ -54,6 +58,19 @@ export const EffectNotificationModal: FC = () => {
     setSelectedCard(card);
   };
 
+  const handleOnGoToYourPlay = () => {
+    if (firstPlayerCard) {
+      setSelectedCard(firstPlayerCard.card);
+    }
+  }
+
+  const handleOnGoToOpponentsPlay = () => {
+    if (firstOpponentCard) {
+      setSelectedCard(firstOpponentCard.card);
+    }
+  }
+  
+
   return (
     <Modal
       isOpen={showModal}
@@ -66,19 +83,19 @@ export const EffectNotificationModal: FC = () => {
         wrapper: 'z-[9999]',
         backdrop: 'z-[9998]',
         base: 'bg-[rgba(0,0,0,0.9)] z-[9999]',
-        body: 'py-8 px-6',
+        body: 'pt-12 pb-8 px-0',
       }}
     >
       <ModalContent
         onClick={handleClose}
-        className="cursor-pointer relative h-[100dvh] w-[100vw] flex items-center justify-center"
+        className="cursor-pointer relative h-dvh w-screen flex items-center justify-center"
       >
-        <Frame variant="scrollable" className="flex flex-col">
+        <Frame variant="scrollable" className="flex flex-col overflow-y-auto h-auto">
           {/* Custom Close Button */}
           <Button
             isIconOnly
             onPress={handleClose}
-            className="absolute top-4 right-4 z-[65] w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-65 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             aria-label="Close"
           >
             <img src={CloseIcon} alt="Close" />
@@ -86,25 +103,25 @@ export const EffectNotificationModal: FC = () => {
 
           <ModalBody className="flex flex-col items-center justify-center gap-10 size-full">
             {/* Player Indicator - updates with carousel */}
-            <div className="flex gap-3">
-              <button
-                className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+            <div className="flex gap-3 px-6">
+              <Button className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                   isPlayerCard
                     ? 'bg-accent text-black'
                     : 'bg-transparent border-2 border-white text-white'
                 }`}
-              >
+                onPress={handleOnGoToYourPlay}
+                aria-label="Your Play">
                 Your Play
-              </button>
-              <button
-                className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+              </Button>
+              <Button className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                   !isPlayerCard
                     ? 'bg-accent text-black'
                     : 'bg-transparent border-2 border-white text-white'
                 }`}
-              >
+                onPress={handleOnGoToOpponentsPlay}
+                aria-label="Opponent's Play">
                 Opponent's Play
-              </button>
+              </Button>
             </div>
 
             {/* Card Carousel */}
@@ -115,12 +132,12 @@ export const EffectNotificationModal: FC = () => {
             />
 
             {/* Effect Details for selected card - fixed height to prevent layout shift */}
-            <div className="max-w-md flex flex-col overflow-y-auto px-4">
+            <div className="max-w-md flex flex-col px-10">
               <Text variant="card-modal-title" color="text-common-ash" className="mb-4">
                 {effectName}
               </Text>
               {effectDescription && (
-                <Text variant="title-4" color="text-common-ash" weight="extrabold">
+                <Text variant="title-4" color="text-common-ash" weight="extrabold" align="left">
                   {effectDescription}
                 </Text>
               )}
