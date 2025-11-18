@@ -1,6 +1,7 @@
 import { type FC } from 'react';
 
 import { Button } from '@/components/Button';
+import { Link } from '@heroui/react';
 import { Icon } from '@/components/Icon';
 import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
@@ -27,7 +28,12 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
         {/* Background decorative elements would go here */}
       </div>
-      {children && <header>{children}</header>}
+      <header>
+        <Link href="/" className="absolute top-5 left-5 z-20">
+          <Icon name="return" label="Back" />
+        </Link>
+        {children}
+      </header>
 
       {/* Main content container - centered with flex-grow */}
       <div className="w-full relative z-10 flex flex-col items-center justify-center gap-4 px-[9.2%] py-8 flex-grow">

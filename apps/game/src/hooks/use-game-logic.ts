@@ -96,12 +96,8 @@ export function useGameLogic() {
    * - For Player (interactive): Shows animation → waits for tap → shows modal
    */
   const handleOWYWEffect = (playerId: 'player' | 'cpu', requiresInteraction: boolean) => {
-    const {
-      prepareOpenWhatYouWantCards,
-      playSelectedCardFromOWYW,
-      setShowOpenWhatYouWantModal,
-      clearPreRevealEffects,
-    } = useGameStore.getState();
+    const { prepareOpenWhatYouWantCards, playSelectedCardFromOWYW, clearPreRevealEffects } =
+      useGameStore.getState();
 
     // Prepare the top 3 cards
     prepareOpenWhatYouWantCards(playerId);
@@ -123,15 +119,11 @@ export function useGameLogic() {
       // Transition to ready (no animation/modal for CPU)
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     } else {
-      // Player: Animation already shown when card was played (via animation queue)
-      // Show modal immediately and transition to ready
-      setShowOpenWhatYouWantModal(true);
-
-      // Clear pre-reveal effects (animation already shown)
-      clearPreRevealEffects();
-
-      // Skip pre-reveal flow and go to ready
-      actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
+      // Player: Let the state machine handle the flow
+      // State machine will automatically transition:
+      // pre_reveal.processing → pre_reveal.animating → pre_reveal.awaiting_interaction
+      // Then player taps deck → pre_reveal.selecting → modal opens
+      // (Cards are already prepared above, pre-reveal effects will be cleared when card is selected)
     }
   };
 
@@ -249,6 +241,12 @@ export function useGameLogic() {
     // transition window has passed. However, we ALWAYS check guard conditions to preserve logic.
     const store = useGameStore.getState();
 
+    // If game is blocked (animations or modals), don't send any events
+    // Wait for blockTransitions to be cleared, then state machine's automatic guards will handle it
+    if (store.blockTransitions) {
+      return;
+    }
+
     // PRIORITY 1: Data Grab ALWAYS interrupts (even during "another play")
     if (store.checkForDataGrab()) {
       actorRef.send({ type: 'DATA_GRAB' });
@@ -274,12 +272,24 @@ export function useGameLogic() {
       }
     }
 
-    // PRIORITY 3: Normal Data War (tie) - only if NOT expecting another play
-    if (!store.anotherPlayExpected) {
-      if (store.checkForDataWar()) {
-        actorRef.send({ type: 'TIE' });
-        return;
-      }
+    // PRIORITY 3: Normal Data War (tie)
+    // Skip data war if:
+    // 1. We're in another play mode and expecting more cards (one player playing), OR
+    // 2. Both players will play again (both cards trigger another play)
+    const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
+    const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
+    const bothTriggerAnother = playerTriggersAnother && cpuTriggersAnother;
+
+    const skipDataWarCheck =
+      (store.anotherPlayMode && store.anotherPlayExpected) || // Single player playing again
+      bothTriggerAnother; // Both players will play again
+
+    if (!skipDataWarCheck && store.checkForDataWar()) {
+      // Clear any existing badges when entering a new data war
+      // Badges will be shown again after all data wars are resolved
+      store.clearAccumulatedEffects();
+      actorRef.send({ type: 'TIE' });
+      return;
     }
 
     // No Data War or Data Grab - prepare effect notification badge (non-blocking)
@@ -554,6 +564,10 @@ export function useGameLogic() {
     const playerHasHostileTakeover = store.player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = store.cpu.playedCard?.specialType === 'hostile_takeover';
 
+    // Only skip cards if this is the FIRST data war (both players have exactly 1 card)
+    const isFirstDataWar =
+      store.player.playedCardsInHand.length === 1 && store.cpu.playedCardsInHand.length === 1;
+
     // Add 3 cards face-down from each player ONLY if not hostile takeover is played
     const playerCards = store.player.deck.slice(0, 3);
     const cpuCards = store.cpu.deck.slice(0, 3);
@@ -563,7 +577,7 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player: playerHasHostileTakeover
+      player: playerHasHostileTakeover && isFirstDataWar
         ? store.player
         : {
             ...store.player,
@@ -573,7 +587,7 @@ export function useGameLogic() {
               ...playerCards.map((card) => ({ card, isFaceDown: true })),
             ],
           },
-      cpu: cpuHasHostileTakeover
+      cpu: cpuHasHostileTakeover && isFirstDataWar
         ? store.cpu
         : {
             ...store.cpu,
@@ -583,7 +597,11 @@ export function useGameLogic() {
               ...cpuCards.map((card) => ({ card, isFaceDown: true })),
             ],
           },
-      cardsInPlay: [...store.cardsInPlay, ...playerCards, ...cpuCards],
+      cardsInPlay: [
+        ...store.cardsInPlay,
+        ...(playerHasHostileTakeover && isFirstDataWar ? [] : playerCards),
+        ...(cpuHasHostileTakeover && isFirstDataWar ? [] : cpuCards),
+      ],
     });
   };
 
@@ -596,9 +614,15 @@ export function useGameLogic() {
     const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    if (playerHasHostileTakeover) {
+    // Detect first data war: either player has exactly 1 card (the HT player won't have face-down cards)
+    // In first data war: HT player has 1 card, opponent has 4 cards (1 original + 3 face-down)
+    // In second+ data war: both will have more cards
+    const isFirstDataWar =
+      player.playedCardsInHand.length === 1 || cpu.playedCardsInHand.length === 1;
+
+    if (playerHasHostileTakeover && isFirstDataWar) {
       playCard('cpu');
-    } else if (cpuHasHostileTakeover) {
+    } else if (cpuHasHostileTakeover && isFirstDataWar) {
       playCard('player');
     } else {
       playCard('cpu');
@@ -609,11 +633,11 @@ export function useGameLogic() {
     const freshState = useGameStore.getState();
 
     // Handle special effects for the new cards
-    if (!playerHasHostileTakeover && freshState.player.playedCard) {
+    if (!(playerHasHostileTakeover && isFirstDataWar) && freshState.player.playedCard) {
       handleCardEffect(freshState.player.playedCard, 'player');
     }
 
-    if (!cpuHasHostileTakeover && freshState.cpu.playedCard) {
+    if (!(cpuHasHostileTakeover && isFirstDataWar) && freshState.cpu.playedCard) {
       handleCardEffect(freshState.cpu.playedCard, 'cpu');
     }
   };

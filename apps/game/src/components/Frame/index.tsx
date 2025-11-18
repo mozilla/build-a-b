@@ -37,7 +37,7 @@ export const Frame: FC<PropsWithChildren<FrameProps>> = ({
       <div
         className={cn(
           'size-full overscroll-none place-self-center min-w-0 min-h-0',
-          variant === 'scrollable' && '', // 'overflow-auto',
+          variant === 'scrollable' && 'overflow-auto',
         )}
       >
         <div className={cn('relative size-full', className)}>

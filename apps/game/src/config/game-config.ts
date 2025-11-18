@@ -45,10 +45,10 @@ export interface GameConfig {
 
 /**
  * Default game configuration
- * Total: 66 cards (33 per player)
+ * Total: 64 cards (32 per player)
  */
 export const DEFAULT_GAME_CONFIG = {
-  cardsPerPlayer: 33,
+  cardsPerPlayer: 32,
   launchStacksToWin: 3,
   deckComposition: [
     // Common cards (5 unique types) - 8 copies each = 40 total
@@ -199,7 +199,7 @@ export const DEFAULT_GAME_CONFIG = {
       specialType: 'tracker_smacker',
       specialActionDescription:
         'Block opponent Billionaire Move and Tracker effects for the remainder of this turn.',
-      count: 1,
+      count: 0,
     },
 
     // Move cards (4 unique) - 1 of each = 4 cards
@@ -319,7 +319,7 @@ export const DEFAULT_GAME_CONFIG = {
       isSpecial: true,
       specialType: 'data_grab',
       specialActionDescription: 'Quick, tap the cards to grab as many as you can!',
-      count: 3,
+      count: 2,
     },
   ],
 } as const satisfies GameConfig;

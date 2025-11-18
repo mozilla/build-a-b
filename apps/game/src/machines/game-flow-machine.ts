@@ -235,11 +235,14 @@ export const gameFlowMachine = createMachine(
         entry: assign({
           tooltipMessage: 'EMPTY', // Clear any previous tooltips
         }),
-        // Automatic transitions for special game states (Data War, Data Grab)
+        // Automatic transitions for special game states (Special Effects, Data War, Data Grab)
+        // IMPORTANT: Special effects must be checked BEFORE data war to prevent conflicts
         // Normal resolution is handled manually via handleCompareTurnContinued to allow badge interaction
         after: {
           [ANIMATION_DURATIONS.CARD_COMPARISON]: [
-            // Data War and Data Grab have automatic transitions (must check modal not open)
+            // Check for special effects FIRST (highest priority)
+            { target: 'special_effect', guard: 'hasSpecialEffectsAndNotAnimating' },
+            // Then check for Data War and Data Grab (must check modal not open)
             { target: 'data_war', guard: 'isDataWarAndNotAnimating' },
             { target: 'data_grab', guard: 'isDataGrabAndNotAnimating' },
             // Normal resolution is handled manually (no automatic transition here)
@@ -261,24 +264,38 @@ export const gameFlowMachine = createMachine(
           const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
           const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
+          // Only apply hostile takeover logic if this is the FIRST data war
+          // (both players have exactly 1 card = original plays only)
+          const isFirstDataWar =
+            player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
+
           useGameStore.setState({
             player: {
               ...player,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue: playerHasHostileTakeover ? player.playedCard?.value ?? 6 : 0,
+              currentTurnValue:
+                playerHasHostileTakeover && isFirstDataWar ? player.playedCard?.value ?? 6 : 0,
             },
             cpu: {
               ...cpu,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue: cpuHasHostileTakeover ? cpu.playedCard?.value ?? 6 : 0,
+              currentTurnValue:
+                cpuHasHostileTakeover && isFirstDataWar ? cpu.playedCard?.value ?? 6 : 0,
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
           });
         },
         states: {
           animating: {
+            // Skip animation immediately if this is the first data war from hostile takeover
+            always: [
+              {
+                target: 'reveal_face_down',
+                guard: 'isHostileTakeoverFirstDataWar',
+              },
+            ],
             after: {
               [ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION]: 'reveal_face_down',
             },
@@ -359,16 +376,53 @@ export const gameFlowMachine = createMachine(
             },
           },
           results: {
-            // Show results in hand viewer (minimum 3 seconds)
+            // Show results in hand viewer - waits for user to click "Collect Cards"
             entry: () => {
               // Finalize results and show hand viewer
               useGameStore.getState().finalizeDataGrabResults();
             },
-            after: {
-              [ANIMATION_DURATIONS.DATA_GRAB_HAND_VIEWER]: '#dataWarGame.resolving',
-            },
             on: {
-              DATA_GRAB_RESULTS_VIEWED: '#dataWarGame.resolving',
+              CHECK_WIN_CONDITION: {
+                target: '#dataWarGame.resolving',
+                actions: () => {
+                  // User clicked "Collect Cards" - modal closing now
+                  // Wait for modal close animation, then restore cards to tableau, then animate to decks
+                  const {
+                    dataGrabDistributions,
+                    dataGrabPlayerLaunchStacks,
+                    dataGrabCPULaunchStacks,
+                  } = useGameStore.getState();
+
+                  // Process Launch Stacks FIRST (triggers win animation)
+                  dataGrabPlayerLaunchStacks.forEach((pcs) => {
+                    useGameStore.getState().addLaunchStack('player', pcs.card);
+                  });
+                  dataGrabCPULaunchStacks.forEach((pcs) => {
+                    useGameStore.getState().addLaunchStack('cpu', pcs.card);
+                  });
+
+                  // Cards are already on tableau (restored when modal opened)
+                  // Just wait for modal to close + fast play animation to complete, then animate to decks
+                  if (dataGrabDistributions.length > 0) {
+                    // Delay to let modal close + fast card play animation complete
+                    setTimeout(() => {
+                      // Trigger collection animation - cards already rendered on tableau
+                      // Visual-only animation - decks already have correct counts
+                      useGameStore
+                        .getState()
+                        .collectCardsDistributed(dataGrabDistributions, undefined, true);
+
+                      useGameStore.setState({
+                        dataGrabDistributions: [],
+                        dataGrabPlayerLaunchStacks: [],
+                        dataGrabCPULaunchStacks: [],
+                        dataGrabCollectedByPlayer: [],
+                        dataGrabCollectedByCPU: [],
+                      });
+                    }, ANIMATION_DURATIONS.UI_TRANSITION_DELAY + ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE); // Modal (300ms) + fast play (200ms)
+                  }
+                },
+              },
             },
           },
         },
@@ -387,7 +441,15 @@ export const gameFlowMachine = createMachine(
           },
           processing: {
             after: {
-              500: '#dataWarGame.resolving',
+              // After special effect completes, check for follow-up states
+              500: [
+                // Check for data war first (tie after special effect)
+                { target: '#dataWarGame.data_war', guard: 'isDataWar' },
+                // Check for data grab
+                { target: '#dataWarGame.data_grab', guard: 'isDataGrab' },
+                // Otherwise, resolve the turn
+                { target: '#dataWarGame.resolving' },
+              ],
             },
           },
         },
@@ -565,6 +627,19 @@ export const gameFlowMachine = createMachine(
         // When modal is open (effectAccumulationPaused = true), prevent transitions
         const state = useGameStore.getState();
         return !state.effectAccumulationPaused;
+      },
+      isHostileTakeoverFirstDataWar: () => {
+        // Check if this is the FIRST data war triggered by hostile takeover
+        // Skip animation only when BOTH players have exactly 1 card (original plays)
+        // Once either has more cards, it means data war already started (show animation for subsequent ties)
+        const { player, cpu } = useGameStore.getState();
+        const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
+        const cpuHasHT = cpu.playedCard?.specialType === 'hostile_takeover';
+
+        if (!playerHasHT && !cpuHasHT) return false;
+
+        // Skip animation only if BOTH players have exactly 1 card each
+        return player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
       },
       isDataGrab: () => {
         // Check if a Data Grab card was played and there are enough cards in play

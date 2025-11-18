@@ -3,10 +3,10 @@
  * Extracted from OpenWhatYouWantModal for reuse in EffectNotificationModal
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import type { SwiperOptions } from 'swiper/types';
+import type { Swiper as SwiperType, SwiperOptions } from 'swiper/types';
 import { capitalize } from '@/utils/capitalize';
 import { CARD_BACK_IMAGE } from '@/config/game-config';
 
@@ -27,6 +27,7 @@ export const CardCarousel = ({
   cardClassName,
   cardRotation = 'rotate-[-15deg]',
 }: CardCarouselProps) => {
+  const swiperRef = useRef<SwiperType | null>(null);
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [A11y, Keyboard],
@@ -53,7 +54,17 @@ export const CardCarousel = ({
   };
 
   // Get initial slide index based on selectedCard
-  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;
+  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;  
+
+  // Navigate to selected card when it changes externally
+  useEffect(() => {
+    if (swiperRef.current && selectedCard) {
+      const targetIndex = cards.findIndex((c) => c.id === selectedCard.id);
+      if (targetIndex !== -1 && targetIndex !== swiperRef.current.activeIndex) {
+        swiperRef.current.slideTo(targetIndex);
+      }
+    }
+  }, [selectedCard, cards]);
 
   return (
     <div className={`w-full ${className}`}>
@@ -65,6 +76,9 @@ export const CardCarousel = ({
           if (currentCard) {
             onCardSelect(currentCard);
           }
+        }}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
         }}
         className="w-full h-[25rem]"
       >
