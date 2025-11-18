@@ -96,12 +96,8 @@ export function useGameLogic() {
    * - For Player (interactive): Shows animation → waits for tap → shows modal
    */
   const handleOWYWEffect = (playerId: 'player' | 'cpu', requiresInteraction: boolean) => {
-    const {
-      prepareOpenWhatYouWantCards,
-      playSelectedCardFromOWYW,
-      setShowOpenWhatYouWantModal,
-      clearPreRevealEffects,
-    } = useGameStore.getState();
+    const { prepareOpenWhatYouWantCards, playSelectedCardFromOWYW, clearPreRevealEffects } =
+      useGameStore.getState();
 
     // Prepare the top 3 cards
     prepareOpenWhatYouWantCards(playerId);
@@ -123,17 +119,11 @@ export function useGameLogic() {
       // Transition to ready (no animation/modal for CPU)
       actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
     } else {
-      // Player: Wait for previous turn's animations to complete before showing modal
-      // This includes win confetti and card collection animations
-      setTimeout(() => {
-        setShowOpenWhatYouWantModal(true);
-      }, ANIMATION_DURATIONS.WIN_EFFECT_DURATION);
-
-      // Clear pre-reveal effects (animation already shown)
-      clearPreRevealEffects();
-
-      // Skip pre-reveal flow and go to ready
-      actorRef.send({ type: 'PRE_REVEAL_COMPLETE' });
+      // Player: Let the state machine handle the flow
+      // State machine will automatically transition:
+      // pre_reveal.processing → pre_reveal.animating → pre_reveal.awaiting_interaction
+      // Then player taps deck → pre_reveal.selecting → modal opens
+      // (Cards are already prepared above, pre-reveal effects will be cleared when card is selected)
     }
   };
 

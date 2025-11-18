@@ -44,6 +44,8 @@ export const ANIMATION_DURATIONS = {
   DATA_GRAB_TAKEOVER: 5000, // Takeover intro animation
   DATA_GRAB_GAME: 4500, // Active gameplay duration (matches card fall speed)
   DATA_GRAB_HAND_VIEWER: 1000, // Minimum results display time (reduced from 3000ms)
+  DATA_GRAB_CARD_RESTORE: 1, // Fast card restore to tableau (hidden behind modal)
+  DATA_GRAB_CARD_RESTORE_DELAY: 200, // Fast card restore to tableau delay (hidden behind modal)
 
   // LaunchStack
   LAUNCH_STACK_WON_TOKEN_DURATION: 1500

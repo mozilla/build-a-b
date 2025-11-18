@@ -77,8 +77,6 @@ export function isInstantEffect(effectType: string): boolean {
  */
 export const EFFECT_NOTIFICATION_CONFIG = {
   showForEffects: [
-    'tracker',
-    'blocker',
     'launch_stack',
     'forced_empathy',
     'open_what_you_want',

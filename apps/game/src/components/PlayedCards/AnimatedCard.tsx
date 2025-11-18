@@ -90,6 +90,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const anotherPlayExpected = useGameStore((state) => state.anotherPlayExpected);
   const collectingState = useGameStore((state) => state.collecting);
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
+  const showDataGrabResults = useGameStore((state) => state.showDataGrabResults);
 
   // Find this card's specific destination from the distribution system
   const cardDistribution = collectingState?.distributions?.find(
@@ -105,8 +106,13 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     !anotherPlayExpected;
   const shouldShowDataWarGlow = isTiedInComparing;
 
+  // Use faster animation for Data Grab cards (restoring to tableau behind modal)
+  const playDuration = showDataGrabResults
+    ? ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE
+    : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK;
+
   // Calculate stagger delay for sequential play
-  const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK : 0;
+  const staggerDelay = isNewCard ? playIndex * playDuration : 0;
 
   // Get rotation class for visual variety
   const rotationClass = getRotationClass(
@@ -266,7 +272,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       transition={{
         duration: shouldCollect
           ? ANIMATION_DURATIONS.CARD_COLLECTION / 1000
-          : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
+          : playDuration / 1000,
         ease: [0.43, 0.13, 0.23, 0.96],
         delay: shouldCollect
           ? index * 0.05

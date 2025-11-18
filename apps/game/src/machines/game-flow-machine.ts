@@ -391,8 +391,6 @@ export const gameFlowMachine = createMachine(
                     dataGrabDistributions,
                     dataGrabPlayerLaunchStacks,
                     dataGrabCPULaunchStacks,
-                    dataGrabCollectedByPlayer,
-                    dataGrabCollectedByCPU,
                   } = useGameStore.getState();
 
                   // Process Launch Stacks FIRST (triggers win animation)
@@ -403,42 +401,25 @@ export const gameFlowMachine = createMachine(
                     useGameStore.getState().addLaunchStack('cpu', pcs.card);
                   });
 
-                  // Wait for modal to fully close, then restore cards to tableau and animate
+                  // Cards are already on tableau (restored when modal opened)
+                  // Just wait for modal to close + fast play animation to complete, then animate to decks
                   if (dataGrabDistributions.length > 0) {
-                    // Delay to let modal fully close (modal animations typically ~300ms)
+                    // Delay to let modal close + fast card play animation complete
                     setTimeout(() => {
-                      // FIRST: Restore cards to tableau (so they're visible on board)
-                      const state = useGameStore.getState();
+                      // Trigger collection animation - cards already rendered on tableau
+                      // Visual-only animation - decks already have correct counts
+                      useGameStore
+                        .getState()
+                        .collectCardsDistributed(dataGrabDistributions, undefined, true);
+
                       useGameStore.setState({
-                        player: {
-                          ...state.player,
-                          playedCardsInHand: dataGrabCollectedByPlayer,
-                        },
-                        cpu: {
-                          ...state.cpu,
-                          playedCardsInHand: dataGrabCollectedByCPU,
-                        },
-                        cardsInPlay: [...dataGrabCollectedByPlayer, ...dataGrabCollectedByCPU].map(
-                          (pcs) => pcs.card,
-                        ),
+                        dataGrabDistributions: [],
+                        dataGrabPlayerLaunchStacks: [],
+                        dataGrabCPULaunchStacks: [],
+                        dataGrabCollectedByPlayer: [],
+                        dataGrabCollectedByCPU: [],
                       });
-
-                      // THEN: Trigger collection animation after brief delay (let cards render)
-                      setTimeout(() => {
-                        // Visual-only animation - decks already have correct counts
-                        useGameStore
-                          .getState()
-                          .collectCardsDistributed(dataGrabDistributions, undefined, true);
-
-                        useGameStore.setState({
-                          dataGrabDistributions: [],
-                          dataGrabPlayerLaunchStacks: [],
-                          dataGrabCPULaunchStacks: [],
-                          dataGrabCollectedByPlayer: [],
-                          dataGrabCollectedByCPU: [],
-                        });
-                      }, 100); // Brief delay to let cards render on tableau
-                    }, 400);
+                    }, ANIMATION_DURATIONS.UI_TRANSITION_DELAY + ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE); // Modal (300ms) + fast play (200ms)
                   }
                 },
               },
