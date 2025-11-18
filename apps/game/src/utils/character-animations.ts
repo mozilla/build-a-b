@@ -4,7 +4,7 @@
  */
 
 import type { BillionaireId } from '@/config/billionaires';
-export type AnimationType = 'vs' | 'datawar';
+export type AnimationType = 'vs' | 'datawar' | 'winner';
 type VideoFileType = 'webm' | 'mp4';
 
 /**
@@ -18,11 +18,26 @@ export const getCharacterMatchupKey = (playerId: string, cpuId: string): string 
 
 /**
  * Animation registries for different animation types
+ * Winner animations have separate sets for player wins and CPU wins
+ * VS and DataWar animations use nested structure (player vs CPU matchup)
  */
-const ANIMATION_REGISTRIES: Record<
-  AnimationType,
-  Record<VideoFileType, Record<BillionaireId, Partial<Record<BillionaireId, string>>>>
-> = {
+type WinnerAnimationRegistry = Record<
+  VideoFileType,
+  {
+    player: Record<BillionaireId, string>; // "You win" with each billionaire
+    cpu: Record<BillionaireId, string>; // "[Billionaire] wins" for CPU victory
+  }
+>;
+type MatchupAnimationRegistry = Record<
+  VideoFileType,
+  Record<BillionaireId, Partial<Record<BillionaireId, string>>>
+>;
+
+const ANIMATION_REGISTRIES: {
+  vs: MatchupAnimationRegistry;
+  datawar: MatchupAnimationRegistry;
+  winner: WinnerAnimationRegistry;
+} = {
   vs: {
     // mp4 is intentionally blank - current assets are not ideal
     mp4: {
@@ -245,12 +260,63 @@ const ANIMATION_REGISTRIES: Record<
       },
     },
   },
+  winner: {
+    mp4: {
+      player: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+      cpu: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+    },
+    webm: {
+      player: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Chaz.webm',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Chloe.webm',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Enzo.webm',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Prudence.webm',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Savannah.webm',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Walter.webm',
+      },
+      cpu: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Chaz.webm',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Chloe.webm',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Enzo.webm',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Prudence.webm',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Savannah.webm',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Walter.webm',
+      },
+    },
+  },
 };
 
 /**
  * Gets the animation video source for a character matchup and animation type
  * Returns undefined if no animation exists for this matchup
  * Prefers WebM format, falls back to MP4 if WebM is not available
+ *
+ * For 'winner' animations:
+ *   - playerId is the billionaire who appears in the video
+ *   - cpuId should be 'player' or 'cpu' to indicate which set of winner videos to use
+ * For 'vs' and 'datawar' animations: Both playerId and cpuId are used for matchup
  */
 export const getCharacterAnimation = (
   playerId: string,
@@ -261,13 +327,28 @@ export const getCharacterAnimation = (
   const player = playerId as BillionaireId;
   const cpu = cpuId as BillionaireId;
 
+  // Winner animations use separate player/cpu sets
+  if (animationType === 'winner') {
+    // cpuId should be 'player' or 'cpu' for winner animations
+    const winnerType = cpuId as 'player' | 'cpu';
+    const preferredAnimation = ANIMATION_REGISTRIES.winner[preferredFormat][winnerType]?.[player];
+    if (preferredAnimation) return preferredAnimation;
+
+    // Fall back to the other format
+    const fallbackFormat: VideoFileType = preferredFormat === 'webm' ? 'mp4' : 'webm';
+    return ANIMATION_REGISTRIES.winner[fallbackFormat][winnerType]?.[player];
+  }
+
+  // VS and DataWar animations use nested matchup structure
+  const registry = ANIMATION_REGISTRIES[animationType];
+
   // Try preferred format first
-  const preferredAnimation = ANIMATION_REGISTRIES[animationType][preferredFormat][cpu]?.[player];
+  const preferredAnimation = registry[preferredFormat][cpu]?.[player];
   if (preferredAnimation) return preferredAnimation;
 
   // Fall back to the other format
   const fallbackFormat: VideoFileType = preferredFormat === 'webm' ? 'mp4' : 'webm';
-  return ANIMATION_REGISTRIES[animationType][fallbackFormat][cpu]?.[player];
+  return registry[fallbackFormat][cpu]?.[player];
 };
 
 /**
