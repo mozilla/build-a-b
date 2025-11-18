@@ -28,8 +28,8 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
         {/* Background decorative elements would go here */}
       </div>
-      <header className="flex pt-4 px-4 w-full">
-        <Link href="/" className="flex items-center justify-center">
+      <header>
+        <Link href="/" className="absolute top-5 left-5 z-20">
           <Icon name="return" label="Back" />
         </Link>
         {children}
