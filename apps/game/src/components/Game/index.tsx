@@ -7,9 +7,7 @@ import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
-  useCpuLaunchStacks,
   useDeckSwapCount,
-  usePlayerLaunchStacks,
   useSelectedBackground,
   useSelectedBillionaire,
   useWinCondition,
@@ -56,8 +54,6 @@ export function Game() {
   // Convert tooltip key to actual message (with display count tracking)
   const tooltipMessage = useTooltip(tooltipKey);
 
-  const playerLaunchStacks = usePlayerLaunchStacks();
-  const cpuLaunchStacks = useCpuLaunchStacks();
   const deckSwapCount = useDeckSwapCount();
   const selectedBackground = useSelectedBackground();
   const selectedBillionaire = useSelectedBillionaire();
@@ -66,9 +62,10 @@ export function Game() {
   const winCondition = useWinCondition();
   const collecting = useGameStore((state) => state.collecting);
 
-  // Total cards owned = playable deck + collected Launch Stacks
-  const playerTotalCards = player.deck.length + playerLaunchStacks.length;
-  const cpuTotalCards = cpu.deck.length + cpuLaunchStacks.length;
+  // Deck counter shows only the main deck
+  // Launch Stacks are tracked separately with rocket indicators
+  const playerTotalCards = player.deck.length;
+  const cpuTotalCards = cpu.deck.length;
 
   // Check if decks are visually swapped (they stay in swapped positions after animation)
   const isSwapped = deckSwapCount % 2 === 1;
@@ -79,11 +76,6 @@ export function Game() {
     DEFAULT_BOARD_BACKGROUND;
 
   const shouldSkipIntro = new URLSearchParams(window.location.search).get('skip-intro') === 'true';
-  // Determine if deck can be clicked based on phase and active player
-  const isDataWarPhase =
-    phase === 'data_war.reveal_face_down' ||
-    phase === 'data_war.reveal_face_up.settling' ||
-    phase === 'data_war.reveal_face_up.ready';
 
   // Data War phases where deck is clickable (exclude settling phase)
   const isClickableDataWarPhase =
@@ -94,11 +86,19 @@ export function Game() {
   // During pre_reveal.awaiting_interaction, player can tap to see modal
   // Disable clicking during card collection animation and during settling
   // IMPORTANT: Only the PLAYER's deck is ever clickable - CPU plays are automated
+  // Check if this is the first HT data war (should auto-advance, so not clickable)
+  const playerPlayedHT = player.playedCard?.specialType === 'hostile_takeover';
+  const cpuPlayedHT = cpu.playedCard?.specialType === 'hostile_takeover';
+  const isFirstHTDataWar =
+    (playerPlayedHT && player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length < 5) ||
+    (cpuPlayedHT && cpu.playedCardsInHand.length === 1 && player.playedCardsInHand.length < 5);
+
   const canClickPlayerDeck =
     !collecting &&
     ((phase === 'ready' && activePlayer === 'player') ||
       phase === 'pre_reveal.awaiting_interaction' ||
-      (isClickableDataWarPhase && player.playedCard?.specialType !== 'hostile_takeover'));
+      // Data war is clickable if NOT first HT data war (which auto-advances)
+      (isClickableDataWarPhase && !isFirstHTDataWar));
 
   const handleDeckClick = () => {
     tapDeck();
@@ -174,10 +174,25 @@ export function Game() {
   }, [phase, send]);
 
   useEffect(() => {
-    if (isDataWarPhase && player.playedCard?.specialType === 'hostile_takeover') {
+    // Auto-advance ONLY for the FIRST Hostile Takeover data war
+    // Only auto-click in phases that require user interaction
+    const shouldAutoAdvance =
+      isFirstHTDataWar &&
+      (phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up.ready');
+
+    if (shouldAutoAdvance) {
       tapDeck();
     }
-  }, [isDataWarPhase, player.playedCard?.specialType, tapDeck]);
+  }, [
+    phase,
+    isFirstHTDataWar,
+    canClickPlayerDeck,
+    playerPlayedHT,
+    cpuPlayedHT,
+    player.playedCardsInHand.length,
+    cpu.playedCardsInHand.length,
+    tapDeck,
+  ]);
 
   return (
     <div

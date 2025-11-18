@@ -22,7 +22,7 @@ import {
   isSpecialCard,
   shouldShowEffectNotification,
 } from '../utils/effect-helpers';
-import type { GameStore } from './types';
+import type { CardDistribution, GameStore } from './types';
 import type { SpecialEffectAnimationType } from '@/config/special-effect-animations';
 
 const createInitialPlayer = (id: PlayerType): Player => ({
@@ -94,6 +94,9 @@ export const useGameStore = create<GameStore>()(
       dataGrabCards: [],
       dataGrabCollectedByPlayer: [],
       dataGrabCollectedByCPU: [],
+      dataGrabDistributions: [],
+      dataGrabPlayerLaunchStacks: [],
+      dataGrabCPULaunchStacks: [],
       showDataGrabTakeover: false,
       dataGrabGameActive: false,
       showDataGrabResults: false,
@@ -321,60 +324,122 @@ export const useGameStore = create<GameStore>()(
         set(updates);
       },
 
-      collectCards: (winnerId, cards) => {
-        // STAGE 1: Show win effect (billionaire celebration) FIRST
-        set({ showingWinEffect: winnerId });
+      /**
+       * Enhanced collection system - Supports per-card destinations and sources
+       * Enables both board-to-deck and deck-to-deck animations
+       */
+      collectCardsDistributed: (distributions, primaryWinner, visualOnly = false) => {
+        const winnerId = primaryWinner || distributions[0]?.destination;
 
-        // Clear accumulated effects immediately when collection starts
-        // This ensures effects are cleared before the next turn begins
-        get().clearAccumulatedEffects();
+        // STAGE 1: Show win effect for primary winner (if specified)
+        if (winnerId) {
+          set({ showingWinEffect: winnerId });
+          get().clearAccumulatedEffects();
+        }
 
-        // Wait for win animation to complete
         setTimeout(() => {
-          // STAGE 2: Start card collection animation (cards fly to deck)
+          // STAGE 2: Start card collection animation
           set({
-            showingWinEffect: null, // Clear win effect
-            collecting: { winner: winnerId, cards }, // Start collection animation
+            showingWinEffect: null,
+            collecting: { distributions, primaryWinner: winnerId },
           });
 
-          // Wait for card collection animation to complete
+          // STAGE 3: Wait for animation, then distribute cards (or just clear states if visual-only)
           setTimeout(() => {
-            const currentWinner = get()[winnerId];
-            const loserId = winnerId === 'player' ? 'cpu' : 'player';
-            const loser = get()[loserId];
+            const state = get();
 
-            // STAGE 3: Add cards to deck and clear all states
-            set({
-              [winnerId]: {
-                ...currentWinner,
-                deck: [...currentWinner.deck, ...(cards || [])], // Add to bottom of deck
-                playedCard: null,
-                playedCardsInHand: [], // Clear hand stack
-                currentTurnValue: 0,
-                activeEffects: [], // Clear active effects
-                pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-                pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-              },
-              [loserId]: {
-                ...loser,
-                playedCard: null,
-                playedCardsInHand: [], // Clear hand stack
-                currentTurnValue: 0,
-                activeEffects: [], // Clear active effects
-                pendingTrackerBonus: 0, // Clear pending bonus (turn is over)
-                pendingBlockerPenalty: 0, // Clear pending penalty (turn is over)
-              },
-              // Clear shown animation IDs when cards are collected
-              shownAnimationCardIds: new Set(),
-              cardsInPlay: [],
-              // Reset turn states for new turn
-              playerTurnState: 'normal',
-              cpuTurnState: 'normal',
-              anotherPlayExpected: false, // Clear flag (turn is over)
-              collecting: null, // Clear collecting state after cards are added
-            });
+            if (visualOnly) {
+              // Visual-only mode: Decks already updated, just clear board states
+              set({
+                player: {
+                  ...state.player,
+                  playedCard: null,
+                  playedCardsInHand: [],
+                  currentTurnValue: 0,
+                  activeEffects: [],
+                  pendingTrackerBonus: 0,
+                  pendingBlockerPenalty: 0,
+                },
+                cpu: {
+                  ...state.cpu,
+                  playedCard: null,
+                  playedCardsInHand: [],
+                  currentTurnValue: 0,
+                  activeEffects: [],
+                  pendingTrackerBonus: 0,
+                  pendingBlockerPenalty: 0,
+                },
+                // Clear shown animation IDs when cards are collected
+                shownAnimationCardIds: new Set(),
+                cardsInPlay: [],
+                // Reset turn states for new turn
+                playerTurnState: 'normal',
+                cpuTurnState: 'normal',
+                anotherPlayExpected: false,
+                collecting: null,
+              });
+            } else {
+              // Normal mode: Update decks and clear states
+              // Group cards by destination
+              const playerCards: Card[] = [];
+              const cpuCards: Card[] = [];
+
+              distributions.forEach(({ card, destination }) => {
+                if (destination === 'player') {
+                  playerCards.push(card);
+                } else {
+                  cpuCards.push(card);
+                }
+              });
+
+              // Add cards to respective decks and clear all states
+              set({
+                player: {
+                  ...state.player,
+                  deck: [...state.player.deck, ...playerCards],
+                  playedCard: null,
+                  playedCardsInHand: [],
+                  currentTurnValue: 0,
+                  activeEffects: [],
+                  pendingTrackerBonus: 0,
+                  pendingBlockerPenalty: 0,
+                },
+                cpu: {
+                  ...state.cpu,
+                  deck: [...state.cpu.deck, ...cpuCards],
+                  playedCard: null,
+                  playedCardsInHand: [],
+                  currentTurnValue: 0,
+                  activeEffects: [],
+                  pendingTrackerBonus: 0,
+                  pendingBlockerPenalty: 0,
+                },
+                // Clear shown animation IDs when cards are collected
+                shownAnimationCardIds: new Set(),
+                cardsInPlay: [],
+                // Reset turn states for new turn
+                playerTurnState: 'normal',
+                cpuTurnState: 'normal',
+                anotherPlayExpected: false,
+                collecting: null,
+              });
+            }
           }, ANIMATION_DURATIONS.CARD_COLLECTION);
         }, ANIMATION_DURATIONS.WIN_ANIMATION);
+      },
+
+      /**
+       * Backward compatibility wrapper - Converts old format to new CardDistribution format
+       */
+      collectCards: (winnerId, cards) => {
+        // Convert to new format - all cards from board go to winner
+        const distributions: CardDistribution[] = cards.map((card) => ({
+          card,
+          destination: winnerId,
+          source: { type: 'board' as const },
+        }));
+
+        get().collectCardsDistributed(distributions, winnerId);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {
@@ -431,10 +496,36 @@ export const useGameStore = create<GameStore>()(
         const stolenCards = fromPlayer.deck.slice(0, count);
         const remainingCards = fromPlayer.deck.slice(count);
 
+        // Update source deck and destination deck
         set({
           [from]: { ...fromPlayer, deck: remainingCards },
           [to]: { ...toPlayer, deck: [...toPlayer.deck, ...stolenCards] },
         });
+
+        // Temporarily add stolen cards to the FROM player's playedCardsInHand (face-down)
+        // This makes them visible on the board so they can be animated to the winner's deck
+        // NOTE: We don't add to cardsInPlay because collectCardsAfterEffects would collect them again
+        const tempPlayedCards = stolenCards.map((card) => ({ card, isFaceDown: true }));
+
+        set({
+          [from]: {
+            ...get()[from],
+            playedCardsInHand: [...get()[from].playedCardsInHand, ...tempPlayedCards],
+          },
+        });
+
+        // Create card distributions for animation
+        const distributions: CardDistribution[] = stolenCards.map((card) => ({
+          card,
+          destination: to,
+          source: {
+            type: 'board' as const,
+          },
+        }));
+
+        // Trigger visual-only collection animation (decks already updated above)
+        // This will animate the cards from the board to the destination deck
+        get().collectCardsDistributed(distributions, to, true);
       },
 
       checkWinCondition: () => {
@@ -683,6 +774,9 @@ export const useGameStore = create<GameStore>()(
             // Animation will be queued and played sequentially
             break;
           case 'forced_empathy':
+            // Block game transitions during Forced Empathy animation
+            set({ blockTransitions: true });
+
             // Wait for card to settle on board before showing animation overlay
             setTimeout(() => {
               // STEP 1: Show video overlay (decks don't move yet)
@@ -698,6 +792,19 @@ export const useGameStore = create<GameStore>()(
                   get().swapDecks();
                   set({ deckSwapCount: get().deckSwapCount + 1 });
                   get().setForcedEmpathySwapping(false);
+
+                  // Wait for deck swap to visually settle before unblocking game
+                  setTimeout(() => {
+                    // Unblock game transitions now that animation is fully complete
+                    set({ blockTransitions: false });
+
+                    // Call animation completion callback if set (to continue game flow)
+                    const callback = get().animationCompletionCallback;
+                    if (callback) {
+                      set({ animationCompletionCallback: null });
+                      callback();
+                    }
+                  }, ANIMATION_DURATIONS.FORCED_EMPATHY_SETTLE_DELAY);
                 }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
               }, ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION);
             }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY);
@@ -833,6 +940,9 @@ export const useGameStore = create<GameStore>()(
                   get().initializeTemperTantrumSelection(winner);
                   // Note: Game will pause here (blockTransitions remains true)
                   // Cards will be stolen after player confirms selection
+                  // IMPORTANT: Return early to prevent processing remaining effects (like Launch Stack)
+                  // Remaining effects will be processed after modal closes
+                  return;
                 } else {
                   // CPU LOSES: Automatic selection (first 2 cards from player's pile)
                   const currentState = get();
@@ -897,8 +1007,16 @@ export const useGameStore = create<GameStore>()(
               break;
 
             case 'data_grab': {
-              // Digital adaptation: Randomly distribute cards in play between both players
+              // Mini-game handles distribution via finalizeDataGrabResults()
+              // Only process this if cards are still in play (failsafe for non-interactive mode)
               const { cardsInPlay } = get();
+
+              if (cardsInPlay.length === 0) {
+                // Cards already distributed by mini-game, skip
+                break;
+              }
+
+              // Fallback: Random distribution if mini-game wasn't played
               const shuffledCards = [...cardsInPlay].sort(() => Math.random() - 0.5);
               const playerCards: Card[] = [];
               const cpuCards: Card[] = [];
@@ -1219,11 +1337,15 @@ export const useGameStore = create<GameStore>()(
           shownAnimationCardIds.add(playerCard!.id);
         }
 
-        // Then queue CPU animation
-        if (shouldShowAnimation(cpuCard, 'cpu')) {
+        // Then queue CPU animation (skip if both players played the same card type)
+        const bothPlayedSameCard = playerCard?.specialType === cpuCard?.specialType;
+        if (shouldShowAnimation(cpuCard, 'cpu') && !bothPlayedSameCard) {
           animationsToQueue.push({ type: cpuCard!.specialType!, playedBy: 'cpu' });
           // Mark this card as having shown its animation
           shownAnimationCardIds.add(cpuCard!.id);
+        } else if (bothPlayedSameCard && cpuCard) {
+          // Both played same card - mark CPU's card as shown even though we skip its animation
+          shownAnimationCardIds.add(cpuCard.id);
         }
 
         // Update the set in store
@@ -1268,6 +1390,7 @@ export const useGameStore = create<GameStore>()(
           dataGrabCards: allPlayedCards,
           dataGrabCollectedByPlayer: [],
           dataGrabCollectedByCPU: [],
+          dataGrabDistributions: [],
           showDataGrabTakeover: true,
           dataGrabGameActive: false,
           showDataGrabResults: false,
@@ -1339,42 +1462,100 @@ export const useGameStore = create<GameStore>()(
           updatedCPUCards.push(playedCardState);
         });
 
-        // Extract just the Card objects from PlayedCardState for deck distribution
-        const playerCards = updatedPlayerCards.map((pcs) => pcs.card);
-        const cpuCards = updatedCPUCards.map((pcs) => pcs.card);
+        // Separate Launch Stacks from regular cards for each player
+        const playerLaunchStacks = updatedPlayerCards.filter(
+          (pcs) => pcs.card.specialType === 'launch_stack',
+        );
+        const playerRegularCards = updatedPlayerCards.filter(
+          (pcs) => pcs.card.specialType !== 'launch_stack',
+        );
+        const cpuLaunchStacks = updatedCPUCards.filter(
+          (pcs) => pcs.card.specialType === 'launch_stack',
+        );
+        const cpuRegularCards = updatedCPUCards.filter(
+          (pcs) => pcs.card.specialType !== 'launch_stack',
+        );
 
-        // Get current player/cpu state
-        const { player, cpu } = get();
+        // Extract Card objects for main deck updates (excluding Launch Stacks)
+        const playerCards = playerRegularCards.map((pcs) => pcs.card);
+        const cpuCards = cpuRegularCards.map((pcs) => pcs.card);
 
-        // The mini-game IS the turn resolution - cards are already distributed based on clicks
-        // No need to call resolveTurn() - just finalize everything and start a new turn
+        // Get current state for deck updates
+        const state = get();
 
-        // Distribute cards and reset state for a fresh turn
+        // Create card distributions for visual animation (includes ALL cards, even Launch Stacks)
+        const distributions: CardDistribution[] = [
+          // Player's collected cards (including Launch Stacks for animation)
+          ...updatedPlayerCards.map((pcs) => ({
+            card: pcs.card,
+            source: { type: 'board' as const },
+            destination: 'player' as const,
+          })),
+          // CPU's collected cards (including Launch Stacks for animation)
+          ...updatedCPUCards.map((pcs) => ({
+            card: pcs.card,
+            source: { type: 'board' as const },
+            destination: 'cpu' as const,
+          })),
+        ];
+
+        // UPDATE MAIN DECKS IMMEDIATELY (math/logic happens now)
+        // Open modal FIRST, then delay card restoration so animation starts behind open modal
         set({
           player: {
-            ...player,
-            deck: [...player.deck, ...playerCards],
-            playedCard: null, // Clear played card
-            currentTurnValue: 0, // Reset turn value for new turn
-            pendingTrackerBonus: 0, // Clear any pending bonuses
-            pendingBlockerPenalty: 0, // Clear any pending penalties
+            ...state.player,
+            deck: [...state.player.deck, ...playerCards], // Only regular cards, not Launch Stacks
+            playedCard: null,
+            playedCardsInHand: [], // Don't restore yet - will do after modal opens
+            currentTurnValue: 0,
+            pendingTrackerBonus: 0,
+            pendingBlockerPenalty: 0,
           },
           cpu: {
-            ...cpu,
-            deck: [...cpu.deck, ...cpuCards],
-            playedCard: null, // Clear played card
-            currentTurnValue: 0, // Reset turn value for new turn
-            pendingTrackerBonus: 0, // Clear any pending bonuses
-            pendingBlockerPenalty: 0, // Clear any pending penalties
+            ...state.cpu,
+            deck: [...state.cpu.deck, ...cpuCards], // Only regular cards, not Launch Stacks
+            playedCard: null,
+            playedCardsInHand: [], // Don't restore yet - will do after modal opens
+            currentTurnValue: 0,
+            pendingTrackerBonus: 0,
+            pendingBlockerPenalty: 0,
           },
-          dataGrabCollectedByPlayer: updatedPlayerCards,
-          dataGrabCollectedByCPU: updatedCPUCards,
-          dataGrabCards: [], // Clear remaining cards
+          dataGrabCollectedByPlayer: updatedPlayerCards, // Store for modal display
+          dataGrabCollectedByCPU: updatedCPUCards, // Store for modal display
           dataGrabGameActive: false,
-          showDataGrabResults: true,
-          cardsInPlay: [], // Clear cards in play
-          anotherPlayExpected: false, // Reset another play mode
+          showDataGrabResults: true, // Modal opens immediately
+          cardsInPlay: [], // Don't add yet - will do after modal opens
+          anotherPlayExpected: false,
+          // Store distributions AND Launch Stacks for processing after modal closes
+          dataGrabDistributions: distributions,
+          dataGrabPlayerLaunchStacks: playerLaunchStacks,
+          dataGrabCPULaunchStacks: cpuLaunchStacks,
         });
+
+        // Delay card restoration so modal opens first, then cards animate behind it
+        setTimeout(() => {
+          set({
+            player: {
+              ...get().player,
+              playedCardsInHand: updatedPlayerCards, // NOW restore to tableau (behind open modal)
+            },
+            cpu: {
+              ...get().cpu,
+              playedCardsInHand: updatedCPUCards, // NOW restore to tableau (behind open modal)
+            },
+            cardsInPlay: [...updatedPlayerCards, ...updatedCPUCards].map((pcs) => pcs.card),
+          });
+        }, ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE_DELAY); // 150ms delay for modal to start opening
+
+        // Remove Data Grab AND collected Launch Stacks from pending effects
+        // (Launch Stacks will be processed after modal, not in processPendingEffects)
+        const allLaunchStacks = [...playerLaunchStacks, ...cpuLaunchStacks];
+        const launchStackIds = new Set(allLaunchStacks.map((pcs) => pcs.card.id));
+        const updatedEffects = get().pendingEffects.filter(
+          (e) =>
+            e.type !== 'data_grab' && !(e.type === 'launch_stack' && launchStackIds.has(e.card.id)),
+        );
+        set({ pendingEffects: updatedEffects });
       },
 
       setShowDataGrabTakeover: (show) => {
@@ -1389,12 +1570,14 @@ export const useGameStore = create<GameStore>()(
         set({ showDataGrabResults: show });
 
         // Reset Data Grab state when closing results
+        // NOTE: Don't clear dataGrabCollectedByPlayer/CPU here - they're needed for animation
+        // They'll be cleared after the animation completes in the state machine
         if (!show) {
           set({
             dataGrabActive: false,
             dataGrabCards: [],
-            dataGrabCollectedByPlayer: [],
-            dataGrabCollectedByCPU: [],
+            // dataGrabCollectedByPlayer: [],  // Keep for animation
+            // dataGrabCollectedByCPU: [],     // Keep for animation
           });
         }
       },
@@ -1454,70 +1637,103 @@ export const useGameStore = create<GameStore>()(
 
         if (!temperTantrumWinner) return;
 
-        // Player is the loser (since they're selecting cards)
         const winner = temperTantrumWinner;
+        const loser: PlayerType = winner === 'player' ? 'cpu' : 'player';
 
-        // Use stored cards (since playedCardsInHand may have been cleared)
-        const loserCards = temperTantrumLoserCards;
-        const winnerCards = temperTantrumAvailableCards;
-
-        // Stolen cards from winner's pile
+        // Separate stolen cards into Launch Stacks and regular cards
         const stolenCards = temperTantrumSelectedCards;
+        const stolenLaunchStacks = stolenCards.filter(
+          (card) => card.specialType === 'launch_stack',
+        );
+        const stolenRegularCards = stolenCards.filter(
+          (card) => card.specialType !== 'launch_stack',
+        );
 
-        // Remaining winner's cards (not stolen)
-        const remainingWinnerCards = winnerCards.filter(
+        const remainingWinnerCards = temperTantrumAvailableCards.filter(
           (card) => !stolenCards.some((stolen) => stolen.id === card.id),
         );
 
-        // Capture card arrays before setTimeout (so they don't get cleared)
-        const stolenCardsCaptured = [...stolenCards];
-        const loserCardsCaptured = [...loserCards];
-        const remainingWinnerCardsCaptured = [...remainingWinnerCards];
+        // Build distribution array for animation (includes ALL cards, even Launch Stacks)
+        const distributions: CardDistribution[] = [
+          // Stolen cards go to loser (from board) - includes Launch Stacks for animation
+          ...stolenCards.map((card) => ({
+            card,
+            destination: loser,
+            source: { type: 'board' as const },
+          })),
+          // Remaining winner cards go to winner (from board)
+          ...remainingWinnerCards.map((card) => ({
+            card,
+            destination: winner,
+            source: { type: 'board' as const },
+          })),
+          // Loser's original cards go to winner (from board)
+          ...temperTantrumLoserCards.map((card) => ({
+            card,
+            destination: winner,
+            source: { type: 'board' as const },
+          })),
+        ];
 
-        // Close modal and trigger collection animation
+        // UPDATE DECKS IMMEDIATELY before closing modal
+
+        // Process stolen Launch Stacks FIRST - add to loser's Launch Stacks collection
+        // The PlayerDeck component will automatically show the animation when launchStackCount changes
+        stolenLaunchStacks.forEach((launchStack) => {
+          get().addLaunchStack(loser, launchStack);
+        });
+
+        // Get UPDATED state AFTER Launch Stacks are processed (to preserve counter updates)
+        const state = get();
+
+        // Calculate cards for main decks (excluding Launch Stacks)
+        const loserRegularCards = stolenRegularCards;
+        const winnerRegularCards = [...remainingWinnerCards, ...temperTantrumLoserCards];
+
+        set({
+          player: {
+            ...state.player,
+            deck:
+              winner === 'player'
+                ? [...state.player.deck, ...winnerRegularCards]
+                : [...state.player.deck, ...loserRegularCards],
+          },
+          cpu: {
+            ...state.cpu,
+            deck:
+              winner === 'cpu'
+                ? [...state.cpu.deck, ...winnerRegularCards]
+                : [...state.cpu.deck, ...loserRegularCards],
+          },
+        });
+
+        // Close modal and clear state
         set({
           showTemperTantrumModal: false,
           temperTantrumAvailableCards: [],
           temperTantrumSelectedCards: [],
           temperTantrumLoserCards: [],
-          collecting: { winner, cards: [...remainingWinnerCards, ...loserCards] },
+          temperTantrumWinner: null,
+          blockTransitions: false,
         });
 
-        // Wait for animation to complete, then distribute cards
-        setTimeout(() => {
-          const currentState = get();
-          // Distribute cards:
-          // - Loser gets: ONLY stolen cards (doesn't keep their own cards)
-          // - Winner gets: remaining cards from their pile + loser's cards
-          const newPlayerDeck = [...currentState.player.deck, ...stolenCardsCaptured];
-          const newCpuDeck = [
-            ...currentState.cpu.deck,
-            ...remainingWinnerCardsCaptured,
-            ...loserCardsCaptured,
-          ];
+        // Remove Tantrum AND processed Launch Stacks from pending effects
+        // This prevents duplicate processing
+        const stolenLaunchStackIds = new Set(stolenLaunchStacks.map((ls) => ls.id));
+        const updatedEffects = get().pendingEffects.filter(
+          (e) =>
+            e.type !== 'temper_tantrum' &&
+            !(e.type === 'launch_stack' && stolenLaunchStackIds.has(e.card.id)),
+        );
+        set({ pendingEffects: updatedEffects });
 
-          set({
-            player: {
-              ...currentState.player,
-              deck: newPlayerDeck,
-              playedCardsInHand: [],
-              currentTurnValue: 0, // Reset turn value
-              activeEffects: [], // Clear active effects
-            },
-            cpu: {
-              ...currentState.cpu,
-              deck: newCpuDeck,
-              playedCardsInHand: [],
-              currentTurnValue: 0, // Reset turn value
-              activeEffects: [], // Clear active effects
-            },
-            cardsInPlay: [], // All cards distributed
-            collecting: null,
-            temperTantrumWinner: null,
-            blockTransitions: false, // Resume game
-            showEffectNotificationBadge: false, // Clear effect badge
-          });
-        }, ANIMATION_DURATIONS.CARD_COLLECTION);
+        // Process remaining pending effects (other Launch Stacks, etc.)
+        if (updatedEffects.length > 0) {
+          get().processPendingEffects(winner);
+        }
+
+        // Use visual-only collection animation (decks already updated)
+        get().collectCardsDistributed(distributions, winner, true);
       },
 
       setShowTemperTantrumModal: (show) => {
@@ -1963,6 +2179,7 @@ export const useGameStore = create<GameStore>()(
           dataGrabCards: [],
           dataGrabCollectedByPlayer: [],
           dataGrabCollectedByCPU: [],
+          dataGrabDistributions: [],
           showDataGrabTakeover: false,
           dataGrabGameActive: false,
           showDataGrabResults: false,
