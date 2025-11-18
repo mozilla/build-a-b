@@ -1500,13 +1500,13 @@ export const useGameStore = create<GameStore>()(
         ];
 
         // UPDATE MAIN DECKS IMMEDIATELY (math/logic happens now)
-        // Cards will be shown on tableau AFTER modal closes, then animated (visual only)
+        // Open modal FIRST, then delay card restoration so animation starts behind open modal
         set({
           player: {
             ...state.player,
             deck: [...state.player.deck, ...playerCards], // Only regular cards, not Launch Stacks
             playedCard: null,
-            playedCardsInHand: [], // Clear tableau during modal
+            playedCardsInHand: [], // Don't restore yet - will do after modal opens
             currentTurnValue: 0,
             pendingTrackerBonus: 0,
             pendingBlockerPenalty: 0,
@@ -1515,7 +1515,7 @@ export const useGameStore = create<GameStore>()(
             ...state.cpu,
             deck: [...state.cpu.deck, ...cpuCards], // Only regular cards, not Launch Stacks
             playedCard: null,
-            playedCardsInHand: [], // Clear tableau during modal
+            playedCardsInHand: [], // Don't restore yet - will do after modal opens
             currentTurnValue: 0,
             pendingTrackerBonus: 0,
             pendingBlockerPenalty: 0,
@@ -1523,14 +1523,29 @@ export const useGameStore = create<GameStore>()(
           dataGrabCollectedByPlayer: updatedPlayerCards, // Store for modal display
           dataGrabCollectedByCPU: updatedCPUCards, // Store for modal display
           dataGrabGameActive: false,
-          showDataGrabResults: true,
-          cardsInPlay: [], // Clear board during modal
+          showDataGrabResults: true, // Modal opens immediately
+          cardsInPlay: [], // Don't add yet - will do after modal opens
           anotherPlayExpected: false,
           // Store distributions AND Launch Stacks for processing after modal closes
           dataGrabDistributions: distributions,
           dataGrabPlayerLaunchStacks: playerLaunchStacks,
           dataGrabCPULaunchStacks: cpuLaunchStacks,
         });
+
+        // Delay card restoration so modal opens first, then cards animate behind it
+        setTimeout(() => {
+          set({
+            player: {
+              ...get().player,
+              playedCardsInHand: updatedPlayerCards, // NOW restore to tableau (behind open modal)
+            },
+            cpu: {
+              ...get().cpu,
+              playedCardsInHand: updatedCPUCards, // NOW restore to tableau (behind open modal)
+            },
+            cardsInPlay: [...updatedPlayerCards, ...updatedCPUCards].map((pcs) => pcs.card),
+          });
+        }, ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE_DELAY); // 150ms delay for modal to start opening
 
         // Remove Data Grab AND collected Launch Stacks from pending effects
         // (Launch Stacks will be processed after modal, not in processPendingEffects)
