@@ -1,29 +1,29 @@
 export const quickStartMicrocopy = {
   title: 'Quick Launch Guide',
-  subtitle: 'First to 3 Launch Stacks wins their Billionaire a one-way ticket to space!',
+  subtitle: 'First to 3 Launch Stack cards wins their Billionaire a one-way ticket to space!',
   steps: [
     {
       number: 1,
       title: 'Tap stack to start!',
       description:
-        'Whoever has the most data points at the end of the hand wins all the played cards, including Launch Stacks.',
+        'Whoever has the most data points at the end of the hand wins all the played cards, including Launch Stack cards.',
     },
     {
       number: 2,
-      title: 'A tie means WAR!',
-      description:
-        'And more ties means more war, which means more cards to the winner, which means more Launch Stacks!',
+      title: 'A tie means (Data) War!',
+      description: 'When turn values tie, play 3 cards down, 1 face up. Winner takes all.',
     },
     {
       number: 3,
       title: 'Tricky cards.',
-      description: 'Some cards come with powerful effects that can turn the whole game around!',
+      description:
+        'Some cards come with powerful effects that can turn the whole game around. Tap on the card to see effects.',
     },
   ],
   cta: 'Deal me in!',
   menuCta: 'Close',
   cardCarousel: {
-    title: 'The lineup',
-    subtitle: 'Meet the cards of Data War.',
+    title: 'The Lineup',
+    subtitle: 'Meet the cards of <span class="font-bold italic">Data War.</span>',
   },
 };

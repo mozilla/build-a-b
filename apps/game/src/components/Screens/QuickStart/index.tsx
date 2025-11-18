@@ -60,7 +60,9 @@ export const QuickStart: FC<
               {quickStartMicrocopy.cardCarousel.title}
             </Text>
             <Text variant="body-small" color="text-common-ash">
-              {quickStartMicrocopy.cardCarousel.subtitle}
+              <span
+                dangerouslySetInnerHTML={{ __html: quickStartMicrocopy.cardCarousel.subtitle }}
+              ></span>
             </Text>
           </div>
           <CardCarousel />
