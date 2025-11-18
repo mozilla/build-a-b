@@ -1,0 +1,71 @@
+import { type FC } from 'react';
+import { motion } from 'framer-motion';
+
+interface AnimatedRocketProps {
+  className?: string;
+  delay?: number;
+  gradientId: string;
+  rotation?: number;
+}
+
+export const AnimatedRocket: FC<AnimatedRocketProps> = ({ 
+  className, 
+  delay = 0, 
+  gradientId,
+  rotation = 0 
+}) => {
+  return (
+    <motion.div
+      initial={{ scale: 1, rotate: rotation }}
+      animate={{ scale: [1, 1.4, 1], rotate: rotation }}
+      transition={{
+        duration: 0.8,
+        times: [0, 0.5, 1],
+        delay,
+        ease: 'easeInOut',
+      }}
+      className={className}
+    >
+      <svg
+        width="53"
+        height="66"
+        viewBox="0 0 53 66"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="100%" x2="100%" y2="0%">
+            <motion.stop
+              offset="0%"
+              initial={{ stopColor: '#F8F6F4', stopOpacity: 0 }}
+              animate={{ stopColor: '#FF8A50', stopOpacity: 1 }}
+              transition={{
+                duration: 0.5,
+                delay: delay + 0.15,
+                ease: 'easeIn',
+              }}
+            />
+            <motion.stop
+              offset="100%"
+              initial={{ stopColor: '#F8F6F4', stopOpacity: 0 }}
+              animate={{ stopColor: '#754FE0', stopOpacity: 1 }}
+              transition={{
+                duration: 0.5,
+                delay: delay + 0.15,
+                ease: 'easeIn',
+              }}
+            />
+          </linearGradient>
+        </defs>
+        <path
+          d="M10.4725 34.3682C7.33069 18.2559 16.7584 8.19035 23.4184 3.65941L23.4184 3.66079C25.3207 2.3254 27.7972 2.31462 29.7105 3.63402C36.403 8.10837 45.9027 18.0879 42.9072 34.2089C42.9059 34.2182 42.9044 34.2274 42.9031 34.2366L47.9033 39.1966C50.4081 41.6814 51.3784 45.3997 50.5158 48.8115L47.952 58.952L47.9499 58.9513C47.5263 60.7204 46.2171 62.2126 44.2966 62.6218C42.3685 63.1836 40.5697 62.4503 39.396 61.2861L34.2321 56.1638C34.2009 56.2269 34.1709 56.2895 34.1411 56.3499C33.1975 58.3251 31.1235 59.6529 28.8424 59.5726L24.4023 59.5905C22.2095 59.5992 20.2229 58.3612 19.2012 56.346L14.2 61.3877C13.0323 62.5649 11.232 63.3136 9.29299 62.7582C7.37844 62.3592 6.06253 60.8826 5.62605 59.1222L5.62468 59.1235L2.97842 49.0033C2.08825 45.5985 3.02905 41.872 5.51386 39.367L10.4725 34.3682Z"
+          stroke="#F8F6F4"
+          strokeWidth="5.30103"
+          fill={`url(#${gradientId})`}
+        />
+      </svg>
+    </motion.div>
+  );
+};
+
