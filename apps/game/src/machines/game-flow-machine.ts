@@ -260,7 +260,11 @@ export const gameFlowMachine = createMachine(
           RESOLVE_TURN: {
             target: 'resolving',
             actions: () => {
-              console.log(`[TIMING] ${performance.now().toFixed(0)}ms - RESOLVE_TURN event received by state machine`);
+              console.log(
+                `[TIMING] ${performance
+                  .now()
+                  .toFixed(0)}ms - RESOLVE_TURN event received by state machine`,
+              );
             },
           },
         },
@@ -413,13 +417,7 @@ export const gameFlowMachine = createMachine(
                   // User clicked "Collect Cards" - modal closing now
                   // Wait for modal close animation, then restore cards to tableau, then animate to decks
                   const store = useGameStore.getState();
-                  const {
-                    dataGrabDistributions,
-                    dataGrabPlayerLaunchStacks,
-                    dataGrabCPULaunchStacks,
-                    animationQueue,
-                    pendingEffects,
-                  } = store;
+                  const { dataGrabDistributions, animationQueue, pendingEffects } = store;
 
                   // Function to process pending effects (including Launch Stacks)
                   // This will queue animations and handle effects properly
@@ -479,7 +477,6 @@ export const gameFlowMachine = createMachine(
                       runCardCollection();
                     }, ANIMATION_DURATIONS.UI_TRANSITION_DELAY + ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE); // Modal (300ms) + fast play (200ms)
                   }
-
                 },
               },
             },
@@ -712,21 +709,19 @@ export const gameFlowMachine = createMachine(
         // Check if all pending effects are post-resolution effects
         // Post-resolution effects don't need the special_effect phase
         // EXCEPTION: Launch Stack animations run BEFORE Data Grab mini-game
-        const allEffectsArePostResolution = state.pendingEffects.every(
-          (effect) => {
-            // Special case: if Data Grab is triggered, Launch Stack animation runs BEFORE Data Grab
-            if (effect.type === 'launch_stack' && isDataGrabTriggered) {
-              return false; // Not post-resolution in this context
-            }
-            return (
-              effect.type === 'launch_stack' ||
-              effect.type === 'patent_theft' ||
-              effect.type === 'leveraged_buyout' ||
-              effect.type === 'temper_tantrum' ||
-              effect.type === 'mandatory_recall'
-            );
+        const allEffectsArePostResolution = state.pendingEffects.every((effect) => {
+          // Special case: if Data Grab is triggered, Launch Stack animation runs BEFORE Data Grab
+          if (effect.type === 'launch_stack' && isDataGrabTriggered) {
+            return false; // Not post-resolution in this context
           }
-        );
+          return (
+            effect.type === 'launch_stack' ||
+            effect.type === 'patent_theft' ||
+            effect.type === 'leveraged_buyout' ||
+            effect.type === 'temper_tantrum' ||
+            effect.type === 'mandatory_recall'
+          );
+        });
 
         // Only enter special_effect phase if there are unseen animations AND they're not all post-resolution
         return hasUnseenAnimations && !allEffectsArePostResolution;
@@ -868,7 +863,12 @@ export const gameFlowMachine = createMachine(
 
         const adjustedDelay = getGameSpeedAdjustedDuration(baseDelay);
 
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - comparisonDelay calculated:`, adjustedDelay, 'ms', { baseDelay, useFastTiming, playerSpecialType, cpuSpecialType });
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - comparisonDelay calculated:`,
+          adjustedDelay,
+          'ms',
+          { baseDelay, useFastTiming, playerSpecialType, cpuSpecialType },
+        );
 
         return adjustedDelay;
       },
