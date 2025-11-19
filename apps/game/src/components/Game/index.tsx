@@ -144,14 +144,12 @@ export function Game() {
         handleRevealCards();
         break;
       case 'comparing':
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - PHASE: comparing`);
         // Call handleCompareTurn to queue animations and determine next step
         // If animations are queued, callback will handle the transition
         // Otherwise, state machine will auto-transition after 1500ms delay
         handleCompareTurn();
         break;
       case 'resolving':
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - PHASE: resolving`);
         handleResolveTurn();
         break;
       default:
@@ -191,6 +189,17 @@ export function Game() {
     cpu.playedCardsInHand.length,
     tapDeck,
   ]);
+
+  // Auto-transition to win screen after animations complete
+  const shouldTransitionToWin = useGameStore((state) => state.shouldTransitionToWin);
+  useEffect(() => {
+    if (shouldTransitionToWin) {
+      // Clear the flag first
+      useGameStore.setState({ shouldTransitionToWin: false });
+      // Send event to transition to game_over
+      send({ type: 'CHECK_WIN_CONDITION' });
+    }
+  }, [shouldTransitionToWin, send]);
 
   return (
     <div

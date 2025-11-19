@@ -245,8 +245,6 @@ export function useGameLogic() {
    * Handles turn comparison and resolution
    */
   const handleCompareTurn = () => {
-    const startTime = performance.now();
-    console.log(`[TIMING] ${startTime.toFixed(0)}ms - handleCompareTurn START`);
     const store = useGameStore.getState();
 
     // Check if either player has an instant animation card
@@ -271,13 +269,9 @@ export function useGameLogic() {
 
     const settleDelay = getGameSpeedAdjustedDuration(baseSettleDelay);
 
-    console.log(`[TIMING] ${performance.now().toFixed(0)}ms - settleDelay: ${settleDelay}ms`, { baseSettleDelay, hasInstantAnimation });
-
     // Wait for cards to settle on the board before triggering special card animations
     // This is especially important when there are multiple cards in the tableau
     setTimeout(() => {
-      const afterSettleTime = performance.now();
-      console.log(`[TIMING] ${afterSettleTime.toFixed(0)}ms - After settleDelay (+${(afterSettleTime - startTime).toFixed(0)}ms) - checking for animations`);
       // Queue animations for special cards played by both players
       // This will play them sequentially (player first, then CPU) and pause the game
       // Set callback to continue comparison after animations complete
@@ -286,7 +280,6 @@ export function useGameLogic() {
       });
 
       const hasAnimations = store.queueSpecialCardAnimations();
-      console.log('[TIMING] hasAnimations:', hasAnimations);
 
       // If animations were queued, return early - callback will continue the flow
       if (hasAnimations) {
@@ -299,8 +292,6 @@ export function useGameLogic() {
   };
 
   const handleCompareTurnContinued = () => {
-    const continueTime = performance.now();
-    console.log(`[TIMING] ${continueTime.toFixed(0)}ms - handleCompareTurnContinued START`);
 
     // After animations complete, check for special game states and trigger transitions
     // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
@@ -311,7 +302,6 @@ export function useGameLogic() {
     // If game is blocked (animations or modals), don't send any events
     // Wait for blockTransitions to be cleared, then state machine's automatic guards will handle it
     if (store.blockTransitions) {
-      console.log(`[TIMING] ${performance.now().toFixed(0)}ms - blockTransitions is true, returning`);
       return;
     }
 
@@ -370,16 +360,11 @@ export function useGameLogic() {
       ? ANIMATION_DURATIONS.CARD_COMPARISON_FAST
       : ANIMATION_DURATIONS.CARD_COMPARISON;
 
-    console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Badge delay: ${delay}ms`, { useFastTimingForBadge });
-
     setTimeout(() => {
-      const afterBadgeTime = performance.now();
-      console.log(`[TIMING] ${afterBadgeTime.toFixed(0)}ms - After badge delay (+${(afterBadgeTime - continueTime).toFixed(0)}ms) - checking resolution`);
       const currentStore = useGameStore.getState();
 
       // If game is blocked (modal open), set flag and wait for modal to close
       if (currentStore.blockTransitions) {
-        console.log('[TIMING] blockTransitions is true, setting awaitingResolution');
         useGameStore.setState({ awaitingResolution: true });
         return;
       }
@@ -390,10 +375,7 @@ export function useGameLogic() {
       // Ensure flag is cleared
       useGameStore.setState({ awaitingResolution: false });
 
-      console.log(`[TIMING] ${performance.now().toFixed(0)}ms - shouldResolve:`, shouldResolve, 'pendingEffects:', currentStore.pendingEffects.length);
-
       if (shouldResolve) {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Sending RESOLVE_TURN`);
         actorRef.send({ type: 'RESOLVE_TURN' });
       } else if (currentStore.pendingEffects.length > 0) {
         // Check if there are pending effects with UNSEEN animations
@@ -401,8 +383,6 @@ export function useGameLogic() {
         const hasUnseenAnimations = currentStore.pendingEffects.some(
           (effect) => !currentStore.shownAnimationCardIds.has(effect.card.id)
         );
-
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - hasUnseenAnimations:`, hasUnseenAnimations);
 
         // Check if all pending effects are post-resolution effects
         // Post-resolution effects don't need the special_effect phase delay
@@ -415,17 +395,12 @@ export function useGameLogic() {
             effect.type === 'mandatory_recall'
         );
 
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - allEffectsArePostResolution:`, allEffectsArePostResolution);
-
         if (hasUnseenAnimations && !allEffectsArePostResolution) {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Sending SPECIAL_EFFECT`);
           actorRef.send({ type: 'SPECIAL_EFFECT' });
         } else {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Sending RESOLVE_TURN (post-resolution effects or already shown)`);
           actorRef.send({ type: 'RESOLVE_TURN' });
         }
       } else {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Sending RESOLVE_TURN (no pending effects)`);
         actorRef.send({ type: 'RESOLVE_TURN' });
       }
     }, delay);
@@ -487,7 +462,6 @@ export function useGameLogic() {
    * Handles the resolution phase
    */
   const handleResolveTurn = () => {
-    console.log(`[TIMING] ${performance.now().toFixed(0)}ms - handleResolveTurn START`);
     const store = useGameStore.getState();
 
     // Check if either card triggers another play
@@ -549,22 +523,16 @@ export function useGameLogic() {
 
       if (nextPlayerState.deck.length === 0) {
         // Player has no cards left - resolve the turn instead of triggering another play
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Resolving turn (no cards left)`);
         const winner = resolveTurn();
 
         // Process pending special effects now that we know the winner
         // Returns true if post-resolution animations were queued (e.g., launch_stack)
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Processing pending effects`);
         const animationsQueued = processPendingEffects(winner);
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - animationsQueued:`, animationsQueued);
 
         // Only collect cards if no post-resolution animations were queued
         // If animations were queued, the callback will handle card collection after they complete
         if (!animationsQueued) {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Collecting cards (no animations queued)`);
           collectCardsAfterEffects(winner);
-        } else {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Skipping card collection (animations queued, callback will handle)`);
         }
 
         // Check if game is over
@@ -596,22 +564,16 @@ export function useGameLogic() {
       actorRef.send({ type: 'CHECK_WIN_CONDITION' });
     } else {
       // No more "another play" triggers - resolve the turn now
-      console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Resolving turn (no another play)`);
       const winner = resolveTurn();
 
       // Process pending special effects now that we know the winner
       // Returns true if post-resolution animations were queued (e.g., launch_stack)
-      console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Processing pending effects`);
       const animationsQueued = processPendingEffects(winner);
-      console.log(`[TIMING] ${performance.now().toFixed(0)}ms - animationsQueued:`, animationsQueued);
 
       // Only collect cards if no post-resolution animations were queued
       // If animations were queued, the callback will handle card collection after they complete
       if (!animationsQueued) {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Collecting cards (no animations queued)`);
         collectCardsAfterEffects(winner);
-      } else {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Skipping card collection (animations queued, callback will handle)`);
       }
 
       // Check if game is over

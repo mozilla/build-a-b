@@ -528,6 +528,10 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         expect(useGameStore.getState().player.launchStackCount).toBe(initialCount + 1);
         expect(useGameStore.getState().pendingEffects).toHaveLength(0);
       });
@@ -608,27 +612,20 @@ describe('Turn Resolution', () => {
         const initialCpuCount = useGameStore.getState().cpu.launchStackCount;
         const initialPlayerLaunchStacks = useGameStore.getState().playerLaunchStacks;
 
-        // Process pending effects - this triggers Phase 1 (reduce opponent's counter)
+        // Process pending effects - this queues animations and sets up callback
         useGameStore.getState().processPendingEffects('player');
-
-        // After Phase 1: CPU's counter should be reduced, player's should NOT increase yet
-        expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
-        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount); // Not increased yet
-
-        // The stolen card and winner should be stored in temporary state
-        expect(useGameStore.getState().patentTheftStolenCard).toEqual(cpuLaunchStackCard);
-        expect(useGameStore.getState().patentTheftWinner).toBe('player');
 
         // Animation completion callback should be set
         const callback = useGameStore.getState().animationCompletionCallback;
         expect(callback).toBeDefined();
 
-        // Manually trigger Phase 2 by calling the callback
+        // Manually trigger the callback to process the theft
         if (callback) {
           callback();
         }
 
-        // After Phase 2: Player's Launch Stack counter should increase
+        // After callback: CPU's counter should be reduced and player's should increase
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
         expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
         // Stolen card should be added to player's launch stack collection
         expect(useGameStore.getState().playerLaunchStacks.length).toBe(initialPlayerLaunchStacks.length + 1);
@@ -736,6 +733,10 @@ describe('Turn Resolution', () => {
         });
 
         useGameStore.getState().processPendingEffects('player');
+
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
 
         expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 2);
         expect(useGameStore.getState().cpu.deck.length).toBe(initialCpuDeckSize - 2);

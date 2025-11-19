@@ -56,6 +56,7 @@ export const useGameStore = create<GameStore>()(
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      shouldTransitionToWin: false,
       playerLaunchStacks: [], // Launch Stack cards player has collected
       cpuLaunchStacks: [], // Launch Stack cards CPU has collected
       playerTurnState: 'normal',
@@ -185,6 +186,7 @@ export const useGameStore = create<GameStore>()(
           cardsInPlay: [],
           winner: null,
           winCondition: null,
+          shouldTransitionToWin: false,
           showingWinEffect: null,
           collecting: null,
           activePlayer: 'player',
@@ -335,8 +337,21 @@ export const useGameStore = create<GameStore>()(
        * Enhanced collection system - Supports per-card destinations and sources
        * Enables both board-to-deck and deck-to-deck animations
        */
-      collectCardsDistributed: (distributions, primaryWinner, visualOnly = false) => {
+      collectCardsDistributed: (
+        distributions,
+        primaryWinner,
+        visualOnly = false,
+        launchStackCount = 0,
+      ) => {
         const winnerId = primaryWinner || distributions[0]?.destination;
+
+        // Calculate dynamic duration based on number of rockets
+        // Each rocket needs time to animate, and they may be staggered
+        const rocketDuration =
+          launchStackCount > 0
+            ? ANIMATION_DURATIONS.WIN_ANIMATION +
+              launchStackCount * ANIMATION_DURATIONS.WIN_ANIMATION // Base + 1200ms per rocket
+            : ANIMATION_DURATIONS.WIN_ANIMATION;
 
         // STAGE 1: Show win effect for primary winner (if specified)
         if (winnerId) {
@@ -385,6 +400,12 @@ export const useGameStore = create<GameStore>()(
                 anotherPlayExpected: false,
                 collecting: null,
               });
+
+              // Check win condition after all animations complete (rockets + collection)
+              const hasWon = get().checkWinCondition();
+              if (hasWon) {
+                set({ shouldTransitionToWin: true });
+              }
             } else {
               // Normal mode: Update decks and clear states
               // Group cards by destination
@@ -430,15 +451,21 @@ export const useGameStore = create<GameStore>()(
                 anotherPlayExpected: false,
                 collecting: null,
               });
+
+              // Check win condition after all animations complete (rockets + collection)
+              const hasWon = get().checkWinCondition();
+              if (hasWon) {
+                set({ shouldTransitionToWin: true });
+              }
             }
           }, ANIMATION_DURATIONS.CARD_COLLECTION);
-        }, ANIMATION_DURATIONS.WIN_ANIMATION);
+        }, rocketDuration); // Use dynamic duration based on number of rockets
       },
 
       /**
        * Backward compatibility wrapper - Converts old format to new CardDistribution format
        */
-      collectCards: (winnerId, cards) => {
+      collectCards: (winnerId, cards, launchStackCount = 0) => {
         // Convert to new format - all cards from board go to winner
         const distributions: CardDistribution[] = cards.map((card) => ({
           card,
@@ -446,7 +473,7 @@ export const useGameStore = create<GameStore>()(
           source: { type: 'board' as const },
         }));
 
-        get().collectCardsDistributed(distributions, winnerId);
+        get().collectCardsDistributed(distributions, winnerId, false, launchStackCount);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {
@@ -597,17 +624,8 @@ export const useGameStore = create<GameStore>()(
         return result.winner;
       },
 
-      collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie') => {
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - collectCardsAfterEffects START - winner:`,
-          winner,
-        );
+      collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie', launchStackCount = 0) => {
         if (winner === 'tie') {
-          console.log(
-            `[TIMING] ${performance
-              .now()
-              .toFixed(0)}ms - collectCardsAfterEffects - tie, returning`,
-          );
           return;
         }
 
@@ -620,7 +638,7 @@ export const useGameStore = create<GameStore>()(
         // Collect remaining cards in play after effects have been processed
         const { cardsInPlay } = get();
         if (cardsInPlay.length > 0) {
-          get().collectCards(winner, cardsInPlay);
+          get().collectCards(winner, cardsInPlay, launchStackCount);
         }
       },
 
@@ -901,17 +919,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       processPendingEffects: (winner) => {
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - processPendingEffects START - winner:`,
-          winner,
-        );
         const { pendingEffects } = get();
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - pendingEffects count:`,
-          pendingEffects.length,
-          'types:',
-          pendingEffects.map((e) => e.type),
-        );
 
         // Track if we've queued post-resolution animations (only show once per turn)
         let launchStackAnimationQueued = false;
@@ -954,41 +962,29 @@ export const useGameStore = create<GameStore>()(
               break;
 
             case 'mandatory_recall':
-              console.log('[TIMING] Processing mandatory_recall effect for', effect.playedBy);
               // Queue firewall_recall animation ONCE per turn (before processing effects)
               // Store effects to process after animation completes
               if (!mandatoryRecallAnimationQueued) {
                 const animationPlayer = effect.playedBy;
-                console.log('[TIMING] Queueing firewall_recall animation for', animationPlayer);
                 get().queueAnimation('firewall_recall', animationPlayer);
                 mandatoryRecallAnimationQueued = true;
               }
 
               // Store this effect to process after animation completes
               mandatoryRecallEffects.push(effect);
-              console.log(
-                '[TIMING] Stored mandatory_recall effect, total:',
-                mandatoryRecallEffects.length,
-              );
               break;
 
             case 'temper_tantrum':
-              console.log('[TIMING] Processing temper_tantrum effect for', effect.playedBy);
               // Queue move_tantrum animation ONCE per turn (before processing effects)
               // Store effects to process after animation completes
               if (!temperTantrumAnimationQueued) {
                 const animationPlayer = effect.playedBy;
-                console.log('[TIMING] Queueing move_tantrum animation for', animationPlayer);
                 get().queueAnimation('move_tantrum', animationPlayer);
                 temperTantrumAnimationQueued = true;
               }
 
               // Store this effect to process after animation completes
               temperTantrumEffects.push(effect);
-              console.log(
-                '[TIMING] Stored temper_tantrum effect, total:',
-                temperTantrumEffects.length,
-              );
               break;
 
             // @ts-expect-error - We are leaving this JUST IN CASE we need it back
@@ -1040,56 +1036,44 @@ export const useGameStore = create<GameStore>()(
               break;
 
             case 'patent_theft':
-              console.log('[TIMING] Processing patent_theft effect for', effect.playedBy);
               // Queue move_theft animation ONCE per turn (before processing effects)
               // Store effects to process after animation completes
               if (!patentTheftAnimationQueued) {
                 // Use the player who played it for the animation
                 const animationPlayer = effect.playedBy;
-                console.log('[TIMING] Queueing move_theft animation for', animationPlayer);
                 get().queueAnimation('move_theft', animationPlayer);
                 patentTheftAnimationQueued = true;
               }
 
               // Store this effect to process after animation completes
               patentTheftEffects.push(effect);
-              console.log('[TIMING] Stored patent_theft effect, total:', patentTheftEffects.length);
               break;
 
             case 'leveraged_buyout':
-              console.log('[TIMING] Processing leveraged_buyout effect for', effect.playedBy);
               // Queue move_buyout animation ONCE per turn (before processing effects)
               // Store effects to process after animation completes
               if (!leveragedBuyoutAnimationQueued) {
                 const animationPlayer = effect.playedBy;
-                console.log('[TIMING] Queueing move_buyout animation for', animationPlayer);
                 get().queueAnimation('move_buyout', animationPlayer);
                 leveragedBuyoutAnimationQueued = true;
               }
 
               // Store this effect to process after animation completes
               leveragedBuyoutEffects.push(effect);
-              console.log(
-                '[TIMING] Stored leveraged_buyout effect, total:',
-                leveragedBuyoutEffects.length,
-              );
               break;
 
             case 'launch_stack':
-              console.log('[TIMING] Processing launch_stack effect for', effect.playedBy);
               // Queue launch_stack animation ONCE per turn (before processing effects)
               // Store effects to process after animation completes
               if (!launchStackAnimationQueued) {
                 // Use the player who played it for the animation (or player if both played)
                 const animationPlayer = effect.playedBy;
-                console.log('[TIMING] Queueing launch_stack animation for', animationPlayer);
                 get().queueAnimation('launch_stack', animationPlayer);
                 launchStackAnimationQueued = true;
               }
 
               // Store this effect to process after animation completes
               launchStackEffects.push(effect);
-              console.log('[TIMING] Stored launch_stack effect, total:', launchStackEffects.length);
               break;
 
             case 'data_grab': {
@@ -1144,8 +1128,6 @@ export const useGameStore = create<GameStore>()(
               if (existingCallback) {
                 existingCallback();
               }
-
-              console.log('[TIMING] Animation callback - processing post-resolution effects');
 
               // Process all launch_stack effects (add cards to collections)
               // This will trigger rocket counter animations
@@ -1231,23 +1213,30 @@ export const useGameStore = create<GameStore>()(
                 }
               });
 
-              console.log('[TIMING] Animation callback - calling collectCardsAfterEffects');
+              // Count how many launch stacks went to the winner (for rocket animation timing)
+              const launchStacksForWinner = launchStackEffects.filter((effect) => {
+                const wonByPlayer = winner === effect.playedBy;
+                const lostByPlayer = winner !== 'tie' && winner !== effect.playedBy;
+                if (wonByPlayer) return true;
+                if (lostByPlayer) return true; // Lost, goes to winner
+                return false;
+              }).length;
+
               // IMPORTANT: After animations complete, continue with card collection
               // This ensures win effects and card collection happen AFTER animations
-              get().collectCardsAfterEffects(winner);
+              // Win condition will be checked after rockets and card collection complete
+              get().collectCardsAfterEffects(winner, launchStacksForWinner);
+
+              // Call existing callback if it exists
+              if (existingCallback) {
+                existingCallback();
+              }
             },
           });
         }
 
         // Clear pending effects after processing
         get().clearPendingEffects();
-
-        console.log(
-          `[TIMING] ${performance
-            .now()
-            .toFixed(0)}ms - processPendingEffects END - hasPostResolutionAnimations:`,
-          hasPostResolutionAnimations,
-        );
 
         // Return true if post-resolution animations were queued (caller should skip card collection)
         // Return false otherwise (caller should proceed with card collection normally)
@@ -1471,16 +1460,8 @@ export const useGameStore = create<GameStore>()(
       processNextAnimation: () => {
         const { animationQueue, animationCompletionCallback } = get();
 
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - processNextAnimation - queue length:`,
-          animationQueue.length,
-        );
-
         // No more animations to process
         if (animationQueue.length === 0) {
-          console.log(
-            `[TIMING] ${performance.now().toFixed(0)}ms - Animation queue empty - clearing flags`,
-          );
           set({
             isPlayingQueuedAnimation: false,
             animationsPaused: false, // Internal: Queue is free
@@ -1490,9 +1471,6 @@ export const useGameStore = create<GameStore>()(
 
           // Call completion callback if set
           if (animationCompletionCallback) {
-            console.log(
-              `[TIMING] ${performance.now().toFixed(0)}ms - Calling animation completion callback`,
-            );
             const callback = animationCompletionCallback;
             set({ animationCompletionCallback: null }); // Clear callback
             callback(); // Execute callback to resume game flow
@@ -1502,12 +1480,6 @@ export const useGameStore = create<GameStore>()(
 
         // Get the next animation from the queue
         const [nextAnimation, ...remainingQueue] = animationQueue;
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - Playing animation:`,
-          nextAnimation.type,
-          'by',
-          nextAnimation.playedBy,
-        );
         set({
           animationQueue: remainingQueue,
           isPlayingQueuedAnimation: true,
@@ -1600,12 +1572,6 @@ export const useGameStore = create<GameStore>()(
             card.specialType === 'mandatory_recall';
 
           if (isPostResolutionCard) {
-            console.log(
-              '[ANIMATION] Skipping post-resolution animation for',
-              card.specialType,
-              'card:',
-              card.id,
-            );
             return false;
           }
 
@@ -1642,10 +1608,6 @@ export const useGameStore = create<GameStore>()(
         set({ shownAnimationCardIds });
 
         // Queue all animations
-        console.log(
-          '[ANIMATION] Queueing initial animations:',
-          animationsToQueue.map((a) => `${a.type} by ${a.playedBy}`),
-        );
         animationsToQueue.forEach(({ type, playedBy }) => {
           get().queueAnimation(type as SpecialEffectAnimationType, playedBy);
         });
@@ -2461,6 +2423,7 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,
+          shouldTransitionToWin: false,
           showingWinEffect: null,
           collecting: null,
           playerLaunchStacks: [],
