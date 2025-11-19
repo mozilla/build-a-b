@@ -230,7 +230,7 @@ export const ScreenRenderer: FC = () => {
                   setDrawerNode={setDrawerNode}
                   onGameOverCrossfadeStart={handleGameOverCrossfadeStart}
                   onGameOverCrossfadeComplete={handleGameOverCrossfadeComplete}
-                  className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
+                  className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
                   style={{
                     opacity: showGameOverCrossfade ? 0 : 1,
                     transition: 'opacity 3s ease-in-out',
@@ -247,7 +247,7 @@ export const ScreenRenderer: FC = () => {
                     setDrawerOpen={setDrawerOpen}
                     setDrawerNode={setDrawerNode}
                     isCrossFadeComplete={isCrossfadeComplete}
-                    className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none"
+                    className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none hide-scrollbar"
                   />
                 )}
               </>
@@ -260,7 +260,7 @@ export const ScreenRenderer: FC = () => {
                 drawerOpen={drawerOpen}
                 setDrawerOpen={setDrawerOpen}
                 setDrawerNode={setDrawerNode}
-                className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none"
+                className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
               >
                 {showCloseIcon && (
                   <div className="absolute top-5 right-5">

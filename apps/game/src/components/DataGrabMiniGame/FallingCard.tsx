@@ -15,25 +15,33 @@ import type { PlayedCardState } from '@/types';
 import burstAnimation from '@/assets/animations/effects/burst.json';
 
 interface CardPosition {
-  x: number; // Base X position in rem
-  y: number; // Y position in rem (relative to wrapper)
+  x: number; // X position in rem (ensuring 66% visibility)
   translateX: number; // Random offset in rem (-3.75 to 3.75)
   translateY: number; // Random offset in rem (-6.25 to 6.25)
   rotation: number; // Rotation in degrees (-30 to 30)
+  delay: number; // Animation delay in seconds
+  duration: number; // Animation duration in seconds (variable speed)
 }
 
 interface FallingCardProps {
   playedCardState: PlayedCardState;
   position: CardPosition;
   onCollect: (cardId: string, collectedBy: 'player' | 'cpu') => void;
+  onReachBottom: (cardId: string) => void;
   collectedByPlayer: PlayedCardState[];
   collectedByCPU: PlayedCardState[];
 }
+
+// Board dimensions (matching parent component)
+const BOARD_HEIGHT_REM = 54;
+const START_Y_REM = -20; // Start above viewport
+const END_Y_REM = BOARD_HEIGHT_REM + 20; // End below viewport
 
 export const FallingCard: FC<FallingCardProps> = ({
   playedCardState,
   position,
   onCollect,
+  onReachBottom,
   collectedByPlayer,
   collectedByCPU,
 }) => {
@@ -74,29 +82,52 @@ export const FallingCard: FC<FallingCardProps> = ({
     }, DATA_GRAB_CONFIG.BURST_DURATION);
   };
 
+  // Handle animation completion (card reached bottom)
+  const handleAnimationComplete = () => {
+    if (!isCollected) {
+      onReachBottom(card.id);
+    }
+  };
+
   if (isCollected && !showBurst) return null;
 
   return (
     <>
-      {/* Card positioned within wrapper - larger clickable area to account for rotation */}
+      {/* Card with individual falling animation - larger clickable area to account for rotation */}
       <motion.div
         className="absolute cursor-pointer w-[10rem] h-[13rem] flex items-center justify-center origin-center"
         style={{
           left: `${position.x}rem`,
-          top: `${position.y}rem`,
-          transform: `translate(calc(${position.translateX}rem - 1.25rem), calc(${position.translateY}rem - 1.25rem)) rotate(${position.rotation}deg)`,
           opacity: isCollected ? 0 : 1,
           pointerEvents: isCollected ? 'none' : 'auto',
         }}
+        initial={{
+          y: `${START_Y_REM}rem`,
+        }}
+        animate={{
+          y: `${END_Y_REM}rem`,
+        }}
+        transition={{
+          duration: position.duration,
+          delay: position.delay,
+          ease: 'linear',
+        }}
+        onAnimationComplete={handleAnimationComplete}
         onClick={handleClick}
         onTouchEnd={handleClick}
       >
-        {/* Actual card image - centered within clickable area */}
-        <img
-          src={cardImage}
-          alt={isFaceDown ? 'Face-down card' : card.name}
-          className="w-[7.5rem] h-[10.5rem] object-cover rounded-lg shadow-2xl pointer-events-none"
-        />
+        {/* Actual card image with rotation and offsets - centered within clickable area */}
+        <div
+          style={{
+            transform: `translate(calc(${position.translateX}rem - 1.25rem), calc(${position.translateY}rem - 1.25rem)) rotate(${position.rotation}deg)`,
+          }}
+        >
+          <img
+            src={cardImage}
+            alt={isFaceDown ? 'Face-down card' : card.name}
+            className="w-[7.5rem] h-[10.5rem] object-cover rounded-lg shadow-2xl pointer-events-none"
+          />
+        </div>
       </motion.div>
 
       {/* Burst Animation - Rendered via Portal to escape container clipping */}
