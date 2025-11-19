@@ -77,7 +77,7 @@ export const TOOLTIP_CONFIGS = {
   },
   EFFECT_NOTIFICATION: {
     id: 'effect_notification',
-    message: 'Tap to see effect',
+    message: 'Tap to view cards',
     maxDisplayCount: 1, // Show only once
   },
 

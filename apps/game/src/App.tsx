@@ -1,5 +1,5 @@
 import { ScreenRenderer } from '@/components';
-import { BlurredBackground } from '@/components/BlurredBackground';
+// import { BlurredBackground } from '@/components/BlurredBackground';
 import { Menu } from '@/components/Menu';
 import { HeroUIProvider } from '@heroui/react';
 import { Game } from './components/Game';
@@ -21,7 +21,7 @@ function App() {
       <GameProvider>
         <PreloadingProvider>
           <div className="h-[100dvh] w-[100vw] bg-black flex items-center justify-center overscroll-none">
-            <BlurredBackground />
+            {/* <BlurredBackground /> */}
             <Game />
             <ScreenRenderer />
             <Menu />

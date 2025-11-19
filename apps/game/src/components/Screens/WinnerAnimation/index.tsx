@@ -17,7 +17,7 @@ import { cn } from '@/utils/cn';
  * Auto-completes when video ends.
  */
 
-const CROSS_FADE_DURATION = 1; // in seconds
+const CROSS_FADE_DURATION = 0.25; // in seconds
 
 export const WinnerAnimation: FC<BaseScreenProps> = memo(
   ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, ...props }) => {
@@ -76,7 +76,6 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       // Listen for time updates to trigger crossfade
       const handleTimeUpdate = () => {
         const { currentTime, duration } = preloadedVideo;
-        // Trigger crossfade 3 seconds before end
         if (
           duration &&
           currentTime >= duration - CROSS_FADE_DURATION &&
