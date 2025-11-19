@@ -4,7 +4,7 @@
  */
 
 import { assign, createMachine } from 'xstate';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
 import type { TooltipKey } from '../config/tooltip-config';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
@@ -203,7 +203,9 @@ export const gameFlowMachine = createMachine(
 
       revealing: {
         entry: assign({
-          tooltipMessage: 'EMPTY',
+          tooltipMessage: () => {
+            return 'EMPTY';
+          },
         }),
         on: {
           CARDS_REVEALED: 'effect_notification',
@@ -216,16 +218,15 @@ export const gameFlowMachine = createMachine(
           checking: {
             // Check if there are unseen effect notifications and add to accumulation (non-blocking)
             entry: assign({
-              tooltipMessage: 'EMPTY',
+              tooltipMessage: () => {
+                return 'EMPTY';
+              },
             }),
             after: {
-              [ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY]: [
-                // Small delay after instant effects complete, then immediately continue
-                // Badge will show (non-blocking) if effects were accumulated
-                {
-                  target: '#dataWarGame.comparing',
-                },
-              ],
+              // Dynamic delay based on whether there are accumulated effects to show
+              effectNotificationDelay: {
+                target: '#dataWarGame.comparing',
+              },
             },
           },
         },
@@ -233,13 +234,17 @@ export const gameFlowMachine = createMachine(
 
       comparing: {
         entry: assign({
-          tooltipMessage: 'EMPTY', // Clear any previous tooltips
+          tooltipMessage: () => {
+            console.log(`[TIMING] ${performance.now().toFixed(0)}ms - STATE: comparing`);
+            return 'EMPTY';
+          },
         }),
         // Automatic transitions for special game states (Special Effects, Data War, Data Grab)
         // IMPORTANT: Special effects must be checked BEFORE data war to prevent conflicts
         // Normal resolution is handled manually via handleCompareTurnContinued to allow badge interaction
         after: {
-          [ANIMATION_DURATIONS.CARD_COMPARISON]: [
+          // Dynamic delay: Fast for common cards, normal for special cards/data war
+          comparisonDelay: [
             // Check for special effects FIRST (highest priority)
             { target: 'special_effect', guard: 'hasSpecialEffectsAndNotAnimating' },
             // Then check for Data War and Data Grab (must check modal not open)
@@ -252,12 +257,17 @@ export const gameFlowMachine = createMachine(
           TIE: 'data_war',
           DATA_GRAB: 'data_grab',
           SPECIAL_EFFECT: 'special_effect',
-          RESOLVE_TURN: 'resolving',
+          RESOLVE_TURN: {
+            target: 'resolving',
+            actions: () => {
+              console.log(`[TIMING] ${performance.now().toFixed(0)}ms - RESOLVE_TURN event received by state machine`);
+            },
+          },
         },
       },
 
       data_war: {
-        initial: 'animating',
+        initial: 'pre_animation',
         entry: () => {
           // Clear pending bonuses/penalties (Data War = fresh start)
           const { player, cpu } = useGameStore.getState();
@@ -288,14 +298,22 @@ export const gameFlowMachine = createMachine(
           });
         },
         states: {
-          animating: {
-            // Skip animation immediately if this is the first data war from hostile takeover
+          pre_animation: {
+            // Delay before showing the data war animation (breathing room after comparison)
+            // Skip delay immediately if this is the first data war from hostile takeover
             always: [
               {
                 target: 'reveal_face_down',
                 guard: 'isHostileTakeoverFirstDataWar',
               },
             ],
+            after: {
+              [getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY)]:
+                'animating',
+            },
+          },
+          animating: {
+            // Show data war animation
             after: {
               [ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION]: 'reveal_face_down',
             },
@@ -344,17 +362,23 @@ export const gameFlowMachine = createMachine(
       },
 
       data_grab: {
-        initial: 'takeover',
-        entry: () => {
-          // Initialize Data Grab state in store
-          useGameStore.getState().initializeDataGrab();
-        },
+        initial: 'pre_animation',
         states: {
+          pre_animation: {
+            // Delay before showing the data grab takeover animation (breathing room after comparison)
+            after: {
+              [getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY)]:
+                'takeover',
+            },
+          },
           takeover: {
             // Intro animation + "Ready? Set? Go!" countdown
-            entry: assign({
-              tooltipMessage: 'EMPTY',
-            }),
+            entry: () => {
+              // Initialize Data Grab state in store (shows takeover animation)
+              useGameStore.getState().initializeDataGrab();
+              // Clear tooltip
+              useGameStore.setState({ tooltipMessage: 'EMPTY' } as Partial<GameFlowContext>);
+            },
             after: {
               [ANIMATION_DURATIONS.DATA_GRAB_TAKEOVER]: 'playing',
             },
@@ -363,13 +387,14 @@ export const gameFlowMachine = createMachine(
             },
           },
           playing: {
-            // Active mini-game (10 seconds)
+            // Active mini-game (duration varies based on card count, max 8 seconds)
             entry: () => {
               // Start the mini-game timer
               useGameStore.getState().startDataGrabGame();
             },
             after: {
-              [ANIMATION_DURATIONS.DATA_GRAB_GAME]: 'results',
+              // Fallback timeout (safety - actual completion triggered by animation)
+              10000: 'results', // 10s max (generous safety margin)
             },
             on: {
               DATA_GRAB_GAME_COMPLETE: 'results',
@@ -387,25 +412,32 @@ export const gameFlowMachine = createMachine(
                 actions: () => {
                   // User clicked "Collect Cards" - modal closing now
                   // Wait for modal close animation, then restore cards to tableau, then animate to decks
+                  const store = useGameStore.getState();
                   const {
                     dataGrabDistributions,
                     dataGrabPlayerLaunchStacks,
                     dataGrabCPULaunchStacks,
-                  } = useGameStore.getState();
+                    animationQueue,
+                    pendingEffects,
+                  } = store;
 
-                  // Process Launch Stacks FIRST (triggers win animation)
-                  dataGrabPlayerLaunchStacks.forEach((pcs) => {
-                    useGameStore.getState().addLaunchStack('player', pcs.card);
-                  });
-                  dataGrabCPULaunchStacks.forEach((pcs) => {
-                    useGameStore.getState().addLaunchStack('cpu', pcs.card);
-                  });
+                  // Function to process pending effects (including Launch Stacks)
+                  // This will queue animations and handle effects properly
+                  const processPendingEffectsForDataGrab = () => {
+                    // For Data Grab, we need to handle effects for both players' collected cards
+                    // Since there's no single "winner", we'll process effects manually
+                    // The animation queue system will handle showing animations in sequence
+                    const { pendingEffects } = useGameStore.getState();
 
-                  // Cards are already on tableau (restored when modal opened)
-                  // Just wait for modal to close + fast play animation to complete, then animate to decks
-                  if (dataGrabDistributions.length > 0) {
-                    // Delay to let modal close + fast card play animation complete
-                    setTimeout(() => {
+                    if (pendingEffects.length > 0) {
+                      // Process pending effects for player (as winner for their collected cards)
+                      useGameStore.getState().processPendingEffects('player');
+                    }
+                  };
+
+                  // Function to run card collection after animations complete
+                  const runCardCollection = () => {
+                    if (dataGrabDistributions.length > 0) {
                       // Trigger collection animation - cards already rendered on tableau
                       // Visual-only animation - decks already have correct counts
                       useGameStore
@@ -419,8 +451,35 @@ export const gameFlowMachine = createMachine(
                         dataGrabCollectedByPlayer: [],
                         dataGrabCollectedByCPU: [],
                       });
+                    }
+                  };
+
+                  // Check if there are animations queued or pending effects to process
+                  const hasAnimations = animationQueue.length > 0 || pendingEffects.length > 0;
+
+                  if (hasAnimations) {
+                    // Process pending effects (this will queue animations and set up callbacks)
+                    processPendingEffectsForDataGrab();
+
+                    // Get the updated callback after processing effects
+                    const currentCallback = useGameStore.getState().animationCompletionCallback;
+                    useGameStore.setState({
+                      animationCompletionCallback: () => {
+                        // Call the callback from processPendingEffects
+                        if (currentCallback) {
+                          currentCallback();
+                        }
+                        // Run card collection after all animations complete
+                        runCardCollection();
+                      },
+                    });
+                  } else {
+                    // No animations - run card collection after modal closes
+                    setTimeout(() => {
+                      runCardCollection();
                     }, ANIMATION_DURATIONS.UI_TRANSITION_DELAY + ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE); // Modal (300ms) + fast play (200ms)
                   }
+
                 },
               },
             },
@@ -457,7 +516,10 @@ export const gameFlowMachine = createMachine(
 
       resolving: {
         entry: assign({
-          currentTurn: ({ context }) => context.currentTurn + 1,
+          currentTurn: ({ context }) => {
+            console.log(`[TIMING] ${performance.now().toFixed(0)}ms - STATE: resolving`);
+            return context.currentTurn + 1;
+          },
         }),
         on: {
           CHECK_WIN_CONDITION: [
@@ -478,10 +540,13 @@ export const gameFlowMachine = createMachine(
           // Automatically process non-interactive effects
           processing: {
             entry: assign({
-              tooltipMessage: 'EMPTY',
+              tooltipMessage: () => {
+                return 'EMPTY';
+              },
             }),
             after: {
-              [ANIMATION_DURATIONS.WIN_ANIMATION]: [
+              // Dynamic delay based on whether cards collected or another play coming
+              winAnimationDelay: [
                 { target: 'animating', guard: 'hasPreRevealEffects' },
                 { target: '#dataWarGame.ready' },
               ],
@@ -489,7 +554,7 @@ export const gameFlowMachine = createMachine(
             on: {
               START_OWYW_ANIMATION: 'animating',
             },
-            // Wait 1.2s for win animation to complete before transitioning
+            // Wait for win animation to complete before transitioning (fast if another play)
           },
 
           // Animation plays (for OWYW)
@@ -606,6 +671,8 @@ export const gameFlowMachine = createMachine(
           return false;
         }
 
+        // Safety check for tests
+        if (!state.checkForDataWar) return false;
         return state.checkForDataWar();
       },
       isDataWarAndNotAnimating: () => {
@@ -617,26 +684,65 @@ export const gameFlowMachine = createMachine(
           return false;
         }
 
+        // Safety check for tests
+        if (!state.checkForDataWar) return false;
         return state.checkForDataWar();
       },
       hasSpecialEffects: () => {
         // Check if there are pending special effects to show
         const state = useGameStore.getState();
-        return state.pendingEffects.length > 0;
+        return (state.pendingEffects?.length ?? 0) > 0;
       },
       hasSpecialEffectsAndNotAnimating: () => {
         const state = useGameStore.getState();
         if (state.blockTransitions) return false;
-        return state.pendingEffects.length > 0;
+
+        // Safety check for tests
+        if (!state.pendingEffects || !state.shownAnimationCardIds) return false;
+
+        // Check if there are pending effects with UNSEEN animations
+        // If all pending effect animations have already been shown, skip special_effect phase
+        const hasUnseenAnimations = state.pendingEffects.some(
+          (effect) => !state.shownAnimationCardIds.has(effect.card.id),
+        );
+
+        // Check if Data Grab is triggered
+        const isDataGrabTriggered = state.checkForDataGrab?.() ?? false;
+
+        // Check if all pending effects are post-resolution effects
+        // Post-resolution effects don't need the special_effect phase
+        // EXCEPTION: Launch Stack animations run BEFORE Data Grab mini-game
+        const allEffectsArePostResolution = state.pendingEffects.every(
+          (effect) => {
+            // Special case: if Data Grab is triggered, Launch Stack animation runs BEFORE Data Grab
+            if (effect.type === 'launch_stack' && isDataGrabTriggered) {
+              return false; // Not post-resolution in this context
+            }
+            return (
+              effect.type === 'launch_stack' ||
+              effect.type === 'patent_theft' ||
+              effect.type === 'leveraged_buyout' ||
+              effect.type === 'temper_tantrum' ||
+              effect.type === 'mandatory_recall'
+            );
+          }
+        );
+
+        // Only enter special_effect phase if there are unseen animations AND they're not all post-resolution
+        return hasUnseenAnimations && !allEffectsArePostResolution;
       },
       hasPreRevealEffects: () => {
         // Check if there are pre-reveal effects to process (like OWYW)
         const state = useGameStore.getState();
+        // Safety check for tests
+        if (!state.hasPreRevealEffects) return false;
         return state.hasPreRevealEffects();
       },
       hasUnseenEffectNotifications: () => {
         // Check if there are unseen effect notifications to show
         const state = useGameStore.getState();
+        // Safety check for tests
+        if (!state.hasUnseenEffectNotifications) return false;
         return state.hasUnseenEffectNotifications();
       },
       notShowingEffectModal: () => {
@@ -661,11 +767,15 @@ export const gameFlowMachine = createMachine(
       isDataGrab: () => {
         // Check if a Data Grab card was played and there are enough cards in play
         const state = useGameStore.getState();
+        // Safety check for tests
+        if (!state.checkForDataGrab) return false;
         return state.checkForDataGrab();
       },
       isDataGrabAndNotAnimating: () => {
         const state = useGameStore.getState();
         if (state.blockTransitions) return false;
+        // Safety check for tests
+        if (!state.checkForDataGrab) return false;
         return state.checkForDataGrab();
       },
       shouldResolveWithoutChecks: () => {
@@ -724,6 +834,76 @@ export const gameFlowMachine = createMachine(
         }
 
         return false;
+      },
+    },
+    delays: {
+      comparisonDelay: () => {
+        const store = useGameStore.getState();
+
+        // Card types that need SLOW timing (have animations/effects that need time to appreciate)
+        const slowTimingCardTypes = [
+          'forced_empathy', // Deck swap animation
+          'hostile_takeover', // Triggers data war
+          'data_grab', // Mini-game
+          'open_what_you_want', // Modal selection
+          'tracker_smacker', // Animation
+          // Note: launch_stack, patent_theft, leveraged_buyout, temper_tantrum, mandatory_recall removed - animations play after resolution
+        ];
+
+        // Check if either player played a card that needs slow timing
+        const playerSpecialType = store.player.playedCard?.specialType ?? '';
+        const cpuSpecialType = store.cpu.playedCard?.specialType ?? '';
+        const playerNeedsSlow = slowTimingCardTypes.includes(playerSpecialType);
+        const cpuNeedsSlow = slowTimingCardTypes.includes(cpuSpecialType);
+        const hasSlowTimingCards = playerNeedsSlow || cpuNeedsSlow;
+
+        // Use fast timing for common cards, trackers, and blockers
+        // Note: We don't check for data war here because even if cards tie,
+        // we still want fast timing for the initial comparison (data war happens after)
+        const useFastTiming = !hasSlowTimingCards;
+
+        const baseDelay = useFastTiming
+          ? ANIMATION_DURATIONS.CARD_COMPARISON_FAST
+          : ANIMATION_DURATIONS.CARD_COMPARISON;
+
+        const adjustedDelay = getGameSpeedAdjustedDuration(baseDelay);
+
+        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - comparisonDelay calculated:`, adjustedDelay, 'ms', { baseDelay, useFastTiming, playerSpecialType, cpuSpecialType });
+
+        return adjustedDelay;
+      },
+      effectNotificationDelay: () => {
+        const store = useGameStore.getState();
+
+        // Use fast delay if there are no accumulated effects to show
+        // (e.g., trackers/blockers which don't show notifications)
+        const hasAccumulatedEffects = (store.accumulatedEffects?.length ?? 0) > 0;
+
+        const delay = hasAccumulatedEffects
+          ? ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY
+          : ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY_FAST;
+
+        return delay;
+      },
+      winAnimationDelay: () => {
+        const store = useGameStore.getState();
+
+        // Use fast delay if:
+        // 1. Current cards trigger another play, OR
+        // 2. We're currently in "another play" mode (playing because of previous card)
+        const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
+        const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
+        const hasAnotherPlayComing = playerTriggersAnother || cpuTriggersAnother;
+        const inAnotherPlayMode = store.anotherPlayMode || store.anotherPlayExpected;
+
+        // Use fast delay if we're in an "another play" sequence
+        const useFastDelay = hasAnotherPlayComing || inAnotherPlayMode;
+
+        const delay = useFastDelay
+          ? ANIMATION_DURATIONS.WIN_ANIMATION_FAST
+          : ANIMATION_DURATIONS.WIN_ANIMATION;
+
+        return delay;
       },
     },
   },

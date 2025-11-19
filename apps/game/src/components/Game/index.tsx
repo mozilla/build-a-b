@@ -3,7 +3,7 @@
  */
 
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
-import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '@/config/animation-timings';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
@@ -144,12 +144,14 @@ export function Game() {
         handleRevealCards();
         break;
       case 'comparing':
+        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - PHASE: comparing`);
         // Call handleCompareTurn to queue animations and determine next step
         // If animations are queued, callback will handle the transition
         // Otherwise, state machine will auto-transition after 1500ms delay
         handleCompareTurn();
         break;
       case 'resolving':
+        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - PHASE: resolving`);
         handleResolveTurn();
         break;
       default:
@@ -161,9 +163,10 @@ export function Game() {
   useEffect(() => {
     // Handle special effect phase - auto-dismiss after a brief delay
     if (phase === 'special_effect.showing') {
+      const adjustedDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
       const timer = setTimeout(() => {
         send({ type: 'DISMISS_EFFECT' });
-      }, ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
+      }, adjustedDelay);
       return () => clearTimeout(timer);
     }
   }, [phase, send]);

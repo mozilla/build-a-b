@@ -5,9 +5,10 @@
  */
 
 import { DATA_GRAB_ASSETS, DATA_GRAB_CONFIG } from '@/config/data-grab-config';
+import { GameMachineContext } from '@/providers/GameProvider';
 import { useGameStore } from '@/store';
 import { motion } from 'framer-motion';
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useEffect } from 'react';
 import { DataCookie } from './DataCookie';
 import { FallingCard } from './FallingCard';
 
@@ -88,6 +89,7 @@ const generateCardPositions = (cardCount: number): CardPosition[] => {
 };
 
 export const DataGrabMiniGame: FC = () => {
+  const actorRef = GameMachineContext.useActorRef();
   const dataGrabGameActive = useGameStore((state) => state.dataGrabGameActive);
   const dataGrabCards = useGameStore((state) => state.dataGrabCards);
   const collectDataGrabCard = useGameStore((state) => state.collectDataGrabCard);
@@ -108,12 +110,33 @@ export const DataGrabMiniGame: FC = () => {
     const startY = -(wrapperHeight + CARD_HEIGHT_REM); // Start fully above viewport
     const endY = BOARD_HEIGHT_REM + CARD_HEIGHT_REM; // End fully below viewport
 
+    // Calculate duration based on distance to maintain constant visual speed
+    const totalDistance = endY - startY; // Total distance in rem
+    const durationInSeconds = totalDistance / DATA_GRAB_CONFIG.FALL_SPEED_REM_PER_SECOND;
+    const durationInMs = durationInSeconds * 1000;
+
     return {
       wrapperHeight,
       startY,
       endY,
+      duration: durationInSeconds, // Duration in seconds (for Framer Motion)
+      durationMs: durationInMs, // Duration in milliseconds (for timeout)
     };
-  }, [dataGrabCards.length]);
+  }, [dataGrabCards]);
+
+  // Set timeout to end game when animation completes
+  useEffect(() => {
+    if (!dataGrabGameActive) return;
+
+    const timer = setTimeout(() => {
+      // End the game when cards finish falling
+      useGameStore.getState().setDataGrabGameActive(false);
+      // Send event to state machine to immediately show results modal
+      actorRef.send({ type: 'DATA_GRAB_GAME_COMPLETE' });
+    }, animationParams.durationMs);
+
+    return () => clearTimeout(timer);
+  }, [dataGrabGameActive, animationParams.durationMs, actorRef]);
 
   if (!dataGrabGameActive) return null;
 
@@ -164,7 +187,7 @@ export const DataGrabMiniGame: FC = () => {
             y: `${animationParams.endY}rem`,
           }}
           transition={{
-            duration: DATA_GRAB_CONFIG.CARD_FALL_SPEED / 1000,
+            duration: animationParams.duration, // Calculated duration for constant speed
             ease: 'linear',
           }}
         >

@@ -11,8 +11,8 @@ export const DATA_GRAB_CONFIG = {
   // Trigger requirements
   MIN_CARDS_IN_PLAY: 1, // Minimum cards in play to trigger Data Grab
 
-  // Timing (all in milliseconds)
-  CARD_FALL_SPEED: 4500, // 3.5s for cards to fall from top to bottom
+  // Timing
+  FALL_SPEED_REM_PER_SECOND: 40, // Constant visual speed for falling cards (rem per second)
 
   // Visual elements
   COOKIE_COUNT: 4, // Number of floating data cookies
