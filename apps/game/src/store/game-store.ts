@@ -598,9 +598,16 @@ export const useGameStore = create<GameStore>()(
       },
 
       collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie') => {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - collectCardsAfterEffects START - winner:`, winner);
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - collectCardsAfterEffects START - winner:`,
+          winner,
+        );
         if (winner === 'tie') {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - collectCardsAfterEffects - tie, returning`);
+          console.log(
+            `[TIMING] ${performance
+              .now()
+              .toFixed(0)}ms - collectCardsAfterEffects - tie, returning`,
+          );
           return;
         }
 
@@ -894,9 +901,17 @@ export const useGameStore = create<GameStore>()(
       },
 
       processPendingEffects: (winner) => {
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - processPendingEffects START - winner:`, winner);
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - processPendingEffects START - winner:`,
+          winner,
+        );
         const { pendingEffects } = get();
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - pendingEffects count:`, pendingEffects.length, 'types:', pendingEffects.map(e => e.type));
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - pendingEffects count:`,
+          pendingEffects.length,
+          'types:',
+          pendingEffects.map((e) => e.type),
+        );
 
         // Track if we've queued post-resolution animations (only show once per turn)
         let launchStackAnimationQueued = false;
@@ -951,7 +966,10 @@ export const useGameStore = create<GameStore>()(
 
               // Store this effect to process after animation completes
               mandatoryRecallEffects.push(effect);
-              console.log('[TIMING] Stored mandatory_recall effect, total:', mandatoryRecallEffects.length);
+              console.log(
+                '[TIMING] Stored mandatory_recall effect, total:',
+                mandatoryRecallEffects.length,
+              );
               break;
 
             case 'temper_tantrum':
@@ -967,9 +985,13 @@ export const useGameStore = create<GameStore>()(
 
               // Store this effect to process after animation completes
               temperTantrumEffects.push(effect);
-              console.log('[TIMING] Stored temper_tantrum effect, total:', temperTantrumEffects.length);
+              console.log(
+                '[TIMING] Stored temper_tantrum effect, total:',
+                temperTantrumEffects.length,
+              );
               break;
 
+            // @ts-expect-error - We are leaving this JUST IN CASE we need it back
             case 'temper_tantrum_OLD':
               // OLD IMPLEMENTATION - KEEPING FOR REFERENCE
               // If the player who played this card LOST, steal 2 cards from winner's win pile
@@ -1047,7 +1069,10 @@ export const useGameStore = create<GameStore>()(
 
               // Store this effect to process after animation completes
               leveragedBuyoutEffects.push(effect);
-              console.log('[TIMING] Stored leveraged_buyout effect, total:', leveragedBuyoutEffects.length);
+              console.log(
+                '[TIMING] Stored leveraged_buyout effect, total:',
+                leveragedBuyoutEffects.length,
+              );
               break;
 
             case 'launch_stack':
@@ -1172,7 +1197,9 @@ export const useGameStore = create<GameStore>()(
                   } else {
                     // CPU LOSES: Automatic selection (first 2 cards from player's pile)
                     const currentState = get();
-                    const playerCards = currentState.player.playedCardsInHand.map((pcs) => pcs.card);
+                    const playerCards = currentState.player.playedCardsInHand.map(
+                      (pcs) => pcs.card,
+                    );
                     const cpuCards = currentState.cpu.playedCardsInHand.map((pcs) => pcs.card);
                     const winnerCards = winner === 'player' ? playerCards : cpuCards;
                     const cardsToSteal = winnerCards.slice(0, 2);
@@ -1215,7 +1242,12 @@ export const useGameStore = create<GameStore>()(
         // Clear pending effects after processing
         get().clearPendingEffects();
 
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - processPendingEffects END - hasPostResolutionAnimations:`, hasPostResolutionAnimations);
+        console.log(
+          `[TIMING] ${performance
+            .now()
+            .toFixed(0)}ms - processPendingEffects END - hasPostResolutionAnimations:`,
+          hasPostResolutionAnimations,
+        );
 
         // Return true if post-resolution animations were queued (caller should skip card collection)
         // Return false otherwise (caller should proceed with card collection normally)
@@ -1439,11 +1471,16 @@ export const useGameStore = create<GameStore>()(
       processNextAnimation: () => {
         const { animationQueue, animationCompletionCallback } = get();
 
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - processNextAnimation - queue length:`, animationQueue.length);
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - processNextAnimation - queue length:`,
+          animationQueue.length,
+        );
 
         // No more animations to process
         if (animationQueue.length === 0) {
-          console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Animation queue empty - clearing flags`);
+          console.log(
+            `[TIMING] ${performance.now().toFixed(0)}ms - Animation queue empty - clearing flags`,
+          );
           set({
             isPlayingQueuedAnimation: false,
             animationsPaused: false, // Internal: Queue is free
@@ -1453,7 +1490,9 @@ export const useGameStore = create<GameStore>()(
 
           // Call completion callback if set
           if (animationCompletionCallback) {
-            console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Calling animation completion callback`);
+            console.log(
+              `[TIMING] ${performance.now().toFixed(0)}ms - Calling animation completion callback`,
+            );
             const callback = animationCompletionCallback;
             set({ animationCompletionCallback: null }); // Clear callback
             callback(); // Execute callback to resume game flow
@@ -1463,7 +1502,12 @@ export const useGameStore = create<GameStore>()(
 
         // Get the next animation from the queue
         const [nextAnimation, ...remainingQueue] = animationQueue;
-        console.log(`[TIMING] ${performance.now().toFixed(0)}ms - Playing animation:`, nextAnimation.type, 'by', nextAnimation.playedBy);
+        console.log(
+          `[TIMING] ${performance.now().toFixed(0)}ms - Playing animation:`,
+          nextAnimation.type,
+          'by',
+          nextAnimation.playedBy,
+        );
         set({
           animationQueue: remainingQueue,
           isPlayingQueuedAnimation: true,
@@ -1556,7 +1600,12 @@ export const useGameStore = create<GameStore>()(
             card.specialType === 'mandatory_recall';
 
           if (isPostResolutionCard) {
-            console.log('[ANIMATION] Skipping post-resolution animation for', card.specialType, 'card:', card.id);
+            console.log(
+              '[ANIMATION] Skipping post-resolution animation for',
+              card.specialType,
+              'card:',
+              card.id,
+            );
             return false;
           }
 
@@ -1593,7 +1642,10 @@ export const useGameStore = create<GameStore>()(
         set({ shownAnimationCardIds });
 
         // Queue all animations
-        console.log('[ANIMATION] Queueing initial animations:', animationsToQueue.map(a => `${a.type} by ${a.playedBy}`));
+        console.log(
+          '[ANIMATION] Queueing initial animations:',
+          animationsToQueue.map((a) => `${a.type} by ${a.playedBy}`),
+        );
         animationsToQueue.forEach(({ type, playedBy }) => {
           get().queueAnimation(type as SpecialEffectAnimationType, playedBy);
         });
@@ -1795,8 +1847,12 @@ export const useGameStore = create<GameStore>()(
         // Face-up Launch Stacks keep their effects so special effect animation shows
         // Face-down Launch Stacks treated as regular cards (no animation)
         const allFaceDownLaunchStacks = [
-          ...updatedPlayerCards.filter((pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown),
-          ...updatedCPUCards.filter((pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown),
+          ...updatedPlayerCards.filter(
+            (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
+          ),
+          ...updatedCPUCards.filter(
+            (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
+          ),
         ];
         const faceDownLaunchStackIds = new Set(allFaceDownLaunchStacks.map((pcs) => pcs.card.id));
         const updatedEffects = get().pendingEffects.filter(
