@@ -56,7 +56,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
                 transform: index > 0 ? `translateX(-${index * 0.625}rem)` : undefined, // Overlap by 0.625rem per icon
               }}
             >
-              <Icon name={iconName} size={30} aria-label={`${effect.effectType} effect`} />
+              <Icon name={iconName} size={30} aria-label={`${effect.effectType} effect`} className="w-[1.875rem] h-[1.875rem]" />
             </div>
           );
         })}
