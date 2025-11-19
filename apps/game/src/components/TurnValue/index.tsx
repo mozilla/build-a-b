@@ -75,7 +75,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
         </div>
 
         {/* Background circle with layered effect circles */}
-        <div className="w-[68.181%] aspect-square sm:w-[3.75rem] sm:h-[3.75rem] shrink-0 relative">
+        <div className="w-[3.75rem] aspect-square shrink-0 relative">
           {activeEffects.length === 0 ? (
             // No effects - show neutral circle with glow animation
             <motion.div
@@ -135,7 +135,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                     className="absolute inset-0 flex items-center justify-center"
                     style={{
                       transform: `scale(${scale})`,
-                      zIndex: activeEffects.length - actualIndex,
+                      // zIndex: activeEffects.length - actualIndex,
                     }}
                   >
                     <div
@@ -161,9 +161,10 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
           {/* Effect icons - side by side with overlap in bottom-right */}
           {activeEffects.length > 0 && (
             <div
-              className="absolute -bottom-2 flex flex-row-reverse z-2 isolate"
+              className="absolute -bottom-4 flex flex-row-reverse z-2 isolate"
               style={{
-                right: `${-1 * 0.25 + 0.25 * (activeEffects.length - 1)}rem`,
+                right: "-0.25rem",
+                // right: `${-1 * 0.25 + 0.25 * (activeEffects.length - 1)}rem`,
               }}
             >
               {activeEffects.map((effect, index) => (
@@ -178,7 +179,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                   animate={{
                     scale: 1,
                     rotate: 0,
-                    x: index > 0 ? index * 16 : 0, // 1rem offset per icon
+                    x: index > 0 ? index * 20 : 0, // 1rem offset per icon
                   }}
                   transition={{
                     type: 'spring',
@@ -222,6 +223,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                   autoplay={true}
                   width={200}
                   height={200}
+                  className="w-50 h-50"
                 />
               </motion.div>
             )}
