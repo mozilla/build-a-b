@@ -450,17 +450,29 @@ describe('Turn Resolution', () => {
     });
 
     it('should add non-instant effects to pending queue', () => {
-      useGameStore.getState().initializeGame('tracker-first', 'common-first');
+      // Use a non-instant effect like leveraged_buyout
+      const leveragedBuyoutCard: Card = {
+        id: 'lb-1',
+        typeId: 'move-buyout',
+        value: 6,
+        imageUrl: '/test.webp',
+        isSpecial: true,
+        specialType: 'leveraged_buyout',
+        name: 'Leveraged Buyout',
+      };
 
-      const { playCard } = useGameStore.getState();
-      playCard('player');
-      const trackerCard = useGameStore.getState().player.playedCard!;
+      useGameStore.setState({
+        player: {
+          ...useGameStore.getState().player,
+          playedCard: leveragedBuyoutCard,
+        },
+      });
 
-      useGameStore.getState().handleCardEffect(trackerCard, 'player');
+      useGameStore.getState().handleCardEffect(leveragedBuyoutCard, 'player');
 
       const pendingEffects = useGameStore.getState().pendingEffects;
       expect(pendingEffects.length).toBeGreaterThan(0);
-      expect(pendingEffects[0].type).toBe('tracker');
+      expect(pendingEffects[0].type).toBe('leveraged_buyout');
     });
 
     it('should not add instant effects to pending queue', () => {
@@ -515,6 +527,10 @@ describe('Turn Resolution', () => {
         const initialCount = useGameStore.getState().player.launchStackCount;
 
         useGameStore.getState().processPendingEffects('player');
+
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
 
         expect(useGameStore.getState().player.launchStackCount).toBe(initialCount + 1);
         expect(useGameStore.getState().pendingEffects).toHaveLength(0);
@@ -594,17 +610,29 @@ describe('Turn Resolution', () => {
 
         const initialPlayerCount = useGameStore.getState().player.launchStackCount;
         const initialCpuCount = useGameStore.getState().cpu.launchStackCount;
-        const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
+        const initialPlayerLaunchStacks = useGameStore.getState().playerLaunchStacks;
 
+        // Process pending effects - this queues animations and sets up callback
         useGameStore.getState().processPendingEffects('player');
 
-        // Player's Launch Stack counter should NOT increase (card goes to deck)
-        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount);
-        // CPU's Launch Stack counter should decrease
+        // Animation completion callback should be set
+        const callback = useGameStore.getState().animationCompletionCallback;
+        expect(callback).toBeDefined();
+
+        // Manually trigger the callback to process the theft
+        if (callback) {
+          callback();
+        }
+
+        // After callback: CPU's counter should be reduced and player's should increase
         expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
-        // Stolen card should be added to TOP of player's deck
-        expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 1);
-        expect(useGameStore.getState().player.deck[0]).toEqual(cpuLaunchStackCard);
+        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
+        // Stolen card should be added to player's launch stack collection
+        expect(useGameStore.getState().playerLaunchStacks.length).toBe(initialPlayerLaunchStacks.length + 1);
+        expect(useGameStore.getState().playerLaunchStacks).toContainEqual(cpuLaunchStackCard);
+        // Temporary state should be cleared
+        expect(useGameStore.getState().patentTheftStolenCard).toBeNull();
+        expect(useGameStore.getState().patentTheftWinner).toBeNull();
       });
 
       it('should not steal when player loses', () => {
@@ -705,6 +733,10 @@ describe('Turn Resolution', () => {
         });
 
         useGameStore.getState().processPendingEffects('player');
+
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
 
         expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 2);
         expect(useGameStore.getState().cpu.deck.length).toBe(initialCpuDeckSize - 2);

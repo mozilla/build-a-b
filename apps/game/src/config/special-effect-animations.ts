@@ -145,8 +145,8 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     },
     mandatory_recall_won: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}recall_player_{counter}.webm`,
-        cpu: `${SUPABASE_BASE_URL}recall_cpu_{counter}.webm`,
+        player: `${SUPABASE_BASE_URL}recall_cpu_{counter}.webm`,
+        cpu: `${SUPABASE_BASE_URL}recall_player_{counter}.webm`,
       },
       title: 'Launch Stack Stolen',
       loop: false,
