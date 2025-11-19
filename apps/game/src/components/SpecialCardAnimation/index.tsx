@@ -34,7 +34,7 @@ export const SpecialCardAnimation = ({
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center framed-x:rounded-xl',
+        'fixed inset-0 z-50 flex items-center justify-center',
         className,
       )}
     >

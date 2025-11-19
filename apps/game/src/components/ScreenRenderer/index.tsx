@@ -41,6 +41,7 @@ export interface BaseScreenProps
   // Optional callbacks for WinnerAnimation screen
   onGameOverCrossfadeStart?: () => void;
   onGameOverCrossfadeComplete?: () => void;
+  isCrossFadeComplete?: boolean;
 }
 
 // Screen registry mapping state machine phases to components
@@ -85,6 +86,7 @@ export const ScreenRenderer: FC = () => {
 
   // State for GameOver screen crossfade
   const [showGameOverCrossfade, setShowGameOverCrossfade] = useState(false);
+  const [isCrossfadeComplete, setIsCrossfadeComplete] = useState(false);
   const {
     isReady,
     loadedAssets,
@@ -135,6 +137,7 @@ export const ScreenRenderer: FC = () => {
   useEffect(() => {
     if (phaseKey !== 'game_over') {
       setShowGameOverCrossfade(false);
+      setIsCrossfadeComplete(false);
     }
   }, [phaseKey]);
 
@@ -144,7 +147,7 @@ export const ScreenRenderer: FC = () => {
   }, []);
 
   const handleGameOverCrossfadeComplete = useCallback(() => {
-    // Optional: Add any cleanup or state updates when crossfade completes
+    setIsCrossfadeComplete(true);
   }, []);
 
   // Fallback if phase not found
@@ -243,6 +246,7 @@ export const ScreenRenderer: FC = () => {
                     drawerOpen={drawerOpen}
                     setDrawerOpen={setDrawerOpen}
                     setDrawerNode={setDrawerNode}
+                    isCrossFadeComplete={isCrossfadeComplete}
                     className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none"
                   />
                 )}
@@ -261,7 +265,7 @@ export const ScreenRenderer: FC = () => {
                 {showCloseIcon && (
                   <div className="absolute top-5 right-5">
                     <Button onPress={toggleMenu}>
-                      <Icon name="pause" label="pause" className="w-[1.5rem] h-[1.375rem]" />
+                      <Icon name="pause" label="pause" className="w-6 h-[1.375rem]" />
                     </Button>
                   </div>
                 )}

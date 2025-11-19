@@ -97,12 +97,12 @@ export const Menu: FC = () => {
             variant="screen-renderer"
           >
             {/* Menu Content */}
-            <div className="relative h-full flex flex-col items-center frameless:pt-[clamp(1.5rem,-18.4467rem_+_42.553vh,4rem)] framed:pt-16 pb-8 overflow-auto">
+            <div className="relative h-full flex flex-col items-center pt-6 overflow-auto">
               {/* Close Button */}
-              <header className="mx-auto relative w-full">
+              <header className="mx-auto relative w-full mb-10">
                 <Button
                   onPress={toggleMenu}
-                  className="absolute top-0 right-8 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
+                  className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
                   aria-label={menuMicrocopy.closeMenu}
                 >
                   <Icon name="close" width={8} height={8} className="w-2 h-2" />
@@ -112,15 +112,15 @@ export const Menu: FC = () => {
               <Text
                 variant="title-2"
                 align="center"
-                className="text-common-ash mb-[clamp(0.75rem,-5.2338rem+12.77vh,1.5rem)] framed:mb-8 mx-auto"
+                className="text-common-ash mb-8 mx-auto"
               >
                 {menuMicrocopy.title}
               </Text>
 
               {/* Menu Items */}
-              <div className="w-full flex flex-col gap-[clamp(0.75rem,-5.2338rem_+_12.77vh,1.5rem)] framed:gap-6">
+              <div className="w-full flex flex-col gap-8">
                 {/* Quick Launch Guide Button */}
-                <div className="w-full px-9 flex flex-col gap-y-[clamp(1rem,-6.9788rem_+_17.02vh,2rem)] framed:gap-y-8 mx-auto">
+                <div className="w-full px-8 flex flex-col gap-y-8 mx-auto">
                   <button
                     onClick={handleQuickGuide}
                     className={cn(
