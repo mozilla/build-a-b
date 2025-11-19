@@ -863,6 +863,13 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('cpu'); // CPU wins, player loses
 
+        // Wait for temper tantrum animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         // Modal should be open with available cards to steal
         expect(useGameStore.getState().showTemperTantrumModal).toBe(true);
         expect(useGameStore.getState().temperTantrumAvailableCards).toEqual([card1, card2]);
@@ -999,6 +1006,13 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         // CPU should have lost all launch stacks
         expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
         // Launch stacks should be shuffled back into CPU's deck
@@ -1081,7 +1095,17 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
-        // Verify animation was queued with correct type and player
+        // Verify firewall_recall animation was queued first (during processPendingEffects)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('firewall_recall', 'player');
+
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
+        // Verify mandatory_recall_won animation was queued (in callback after effect processing)
         expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'player');
 
         // Verify count was captured BEFORE removal
@@ -1139,7 +1163,17 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('cpu');
 
-        // Verify animation was queued for CPU
+        // Verify firewall_recall animation was queued first (during processPendingEffects)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('firewall_recall', 'cpu');
+
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
+        // Verify mandatory_recall_won animation was queued for CPU (in callback)
         expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'cpu');
 
         // Verify count is 1
