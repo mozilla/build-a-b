@@ -68,14 +68,8 @@ describe('gameStore', () => {
       expect(state.player.deck).toHaveLength(initialDeckSize - 1);
       expect(state.cardsInPlay).toHaveLength(1);
 
-      // Tracker cards have 0 value when first played (value applied to next card)
-      const expectedValue = topCard.specialType === 'tracker' ? 0 : topCard.value;
-      expect(state.player.currentTurnValue).toBe(expectedValue);
-
-      // If tracker, verify bonus is stored for next card
-      if (topCard.specialType === 'tracker') {
-        expect(state.player.pendingTrackerBonus).toBe(topCard.value);
-      }
+      // Tracker cards now show their value immediately (changed behavior)
+      expect(state.player.currentTurnValue).toBe(topCard.value);
     });
 
     it('should play card from top of CPU deck', () => {
