@@ -5,12 +5,47 @@
 
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
 import { useCpuPlayer } from './use-cpu-player';
+
+/**
+ * Determines if we should use fast timing for this turn
+ * Fast timing is used when:
+ * - No special cards WITH ANIMATIONS/EFFECTS are played
+ * - Not in data war mode
+ * - Trackers and blockers use fast timing (no animations, just value modifiers)
+ */
+function shouldUseFastTiming(): boolean {
+  const store = useGameStore.getState();
+
+  // Card types that need SLOW timing (have animations/effects that need time to appreciate)
+  const slowTimingCardTypes = [
+    'forced_empathy', // Deck swap animation
+    'hostile_takeover', // Triggers data war
+    'data_grab', // Mini-game
+    'open_what_you_want', // Modal selection
+    'tracker_smacker', // Animation
+    // Note: launch_stack, patent_theft, leveraged_buyout, temper_tantrum, mandatory_recall removed - animations play after resolution
+  ];
+
+  // Check if either player played a card that needs slow timing
+  const playerSpecialType = store.player.playedCard?.specialType ?? '';
+  const cpuSpecialType = store.cpu.playedCard?.specialType ?? '';
+  const playerNeedsSlow = slowTimingCardTypes.includes(playerSpecialType);
+  const cpuNeedsSlow = slowTimingCardTypes.includes(cpuSpecialType);
+  const hasSlowTimingCards = playerNeedsSlow || cpuNeedsSlow;
+
+  // Use fast timing for common cards, trackers, and blockers
+  // Note: We don't check for data war here because even if cards tie,
+  // we still want fast timing for the initial comparison (data war happens after)
+  const useFastTiming = !hasSlowTimingCards;
+
+  return useFastTiming;
+}
 
 /**
  * Main game logic hook that orchestrates the entire game
@@ -212,6 +247,28 @@ export function useGameLogic() {
   const handleCompareTurn = () => {
     const store = useGameStore.getState();
 
+    // Check if either player has an instant animation card
+    const instantAnimationTypes = ['forced_empathy', 'tracker_smacker', 'hostile_takeover'];
+    const playerHasInstantAnimation = store.player.playedCard?.specialType &&
+      instantAnimationTypes.includes(store.player.playedCard.specialType);
+    const cpuHasInstantAnimation = store.cpu.playedCard?.specialType &&
+      instantAnimationTypes.includes(store.cpu.playedCard.specialType);
+    const hasInstantAnimation = playerHasInstantAnimation || cpuHasInstantAnimation;
+
+    // Use INSTANT_ANIMATION_DELAY for cards with instant animations
+    // Otherwise use fast/slow timing based on card type
+    let baseSettleDelay: number;
+    if (hasInstantAnimation) {
+      baseSettleDelay = ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY;
+    } else {
+      const useFastTiming = shouldUseFastTiming();
+      baseSettleDelay = useFastTiming
+        ? ANIMATION_DURATIONS.CARD_SETTLE_DELAY_FAST
+        : ANIMATION_DURATIONS.CARD_SETTLE_DELAY;
+    }
+
+    const settleDelay = getGameSpeedAdjustedDuration(baseSettleDelay);
+
     // Wait for cards to settle on the board before triggering special card animations
     // This is especially important when there are multiple cards in the tableau
     setTimeout(() => {
@@ -231,10 +288,11 @@ export function useGameLogic() {
 
       // No animations, continue immediately
       handleCompareTurnContinued();
-    }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY);
+    }, settleDelay);
   };
 
   const handleCompareTurnContinued = () => {
+
     // After animations complete, check for special game states and trigger transitions
     // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
     // but animations take 3000ms. By the time blockTransitions is cleared, the automatic
@@ -296,7 +354,11 @@ export function useGameLogic() {
     store.prepareEffectNotification();
 
     // Wait briefly to give user time to click badge, then trigger normal resolution
-    const delay = ANIMATION_DURATIONS.CARD_COMPARISON;
+    // Use conditional timing based on card types
+    const useFastTimingForBadge = shouldUseFastTiming();
+    const delay = useFastTimingForBadge
+      ? ANIMATION_DURATIONS.CARD_COMPARISON_FAST
+      : ANIMATION_DURATIONS.CARD_COMPARISON;
 
     setTimeout(() => {
       const currentStore = useGameStore.getState();
@@ -316,7 +378,28 @@ export function useGameLogic() {
       if (shouldResolve) {
         actorRef.send({ type: 'RESOLVE_TURN' });
       } else if (currentStore.pendingEffects.length > 0) {
-        actorRef.send({ type: 'SPECIAL_EFFECT' });
+        // Check if there are pending effects with UNSEEN animations
+        // Only send SPECIAL_EFFECT if animations haven't been shown yet
+        const hasUnseenAnimations = currentStore.pendingEffects.some(
+          (effect) => !currentStore.shownAnimationCardIds.has(effect.card.id)
+        );
+
+        // Check if all pending effects are post-resolution effects
+        // Post-resolution effects don't need the special_effect phase delay
+        const allEffectsArePostResolution = currentStore.pendingEffects.every(
+          (effect) =>
+            effect.type === 'launch_stack' ||
+            effect.type === 'patent_theft' ||
+            effect.type === 'leveraged_buyout' ||
+            effect.type === 'temper_tantrum' ||
+            effect.type === 'mandatory_recall'
+        );
+
+        if (hasUnseenAnimations && !allEffectsArePostResolution) {
+          actorRef.send({ type: 'SPECIAL_EFFECT' });
+        } else {
+          actorRef.send({ type: 'RESOLVE_TURN' });
+        }
       } else {
         actorRef.send({ type: 'RESOLVE_TURN' });
       }
@@ -443,10 +526,14 @@ export function useGameLogic() {
         const winner = resolveTurn();
 
         // Process pending special effects now that we know the winner
-        processPendingEffects(winner);
+        // Returns true if post-resolution animations were queued (e.g., launch_stack)
+        const animationsQueued = processPendingEffects(winner);
 
-        // Collect remaining cards after effects have been processed
-        collectCardsAfterEffects(winner);
+        // Only collect cards if no post-resolution animations were queued
+        // If animations were queued, the callback will handle card collection after they complete
+        if (!animationsQueued) {
+          collectCardsAfterEffects(winner);
+        }
 
         // Check if game is over
         const hasWon = checkWinCondition();
@@ -480,10 +567,14 @@ export function useGameLogic() {
       const winner = resolveTurn();
 
       // Process pending special effects now that we know the winner
-      processPendingEffects(winner);
+      // Returns true if post-resolution animations were queued (e.g., launch_stack)
+      const animationsQueued = processPendingEffects(winner);
 
-      // Collect remaining cards after effects have been processed
-      collectCardsAfterEffects(winner);
+      // Only collect cards if no post-resolution animations were queued
+      // If animations were queued, the callback will handle card collection after they complete
+      if (!animationsQueued) {
+        collectCardsAfterEffects(winner);
+      }
 
       // Check if game is over
       const hasWon = checkWinCondition();
@@ -692,7 +783,28 @@ export function useGameLogic() {
       if (shouldResolve) {
         actorRef.send({ type: 'RESOLVE_TURN' });
       } else if (store.pendingEffects.length > 0) {
-        actorRef.send({ type: 'SPECIAL_EFFECT' });
+        // Check if there are pending effects with UNSEEN animations
+        // Only send SPECIAL_EFFECT if animations haven't been shown yet
+        const hasUnseenAnimations = store.pendingEffects.some(
+          (effect) => !store.shownAnimationCardIds.has(effect.card.id)
+        );
+
+        // Check if all pending effects are post-resolution effects
+        // Post-resolution effects don't need the special_effect phase delay
+        const allEffectsArePostResolution = store.pendingEffects.every(
+          (effect) =>
+            effect.type === 'launch_stack' ||
+            effect.type === 'patent_theft' ||
+            effect.type === 'leveraged_buyout' ||
+            effect.type === 'temper_tantrum' ||
+            effect.type === 'mandatory_recall'
+        );
+
+        if (hasUnseenAnimations && !allEffectsArePostResolution) {
+          actorRef.send({ type: 'SPECIAL_EFFECT' });
+        } else {
+          actorRef.send({ type: 'RESOLVE_TURN' });
+        }
       } else {
         actorRef.send({ type: 'RESOLVE_TURN' });
       }

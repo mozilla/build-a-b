@@ -3,7 +3,7 @@
  */
 
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
-import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '@/config/animation-timings';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
@@ -164,9 +164,10 @@ export function Game() {
   useEffect(() => {
     // Handle special effect phase - auto-dismiss after a brief delay
     if (phase === 'special_effect.showing') {
+      const adjustedDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
       const timer = setTimeout(() => {
         send({ type: 'DISMISS_EFFECT' });
-      }, ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
+      }, adjustedDelay);
       return () => clearTimeout(timer);
     }
   }, [phase, send]);
@@ -191,6 +192,17 @@ export function Game() {
     cpu.playedCardsInHand.length,
     tapDeck,
   ]);
+
+  // Auto-transition to win screen after animations complete
+  const shouldTransitionToWin = useGameStore((state) => state.shouldTransitionToWin);
+  useEffect(() => {
+    if (shouldTransitionToWin) {
+      // Clear the flag first
+      useGameStore.setState({ shouldTransitionToWin: false });
+      // Send event to transition to game_over
+      send({ type: 'CHECK_WIN_CONDITION' });
+    }
+  }, [shouldTransitionToWin, send]);
 
   return (
     <div

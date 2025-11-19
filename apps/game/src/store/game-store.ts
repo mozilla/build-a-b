@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
 import { getRandomBillionaire, type BillionaireId } from '../config/billionaires';
 import { DATA_GRAB_CONFIG } from '../config/data-grab-config';
 import { DEFAULT_GAME_CONFIG } from '../config/game-config';
@@ -56,6 +56,7 @@ export const useGameStore = create<GameStore>()(
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,
+      shouldTransitionToWin: false,
       playerLaunchStacks: [], // Launch Stack cards player has collected
       cpuLaunchStacks: [], // Launch Stack cards CPU has collected
       playerTurnState: 'normal',
@@ -79,6 +80,8 @@ export const useGameStore = create<GameStore>()(
       showTheftWonAnimation: false,
       showRecallWonAnimation: false,
       recallReturnCount: 0,
+      patentTheftStolenCard: null, // Temporarily stores stolen card during Patent Theft animation sequence
+      patentTheftWinner: null, // Stores winner ID during Patent Theft animation sequence
 
       // Animation Queue System
       animationQueue: [],
@@ -101,6 +104,9 @@ export const useGameStore = create<GameStore>()(
       dataGrabGameActive: false,
       showDataGrabResults: false,
       showDataGrabCookies: false, // Debug option - disabled by default
+
+      // Debug Options
+      gameSpeedMultiplier: 1, // Default: normal speed (1x)
 
       // Temper Tantrum Card Selection State
       showTemperTantrumModal: false,
@@ -180,6 +186,7 @@ export const useGameStore = create<GameStore>()(
           cardsInPlay: [],
           winner: null,
           winCondition: null,
+          shouldTransitionToWin: false,
           showingWinEffect: null,
           collecting: null,
           activePlayer: 'player',
@@ -201,6 +208,8 @@ export const useGameStore = create<GameStore>()(
           showTheftWonAnimation: false,
           showRecallWonAnimation: false,
           recallReturnCount: 0,
+          patentTheftStolenCard: null,
+          patentTheftWinner: null,
           animationQueue: [],
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
@@ -328,8 +337,21 @@ export const useGameStore = create<GameStore>()(
        * Enhanced collection system - Supports per-card destinations and sources
        * Enables both board-to-deck and deck-to-deck animations
        */
-      collectCardsDistributed: (distributions, primaryWinner, visualOnly = false) => {
+      collectCardsDistributed: (
+        distributions,
+        primaryWinner,
+        visualOnly = false,
+        launchStackCount = 0,
+      ) => {
         const winnerId = primaryWinner || distributions[0]?.destination;
+
+        // Calculate dynamic duration based on number of rockets
+        // Each rocket needs time to animate, and they may be staggered
+        const rocketDuration =
+          launchStackCount > 0
+            ? ANIMATION_DURATIONS.WIN_ANIMATION +
+              launchStackCount * ANIMATION_DURATIONS.WIN_ANIMATION // Base + 1200ms per rocket
+            : ANIMATION_DURATIONS.WIN_ANIMATION;
 
         // STAGE 1: Show win effect for primary winner (if specified)
         if (winnerId) {
@@ -378,6 +400,12 @@ export const useGameStore = create<GameStore>()(
                 anotherPlayExpected: false,
                 collecting: null,
               });
+
+              // Check win condition after all animations complete (rockets + collection)
+              const hasWon = get().checkWinCondition();
+              if (hasWon) {
+                set({ shouldTransitionToWin: true });
+              }
             } else {
               // Normal mode: Update decks and clear states
               // Group cards by destination
@@ -423,15 +451,21 @@ export const useGameStore = create<GameStore>()(
                 anotherPlayExpected: false,
                 collecting: null,
               });
+
+              // Check win condition after all animations complete (rockets + collection)
+              const hasWon = get().checkWinCondition();
+              if (hasWon) {
+                set({ shouldTransitionToWin: true });
+              }
             }
           }, ANIMATION_DURATIONS.CARD_COLLECTION);
-        }, ANIMATION_DURATIONS.WIN_ANIMATION);
+        }, rocketDuration); // Use dynamic duration based on number of rockets
       },
 
       /**
        * Backward compatibility wrapper - Converts old format to new CardDistribution format
        */
-      collectCards: (winnerId, cards) => {
+      collectCards: (winnerId, cards, launchStackCount = 0) => {
         // Convert to new format - all cards from board go to winner
         const distributions: CardDistribution[] = cards.map((card) => ({
           card,
@@ -439,7 +473,7 @@ export const useGameStore = create<GameStore>()(
           source: { type: 'board' as const },
         }));
 
-        get().collectCardsDistributed(distributions, winnerId);
+        get().collectCardsDistributed(distributions, winnerId, false, launchStackCount);
       },
 
       addLaunchStack: (playerId, launchStackCard) => {
@@ -590,7 +624,7 @@ export const useGameStore = create<GameStore>()(
         return result.winner;
       },
 
-      collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie') => {
+      collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie', launchStackCount = 0) => {
         if (winner === 'tie') {
           return;
         }
@@ -604,7 +638,7 @@ export const useGameStore = create<GameStore>()(
         // Collect remaining cards in play after effects have been processed
         const { cardsInPlay } = get();
         if (cardsInPlay.length > 0) {
-          get().collectCards(winner, cardsInPlay);
+          get().collectCards(winner, cardsInPlay, launchStackCount);
         }
       },
 
@@ -720,9 +754,13 @@ export const useGameStore = create<GameStore>()(
           type: card.specialType,
           playedBy,
           card,
-          isInstant: ['forced_empathy', 'tracker_smacker', 'hostile_takeover'].includes(
-            card.specialType,
-          ),
+          isInstant: [
+            'forced_empathy',
+            'tracker_smacker',
+            'hostile_takeover',
+            'tracker', // Instant - no animation, just value modifier
+            'blocker', // Instant - no animation, just value modifier
+          ].includes(card.specialType),
         };
 
         // If instant effect, we'll handle it immediately in the machine
@@ -778,6 +816,7 @@ export const useGameStore = create<GameStore>()(
             set({ blockTransitions: true });
 
             // Wait for card to settle on board before showing animation overlay
+            // Use instant animation delay for consistency with other instant animations
             setTimeout(() => {
               // STEP 1: Show video overlay (decks don't move yet)
               get().setShowForcedEmpathyAnimation(true);
@@ -807,7 +846,7 @@ export const useGameStore = create<GameStore>()(
                   }, ANIMATION_DURATIONS.FORCED_EMPATHY_SETTLE_DELAY);
                 }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
               }, ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION);
-            }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY);
+            }, getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY)); // Use instant animation delay for consistency
             break;
           // Other effects will be handled when processing pending effects
         }
@@ -882,6 +921,19 @@ export const useGameStore = create<GameStore>()(
       processPendingEffects: (winner) => {
         const { pendingEffects } = get();
 
+        // Track if we've queued post-resolution animations (only show once per turn)
+        let launchStackAnimationQueued = false;
+        let patentTheftAnimationQueued = false;
+        let leveragedBuyoutAnimationQueued = false;
+        let temperTantrumAnimationQueued = false;
+        let mandatoryRecallAnimationQueued = false;
+        // Store post-resolution effects to process after animations complete
+        const launchStackEffects: SpecialEffect[] = [];
+        const patentTheftEffects: SpecialEffect[] = [];
+        const leveragedBuyoutEffects: SpecialEffect[] = [];
+        const temperTantrumEffects: SpecialEffect[] = [];
+        const mandatoryRecallEffects: SpecialEffect[] = [];
+
         // Process each pending effect
         for (const effect of pendingEffects) {
           // Check if effect is blocked by Tracker Smacker
@@ -910,26 +962,34 @@ export const useGameStore = create<GameStore>()(
               break;
 
             case 'mandatory_recall':
-              // If the player who played this card won, opponents shuffle Launch Stacks back
-              if (winner === effect.playedBy) {
-                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                const launchStackCount = get()[opponentId].launchStackCount;
-
-                // Only process if opponent has launch stacks
-                if (launchStackCount > 0) {
-                  // Capture the count BEFORE removing (for animation)
-                  set({ recallReturnCount: launchStackCount });
-
-                  // Remove the launch stacks
-                  get().removeLaunchStacks(opponentId, launchStackCount);
-
-                  // Queue animation showing Launch Stacks returning to opponent's deck
-                  get().queueAnimation('mandatory_recall_won', effect.playedBy);
-                }
+              // Queue firewall_recall animation ONCE per turn (before processing effects)
+              // Store effects to process after animation completes
+              if (!mandatoryRecallAnimationQueued) {
+                const animationPlayer = effect.playedBy;
+                get().queueAnimation('firewall_recall', animationPlayer);
+                mandatoryRecallAnimationQueued = true;
               }
+
+              // Store this effect to process after animation completes
+              mandatoryRecallEffects.push(effect);
               break;
 
             case 'temper_tantrum':
+              // Queue move_tantrum animation ONCE per turn (before processing effects)
+              // Store effects to process after animation completes
+              if (!temperTantrumAnimationQueued) {
+                const animationPlayer = effect.playedBy;
+                get().queueAnimation('move_tantrum', animationPlayer);
+                temperTantrumAnimationQueued = true;
+              }
+
+              // Store this effect to process after animation completes
+              temperTantrumEffects.push(effect);
+              break;
+
+            // @ts-expect-error - We are leaving this JUST IN CASE we need it back
+            case 'temper_tantrum_OLD':
+              // OLD IMPLEMENTATION - KEEPING FOR REFERENCE
               // If the player who played this card LOST, steal 2 cards from winner's win pile
               if (winner !== 'tie' && winner !== effect.playedBy) {
                 const loser = effect.playedBy;
@@ -976,34 +1036,44 @@ export const useGameStore = create<GameStore>()(
               break;
 
             case 'patent_theft':
-              // If the player who played this card won, steal 1 Launch Stack from opponent
-              if (winner === effect.playedBy) {
-                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                if (get()[opponentId].launchStackCount > 0) {
-                  get().stealLaunchStack(opponentId, effect.playedBy);
-                  // Queue "theft won" animation showing Launch Stack card going to winner's deck
-                  get().queueAnimation('theft_won', effect.playedBy);
-                }
+              // Queue move_theft animation ONCE per turn (before processing effects)
+              // Store effects to process after animation completes
+              if (!patentTheftAnimationQueued) {
+                // Use the player who played it for the animation
+                const animationPlayer = effect.playedBy;
+                get().queueAnimation('move_theft', animationPlayer);
+                patentTheftAnimationQueued = true;
               }
+
+              // Store this effect to process after animation completes
+              patentTheftEffects.push(effect);
               break;
 
             case 'leveraged_buyout':
-              // If the player who played this card won, take 2 cards from top of opponent's deck
-              if (winner === effect.playedBy) {
-                const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                get().stealCards(opponentId, effect.playedBy, 2);
+              // Queue move_buyout animation ONCE per turn (before processing effects)
+              // Store effects to process after animation completes
+              if (!leveragedBuyoutAnimationQueued) {
+                const animationPlayer = effect.playedBy;
+                get().queueAnimation('move_buyout', animationPlayer);
+                leveragedBuyoutAnimationQueued = true;
               }
+
+              // Store this effect to process after animation completes
+              leveragedBuyoutEffects.push(effect);
               break;
 
             case 'launch_stack':
-              // If the player who played this card won the turn, add it to their collection
-              if (winner === effect.playedBy) {
-                get().addLaunchStack(effect.playedBy, effect.card);
-              } else {
-                // If they lost, the Launch Stack goes to the winner's collection
-                const winnerId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                get().addLaunchStack(winnerId, effect.card);
+              // Queue launch_stack animation ONCE per turn (before processing effects)
+              // Store effects to process after animation completes
+              if (!launchStackAnimationQueued) {
+                // Use the player who played it for the animation (or player if both played)
+                const animationPlayer = effect.playedBy;
+                get().queueAnimation('launch_stack', animationPlayer);
+                launchStackAnimationQueued = true;
               }
+
+              // Store this effect to process after animation completes
+              launchStackEffects.push(effect);
               break;
 
             case 'data_grab': {
@@ -1041,13 +1111,144 @@ export const useGameStore = create<GameStore>()(
           }
         }
 
+        // If we have post-resolution effects, set up callback to process them after animations
+        const hasPostResolutionAnimations =
+          launchStackEffects.length > 0 ||
+          patentTheftEffects.length > 0 ||
+          leveragedBuyoutEffects.length > 0 ||
+          temperTantrumEffects.length > 0 ||
+          mandatoryRecallEffects.length > 0;
+
+        if (hasPostResolutionAnimations) {
+          // Get or append to existing callback
+          const existingCallback = get().animationCompletionCallback;
+          set({
+            animationCompletionCallback: () => {
+              // Call existing callback first if it exists
+              if (existingCallback) {
+                existingCallback();
+              }
+
+              // Process all launch_stack effects (add cards to collections)
+              // This will trigger rocket counter animations
+              launchStackEffects.forEach((effect) => {
+                if (winner === effect.playedBy) {
+                  get().addLaunchStack(effect.playedBy, effect.card);
+                } else {
+                  // If they lost, the Launch Stack goes to the winner's collection
+                  const winnerId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                  get().addLaunchStack(winnerId, effect.card);
+                }
+              });
+
+              // Process all patent_theft effects (steal launch stacks)
+              // This happens in two phases: remove from opponent, then add to winner
+              patentTheftEffects.forEach((effect) => {
+                if (winner === effect.playedBy) {
+                  const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                  if (get()[opponentId].launchStackCount > 0) {
+                    // Phase 1: Remove card from opponent's launch stack (reduce their counter)
+                    const stolenCard = get().stealLaunchStackStart(opponentId);
+
+                    if (stolenCard) {
+                      // Phase 2: Add card to winner's launch stack (increase their counter)
+                      // This will automatically trigger the rocket animation
+                      get().stealLaunchStackComplete(effect.playedBy, stolenCard);
+                    }
+                  }
+                }
+              });
+
+              // Process all leveraged_buyout effects (steal cards from deck)
+              leveragedBuyoutEffects.forEach((effect) => {
+                if (winner === effect.playedBy) {
+                  const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                  get().stealCards(opponentId, effect.playedBy, 2);
+                }
+              });
+
+              // Process all temper_tantrum effects (steal cards from win pile when you LOSE)
+              temperTantrumEffects.forEach((effect) => {
+                if (winner !== 'tie' && winner !== effect.playedBy) {
+                  const loser = effect.playedBy;
+
+                  if (loser === 'player') {
+                    // PLAYER LOSES: Show modal for card selection from winner's cards
+                    get().initializeTemperTantrumSelection(winner);
+                    // Note: Modal will pause game, cards stolen after confirmation
+                  } else {
+                    // CPU LOSES: Automatic selection (first 2 cards from player's pile)
+                    const currentState = get();
+                    const playerCards = currentState.player.playedCardsInHand.map(
+                      (pcs) => pcs.card,
+                    );
+                    const cpuCards = currentState.cpu.playedCardsInHand.map((pcs) => pcs.card);
+                    const winnerCards = winner === 'player' ? playerCards : cpuCards;
+                    const cardsToSteal = winnerCards.slice(0, 2);
+
+                    if (cardsToSteal.length > 0) {
+                      get().stealCards(winner, loser, 2);
+                    }
+                  }
+                }
+              });
+
+              // Process all mandatory_recall effects (return launch stacks to opponent's deck)
+              mandatoryRecallEffects.forEach((effect) => {
+                if (winner === effect.playedBy) {
+                  const opponentId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                  const launchStackCount = get()[opponentId].launchStackCount;
+
+                  // Only process if opponent has launch stacks
+                  if (launchStackCount > 0) {
+                    // Capture the count BEFORE removing (for animation)
+                    set({ recallReturnCount: launchStackCount });
+
+                    // Remove the launch stacks
+                    get().removeLaunchStacks(opponentId, launchStackCount);
+
+                    // Queue animation showing Launch Stacks returning to opponent's deck
+                    get().queueAnimation('mandatory_recall_won', effect.playedBy);
+                  }
+                }
+              });
+
+              // Count how many launch stacks went to the winner (for rocket animation timing)
+              const launchStacksForWinner = launchStackEffects.filter((effect) => {
+                const wonByPlayer = winner === effect.playedBy;
+                const lostByPlayer = winner !== 'tie' && winner !== effect.playedBy;
+                if (wonByPlayer) return true;
+                if (lostByPlayer) return true; // Lost, goes to winner
+                return false;
+              }).length;
+
+              // IMPORTANT: After animations complete, continue with card collection
+              // This ensures win effects and card collection happen AFTER animations
+              // Win condition will be checked after rockets and card collection complete
+              get().collectCardsAfterEffects(winner, launchStacksForWinner);
+
+              // Call existing callback if it exists
+              if (existingCallback) {
+                existingCallback();
+              }
+            },
+          });
+        }
+
         // Clear pending effects after processing
         get().clearPendingEffects();
+
+        // Return true if post-resolution animations were queued (caller should skip card collection)
+        // Return false otherwise (caller should proceed with card collection normally)
+        return hasPostResolutionAnimations;
       },
 
-      stealLaunchStack: (from, to) => {
+      /**
+       * Phase 1 of Patent Theft: Remove card from opponent's launch stack
+       * Returns the stolen card so it can be added to winner's stack after animation
+       */
+      stealLaunchStackStart: (from: PlayerType) => {
         const fromPlayer = get()[from];
-        const toPlayer = get()[to];
         const fromLaunchStackKey = from === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
         const fromLaunchStacks = get()[fromLaunchStackKey];
 
@@ -1057,12 +1258,58 @@ export const useGameStore = create<GameStore>()(
           const stolenCard = fromLaunchStacks[0];
           const remainingFromStacks = fromLaunchStacks.slice(1);
 
-          // Add stolen card to TOP of winner's deck (not their Launch Stack collection)
-          // Winner's Launch Stack counter does NOT increase
+          // Reduce opponent's counter and remove card from their collection
           set({
             [from]: { ...fromPlayer, launchStackCount: fromPlayer.launchStackCount - 1 },
-            [to]: { ...toPlayer, deck: [stolenCard, ...toPlayer.deck] }, // Add to TOP of deck
             [fromLaunchStackKey]: remainingFromStacks,
+          });
+
+          return stolenCard; // Return the stolen card for phase 2
+        }
+        return null;
+      },
+
+      /**
+       * Phase 2 of Patent Theft: Add stolen card to winner's launch stack
+       * This will automatically trigger the rocket animation via PlayerDeck's useEffect
+       */
+      stealLaunchStackComplete: (to: PlayerType, stolenCard: Card) => {
+        if (!stolenCard) return;
+
+        const toPlayer = get()[to];
+        const toLaunchStackKey = to === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const toLaunchStacks = get()[toLaunchStackKey];
+
+        // Add stolen card to winner's Launch Stack collection and increment counter
+        // This counter increment will automatically trigger the rocket animation
+        set({
+          [to]: { ...toPlayer, launchStackCount: toPlayer.launchStackCount + 1 },
+          [toLaunchStackKey]: [...toLaunchStacks, stolenCard],
+        });
+      },
+
+      // Legacy function for backward compatibility (not used anymore)
+      stealLaunchStack: (from, to) => {
+        const fromPlayer = get()[from];
+        const toPlayer = get()[to];
+        const fromLaunchStackKey = from === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const toLaunchStackKey = to === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
+        const fromLaunchStacks = get()[fromLaunchStackKey];
+        const toLaunchStacks = get()[toLaunchStackKey];
+
+        // Only steal if opponent has Launch Stack cards
+        if (fromPlayer.launchStackCount > 0 && fromLaunchStacks.length > 0) {
+          // Take the first Launch Stack card from opponent's collection
+          const stolenCard = fromLaunchStacks[0];
+          const remainingFromStacks = fromLaunchStacks.slice(1);
+
+          // Add stolen card to winner's Launch Stack collection
+          // Winner's Launch Stack counter DOES increase
+          set({
+            [from]: { ...fromPlayer, launchStackCount: fromPlayer.launchStackCount - 1 },
+            [to]: { ...toPlayer, launchStackCount: toPlayer.launchStackCount + 1 },
+            [fromLaunchStackKey]: remainingFromStacks,
+            [toLaunchStackKey]: [...toLaunchStacks, stolenCard],
           });
         }
       },
@@ -1245,14 +1492,14 @@ export const useGameStore = create<GameStore>()(
           forced_empathy: get().setShowForcedEmpathyAnimation,
           hostile_takeover: get().setShowHostileTakeoverAnimation,
           launch_stack: get().setShowLaunchStackAnimation,
-          leveraged_buyout: get().setShowLeveragedBuyoutAnimation,
-          patent_theft: get().setShowPatentTheftAnimation,
-          temper_tantrum: get().setShowTemperTantrumAnimation,
-          mandatory_recall: get().setShowMandatoryRecallAnimation,
+          move_theft: get().setShowPatentTheftAnimation, // Patent Theft now uses move_theft animation
+          move_buyout: get().setShowLeveragedBuyoutAnimation, // Leveraged Buyout now uses move_buyout animation
+          move_tantrum: get().setShowTemperTantrumAnimation, // Temper Tantrum now uses move_tantrum animation
+          firewall_recall: get().setShowMandatoryRecallAnimation, // Mandatory Recall now uses firewall_recall animation
           open_what_you_want: get().setShowOpenWhatYouWantAnimation,
           data_grab: (show) => set({ showDataGrabTakeover: show }),
-          theft_won: get().setShowTheftWonAnimation,
           mandatory_recall_won: get().setShowRecallWonAnimation,
+          // Note: theft_won removed - move_theft animation now plays instead
         };
 
         const setter = animationTypeToSetter[nextAnimation.type];
@@ -1316,12 +1563,21 @@ export const useGameStore = create<GameStore>()(
           // Skip data_grab - it has its own mini-game flow, no separate animation needed
           if (card.specialType === 'data_grab') return false;
 
-          // Check if blocked by opponent's tracker smacker (only for Billionaire Move cards)
-          const isBillionaireMove =
-            card.specialType === 'hostile_takeover' ||
-            card.specialType === 'leveraged_buyout' ||
+          // Skip post-resolution animations - these play only after winner is determined
+          const isPostResolutionCard =
+            card.specialType === 'launch_stack' ||
             card.specialType === 'patent_theft' ||
-            card.specialType === 'temper_tantrum';
+            card.specialType === 'leveraged_buyout' ||
+            card.specialType === 'temper_tantrum' ||
+            card.specialType === 'mandatory_recall';
+
+          if (isPostResolutionCard) {
+            return false;
+          }
+
+          // Check if blocked by opponent's tracker smacker (only for Billionaire Move cards)
+          // Note: patent_theft, leveraged_buyout, temper_tantrum removed - now post-resolution animations (handled above)
+          const isBillionaireMove = card.specialType === 'hostile_takeover';
 
           if (isBillionaireMove && trackerSmackerActive && trackerSmackerActive !== playedBy) {
             return false; // Blocked by tracker smacker
@@ -1463,17 +1719,19 @@ export const useGameStore = create<GameStore>()(
         });
 
         // Separate Launch Stacks from regular cards for each player
+        // IMPORTANT: Only face-up launch stacks count toward launch stack counter
+        // Face-down launch stacks are treated as regular cards
         const playerLaunchStacks = updatedPlayerCards.filter(
-          (pcs) => pcs.card.specialType === 'launch_stack',
+          (pcs) => pcs.card.specialType === 'launch_stack' && !pcs.isFaceDown,
         );
         const playerRegularCards = updatedPlayerCards.filter(
-          (pcs) => pcs.card.specialType !== 'launch_stack',
+          (pcs) => pcs.card.specialType !== 'launch_stack' || pcs.isFaceDown,
         );
         const cpuLaunchStacks = updatedCPUCards.filter(
-          (pcs) => pcs.card.specialType === 'launch_stack',
+          (pcs) => pcs.card.specialType === 'launch_stack' && !pcs.isFaceDown,
         );
         const cpuRegularCards = updatedCPUCards.filter(
-          (pcs) => pcs.card.specialType !== 'launch_stack',
+          (pcs) => pcs.card.specialType !== 'launch_stack' || pcs.isFaceDown,
         );
 
         // Extract Card objects for main deck updates (excluding Launch Stacks)
@@ -1547,13 +1805,22 @@ export const useGameStore = create<GameStore>()(
           });
         }, ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE_DELAY); // 150ms delay for modal to start opening
 
-        // Remove Data Grab AND collected Launch Stacks from pending effects
-        // (Launch Stacks will be processed after modal, not in processPendingEffects)
-        const allLaunchStacks = [...playerLaunchStacks, ...cpuLaunchStacks];
-        const launchStackIds = new Set(allLaunchStacks.map((pcs) => pcs.card.id));
+        // Remove Data Grab AND face-down Launch Stacks from pending effects
+        // Face-up Launch Stacks keep their effects so special effect animation shows
+        // Face-down Launch Stacks treated as regular cards (no animation)
+        const allFaceDownLaunchStacks = [
+          ...updatedPlayerCards.filter(
+            (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
+          ),
+          ...updatedCPUCards.filter(
+            (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
+          ),
+        ];
+        const faceDownLaunchStackIds = new Set(allFaceDownLaunchStacks.map((pcs) => pcs.card.id));
         const updatedEffects = get().pendingEffects.filter(
           (e) =>
-            e.type !== 'data_grab' && !(e.type === 'launch_stack' && launchStackIds.has(e.card.id)),
+            e.type !== 'data_grab' &&
+            !(e.type === 'launch_stack' && faceDownLaunchStackIds.has(e.card.id)),
         );
         set({ pendingEffects: updatedEffects });
       },
@@ -1584,6 +1851,11 @@ export const useGameStore = create<GameStore>()(
 
       setShowDataGrabCookies: (show) => {
         set({ showDataGrabCookies: show });
+      },
+
+      // Debug Actions
+      setGameSpeedMultiplier: (multiplier) => {
+        set({ gameSpeedMultiplier: multiplier });
       },
 
       // Temper Tantrum Actions
@@ -2151,6 +2423,7 @@ export const useGameStore = create<GameStore>()(
           trackerSmackerActive: null,
           winner: null,
           winCondition: null,
+          shouldTransitionToWin: false,
           showingWinEffect: null,
           collecting: null,
           playerLaunchStacks: [],
@@ -2200,3 +2473,9 @@ export const useGameStore = create<GameStore>()(
     { name: 'DataWarGame' },
   ),
 );
+
+// Expose store globally for game speed helper function
+if (typeof window !== 'undefined') {
+  // @ts-expect-error - global store for game speed helper
+  window.__gameStore = useGameStore;
+}

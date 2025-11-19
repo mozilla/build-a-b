@@ -176,8 +176,6 @@ describe('deckBuilder', () => {
       const value5Cards = deck.filter((c) => c.value === 5);
       const value6Cards = deck.filter((c) => c.value === 6);
 
-      console.log(value6Cards.map((c) => c.name));
-
       // Value 0: 4 Blockers + 5 Launch Stacks + 2 Data Grabs = 11
       expect(value0Cards).toHaveLength(11);
       // Value 1: 8 common + 2 tracker-1 = 10

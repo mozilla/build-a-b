@@ -49,6 +49,8 @@ export function DebugUI() {
   const initializeGame = useGameStore((state) => state.initializeGame);
   const showDataGrabCookies = useGameStore((state) => state.showDataGrabCookies);
   const setShowDataGrabCookies = useGameStore((state) => state.setShowDataGrabCookies);
+  const gameSpeedMultiplier = useGameStore((state) => state.gameSpeedMultiplier);
+  const setGameSpeedMultiplier = useGameStore((state) => state.setGameSpeedMultiplier);
 
   // Card options from config
   const cardOptions: CardOption[] = DEFAULT_GAME_CONFIG.deckComposition.map((card) => ({
@@ -208,17 +210,54 @@ export function DebugUI() {
                 </div>
 
                 {/* Debug Options */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                  <p className="font-semibold mb-2 text-cyan-300">🍪 Visual Options:</p>
-                  <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={showDataGrabCookies}
-                      onChange={(e) => setShowDataGrabCookies(e.target.checked)}
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-sm">Show floating cookies during Data Grab</span>
-                  </label>
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
+                  <p className="font-semibold text-cyan-300">⚙️ Debug Options:</p>
+
+                  {/* Game Speed Control */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Game Speed: {gameSpeedMultiplier.toFixed(1)}x
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.1"
+                        value={gameSpeedMultiplier}
+                        onChange={(e) => setGameSpeedMultiplier(parseFloat(e.target.value))}
+                        className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                      />
+                      <button
+                        onClick={() => setGameSpeedMultiplier(1)}
+                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded transition-colors"
+                        title="Reset to normal speed"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>0.1x (Slowest)</span>
+                      <span>0.5x</span>
+                      <span>1.0x (Normal)</span>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">
+                      Affects delays and viewing times (not CSS animations or videos)
+                    </p>
+                  </div>
+
+                  {/* Visual Options */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showDataGrabCookies}
+                        onChange={(e) => setShowDataGrabCookies(e.target.checked)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">Show floating cookies during Data Grab</span>
+                    </label>
+                  </div>
                 </div>
 
                 {/* Instant Win Controls */}
