@@ -13,7 +13,7 @@ import {
 } from '@/store';
 import { cn } from '@/utils/cn';
 import { getBackgroundImage } from '@/utils/selectors';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useTooltip } from '../../hooks/use-tooltip';
 import { useGameStore } from '../../store/game-store';
@@ -28,6 +28,7 @@ import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
 import { TemperTantrumModal } from '../TemperTantrumModal';
+import type { PlayerType } from '@/types/game';
 
 /**
  * Game Component - Main game container
@@ -56,6 +57,8 @@ export function Game() {
   const selectedBillionaire = useSelectedBillionaire();
   const cpuBillionaire = useCpuBillionaire();
   const collecting = useGameStore((state) => state.collecting);
+  
+  const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
 
   // Deck counter shows only the main deck
   // Launch Stacks are tracked separately with rocket indicators
@@ -214,13 +217,13 @@ export function Game() {
             {/* CPU Played Card Area */}
             <div className="flex items-center justify-center gap-6 col-2 self-end">
               {/* CPU Cards */}
-              <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" />
+              <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
 
             {/* Player Played Card Area */}
             <div className="flex items-center justify-center gap-6 col-2 self-start">
               {/* Player Cards */}
-              <PlayedCards cards={player.playedCardsInHand} owner="player" />
+              <PlayedCards cards={player.playedCardsInHand} owner="player" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
           </div>
           <PlayerDeck
@@ -245,7 +248,7 @@ export function Game() {
         <OpenWhatYouWantModal />
 
         {/* Effect Notification Modal */}
-        <EffectNotificationModal />
+        <EffectNotificationModal ownerBadgeClicked={ownerBadgeClicked} />
 
         {/* Data Grab Mini-Game */}
         <DataGrabMiniGame />

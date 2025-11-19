@@ -9,7 +9,7 @@ import { useBatchTracking, useDeckMeasurements } from './hooks';
 import type { PlayedCardsProps } from './types';
 import { calculateRenderOrder, generateLandedKey, getBatchCardIndices } from './utils';
 
-export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
+export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeClicked }) => {
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const winner = useGameStore((state) => state.collecting?.primaryWinner ?? null);
 
@@ -68,6 +68,11 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner }) => {
 
     // Open modal and pause game
     openEffectModal();
+
+    // Notify parent component that badge was clicked
+    if (onBadgeClicked) {
+      onBadgeClicked(owner);
+    }
   };
 
   // Compute rendered cards
