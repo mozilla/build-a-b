@@ -176,7 +176,7 @@ export default async function Page() {
         </p>
       </CardsSection>
 
-      <ImageGallery images={imagesForGallery} />
+      {/* <ImageGallery images={imagesForGallery} /> */}
 
       {/* {!isLaunchCompleted && (
         <section className="mb-4 landscape:mb-8 flex flex-col-reverse gap-4 landscape:flex-row landscape:gap-8">
@@ -222,12 +222,65 @@ export default async function Page() {
         Ways to play
       </h2>
 
-      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
+      <section className="mb-4 landscape:mb-8 flex flex-col-reverse gap-4 landscape:flex-row landscape:gap-8">
         <Bento
-          image="/assets/images/shark-billionaire.webp"
-          imageAlt="Billionaire riding a shark"
+          image={
+            isPhase4 ? '/assets/images/cards-on-table.webp' : '/assets/images/data-war/bag.webp'
+          }
+          imageAlt="Billionaire in a box"
           className="landscape:w-[30%] aspect-square border-none"
         />
+        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
+          <Window className="bg-common-ash">
+            <div className="p-4 landscape:p-12 flex flex-col gap-4">
+              <h2 className="text-title-1 text-charcoal">DIY your own deck</h2>
+              {isPhase4 ? (
+                <p className="text-body-regular text-charcoal">
+                  Physical decks of Data War were only available at TwitchCon, but if you didn’t get
+                  yours, don’t fret! Scissors + printer = game night unlocked. Download your own
+                  copy of Data War to print, play and personalize.
+                </p>
+              ) : (
+                <p className="text-body-regular text-charcoal">
+                  Scissors + printer = game night unlocked. Download your own copy of Data War to
+                  cut up and blast off with right here.
+                </p>
+              )}
+
+              <div className="flex flex-col gap-4 landscape:flex-row landscape:gap-4">
+                <LinkButton
+                  href="/datawar/instructions"
+                  title="See Game Details"
+                  className="secondary-button landscape:w-fit
+                             border-charcoal text-charcoal hover:border-charcoal
+                               hover:bg-charcoal hover:text-common-ash
+                               active:border-charcoal active:bg-charcoal active:text-common-ash"
+                  trackableEvent="click_go_to_instructions"
+                >
+                  See Game Details
+                </LinkButton>
+
+                <LinkButton
+                  href={DATAWAR_PDF_URL}
+                  title="Get your own game cards"
+                  className='secondary-button landscape:w-fit
+                             border-charcoal text-charcoal hover:border-charcoal
+                               hover:bg-charcoal hover:text-common-ash
+                               active:border-charcoal active:bg-charcoal active:text-common-ash
+                               before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
+                               before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
+                               before:mask-no-repeat before:mask-center before:mask-contain'
+                  trackableEvent="click_download_deck_datawar_diy"
+                >
+                  Download the Deck!
+                </LinkButton>
+              </div>
+            </div>
+          </Window>
+        </Bento>
+      </section>
+
+      <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
         <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
           <Window className="bg-common-ash">
             <div className="p-4 landscape:p-12 flex flex-col gap-4">
@@ -293,62 +346,9 @@ export default async function Page() {
             </div>
           </Window>
         </Bento>
-      </section>
-
-      <section className="mb-4 landscape:mb-8 flex flex-col-reverse gap-4 landscape:flex-row landscape:gap-8">
-        <Bento className="border-none h-full landscape:flex-1 landscape:h-auto">
-          <Window className="bg-common-ash">
-            <div className="p-4 landscape:p-12 flex flex-col gap-4">
-              <h2 className="text-title-1 text-charcoal">DIY your own deck</h2>
-              {isPhase4 ? (
-                <p className="text-body-regular text-charcoal">
-                  Physical decks of Data War were only available at TwitchCon, but if you didn’t get
-                  yours, don’t fret! Scissors + printer = game night unlocked. Download your own
-                  copy of Data War to print, play and personalize.
-                </p>
-              ) : (
-                <p className="text-body-regular text-charcoal">
-                  Scissors + printer = game night unlocked. Download your own copy of Data War to
-                  cut up and blast off with right here.
-                </p>
-              )}
-
-              <div className="flex flex-col gap-4 landscape:flex-row landscape:gap-4">
-                <LinkButton
-                  href="/datawar/instructions"
-                  title="See Game Details"
-                  className="secondary-button landscape:w-fit
-                             border-charcoal text-charcoal hover:border-charcoal
-                               hover:bg-charcoal hover:text-common-ash
-                               active:border-charcoal active:bg-charcoal active:text-common-ash"
-                  trackableEvent="click_go_to_instructions"
-                >
-                  See Game Details
-                </LinkButton>
-
-                <LinkButton
-                  href={DATAWAR_PDF_URL}
-                  title="Get your own game cards"
-                  className='secondary-button landscape:w-fit
-                             border-charcoal text-charcoal hover:border-charcoal
-                               hover:bg-charcoal hover:text-common-ash
-                               active:border-charcoal active:bg-charcoal active:text-common-ash
-                               before:content-[""] before:inline-block before:w-4 before:h-4 before:mr-2
-                               before:bg-current before:mask-[url(/assets/images/icons/download.svg)]
-                               before:mask-no-repeat before:mask-center before:mask-contain'
-                  trackableEvent="click_download_deck_datawar_diy"
-                >
-                  Download the Deck!
-                </LinkButton>
-              </div>
-            </div>
-          </Window>
-        </Bento>
         <Bento
-          image={
-            isPhase4 ? '/assets/images/cards-on-table.webp' : '/assets/images/data-war/bag.webp'
-          }
-          imageAlt="Billionaire in a box"
+          image="/assets/images/shark-billionaire.webp"
+          imageAlt="Billionaire riding a shark"
           className="landscape:w-[30%] aspect-square border-none"
         />
       </section>
