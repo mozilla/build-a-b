@@ -198,6 +198,15 @@ export const gameFlowMachine = createMachine(
             target: 'revealing',
             guard: 'notShowingEffectModal',
           },
+          CHECK_WIN_CONDITION: [
+            {
+              target: 'game_over',
+              guard: 'hasWinCondition',
+            },
+            {
+              target: 'pre_reveal',
+            },
+          ],
         },
       },
 
@@ -235,7 +244,6 @@ export const gameFlowMachine = createMachine(
       comparing: {
         entry: assign({
           tooltipMessage: () => {
-            console.log(`[TIMING] ${performance.now().toFixed(0)}ms - STATE: comparing`);
             return 'EMPTY';
           },
         }),
@@ -259,13 +267,7 @@ export const gameFlowMachine = createMachine(
           SPECIAL_EFFECT: 'special_effect',
           RESOLVE_TURN: {
             target: 'resolving',
-            actions: () => {
-              console.log(
-                `[TIMING] ${performance
-                  .now()
-                  .toFixed(0)}ms - RESOLVE_TURN event received by state machine`,
-              );
-            },
+            actions: () => {},
           },
         },
       },
@@ -299,6 +301,8 @@ export const gameFlowMachine = createMachine(
                 cpuHasHostileTakeover && isFirstDataWar ? cpu.playedCard?.value ?? 6 : 0,
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
+            anotherPlayMode: false, // Clear another play mode (Data War is fresh start)
+            activePlayer: 'player', // Reset active player to default
           });
         },
         states: {
@@ -514,7 +518,6 @@ export const gameFlowMachine = createMachine(
       resolving: {
         entry: assign({
           currentTurn: ({ context }) => {
-            console.log(`[TIMING] ${performance.now().toFixed(0)}ms - STATE: resolving`);
             return context.currentTurn + 1;
           },
         }),
@@ -862,14 +865,6 @@ export const gameFlowMachine = createMachine(
           : ANIMATION_DURATIONS.CARD_COMPARISON;
 
         const adjustedDelay = getGameSpeedAdjustedDuration(baseDelay);
-
-        console.log(
-          `[TIMING] ${performance.now().toFixed(0)}ms - comparisonDelay calculated:`,
-          adjustedDelay,
-          'ms',
-          { baseDelay, useFastTiming, playerSpecialType, cpuSpecialType },
-        );
-
         return adjustedDelay;
       },
       effectNotificationDelay: () => {

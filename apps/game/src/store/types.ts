@@ -49,6 +49,7 @@ export type GameStore = {
   trackerSmackerActive: PlayerType | null;
   winner: PlayerType | null;
   winCondition: 'all_cards' | 'launch_stacks' | null;
+  shouldTransitionToWin: boolean; // Flag to trigger automatic win transition after animations
   showingWinEffect: PlayerType | null; // Player currently showing win celebration (before collection)
   collecting: CollectingState | null; // Enhanced collection system with per-card destinations
 
@@ -183,8 +184,8 @@ export type GameStore = {
     cpuCustomOrder?: CardTypeId[],
   ) => void;
   playCard: (playerId: PlayerType) => void;
-  collectCards: (winnerId: PlayerType, cards: Card[]) => void; // Backward compatibility wrapper
-  collectCardsDistributed: (distributions: CardDistribution[], primaryWinner?: PlayerType, visualOnly?: boolean) => void; // New enhanced collection
+  collectCards: (winnerId: PlayerType, cards: Card[], launchStackCount?: number) => void; // Backward compatibility wrapper
+  collectCardsDistributed: (distributions: CardDistribution[], primaryWinner?: PlayerType, visualOnly?: boolean, launchStackCount?: number) => void; // New enhanced collection
   addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
   stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
@@ -194,7 +195,7 @@ export type GameStore = {
 
   // Actions - Turn Resolution
   resolveTurn: () => PlayerType | 'tie';
-  collectCardsAfterEffects: (winner: PlayerType | 'tie') => void;
+  collectCardsAfterEffects: (winner: PlayerType | 'tie', launchStackCount?: number) => void;
   applyTrackerEffect: (playerId: PlayerType, trackerCard: Card) => void;
   applyBlockerEffect: (playerId: PlayerType, blockerCard: Card) => void;
   checkForDataWar: () => boolean;
