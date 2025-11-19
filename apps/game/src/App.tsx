@@ -21,7 +21,7 @@ function App() {
       <GameProvider>
         <PreloadingProvider>
           <div className="h-[100dvh] w-[100vw] bg-black flex items-center justify-center overscroll-none">
-            <BlurredBackground />
+            {/* <BlurredBackground /> */}
             <Game />
             <ScreenRenderer />
             <Menu />
