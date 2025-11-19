@@ -235,7 +235,9 @@ export const useGameStore = create<GameStore>()(
          * Helper: Determines if a tracker/blocker card's effect should be negated
          * Effects are negated if:
          * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
-         * 2. Hostile Takeover is in play (ignores ALL trackers/blockers from both players)
+         * 2. Hostile Takeover is in play AND it's the original play (first Data War)
+         *    - HT only ignores trackers/blockers on the original play
+         *    - During Data War face-up reveals, trackers/blockers should work normally
          */
         const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
           if (cardType !== 'tracker' && cardType !== 'blocker') {
@@ -251,7 +253,14 @@ export const useGameStore = create<GameStore>()(
             p.playedCard?.specialType === 'hostile_takeover' ||
             c.playedCard?.specialType === 'hostile_takeover';
 
-          return blockedBySmacker || hostileTakeoverInPlay;
+          // Only ignore tracker/blocker if HT is in play AND it's the ORIGINAL play
+          // Original play: BOTH players have exactly 1 card (before Data War starts)
+          // Once Data War cards are added, trackers/blockers should work normally
+          const isOriginalPlay =
+            p.playedCardsInHand.length === 1 && c.playedCardsInHand.length === 1;
+          const shouldIgnoreDueToHT = hostileTakeoverInPlay && isOriginalPlay;
+
+          return blockedBySmacker || shouldIgnoreDueToHT;
         };
 
         // Determine if this card's value should be negated
@@ -782,10 +791,17 @@ export const useGameStore = create<GameStore>()(
               p.playedCard?.specialType === 'hostile_takeover' ||
               c.playedCard?.specialType === 'hostile_takeover';
 
-            if (!hostileTakeoverInPlay) {
+            // Only ignore blocker if HT is in play AND it's the ORIGINAL play
+            // Original play: BOTH players have exactly 1 card (before Data War starts)
+            // Once Data War cards are added, blockers should work normally
+            const isOriginalPlay =
+              p.playedCardsInHand.length === 1 && c.playedCardsInHand.length === 1;
+            const shouldIgnoreDueToHT = hostileTakeoverInPlay && isOriginalPlay;
+
+            if (!shouldIgnoreDueToHT) {
               get().applyBlockerEffect(playedBy, card);
             }
-            // If Hostile Takeover is in play, blocker effect is completely ignored
+            // If Hostile Takeover is in play on first Data War, blocker effect is ignored
             break;
           }
           case 'launch_stack':
