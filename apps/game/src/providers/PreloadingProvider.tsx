@@ -26,6 +26,8 @@ import poindexterBg from '@/assets/backgrounds/color_poindexter.webp';
 import prudenceBg from '@/assets/backgrounds/color_prudence.webp';
 import savannahBg from '@/assets/backgrounds/color_savannah.webp';
 import walterBg from '@/assets/backgrounds/color_walter.webp';
+import { getAllAnimationVideoSrc } from '@/config/special-effect-animations';
+import { isSafari } from '@/utils/browser-detect';
 
 export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
   const { selectedBillionaire, updatePreloadingProgress } = useGameStore();
@@ -65,9 +67,15 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
 
   // Preload video assets
   const videoUrls = useMemo(() => {
-    if (!selectedBillionaire || !cpuBillionaire) return [];
+    const urls: string[] = [];
 
-    return [
+    if (isSafari()) {
+      urls.push(...getAllAnimationVideoSrc());
+    }
+
+    if (!selectedBillionaire || !cpuBillionaire) return urls;
+
+    const characterAnimationUrls = [
       getCharacterAnimation(selectedBillionaire, cpuBillionaire, 'vs'),
       getCharacterAnimation(selectedBillionaire, cpuBillionaire, 'datawar'),
       // Winner animations: player wins (showing "You win" with selected billionaire)
@@ -75,6 +83,10 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
       // Winner animations: CPU wins (showing "[CPU billionaire] wins")
       getCharacterAnimation(cpuBillionaire, 'cpu', 'winner'),
     ].filter((url): url is string => url !== undefined);
+
+    urls.push(...characterAnimationUrls);
+
+    return urls;
   }, [selectedBillionaire, cpuBillionaire]);
 
   const videoPreloadState = useVideoPreloader(videoUrls, {
