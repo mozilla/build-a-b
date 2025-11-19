@@ -1,5 +1,5 @@
 import { ScreenRenderer } from '@/components';
-import { BlurredBackground } from '@/components/BlurredBackground';
+// import { BlurredBackground } from '@/components/BlurredBackground';
 import { Menu } from '@/components/Menu';
 import { HeroUIProvider } from '@heroui/react';
 import { Game } from './components/Game';
