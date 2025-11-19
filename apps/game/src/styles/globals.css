@@ -59,7 +59,7 @@
   --color-accent: #53ffbc;
 
   /* Typography */
-  --font-sharp-sans: 'Sharp Sans', sans-serif;
+  --font-sharp: 'Sharp Sans', sans-serif;
   --font-size-xs10: 0.714rem;
 }
 
@@ -153,7 +153,7 @@ html {
 }
 
 body {
-  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp-sans text-common-ash font-semibold;
+  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp text-common-ash font-semibold;
 }
 
 /* Utility for 3D transforms and animations */
