@@ -4,8 +4,8 @@
  */
 
 import type { BillionaireId } from '@/config/billionaires';
+import { getPreferredFormat, type VideoFileType } from './video';
 export type AnimationType = 'vs' | 'datawar' | 'winner';
-type VideoFileType = 'webm' | 'mp4';
 
 /**
  * Creates a normalized matchup key from two character IDs
@@ -84,6 +84,70 @@ const ANIMATION_REGISTRIES: {
         savannah: '',
       },
     },
+    mov: {
+      chaz: {
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/1_R1_Chaz_vs_Chloe.mov',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/9_R1_Chaz_vs_Enzo.mov',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/7_R1_Chaz_vs_Prudence.mov',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/5_R1_Chaz_vs_Savannah.mov',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/3_R1_Chaz_vs_Walter.mov',
+      },
+      chloe: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/2_R1_Chloe_vs_Chaz.mov',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/17_R1_Chloe_vs_Enzo.mov',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/15_R1_Chloe_vs_Prudence.mov',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/13_R1_Chloe_vs_Savannah.mov',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/11_R1_Chloe_vs_Walter.mov',
+      },
+      enzo: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/10_R1_Enzo_vs_Chaz.mov',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/18_R1_Enzo_vs_Chloe.mov',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/30_R1_Enzo_vs_Prudence.mov',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/28_R1_Enzo_vs_Savannah.mov',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/24_R1_Enzo_vs_Walter.mov',
+      },
+      prudence: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/8_R1_Prudence_vs_Chaz.mov',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/16_R1_Prudence_vs_Chloe.mov',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/29_R1_Prudence_vs_Enzo.mov',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/26_R1_Prudence_vs_Savannah.mov',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/22_R1_Prudence_vs_Walter.mov',
+      },
+      savannah: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/6_R1_Savanah_vs_Chaz.mov',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/14_R1_Savannah_vs_Chloe.mov',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/27_R1_Savannah_vs_Enzo.mov',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/25_R1_Savannah_vs_Prudence.mov',
+        walter:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/20_R1_Savannah_vs_Walter.mov',
+      },
+      walter: {
+        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/4_R1_Walter_vs_Chaz.mov',
+        chloe:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/12_R1_Walter_vs_Chloe.mov',
+        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/23_R1_Walter_vs_Enzo.mov',
+        prudence:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/21_R1_Walter_vs_Prudence.mov',
+        savannah:
+          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/19_R1_Walter_vs_Savannah.mov',
+      },
+    },
     webm: {
       chaz: {
         chloe:
@@ -152,6 +216,51 @@ const ANIMATION_REGISTRIES: {
   datawar: {
     // mp4 is intentionally blank - current assets are not ideal
     mp4: {
+      chaz: {
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+      chloe: {
+        chaz: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+      enzo: {
+        chaz: '',
+        chloe: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+      prudence: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        savannah: '',
+        walter: '',
+      },
+      savannah: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        walter: '',
+      },
+      walter: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+      },
+    },
+    mov: {
+      // intentionally blank to use webm instead
       chaz: {
         chloe: '',
         enzo: '',
@@ -279,6 +388,25 @@ const ANIMATION_REGISTRIES: {
         walter: '',
       },
     },
+    mov: {
+      // intentionally blank to use webm instead
+      player: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+      cpu: {
+        chaz: '',
+        chloe: '',
+        enzo: '',
+        prudence: '',
+        savannah: '',
+        walter: '',
+      },
+    },
     webm: {
       player: {
         chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Chaz.webm',
@@ -311,7 +439,10 @@ const ANIMATION_REGISTRIES: {
 /**
  * Gets the animation video source for a character matchup and animation type
  * Returns undefined if no animation exists for this matchup
- * Prefers WebM format, falls back to MP4 if WebM is not available
+ * Prefers WebM format for non safari browsers,
+ * Prefers MOV format for safari
+ * For mov will fallback to webm -> mp4
+ * For webm will fallback to mp4
  *
  * For 'winner' animations:
  *   - playerId is the billionaire who appears in the video
@@ -322,21 +453,29 @@ export const getCharacterAnimation = (
   playerId: string,
   cpuId: string,
   animationType: AnimationType,
-  preferredFormat: VideoFileType = 'webm',
+  preferredFormat?: VideoFileType,
 ): string | undefined => {
   const player = playerId as BillionaireId;
   const cpu = cpuId as BillionaireId;
+
+  preferredFormat = preferredFormat ?? getPreferredFormat();
 
   // Winner animations use separate player/cpu sets
   if (animationType === 'winner') {
     // cpuId should be 'player' or 'cpu' for winner animations
     const winnerType = cpuId as 'player' | 'cpu';
-    const preferredAnimation = ANIMATION_REGISTRIES.winner[preferredFormat][winnerType]?.[player];
+    const winnerRegistry = ANIMATION_REGISTRIES.winner;
+    const preferredAnimation = winnerRegistry[preferredFormat][winnerType]?.[player];
     if (preferredAnimation) return preferredAnimation;
 
-    // Fall back to the other format
-    const fallbackFormat: VideoFileType = preferredFormat === 'webm' ? 'mp4' : 'webm';
-    return ANIMATION_REGISTRIES.winner[fallbackFormat][winnerType]?.[player];
+    // Use fallback when preferred format video not found
+    if (preferredFormat === 'mov') {
+      return (
+        winnerRegistry['webm'][winnerType]?.[player] ?? winnerRegistry['mp4'][winnerType]?.[player]
+      );
+    }
+
+    return winnerRegistry['mp4'][winnerType]?.[player];
   }
 
   // VS and DataWar animations use nested matchup structure
@@ -346,9 +485,12 @@ export const getCharacterAnimation = (
   const preferredAnimation = registry[preferredFormat][cpu]?.[player];
   if (preferredAnimation) return preferredAnimation;
 
-  // Fall back to the other format
-  const fallbackFormat: VideoFileType = preferredFormat === 'webm' ? 'mp4' : 'webm';
-  return registry[fallbackFormat][cpu]?.[player];
+  // Use fallback when preferred format video not found
+  if (preferredFormat === 'mov') {
+    return registry['webm'][cpu]?.[player] ?? registry['mp4'][cpu]?.[player];
+  }
+
+  return registry['mp4'][cpu]?.[player];
 };
 
 /**
