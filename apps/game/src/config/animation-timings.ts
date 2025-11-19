@@ -48,7 +48,10 @@ export const ANIMATION_DURATIONS = {
   DATA_GRAB_CARD_RESTORE_DELAY: 200, // Fast card restore to tableau delay (hidden behind modal)
 
   // LaunchStack
-  LAUNCH_STACK_WON_TOKEN_DURATION: 1500
+  LAUNCH_STACK_WON_TOKEN_DURATION: 1500,
+
+  // GameOver
+  ROCKET_REVEAL_TIMEOUT: 2500, // Triggers the rocket/button reveal after 4 seconds if it wasn't already triggered
 } as const;
 
 export type AnimationDuration = keyof typeof ANIMATION_DURATIONS;
