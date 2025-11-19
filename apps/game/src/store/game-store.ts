@@ -1710,6 +1710,7 @@ export const useGameStore = create<GameStore>()(
         // Filter out cards that were already collected
         const missedCards = dataGrabCards.filter((pcs) => !collectedIds.has(pcs.card.id));
 
+
         const updatedPlayerCards = [...dataGrabCollectedByPlayer];
         const updatedCPUCards = [...dataGrabCollectedByCPU];
 
@@ -1738,19 +1739,36 @@ export const useGameStore = create<GameStore>()(
         const playerCards = playerRegularCards.map((pcs) => pcs.card);
         const cpuCards = cpuRegularCards.map((pcs) => pcs.card);
 
+        // Rebuild complete card lists (for display and animation)
+        const finalPlayerCards = [...playerRegularCards, ...playerLaunchStacks];
+        const finalCPUCards = [...cpuRegularCards, ...cpuLaunchStacks];
+
         // Get current state for deck updates
         const state = get();
 
-        // Create card distributions for visual animation (includes ALL cards, even Launch Stacks)
+        // Create card distributions for visual animation
+        // Cards go exactly where they were collected during Data Grab
         const distributions: CardDistribution[] = [
-          // Player's collected cards (including Launch Stacks for animation)
-          ...updatedPlayerCards.map((pcs) => ({
+          // Player's regular cards
+          ...playerRegularCards.map((pcs) => ({
             card: pcs.card,
             source: { type: 'board' as const },
             destination: 'player' as const,
           })),
-          // CPU's collected cards (including Launch Stacks for animation)
-          ...updatedCPUCards.map((pcs) => ({
+          // CPU's regular cards
+          ...cpuRegularCards.map((pcs) => ({
+            card: pcs.card,
+            source: { type: 'board' as const },
+            destination: 'cpu' as const,
+          })),
+          // Player's Launch Stacks
+          ...playerLaunchStacks.map((pcs) => ({
+            card: pcs.card,
+            source: { type: 'board' as const },
+            destination: 'player' as const,
+          })),
+          // CPU's Launch Stacks
+          ...cpuLaunchStacks.map((pcs) => ({
             card: pcs.card,
             source: { type: 'board' as const },
             destination: 'cpu' as const,
@@ -1758,7 +1776,7 @@ export const useGameStore = create<GameStore>()(
         ];
 
         // UPDATE MAIN DECKS IMMEDIATELY (math/logic happens now)
-        // Open modal FIRST, then delay card restoration so animation starts behind open modal
+        // Open modal FIRST, then delay card restoration
         set({
           player: {
             ...state.player,
@@ -1795,19 +1813,20 @@ export const useGameStore = create<GameStore>()(
           set({
             player: {
               ...get().player,
-              playedCardsInHand: updatedPlayerCards, // NOW restore to tableau (behind open modal)
+              playedCardsInHand: finalPlayerCards, // Restore collected cards to tableau
             },
             cpu: {
               ...get().cpu,
-              playedCardsInHand: updatedCPUCards, // NOW restore to tableau (behind open modal)
+              playedCardsInHand: finalCPUCards, // Restore collected cards to tableau
             },
-            cardsInPlay: [...updatedPlayerCards, ...updatedCPUCards].map((pcs) => pcs.card),
+            cardsInPlay: [...finalPlayerCards, ...finalCPUCards].map((pcs) => pcs.card),
           });
         }, ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE_DELAY); // 150ms delay for modal to start opening
 
-        // Remove Data Grab AND face-down Launch Stacks from pending effects
-        // Face-up Launch Stacks keep their effects so special effect animation shows
-        // Face-down Launch Stacks treated as regular cards (no animation)
+        // Remove special effect cards from pending effects (except Launch Stacks)
+        // Launch Stacks keep their effects for rocket animations
+        // All other special effects (Temper Tantrum, Patent Theft, etc.) are removed
+        // so they don't animate/process after Data Grab closes
         const allFaceDownLaunchStacks = [
           ...updatedPlayerCards.filter(
             (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
@@ -1817,9 +1836,23 @@ export const useGameStore = create<GameStore>()(
           ),
         ];
         const faceDownLaunchStackIds = new Set(allFaceDownLaunchStacks.map((pcs) => pcs.card.id));
+
+        // Special effect types to remove (all except launch_stack)
+        const specialEffectTypes = [
+          'data_grab',
+          'temper_tantrum',
+          'patent_theft',
+          'leveraged_buyout',
+          'mandatory_recall',
+          'forced_empathy',
+          'tracker_smacker',
+          'hostile_takeover',
+          'open_what_you_want',
+        ];
+
         const updatedEffects = get().pendingEffects.filter(
           (e) =>
-            e.type !== 'data_grab' &&
+            !specialEffectTypes.includes(e.type) &&
             !(e.type === 'launch_stack' && faceDownLaunchStackIds.has(e.card.id)),
         );
         set({ pendingEffects: updatedEffects });
