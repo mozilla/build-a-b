@@ -100,7 +100,7 @@ export const ANIMATION_DURATIONS = {
   FORCED_EMPATHY_VIDEO_DURATION: 5000, // How long the video overlay stays visible (total effect time)
   FORCED_EMPATHY_SETTLE_DELAY: 1000, // Delay after deck swap completes before continuing game flow (prevents overlap with subsequent animations)
   DATA_WAR_ANIMATION_DURATION: 2000, // Data war character animation duration
-  DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 3000,
+  DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 2500, // CARD_PLAY_FROM_DECK (800) + 2 staggers (600ms x 2 = 1200) + settle (500)
 
   // Data Grab mini-game
   DATA_GRAB_TAKEOVER: 5000, // Takeover intro animation - DO NOT SPEED ADJUST

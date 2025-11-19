@@ -111,8 +111,9 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     ? ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE
     : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK;
 
-  // Calculate stagger delay for sequential play
-  const staggerDelay = isNewCard ? playIndex * playDuration : 0;
+  // Calculate stagger delay for sequential play (600ms between cards)
+  const CARD_STAGGER_DELAY = 600;
+  const staggerDelay = isNewCard ? playIndex * CARD_STAGGER_DELAY : 0;
 
   // Get rotation class for visual variety
   const rotationClass = getRotationClass(
@@ -121,7 +122,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     index,
     ROTATION_CLASSES,
   );
-  const rotationDelay = isTopCard ? 0 : ANIMATION_DELAYS.CARD_ROTATION;
+  // Don't apply rotation delay to face-down cards (data war) for consistent sequential timing
+  const rotationDelay = playedCardState.isFaceDown ? 0 : (isTopCard ? 0 : ANIMATION_DELAYS.CARD_ROTATION);
 
   // Determine card image (back or front)
   const cardImage = playedCardState.isFaceDown ? CARD_BACK_IMAGE : playedCardState.card.imageUrl;

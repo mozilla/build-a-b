@@ -7,83 +7,72 @@
 import { DATA_GRAB_ASSETS, DATA_GRAB_CONFIG } from '@/config/data-grab-config';
 import { GameMachineContext } from '@/providers/GameProvider';
 import { useGameStore } from '@/store';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { type FC, useMemo, useEffect } from 'react';
 import { DataCookie } from './DataCookie';
 import { FallingCard } from './FallingCard';
 
 // Board dimensions (in rem)
 const BOARD_WIDTH_REM = 25; // 25rem
-const BOARD_HEIGHT_REM = 54; // 54rem
-const ROW_SEPARATION_REM = BOARD_HEIGHT_REM * 0.5; // 50% of board height = 27rem
-const CARD_HEIGHT_REM = 10.5; // 168px = 10.5rem (used for wrapper height calculation)
+// const BOARD_HEIGHT_REM = 54; // 54rem
+// const CARD_WIDTH_REM = 7.5; // Card width for visibility calculations
+// const CARD_HEIGHT_REM = 10.5; // Card height
+const EDGE_BUFFER_PERCENT = 0.25; // Keep cards 25% away from left and right edges
 
 interface CardPosition {
-  x: number; // Base X position in rem
-  y: number; // Y position in rem (relative to wrapper)
+  x: number; // X position in rem (ensuring 66% visibility)
   translateX: number; // Random offset in rem (-3.75 to 3.75)
   translateY: number; // Random offset in rem (-6.25 to 6.25)
   rotation: number; // Rotation in degrees (-30 to 30)
+  delay: number; // Animation delay in seconds
+  duration: number; // Animation duration in seconds (variable speed)
 }
 
 /**
- * Calculate card rows following the pattern: 1-2-1-2-1-2...
- * First row has 1 card, second row has 2 cards, and so on
- */
-const calculateCardRows = <T,>(cards: T[]): T[][] => {
-  const rows: T[][] = [];
-  let cardIndex = 0;
-  let rowIndex = 0;
-
-  while (cardIndex < cards.length) {
-    const cardsInRow = rowIndex % 2 === 0 ? 1 : 2; // Alternating 1-2-1-2
-    const rowCards = cards.slice(cardIndex, Math.min(cardIndex + cardsInRow, cards.length));
-    rows.push(rowCards);
-    cardIndex += rowCards.length;
-    rowIndex++;
-  }
-
-  return rows;
-};
-
-/**
- * Generate positions for cards based on row structure
- * Rows alternate between 1 and 2 cards with 50% board height separation
+ * Generate positions and animation parameters for cards
+ * Each card gets random X position (staying 25% away from edges), rotation, and variable speed/delay
  */
 const generateCardPositions = (cardCount: number): CardPosition[] => {
   const positions: CardPosition[] = [];
-  const cards = Array.from({ length: cardCount }, (_, i) => i);
-  const rows = calculateCardRows(cards);
+  
+  // Calculate safe X position range - 25% from edges, accounting for random offsets
+  const edgeBuffer = BOARD_WIDTH_REM * EDGE_BUFFER_PERCENT; // 6.25rem from each edge
+  const maxTranslateX = 3.75; // Maximum horizontal offset
+  
+  // Base X position range that ensures card + offset stays within bounds
+  const minX = edgeBuffer + maxTranslateX; // 6.25 + 3.75 = 10rem
+  const maxX = BOARD_WIDTH_REM - edgeBuffer - maxTranslateX; // 25 - 6.25 - 3.75 = 15rem
+  
+  let cumulativeDelay = DATA_GRAB_CONFIG.INITIAL_CARD_DELAY_MS;
 
-  rows.forEach((rowCards, rowIndex) => {
-    const yPosition = rowIndex * ROW_SEPARATION_REM;
-    const cardsInRow = rowCards.length;
-
-    rowCards.forEach((_, cardIndexInRow) => {
-      // Base X position
-      let baseX: number;
-      if (cardsInRow === 1) {
-        // 1-card row: centered at 50%
-        baseX = BOARD_WIDTH_REM * 0.5;
-      } else {
-        // 2-card row: positioned at 25% and 75%
-        baseX = cardIndexInRow === 0 ? BOARD_WIDTH_REM * 0.25 : BOARD_WIDTH_REM * 0.75;
-      }
-
-      // Random offsets
-      const translateX = -3.75 + Math.random() * 7.5; // -3.75rem to 3.75rem
-      const translateY = -6.25 + Math.random() * 12.5; // -6.25rem to 6.25rem
-      const rotation = -30 + Math.random() * 60; // -30deg to 30deg
-
-      positions.push({
-        x: baseX,
-        y: yPosition,
-        translateX,
-        translateY,
-        rotation,
-      });
+  for (let i = 0; i < cardCount; i++) {
+    // Random X position within safe zone
+    const x = minX + Math.random() * (maxX - minX);
+    
+    // Random offsets (now guaranteed to keep card within 25% edge buffer)
+    const translateX = -maxTranslateX + Math.random() * (maxTranslateX * 2); // -3.75rem to 3.75rem
+    const translateY = -6.25 + Math.random() * 12.5; // -6.25rem to 6.25rem
+    const rotation = -30 + Math.random() * 60; // -30deg to 30deg
+    
+    // Variable speed: base duration ±CARD_SPEED_VARIATION_PERCENT
+    const speedVariation = 1 + ((Math.random() * 2 - 1) * DATA_GRAB_CONFIG.CARD_SPEED_VARIATION_PERCENT / 100);
+    const duration = (DATA_GRAB_CONFIG.CARD_FALL_DURATION_MS * speedVariation) / 1000; // Convert to seconds
+    
+    positions.push({
+      x,
+      translateX,
+      translateY,
+      rotation,
+      delay: cumulativeDelay / 1000, // Convert to seconds for Framer Motion
+      duration,
     });
-  });
+    
+    // Add random delay increment for next card
+    const delayIncrement = 
+      DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MIN_MS + 
+      Math.random() * (DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MAX_MS - DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MIN_MS);
+    cumulativeDelay += delayIncrement;
+  }
 
   return positions;
 };
@@ -103,40 +92,32 @@ export const DataGrabMiniGame: FC = () => {
     [dataGrabCards.length],
   );
 
-  // Calculate wrapper height and animation parameters
-  const animationParams = useMemo(() => {
-    const numRows = calculateCardRows(dataGrabCards).length;
-    const wrapperHeight = (numRows - 1) * ROW_SEPARATION_REM + CARD_HEIGHT_REM;
-    const startY = -(wrapperHeight + CARD_HEIGHT_REM); // Start fully above viewport
-    const endY = BOARD_HEIGHT_REM + CARD_HEIGHT_REM; // End fully below viewport
+  // Handle card reaching bottom (uncollected)
+  const handleCardReachBottom = (cardId: string) => {
+    // Auto-collect for CPU if not already collected
+    const isCollected =
+      collectedByPlayer.some((pcs) => pcs.card.id === cardId) ||
+      collectedByCPU.some((pcs) => pcs.card.id === cardId);
+    
+    if (!isCollected) {
+      collectDataGrabCard(cardId, 'cpu');
+    }
+  };
 
-    // Calculate duration based on distance to maintain constant visual speed
-    const totalDistance = endY - startY; // Total distance in rem
-    const durationInSeconds = totalDistance / DATA_GRAB_CONFIG.FALL_SPEED_REM_PER_SECOND;
-    const durationInMs = durationInSeconds * 1000;
-
-    return {
-      wrapperHeight,
-      startY,
-      endY,
-      duration: durationInSeconds, // Duration in seconds (for Framer Motion)
-      durationMs: durationInMs, // Duration in milliseconds (for timeout)
-    };
-  }, [dataGrabCards]);
-
-  // Set timeout to end game when animation completes
+  // Check if game should end (all cards collected or reached bottom)
   useEffect(() => {
     if (!dataGrabGameActive) return;
 
-    const timer = setTimeout(() => {
-      // End the game when cards finish falling
+    const totalCollected = collectedByPlayer.length + collectedByCPU.length;
+    const allCardsProcessed = totalCollected === dataGrabCards.length;
+
+    if (allCardsProcessed) {
+      // End the game when all cards are processed
       useGameStore.getState().setDataGrabGameActive(false);
       // Send event to state machine to immediately show results modal
       actorRef.send({ type: 'DATA_GRAB_GAME_COMPLETE' });
-    }, animationParams.durationMs);
-
-    return () => clearTimeout(timer);
-  }, [dataGrabGameActive, animationParams.durationMs, actorRef]);
+    }
+  }, [dataGrabGameActive, collectedByPlayer.length, collectedByCPU.length, dataGrabCards.length, actorRef]);
 
   if (!dataGrabGameActive) return null;
 
@@ -173,35 +154,20 @@ export const DataGrabMiniGame: FC = () => {
           </div>
         )}
 
-        {/* Falling Cards (Layer 3) - Cards in animated wrapper */}
-        <motion.div
-          className="absolute z-20"
-          style={{
-            width: '100%',
-            height: `${animationParams.wrapperHeight}rem`,
-          }}
-          initial={{
-            y: `${animationParams.startY}rem`,
-          }}
-          animate={{
-            y: `${animationParams.endY}rem`,
-          }}
-          transition={{
-            duration: animationParams.duration, // Calculated duration for constant speed
-            ease: 'linear',
-          }}
-        >
+        {/* Falling Cards (Layer 3) - Individual animated cards */}
+        <div className="absolute inset-0 z-20">
           {dataGrabCards.map((playedCardState, index) => (
             <FallingCard
               key={playedCardState.card.id}
               playedCardState={playedCardState}
               position={cardPositions[index]}
               onCollect={collectDataGrabCard}
+              onReachBottom={handleCardReachBottom}
               collectedByPlayer={collectedByPlayer}
               collectedByCPU={collectedByCPU}
             />
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
