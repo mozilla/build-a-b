@@ -93,7 +93,7 @@ export const DataGrabResultsModal: FC = () => {
             className="absolute top-4 right-4 z-65 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex"
             aria-label="Close"
           >
-            <img src={CloseIcon} alt="Close" />
+            <img src={CloseIcon} alt="Close" className="w-10 h-10" />
           </Button>
 
           <ModalBody className="flex flex-col items-center justify-center gap-6">

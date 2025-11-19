@@ -191,6 +191,7 @@ export const TurnValue: FC<TurnValueProps> = ({ value, activeEffects = [], class
                     name={EFFECT_ICON_MAP[effect.type]}
                     size={32}
                     aria-label={`${effect.type} effect`}
+                    className="w-8 h-8"
                   />
                 </motion.div>
               ))}

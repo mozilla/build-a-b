@@ -261,7 +261,7 @@ export const ScreenRenderer: FC = () => {
                 {showCloseIcon && (
                   <div className="absolute top-5 right-5">
                     <Button onPress={toggleMenu}>
-                      <Icon name="pause" label="pause" className="w-[1.5rem] h-[1.375rem]" />
+                      <Icon name="pause" label="pause" className="w-6 h-[1.375rem]" />
                     </Button>
                   </div>
                 )}
