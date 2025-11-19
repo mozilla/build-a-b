@@ -5,6 +5,7 @@
  * when they're needed. Uses the browser's video preload mechanism.
  */
 
+import { isSafari } from '@/utils/browser-detect';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -92,6 +93,11 @@ export function useVideoPreloader(
       video.preload = preloadStrategy;
       video.muted = true; // Required for autoplay policies
       video.playsInline = true;
+
+      if (isSafari()) {
+        video.autoplay = true;
+        video.play();
+      }
 
       const preloadedVideo: PreloadedVideo = {
         url,
