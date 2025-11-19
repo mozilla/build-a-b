@@ -5,7 +5,7 @@
 
 import { useEffect } from 'react';
 import type { GamePhase } from '../types';
-import { ANIMATION_DURATIONS } from '../config/animation-timings';
+import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
 
 interface useCpuPlayerOptions {
   enabled?: boolean; // Whether CPU automation is enabled (default: true)
@@ -39,10 +39,11 @@ export function useCpuPlayer(
       return;
     }
 
-    // Add realistic delay for better UX
+    // Add realistic delay for better UX (with game speed adjustment)
+    const adjustedDelay = getGameSpeedAdjustedDuration(delay);
     const timer = setTimeout(() => {
       onCPUTurn();
-    }, delay);
+    }, adjustedDelay);
 
     return () => {
       clearTimeout(timer);

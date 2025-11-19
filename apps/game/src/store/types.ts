@@ -85,6 +85,8 @@ export type GameStore = {
   showTheftWonAnimation: boolean; // Shows when patent theft wins and steals Launch Stack
   showRecallWonAnimation: boolean; // Shows when mandatory recall wins and returns Launch Stacks
   recallReturnCount: number; // Number of launch stacks being returned by Mandatory Recall
+  patentTheftStolenCard: Card | null; // Temporarily stores stolen card during Patent Theft animation sequence
+  patentTheftWinner: PlayerType | null; // Stores winner ID during Patent Theft animation sequence
 
   // Animation Queue System
   animationQueue: Array<{
@@ -110,6 +112,9 @@ export type GameStore = {
   dataGrabGameActive: boolean; // True during active gameplay (~1.5 seconds)
   showDataGrabResults: boolean; // Show results in hand viewer
   showDataGrabCookies: boolean; // Debug option to show floating cookie decorations
+
+  // Debug Options
+  gameSpeedMultiplier: number; // Speed multiplier for delays and viewing times (0.5 = half speed, 1 = normal, 2 = double speed)
 
   // Temper Tantrum Card Selection State
   showTemperTantrumModal: boolean; // Show modal for player card selection
@@ -198,13 +203,15 @@ export type GameStore = {
   // Actions - Special Effects
   addPendingEffect: (effect: SpecialEffect) => void;
   clearPendingEffects: () => void;
-  processPendingEffects: (winner: PlayerType | 'tie') => void;
+  processPendingEffects: (winner: PlayerType | 'tie') => boolean; // Returns true if post-resolution animations queued
   addPreRevealEffect: (effect: PreRevealEffect) => void;
   clearPreRevealEffects: () => void;
   hasPreRevealEffects: () => boolean;
   setPreRevealProcessed: (processed: boolean) => void;
   setTrackerSmackerActive: (playerId: PlayerType | null) => void;
   stealLaunchStack: (from: PlayerType, to: PlayerType) => void;
+  stealLaunchStackStart: (from: PlayerType) => Card | null; // Phase 1: Remove card from opponent
+  stealLaunchStackComplete: (to: PlayerType, stolenCard: Card) => void; // Phase 2: Add card to winner
   removeLaunchStacks: (playerId: PlayerType, count: number) => void;
   reorderTopCards: (playerId: PlayerType, cards: Card[]) => void;
 
@@ -249,6 +256,9 @@ export type GameStore = {
   setDataGrabGameActive: (active: boolean) => void;
   setShowDataGrabResults: (show: boolean) => void;
   setShowDataGrabCookies: (show: boolean) => void; // Toggle cookie decorations (debug)
+
+  // Debug Actions
+  setGameSpeedMultiplier: (multiplier: number) => void; // Set game speed multiplier
 
   // Temper Tantrum Actions
   initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void; // Prepare modal state with winner info

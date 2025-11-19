@@ -450,17 +450,29 @@ describe('Turn Resolution', () => {
     });
 
     it('should add non-instant effects to pending queue', () => {
-      useGameStore.getState().initializeGame('tracker-first', 'common-first');
+      // Use a non-instant effect like leveraged_buyout
+      const leveragedBuyoutCard: Card = {
+        id: 'lb-1',
+        typeId: 'move-buyout',
+        value: 6,
+        imageUrl: '/test.webp',
+        isSpecial: true,
+        specialType: 'leveraged_buyout',
+        name: 'Leveraged Buyout',
+      };
 
-      const { playCard } = useGameStore.getState();
-      playCard('player');
-      const trackerCard = useGameStore.getState().player.playedCard!;
+      useGameStore.setState({
+        player: {
+          ...useGameStore.getState().player,
+          playedCard: leveragedBuyoutCard,
+        },
+      });
 
-      useGameStore.getState().handleCardEffect(trackerCard, 'player');
+      useGameStore.getState().handleCardEffect(leveragedBuyoutCard, 'player');
 
       const pendingEffects = useGameStore.getState().pendingEffects;
       expect(pendingEffects.length).toBeGreaterThan(0);
-      expect(pendingEffects[0].type).toBe('tracker');
+      expect(pendingEffects[0].type).toBe('leveraged_buyout');
     });
 
     it('should not add instant effects to pending queue', () => {
@@ -594,17 +606,36 @@ describe('Turn Resolution', () => {
 
         const initialPlayerCount = useGameStore.getState().player.launchStackCount;
         const initialCpuCount = useGameStore.getState().cpu.launchStackCount;
-        const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
+        const initialPlayerLaunchStacks = useGameStore.getState().playerLaunchStacks;
 
+        // Process pending effects - this triggers Phase 1 (reduce opponent's counter)
         useGameStore.getState().processPendingEffects('player');
 
-        // Player's Launch Stack counter should NOT increase (card goes to deck)
-        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount);
-        // CPU's Launch Stack counter should decrease
+        // After Phase 1: CPU's counter should be reduced, player's should NOT increase yet
         expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
-        // Stolen card should be added to TOP of player's deck
-        expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 1);
-        expect(useGameStore.getState().player.deck[0]).toEqual(cpuLaunchStackCard);
+        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount); // Not increased yet
+
+        // The stolen card and winner should be stored in temporary state
+        expect(useGameStore.getState().patentTheftStolenCard).toEqual(cpuLaunchStackCard);
+        expect(useGameStore.getState().patentTheftWinner).toBe('player');
+
+        // Animation completion callback should be set
+        const callback = useGameStore.getState().animationCompletionCallback;
+        expect(callback).toBeDefined();
+
+        // Manually trigger Phase 2 by calling the callback
+        if (callback) {
+          callback();
+        }
+
+        // After Phase 2: Player's Launch Stack counter should increase
+        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
+        // Stolen card should be added to player's launch stack collection
+        expect(useGameStore.getState().playerLaunchStacks.length).toBe(initialPlayerLaunchStacks.length + 1);
+        expect(useGameStore.getState().playerLaunchStacks).toContainEqual(cpuLaunchStackCard);
+        // Temporary state should be cleared
+        expect(useGameStore.getState().patentTheftStolenCard).toBeNull();
+        expect(useGameStore.getState().patentTheftWinner).toBeNull();
       });
 
       it('should not steal when player loses', () => {
