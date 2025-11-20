@@ -8,7 +8,6 @@ import { TRACKS } from '@/config/audio-config';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
-  useDeckSwapCount,
   useSelectedBackground,
   useSelectedBillionaire,
 } from '@/store';
@@ -23,6 +22,7 @@ import { DataGrabMiniGame } from '../DataGrabMiniGame';
 import { DataGrabResultsModal } from '../DataGrabResultsModal';
 import { DataWarAnimation } from '../DataWarAnimation';
 import { DebugUI } from '../DebugUI';
+import { DeckInteractionZone } from '../DeckInteractionZone';
 import { EffectNotificationModal } from '../EffectNotificationModal';
 import { OpenWhatYouWantModal } from '../OpenWhatYouWantModal';
 import { PlayedCards } from '../PlayedCards';
@@ -53,7 +53,6 @@ export function Game() {
   // Convert tooltip key to actual message (with display count tracking)
   const tooltipMessage = useTooltip(tooltipKey);
 
-  const deckSwapCount = useDeckSwapCount();
   const selectedBackground = useSelectedBackground();
   const selectedBillionaire = useSelectedBillionaire();
   const cpuBillionaire = useCpuBillionaire();
@@ -68,9 +67,6 @@ export function Game() {
   // Launch Stacks are tracked separately with rocket indicators
   const playerTotalCards = player.deck.length;
   const cpuTotalCards = cpu.deck.length;
-
-  // Check if decks are visually swapped (they stay in swapped positions after animation)
-  const isSwapped = deckSwapCount % 2 === 1;
 
   const backgroundImage =
     getBackgroundImage(selectedBackground) ||
@@ -141,24 +137,10 @@ export function Game() {
     }
   };
 
-  // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
-  // When swapped: owner="cpu" is visually at bottom, owner="player" is visually at top
-  // IMPORTANT: Only player's deck is clickable (CPU is automated)
-  // When NOT swapped: player's deck is at bottom (normal position)
-  // When swapped: player's deck is at top (swapped position)
-  const topDeckCanClick = isSwapped ? canClickPlayerDeck : false;
-  const bottomDeckCanClick = isSwapped ? false : canClickPlayerDeck;
-
-  // Tooltip ALWAYS shows on the player's deck (which moves based on swap state)
-  const topDeckTooltip = isSwapped && canClickPlayerDeck ? tooltipMessage : '';
-  const bottomDeckTooltip = !isSwapped && canClickPlayerDeck ? tooltipMessage : '';
-
-  // Active indicator (glow) only shows for player's deck (when clickable)
-  // CPU deck never glows
-  // When NOT swapped: player at bottom, CPU at top
-  // When swapped: player at top, CPU at bottom
-  const topDeckActiveIndicator = isSwapped ? canClickPlayerDeck : false;
-  const bottomDeckActiveIndicator = !isSwapped ? canClickPlayerDeck : false;
+  // SIMPLIFIED INTERACTION LOGIC
+  // Player interaction zone is ALWAYS at bottom (never moves)
+  // CPU has no interaction zone (automated)
+  // Visual deck positions can swap, but interaction stays fixed
 
   useEffect(() => {
     switch (phase) {
@@ -246,16 +228,15 @@ export function Game() {
       )}
     >
       <Board bgSrc={backgroundImage}>
-        <div className="w-full mx-auto grid grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-[30.4%_1fr_26.6%] gap-x-[1.5rem] framed:gap-x-6 h-full items-center">
+        <div className="w-full mx-auto grid grid-rows-[min-content_min-content_auto_min-content_min-content] auto-rows-min grid-cols-[30.4%_1fr_26.6%] gap-x-[1.5rem] framed:gap-x-6 h-full items-center relative">
+          {/* CPU Deck - Visual only, no interaction */}
           <PlayerDeck
             deckLength={cpuTotalCards}
-            handleDeckClick={topDeckCanClick ? handleDeckClick : undefined}
             turnValue={cpu.currentTurnValue}
             turnValueActiveEffects={cpu.activeEffects}
             owner="cpu"
             billionaireId={cpuBillionaire}
-            tooltipContent={topDeckTooltip}
-            activeIndicator={topDeckActiveIndicator}
+            activeIndicator={false}
           />
 
           {/* Play Area - Center of board */}
@@ -284,15 +265,23 @@ export function Game() {
               <PlayedCards cards={player.playedCardsInHand} owner="player" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
           </div>
+
+          {/* Player Deck - Visual only, no interaction */}
           <PlayerDeck
             deckLength={playerTotalCards}
-            handleDeckClick={bottomDeckCanClick ? handleDeckClick : undefined}
             turnValue={player.currentTurnValue}
             turnValueActiveEffects={player.activeEffects}
             owner="player"
             billionaireId={selectedBillionaire}
-            tooltipContent={bottomDeckTooltip}
-            activeIndicator={bottomDeckActiveIndicator}
+            activeIndicator={canClickPlayerDeck}
+          />
+
+          {/* Fixed Player Interaction Zone - Always at bottom */}
+          <DeckInteractionZone
+            position="bottom"
+            onClick={canClickPlayerDeck ? handleDeckClick : undefined}
+            tooltipContent={canClickPlayerDeck ? tooltipMessage : undefined}
+            activeIndicator={canClickPlayerDeck}
           />
         </div>
 

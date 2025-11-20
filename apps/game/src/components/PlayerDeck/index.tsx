@@ -42,11 +42,9 @@ const gridLayoutMap: Record<PlayerType, Containers> = {
 
 export const PlayerDeck: FC<PlayerDeckProps> = ({
   deckLength,
-  handleDeckClick,
   turnValue,
   turnValueActiveEffects,
   owner,
-  tooltipContent,
   billionaireId,
   activeIndicator = false,
 }) => {
@@ -277,13 +275,9 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         className={cn('col-2', gridLayoutMap[layoutOwner].deck)}
         cardCount={deckLength}
         owner={owner}
-        onClick={handleDeckClick}
-        showTooltip={!!tooltipContent}
-        tooltipContent={tooltipContent}
-        activeIndicator={activeIndicator}
         deckSwapCount={deckSwapCount}
-        isRunningWinAnimation={showWinEffect}
         layoutOwner={layoutOwner}
+        activeIndicator={activeIndicator}
       />
       {/** Turn points */}
       <TurnValue

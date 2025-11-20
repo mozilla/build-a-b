@@ -578,21 +578,11 @@ export const useGameStore = create<GameStore>()(
       },
 
       swapDecks: () => {
-        const { player, cpu } = get();
-        // Swap ONLY the deck arrays between player and cpu
-        // Visual positions stay the same after animation: bottom = player, top = cpu
-        // launchStackCount, points, and current turn state do NOT swap
-        // The visual animation + data swap results in correct final positions
-        set({
-          player: {
-            ...player,
-            deck: cpu.deck,
-          },
-          cpu: {
-            ...cpu,
-            deck: player.deck,
-          },
-        });
+        // REFACTORED: No longer swaps actual deck data
+        // Only increments deckSwapCount to trigger visual animation
+        // Decks stay with their owners - only visuals swap positions
+        // This simplifies interaction logic (player deck is always player's data)
+        set({ deckSwapCount: get().deckSwapCount + 1 });
       },
 
       stealCards: (from, to, count) => {
@@ -944,10 +934,9 @@ export const useGameStore = create<GameStore>()(
                 get().setShowForcedEmpathyAnimation(false);
                 get().setForcedEmpathySwapping(true);
 
-                // STEP 3: After deck piles finish moving (DURATION only, no delay), swap data and hide animation
+                // STEP 3: After deck piles finish moving (DURATION only, no delay), increment swap counter and hide animation
                 setTimeout(() => {
-                  get().swapDecks();
-                  set({ deckSwapCount: get().deckSwapCount + 1 });
+                  get().swapDecks(); // Only increments deckSwapCount now, doesn't swap data
                   get().setForcedEmpathySwapping(false);
 
                   // Wait for deck swap to visually settle before unblocking game

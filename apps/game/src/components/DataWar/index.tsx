@@ -6,7 +6,7 @@ import { DeckPile } from '../DeckPile';
 import type { BaseScreenProps } from '../ScreenRenderer';
 
 export const DataWar: FC<BaseScreenProps> = () => {
-  const { player, cpu, playCard } = useGame();
+  const { player, cpu } = useGame();
   const playerLaunchStacks = useGameStore((state) => state.playerLaunchStacks);
   const cpuLaunchStacks = useGameStore((state) => state.cpuLaunchStacks);
 
@@ -14,18 +14,10 @@ export const DataWar: FC<BaseScreenProps> = () => {
   const playerTotalCards = player.deck.length + playerLaunchStacks.length;
   const cpuTotalCards = cpu.deck.length + cpuLaunchStacks.length;
 
-  const handlePlayerDeckClick = () => {
-    playCard('player');
-  };
-
-  const handleCpuDeckClick = () => {
-    playCard('cpu');
-  };
-
   return (
     <div className="flex flex-col justify-between items-center flex-1">
-      {/* CPU Deck (top) */}
-      <DeckPile cardCount={cpuTotalCards} owner="cpu" onClick={handleCpuDeckClick} />
+      {/* CPU Deck (top) - Visual only */}
+      <DeckPile cardCount={cpuTotalCards} owner="cpu" />
 
       {/* Play Area - Center of board */}
       <div className="flex flex-col items-center justify-around flex-1 relative mb-4">
@@ -40,8 +32,8 @@ export const DataWar: FC<BaseScreenProps> = () => {
         </div>
       </div>
 
-      {/* Player Deck (bottom) */}
-      <DeckPile cardCount={playerTotalCards} owner="player" onClick={handlePlayerDeckClick} />
+      {/* Player Deck (bottom) - Visual only */}
+      <DeckPile cardCount={playerTotalCards} owner="player" />
     </div>
   );
 };

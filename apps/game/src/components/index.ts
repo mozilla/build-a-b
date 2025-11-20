@@ -59,6 +59,8 @@ export { ScreenRenderer } from './ScreenRenderer';
 export { Board } from './Board';
 export { Card } from './Card';
 export { DeckPile } from './DeckPile';
+export { DeckInteractionZone } from './DeckInteractionZone';
+export type { DeckInteractionZoneProps } from './DeckInteractionZone';
 export { Game } from './Game';
 export { PlayedCards } from './PlayedCards';
 export type { PlayedCardsProps } from './PlayedCards/types';
