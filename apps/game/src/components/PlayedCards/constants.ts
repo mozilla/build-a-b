@@ -13,8 +13,8 @@ export const Z_INDEX_CONFIG = {
   START_BASE: 500, // High z-index while cards are in-flight
   FINAL_BASE: 20, // Base z-index for landed cards
   CARD_MAX: 100, // Maximum z-index to prevent interfering with overlays
-  COLLECTION_WINNER_BASE: 10, // Base for winner's cards during collection
-  COLLECTION_LOSER_BASE: 0, // Base for loser's cards during collection
+  COLLECTION_WINNER_BASE: 200, // Base for winner's cards during collection (above tableau)
+  COLLECTION_LOSER_BASE: 150, // Base for loser's cards during collection (above tableau)
   FALLBACK: 20, // Fallback for non-animated cards
 } as const;
 

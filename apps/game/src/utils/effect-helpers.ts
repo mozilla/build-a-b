@@ -86,7 +86,6 @@ export const EFFECT_NOTIFICATION_CONFIG = {
     'patent_theft',
     'leveraged_buyout',
     'temper_tantrum',
-    'data_grab',
   ],
 };
 

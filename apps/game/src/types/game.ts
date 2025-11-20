@@ -68,6 +68,7 @@ export interface SpecialEffect {
   playedBy: PlayerType;
   card: Card;
   isInstant: boolean; // True for instant effects, false for queued
+  destinationOverride?: PlayerType; // Override destination (e.g., stolen by Temper Tantrum)
 }
 
 export interface PreRevealEffect {

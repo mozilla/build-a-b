@@ -96,6 +96,15 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const cardDistribution = collectingState?.distributions?.find(
     (d) => d.card.id === playedCardState.card.id,
   );
+
+  // Only collect this card if:
+  // 1. shouldCollect is true (winner is set)
+  // 2. collectingState exists (there's an active collection, not null)
+  // 3. Either no specific distributions (collect all) OR this card is in distributions
+  const hasDistributions = collectingState?.distributions && collectingState.distributions.length > 0;
+  const cardShouldCollect = shouldCollect && collectingState !== null && (
+    !hasDistributions || cardDistribution !== undefined
+  );
   const cardDestination = cardDistribution?.destination || winner;
   const isSwappedNow = deckSwapCount % 2 === 1;
   const isTiedInComparing =
@@ -152,16 +161,16 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const initialRotate = baseInitialRotation + spreadRotation;
 
   // Determine which collection offset to use based on this card's destination
-  const cardSpecificCollectionOffset = shouldCollect
+  const cardSpecificCollectionOffset = cardShouldCollect
     ? cardDestination === 'player'
       ? playerCollectionOffset
       : cpuCollectionOffset
     : { x: 0, y: 0 };
 
   // Animation endpoints
-  const finalX = shouldCollect ? cardSpecificCollectionOffset.x : 0;
-  const finalY = shouldCollect ? cardSpecificCollectionOffset.y : 0;
-  const finalScale = shouldCollect ? SCALE.DECK : SCALE.TABLE;
+  const finalX = cardShouldCollect ? cardSpecificCollectionOffset.x : 0;
+  const finalY = cardShouldCollect ? cardSpecificCollectionOffset.y : 0;
+  const finalScale = cardShouldCollect ? SCALE.DECK : SCALE.TABLE;
 
   // Collection rotation based on visual position (use cardDestination instead of winner)
   const destinationIsVisuallyAtBottom = isSwappedNow
@@ -170,10 +179,10 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const collectionRotation = destinationIsVisuallyAtBottom
     ? COLLECTION_ROTATION.BOTTOM
     : COLLECTION_ROTATION.TOP;
-  const finalRotate = shouldCollect ? collectionRotation : 0;
+  const finalRotate = cardShouldCollect ? collectionRotation : 0;
 
   // Fade out cards as they're collected into the deck
-  const finalOpacity = shouldCollect ? [1, 1, 0.25] : 1;
+  const finalOpacity = cardShouldCollect ? [1, 1, 0.25] : 1;
 
   // Z-index calculation
   const startZ = isNewCard
@@ -184,15 +193,15 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     : Z_INDEX_CONFIG.FINAL_BASE + index;
 
   // Check if this card is going to its owner's deck (winner) or opponent's deck (loser)
-  const isWinnerCard = shouldCollect && owner === cardDestination;
-  const collectionZIndex = shouldCollect
+  const isWinnerCard = cardShouldCollect && owner === cardDestination;
+  const collectionZIndex = cardShouldCollect
     ? isWinnerCard
       ? Z_INDEX_CONFIG.COLLECTION_WINNER_BASE + index
       : Z_INDEX_CONFIG.COLLECTION_LOSER_BASE + index
     : Z_INDEX_CONFIG.FALLBACK + index;
 
   const settledAssignedZ = settledZRef.current[landedKey];
-  const appliedZ = shouldCollect
+  const appliedZ = cardShouldCollect
     ? collectionZIndex
     : isNewCard
     ? landed
@@ -202,7 +211,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
 
   // Detect when card lands and assign settled z-index
   const handleUpdate = (latest: { [k: string]: number }) => {
-    if (!shouldCollect && isNewCard && !landed) {
+    if (!cardShouldCollect && isNewCard && !landed) {
       const currentY = typeof latest.y === 'number' ? latest.y : NaN;
       if (!Number.isNaN(currentY) && Math.abs(currentY - 0) < LANDING_EPSILON) {
         const el = elementRefs.current[landedKey];
@@ -222,7 +231,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
 
   // Fallback: ensure landed is set at animation complete if onUpdate missed it
   const handlePlayComplete = () => {
-    if (!shouldCollect && isNewCard) {
+    if (!cardShouldCollect && isNewCard) {
       const el = elementRefs.current[landedKey];
       if (el && !(landedKey in settledZRef.current)) {
         const assigned = assignSettledZIndex(
@@ -272,11 +281,11 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
         opacity: finalOpacity,
       }}
       transition={{
-        duration: shouldCollect
+        duration: cardShouldCollect
           ? ANIMATION_DURATIONS.CARD_COLLECTION / 1000
           : playDuration / 1000,
         ease: [0.43, 0.13, 0.23, 0.96],
-        delay: shouldCollect
+        delay: cardShouldCollect
           ? index * 0.05
           : (isTopCard ? 0 : rotationDelay / 1000) + staggerDelay / 1000,
       }}
@@ -288,13 +297,13 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
         variant="animated-card"
         cardFrontSrc={cardImage}
         state={
-          shouldCollect
+          cardShouldCollect
             ? 'initial' // Collecting: always show back
             : playedCardState.isFaceDown
             ? 'initial' // Face-down cards stay as back (no flip)
             : 'flipped' // Face-up cards show front (flipped)
         }
-        fullSize={!shouldCollect}
+        fullSize={!cardShouldCollect}
       />
     </motion.div>
   );

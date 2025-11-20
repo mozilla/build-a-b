@@ -882,8 +882,11 @@ describe('Turn Resolution', () => {
         // Confirm selection
         useGameStore.getState().confirmTemperTantrumSelection();
 
-        // Wait for animations to complete (WIN_ANIMATION + CARD_COLLECTION = 1200 + 1200 = 2400ms)
-        vi.advanceTimersByTime(2400);
+        // Wait for all animations to complete:
+        // 1. Stolen cards animation: WIN_ANIMATION + CARD_COLLECTION = 1200 + 1200 = 2400ms
+        // 2. Final collection animation: WIN_ANIMATION + CARD_COLLECTION = 1200 + 1200 = 2400ms
+        // Total: 4800ms
+        vi.advanceTimersByTime(4800);
 
         // New behavior: Player (loser) steals 2 cards from CPU's pile
         // CPU (winner) gets: 0 remaining (both stolen) + player's 1 card = 1 card
