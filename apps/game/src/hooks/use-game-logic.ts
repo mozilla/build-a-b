@@ -70,6 +70,8 @@ export function useGameLogic() {
     cpu,
     activePlayer,
     effectAccumulationPaused,
+    needsDataWarAfterEffects,
+    blockTransitions,
     playCard,
     resolveTurn,
     collectCardsAfterEffects,
@@ -298,15 +300,19 @@ export function useGameLogic() {
   };
 
   const handleCompareTurnContinued = () => {
+    const store = useGameStore.getState();
+    console.log('[handleCompareTurnContinued] Called. blockTransitions:', store.blockTransitions);
+
     // After animations complete, check for special game states and trigger transitions
     // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
     // but animations take 3000ms. By the time blockTransitions is cleared, the automatic
     // transition window has passed. However, we ALWAYS check guard conditions to preserve logic.
-    const store = useGameStore.getState();
 
     // If game is blocked (animations or modals), don't send any events
-    // Wait for blockTransitions to be cleared, then state machine's automatic guards will handle it
+    // Set awaitingResolution flag so the useEffect will retry when blockTransitions clears
     if (store.blockTransitions) {
+      console.log('[handleCompareTurnContinued] Blocked, setting awaitingResolution');
+      useGameStore.setState({ awaitingResolution: true });
       return;
     }
 
@@ -347,16 +353,16 @@ export function useGameLogic() {
       (store.anotherPlayMode && store.anotherPlayExpected) || // Single player playing again
       bothTriggerAnother; // Both players will play again
 
+    // Prepare effect notification badge BEFORE checking for Data War
+    // This ensures effects are accumulated even when Data War is triggered
+    store.prepareEffectNotification();
+
     if (!skipDataWarCheck && store.checkForDataWar()) {
-      // Clear any existing badges when entering a new data war
-      // Badges will be shown again after all data wars are resolved
-      store.clearAccumulatedEffects();
+      // Keep accumulated effects visible during Data War
+      // They will be cleared at turn end when winner is determined
       actorRef.send({ type: 'TIE' });
       return;
     }
-
-    // No Data War or Data Grab - prepare effect notification badge (non-blocking)
-    store.prepareEffectNotification();
 
     // Wait briefly to give user time to click badge, then trigger normal resolution
     // Use conditional timing based on card types
@@ -532,33 +538,49 @@ export function useGameLogic() {
         // Player has no cards left - resolve the turn instead of triggering another play
         const winner = resolveTurn();
 
-        // Process pending special effects now that we know the winner
-        // Returns true if post-resolution animations were queued (e.g., launch_stack)
-        const animationsQueued = processPendingEffects(winner);
+        // Show win confetti FIRST (before special effects)
+        if (winner && winner !== 'tie') {
+          useGameStore.setState({ showingWinEffect: winner, deckClickBlocked: true });
+          useGameStore.getState().clearAccumulatedEffects();
 
-        // Only collect cards if no post-resolution animations were queued
-        // If animations were queued, the callback will handle card collection after they complete
+          // Wait for confetti animation, then process effects
+          setTimeout(() => {
+            useGameStore.setState({ showingWinEffect: null });
+
+            const animationsQueued = processPendingEffects(winner);
+            if (!animationsQueued) {
+              collectCardsAfterEffects(winner);
+            }
+
+            const hasWon = checkWinCondition();
+            if (hasWon) {
+              actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+              return;
+            }
+
+            setAnotherPlayMode(false);
+            setActivePlayer('player');
+            setTrackerSmackerActive(null);
+            actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+          }, ANIMATION_DURATIONS.WIN_ANIMATION);
+          return;
+        }
+
+        // Tie case - process effects directly
+        const animationsQueued = processPendingEffects(winner);
         if (!animationsQueued) {
           collectCardsAfterEffects(winner);
         }
 
-        // Check if game is over
         const hasWon = checkWinCondition();
         if (hasWon) {
           actorRef.send({ type: 'CHECK_WIN_CONDITION' });
           return;
         }
 
-        // Disable "another play" mode
         setAnotherPlayMode(false);
-
-        // Reset active player to default (player always initiates in normal mode)
         setActivePlayer('player');
-
-        // Clear Tracker Smacker at the end of the turn
         setTrackerSmackerActive(null);
-
-        // Move to next turn (will go through pre_reveal if there are effects)
         actorRef.send({ type: 'CHECK_WIN_CONDITION' });
         return;
       }
@@ -573,6 +595,50 @@ export function useGameLogic() {
       // No more "another play" triggers - resolve the turn now
       const winner = resolveTurn();
 
+      // Show win confetti FIRST (before special effects)
+      // This establishes the winner before effect animations play
+      if (winner && winner !== 'tie') {
+        useGameStore.setState({ showingWinEffect: winner, deckClickBlocked: true });
+        useGameStore.getState().clearAccumulatedEffects();
+
+        // Wait for confetti animation, then process effects
+        setTimeout(() => {
+          // Clear confetti before processing effects
+          useGameStore.setState({ showingWinEffect: null });
+
+          // Process pending special effects now that we know the winner
+          // Returns true if post-resolution animations were queued (e.g., launch_stack)
+          const animationsQueued = processPendingEffects(winner);
+
+          // Only collect cards if no post-resolution animations were queued
+          // If animations were queued, the callback will handle card collection after they complete
+          if (!animationsQueued) {
+            collectCardsAfterEffects(winner);
+          }
+
+          // Check if game is over
+          const hasWon = checkWinCondition();
+          if (hasWon) {
+            actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+            return;
+          }
+
+          // Disable "another play" mode
+          setAnotherPlayMode(false);
+
+          // Reset active player to default (player always initiates in normal mode)
+          setActivePlayer('player');
+
+          // Clear Tracker Smacker at the end of the turn
+          setTrackerSmackerActive(null);
+
+          // Move to next turn (will go through pre_reveal if there are effects)
+          actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+        }, ANIMATION_DURATIONS.WIN_ANIMATION);
+        return;
+      }
+
+      // Tie case - no confetti, process effects directly
       // Process pending special effects now that we know the winner
       // Returns true if post-resolution animations were queued (e.g., launch_stack)
       const animationsQueued = processPendingEffects(winner);
@@ -662,9 +728,16 @@ export function useGameLogic() {
     const playerHasHostileTakeover = store.player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = store.cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Only skip cards if this is the FIRST data war (both players have exactly 1 card)
+    // Check if HT effect applies (either first data war OR HT was just played as face-up)
+    // First data war: both players have exactly 1 card
+    // HT as face-up: both have equal cards > 1 (HT was revealed as face-up in existing Data War)
     const isFirstDataWar =
       store.player.playedCardsInHand.length === 1 && store.cpu.playedCardsInHand.length === 1;
+    const htPlayedAsFaceUp =
+      (playerHasHostileTakeover || cpuHasHostileTakeover) &&
+      store.player.playedCardsInHand.length === store.cpu.playedCardsInHand.length &&
+      store.player.playedCardsInHand.length > 1;
+    const htEffectApplies = isFirstDataWar || htPlayedAsFaceUp;
 
     // Add 3 cards face-down from each player ONLY if not hostile takeover is played
     const playerCards = store.player.deck.slice(0, 3);
@@ -675,32 +748,30 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player:
-        playerHasHostileTakeover && isFirstDataWar
-          ? store.player
-          : {
-              ...store.player,
-              deck: updatedPlayerDeck,
-              playedCardsInHand: [
-                ...store.player.playedCardsInHand,
-                ...playerCards.map((card) => ({ card, isFaceDown: true })),
-              ],
-            },
-      cpu:
-        cpuHasHostileTakeover && isFirstDataWar
-          ? store.cpu
-          : {
-              ...store.cpu,
-              deck: updatedCpuDeck,
-              playedCardsInHand: [
-                ...store.cpu.playedCardsInHand,
-                ...cpuCards.map((card) => ({ card, isFaceDown: true })),
-              ],
-            },
+      player: playerHasHostileTakeover && htEffectApplies
+        ? store.player
+        : {
+            ...store.player,
+            deck: updatedPlayerDeck,
+            playedCardsInHand: [
+              ...store.player.playedCardsInHand,
+              ...playerCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
+      cpu: cpuHasHostileTakeover && htEffectApplies
+        ? store.cpu
+        : {
+            ...store.cpu,
+            deck: updatedCpuDeck,
+            playedCardsInHand: [
+              ...store.cpu.playedCardsInHand,
+              ...cpuCards.map((card) => ({ card, isFaceDown: true })),
+            ],
+          },
       cardsInPlay: [
         ...store.cardsInPlay,
-        ...(playerHasHostileTakeover && isFirstDataWar ? [] : playerCards),
-        ...(cpuHasHostileTakeover && isFirstDataWar ? [] : cpuCards),
+        ...(playerHasHostileTakeover && htEffectApplies ? [] : playerCards),
+        ...(cpuHasHostileTakeover && htEffectApplies ? [] : cpuCards),
       ],
     });
   };
@@ -714,15 +785,23 @@ export function useGameLogic() {
     const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Detect first data war: either player has exactly 1 card (the HT player won't have face-down cards)
-    // In first data war: HT player has 1 card, opponent has 4 cards (1 original + 3 face-down)
-    // In second+ data war: both will have more cards
+    // Check if HT effect applies (either first data war OR HT was just played as face-up)
+    // First data war: HT player has 1 card, opponent has 4 cards
+    // HT as face-up: HT player has fewer cards than opponent (because only opponent played face-down)
     const isFirstDataWar =
       player.playedCardsInHand.length === 1 || cpu.playedCardsInHand.length === 1;
 
-    if (playerHasHostileTakeover && isFirstDataWar) {
+    // HT-as-face-up: after face-down phase, HT player still has their original cards
+    // while opponent played 3 more, so HT player has fewer cards
+    const htAsFaceUp =
+      (playerHasHostileTakeover && player.playedCardsInHand.length < cpu.playedCardsInHand.length) ||
+      (cpuHasHostileTakeover && cpu.playedCardsInHand.length < player.playedCardsInHand.length);
+
+    const htEffectApplies = isFirstDataWar || htAsFaceUp;
+
+    if (playerHasHostileTakeover && htEffectApplies) {
       playCard('cpu');
-    } else if (cpuHasHostileTakeover && isFirstDataWar) {
+    } else if (cpuHasHostileTakeover && htEffectApplies) {
       playCard('player');
     } else {
       playCard('cpu');
@@ -733,11 +812,11 @@ export function useGameLogic() {
     const freshState = useGameStore.getState();
 
     // Handle special effects for the new cards
-    if (!(playerHasHostileTakeover && isFirstDataWar) && freshState.player.playedCard) {
+    if (!(playerHasHostileTakeover && htEffectApplies) && freshState.player.playedCard) {
       handleCardEffect(freshState.player.playedCard, 'player');
     }
 
-    if (!(cpuHasHostileTakeover && isFirstDataWar) && freshState.cpu.playedCard) {
+    if (!(cpuHasHostileTakeover && htEffectApplies) && freshState.cpu.playedCard) {
       handleCardEffect(freshState.cpu.playedCard, 'cpu');
     }
   };
@@ -819,6 +898,34 @@ export function useGameLogic() {
       }
     }
   }, [effectAccumulationPaused, actorRef]);
+
+  // Continue game flow when blockTransitions becomes false and we were waiting
+  useEffect(() => {
+    const store = useGameStore.getState();
+    console.log('[useEffect blockTransitions] blockTransitions:', blockTransitions, 'awaitingResolution:', store.awaitingResolution);
+
+    // If blockTransitions just cleared and we were waiting to resolve, continue now
+    if (!blockTransitions && store.awaitingResolution) {
+      console.log('[useEffect blockTransitions] Resuming - calling handleCompareTurnContinued');
+      // Clear the flag
+      useGameStore.setState({ awaitingResolution: false });
+
+      // Continue with comparison flow
+      handleCompareTurnContinued();
+    }
+  }, [blockTransitions, handleCompareTurnContinued]);
+
+  // Trigger Data War when effects complete with a tie
+  useEffect(() => {
+    if (needsDataWarAfterEffects) {
+      // Reset the flag
+      useGameStore.setState({ needsDataWarAfterEffects: false });
+
+      // Trigger Data War
+      console.log('[useGameLogic] Effects completed with tie, triggering Data War');
+      actorRef.send({ type: 'TIE' });
+    }
+  }, [needsDataWarAfterEffects, actorRef]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
   // Pass isPaused flag to prevent CPU from playing while effect modal is open

@@ -102,7 +102,7 @@ export const DEFAULT_GAME_CONFIG = {
     // Value 0 (auto-lose hand but collect stack), triggers another play
     {
       typeId: 'ls-ai-platform',
-      name: 'Launch Stack: Launch AI Platform to Parent Your Kids Like Pokémon, but sadder.',
+      name: 'Launch Stack: Launch AI Platform to Parent Your Kids.',
       imageUrl: LsAiPlatform,
       value: 0,
       isSpecial: true,

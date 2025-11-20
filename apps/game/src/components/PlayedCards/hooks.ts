@@ -131,8 +131,9 @@ export function useBatchTracking(cards: Array<{ card: { id: string; isFaceDown?:
       }
     }
 
-    // If the card array shrank, a round ended — reset all tracking state
-    if (cards.length < prevCardCountRef.current) {
+    // Only reset tracking state when ALL cards are collected (actual round end)
+    // Don't reset when cards are partially removed (e.g., buyout stealing 2 cards)
+    if (cards.length === 0 && prevCardCountRef.current > 0) {
       setLandedMap({});
       cardBatchMapRef.current = {};
       settledZRef.current = {};

@@ -57,6 +57,7 @@ export function Game() {
   const selectedBillionaire = useSelectedBillionaire();
   const cpuBillionaire = useCpuBillionaire();
   const collecting = useGameStore((state) => state.collecting);
+  const deckClickBlocked = useGameStore((state) => state.deckClickBlocked);
   
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
 
@@ -84,19 +85,41 @@ export function Game() {
   // During pre_reveal.awaiting_interaction, player can tap to see modal
   // Disable clicking during card collection animation and during settling
   // IMPORTANT: Only the PLAYER's deck is ever clickable - CPU plays are automated
-  // Check if this is the first HT data war (should auto-advance, so not clickable)
+  // Check if HT effect applies and player shouldn't click (CPU auto-plays)
+  // Two cases where player's deck is not clickable:
+  // 1. Player plays HT as first card → CPU auto-plays Data War cards
+  // 2. Player plays HT as face-up in existing Data War → CPU auto-plays Data War cards
   const playerPlayedHT = player.playedCard?.specialType === 'hostile_takeover';
   const cpuPlayedHT = cpu.playedCard?.specialType === 'hostile_takeover';
+
+  // First HT Data War: HT player has 1 card, opponent has fewer than 5
   const isFirstHTDataWar =
     (playerPlayedHT && player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length < 5) ||
     (cpuPlayedHT && cpu.playedCardsInHand.length === 1 && player.playedCardsInHand.length < 5);
 
+  // HT as face-up: player has HT and has more than 1 card (not first data war)
+  // and has equal or fewer cards than CPU (before or after face-down phase)
+  const playerHTAsFaceUp =
+    playerPlayedHT &&
+    player.playedCardsInHand.length > 1 &&
+    player.playedCardsInHand.length <= cpu.playedCardsInHand.length;
+
+  // Combined: should auto-advance when player has HT (either first or face-up)
+  const shouldAutoAdvanceHT = isFirstHTDataWar || playerHTAsFaceUp;
+
+  // Never clickable during comparison/resolution phases or win effects
+  const isComparisonPhase = phase === 'comparing' || phase === 'resolving';
+  const showingWinEffect = useGameStore((state) => state.showingWinEffect);
+
   const canClickPlayerDeck =
     !collecting &&
+    !deckClickBlocked &&
+    !isComparisonPhase &&
+    !showingWinEffect &&
     ((phase === 'ready' && activePlayer === 'player') ||
       phase === 'pre_reveal.awaiting_interaction' ||
-      // Data war is clickable if NOT first HT data war (which auto-advances)
-      (isClickableDataWarPhase && !isFirstHTDataWar));
+      // Data war is clickable if NOT auto-advancing for HT
+      (isClickableDataWarPhase && !shouldAutoAdvanceHT));
 
   const handleDeckClick = () => {
     tapDeck();
@@ -173,10 +196,10 @@ export function Game() {
   }, [phase, send]);
 
   useEffect(() => {
-    // Auto-advance ONLY for the FIRST Hostile Takeover data war
-    // Only auto-click in phases that require user interaction
+    // Auto-advance when HT effect applies and player has HT
+    // This handles both first HT and HT-as-face-up cases
     const shouldAutoAdvance =
-      isFirstHTDataWar &&
+      shouldAutoAdvanceHT &&
       (phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up.ready');
 
     if (shouldAutoAdvance) {
@@ -184,12 +207,7 @@ export function Game() {
     }
   }, [
     phase,
-    isFirstHTDataWar,
-    canClickPlayerDeck,
-    playerPlayedHT,
-    cpuPlayedHT,
-    player.playedCardsInHand.length,
-    cpu.playedCardsInHand.length,
+    shouldAutoAdvanceHT,
     tapDeck,
   ]);
 
