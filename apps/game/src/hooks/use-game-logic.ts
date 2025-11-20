@@ -202,6 +202,9 @@ export function useGameLogic() {
       if (activePlayerState.playedCard) {
         handleCardEffect(activePlayerState.playedCard, store.activePlayer);
 
+        // Show badge immediately when card lands on board
+        useGameStore.getState().prepareEffectNotification();
+
         // Check if Forced Empathy was played - if so, delay transition for BOTH animations
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
           setTimeout(() => {
@@ -228,6 +231,9 @@ export function useGameLogic() {
       if (c.playedCard) {
         handleCardEffect(c.playedCard, 'cpu');
       }
+
+      // Show badge immediately when cards land on board
+      useGameStore.getState().prepareEffectNotification();
 
       // Check if Forced Empathy was played - if so, delay transition
       const forcedEmpathyPlayed =
@@ -322,42 +328,50 @@ export function useGameLogic() {
       return;
     }
 
-    // PRIORITY 2: Hostile Takeover ALWAYS triggers Data War immediately
+    // PRIORITY 2: Handle CPU "another play" cards BEFORE Data War checks
+    // CPU auto-plays their additional card; player clicks to play theirs
+    const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
+
+    if (cpuTriggersAnother && store.cpu.deck.length > 0) {
+      playCard('cpu');
+      const newState = useGameStore.getState();
+      if (newState.cpu.playedCard) {
+        handleCardEffect(newState.cpu.playedCard, 'cpu');
+      }
+    }
+
+    // Re-fetch state after potential additional plays
+    const updatedStore = useGameStore.getState();
+
+    // PRIORITY 3: Hostile Takeover ALWAYS triggers Data War immediately
     // checkForDataWar() includes re-trigger prevention (checks if opponent already played)
-    const playerPlayedHt = store.player.playedCard?.specialType === 'hostile_takeover';
-    const cpuPlayedHt = store.cpu.playedCard?.specialType === 'hostile_takeover';
+    const playerPlayedHt = updatedStore.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuPlayedHt = updatedStore.cpu.playedCard?.specialType === 'hostile_takeover';
     if (playerPlayedHt || cpuPlayedHt) {
-      if (store.checkForDataWar()) {
+      if (updatedStore.checkForDataWar()) {
         // Trigger Data War immediately
         actorRef.send({ type: 'TIE' });
 
         // Special handling for Hostile Takeover: Show badge after Data War animation completes
         // This gives player time to view the HT effect without interrupting Data War flow
         setTimeout(() => {
-          store.prepareEffectNotification();
+          updatedStore.prepareEffectNotification();
         }, ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION);
 
         return;
       }
     }
 
-    // PRIORITY 3: Normal Data War (tie)
-    // Skip data war if:
-    // 1. We're in another play mode and expecting more cards (one player playing), OR
-    // 2. Both players will play again (both cards trigger another play)
-    const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
-    const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
-    const bothTriggerAnother = playerTriggersAnother && cpuTriggersAnother;
-
+    // PRIORITY 4: Normal Data War (tie)
+    // Skip data war if we're in another play mode and expecting more cards
     const skipDataWarCheck =
-      (store.anotherPlayMode && store.anotherPlayExpected) || // Single player playing again
-      bothTriggerAnother; // Both players will play again
+      updatedStore.anotherPlayMode && updatedStore.anotherPlayExpected;
 
     // Prepare effect notification badge BEFORE checking for Data War
     // This ensures effects are accumulated even when Data War is triggered
-    store.prepareEffectNotification();
+    updatedStore.prepareEffectNotification();
 
-    if (!skipDataWarCheck && store.checkForDataWar()) {
+    if (!skipDataWarCheck && updatedStore.checkForDataWar()) {
       // Keep accumulated effects visible during Data War
       // They will be cleared at turn end when winner is determined
       actorRef.send({ type: 'TIE' });
@@ -785,26 +799,26 @@ export function useGameLogic() {
     const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Check if HT effect applies (either first data war OR HT was just played as face-up)
-    // First data war: HT player has 1 card, opponent has 4 cards
-    // HT as face-up: HT player has fewer cards than opponent (because only opponent played face-down)
-    const isFirstDataWar =
-      player.playedCardsInHand.length === 1 || cpu.playedCardsInHand.length === 1;
+    // Check if HT effect applies (first HT Data War only, not subsequent ties)
+    // HT effect applies when opponent just played 3 face-down cards (difference is exactly 3)
+    // After a tie, the difference becomes 4+, so HT effect no longer applies
+    const playerCards = player.playedCardsInHand.length;
+    const cpuCards = cpu.playedCardsInHand.length;
 
-    // HT-as-face-up: after face-down phase, HT player still has their original cards
-    // while opponent played 3 more, so HT player has fewer cards
-    const htAsFaceUp =
-      (playerHasHostileTakeover && player.playedCardsInHand.length < cpu.playedCardsInHand.length) ||
-      (cpuHasHostileTakeover && cpu.playedCardsInHand.length < player.playedCardsInHand.length);
+    // First turn HT: player 1, CPU 4, diff = 3
+    // HT as face-up: player N, CPU N+3, diff = 3
+    const htEffectApplies =
+      (playerHasHostileTakeover && cpuCards - playerCards === 3) ||
+      (cpuHasHostileTakeover && playerCards - cpuCards === 3);
 
-    const htEffectApplies = isFirstDataWar || htAsFaceUp;
+    // Track who plays in this phase
+    const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
+    const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
 
-    if (playerHasHostileTakeover && htEffectApplies) {
+    if (cpuPlays) {
       playCard('cpu');
-    } else if (cpuHasHostileTakeover && htEffectApplies) {
-      playCard('player');
-    } else {
-      playCard('cpu');
+    }
+    if (playerPlays) {
       playCard('player');
     }
 
@@ -812,11 +826,11 @@ export function useGameLogic() {
     const freshState = useGameStore.getState();
 
     // Handle special effects for the new cards
-    if (!(playerHasHostileTakeover && htEffectApplies) && freshState.player.playedCard) {
+    if (playerPlays && freshState.player.playedCard) {
       handleCardEffect(freshState.player.playedCard, 'player');
     }
 
-    if (!(cpuHasHostileTakeover && htEffectApplies) && freshState.cpu.playedCard) {
+    if (cpuPlays && freshState.cpu.playedCard) {
       handleCardEffect(freshState.cpu.playedCard, 'cpu');
     }
   };
@@ -913,7 +927,10 @@ export function useGameLogic() {
       // Continue with comparison flow
       handleCompareTurnContinued();
     }
-  }, [blockTransitions, handleCompareTurnContinued]);
+    // handleCompareTurnContinued uses useGameStore.getState() for fresh state
+    // and stable refs (actorRef, store actions), so it's safe to omit
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockTransitions]);
 
   // Trigger Data War when effects complete with a tie
   useEffect(() => {
