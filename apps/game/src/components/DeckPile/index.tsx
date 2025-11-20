@@ -10,21 +10,15 @@ import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { type FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
-import Text from '../Text';
-import { Tooltip } from '../Tooltip';
 import type { DeckPileProps } from './types';
 
 export const DeckPile: FC<DeckPileProps> = ({
   cardCount,
   owner,
-  onClick,
-  showTooltip = false,
-  tooltipContent,
-  activeIndicator = false,
   deckSwapCount = 0,
   className,
-  isRunningWinAnimation,
   layoutOwner,
+  activeIndicator = false,
 }) => {
   // Use layoutOwner for positioning logic (accounts for deck swaps), fallback to owner
   const positionOwner = layoutOwner ?? owner;
@@ -113,49 +107,35 @@ export const DeckPile: FC<DeckPileProps> = ({
   const shiftTransitionDuration = ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000;
 
   return (
-    <Tooltip
-      content={
-        <Text className="leading-[1.2]" variant="body-small" color="text-accent" weight="semibold">
-          {tooltipContent}
-        </Text>
-      }
-      isOpen={showTooltip}
-      classNames={{
-        base: [isPlayer ? 'translate-y-6' : '-translate-y-6'],
+    <motion.div
+      layout
+      className={cn('flex flex-col items-center gap-1 w-full outline-0', className)}
+      data-deck-owner={owner}
+      data-deck={owner}
+      transition={{
+        layout: {
+          duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
+          ease: [0.33, 0.0, 0.67, 1.0],
+        },
       }}
     >
+      {/* horizontalOffset/swapRotation are applied separately from the layout
+          animation to avoid any issues with conflicting transform values being
+          applied at the same time.
+      */}
       <motion.div
-        layout
-        className={cn('flex flex-col items-center gap-1 w-full outline-0', className)}
-        data-deck-owner={owner}
-        data-deck={owner}
-        transition={{
-          layout: {
-            duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
-            ease: [0.33, 0.0, 0.67, 1.0],
-          },
+        ref={deckRef}
+        className="relative size-full z-19 outline-0"
+        initial={false}
+        style={{
+          x: horizontalOffset,
+          rotateZ: swapRotation,
         }}
       >
-        {/* horizontalOffset/swapRotation are applied separately from the layout
-            animation to avoid any issues with conflicting transform values being
-            applied at the same time.
-        */}
-        <motion.div
-          ref={deckRef}
-          className="relative size-full z-19 outline-0"
-          onClick={cardCount > 0 && !isRunningWinAnimation ? onClick : undefined}
-          role={cardCount > 0 ? 'button' : undefined}
-          tabIndex={cardCount > 0 ? 0 : undefined}
-          initial={false}
-          style={{
-            x: horizontalOffset,
-            rotateZ: swapRotation,
-          }}
-        >
-          {/* Show stacked effect if cards > 0 */}
-          {cardCount > 0 ? (
-            <div className={cn('relative -translate-y-1', activeIndicator && 'animate-heartbeat')}>
-              {/* Back cards for stacking effect */}
+        {/* Show stacked effect if cards > 0 */}
+        {cardCount > 0 ? (
+          <div className={cn('relative -translate-y-1', activeIndicator && 'animate-heartbeat')}>
+            {/* Back cards for stacking effect */}
 
               {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
               {cardCount >= 4 && (
@@ -252,8 +232,7 @@ export const DeckPile: FC<DeckPileProps> = ({
               <span className="text-white/50 text-xs">Empty</span>
             </div>
           )}
-        </motion.div>
       </motion.div>
-    </Tooltip>
+    </motion.div>
   );
 };
