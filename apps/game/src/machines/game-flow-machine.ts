@@ -381,8 +381,7 @@ export const gameFlowMachine = createMachine(
           pre_animation: {
             // Delay before showing the data grab takeover animation (breathing room after comparison)
             after: {
-              [getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY)]:
-                'takeover',
+              [ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY]: 'takeover',
             },
           },
           takeover: {
@@ -690,6 +689,9 @@ export const gameFlowMachine = createMachine(
           return false;
         }
 
+        // Data Grab has priority over Data War
+        if (state.checkForDataGrab?.()) return false;
+
         // Safety check for tests
         if (!state.checkForDataWar) return false;
         return state.checkForDataWar();
@@ -728,7 +730,8 @@ export const gameFlowMachine = createMachine(
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
-            effect.type === 'mandatory_recall'
+            effect.type === 'mandatory_recall' ||
+            effect.type === 'data_grab'
           );
         });
 

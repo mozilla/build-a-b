@@ -27,9 +27,9 @@ function shouldUseFastTiming(): boolean {
   const slowTimingCardTypes = [
     'forced_empathy', // Deck swap animation
     'hostile_takeover', // Triggers data war
-    'data_grab', // Mini-game
     'open_what_you_want', // Modal selection
     'tracker_smacker', // Animation
+    // Note: data_grab removed - has its own extended animation/mini-game sequence
     // Note: launch_stack, patent_theft, leveraged_buyout, temper_tantrum, mandatory_recall removed - animations play after resolution
   ];
 
