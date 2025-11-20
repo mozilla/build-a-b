@@ -4,6 +4,7 @@
 
 import { DEFAULT_BOARD_BACKGROUND } from '@/components/Screens/SelectBackground/backgrounds';
 import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '@/config/animation-timings';
+import { TRACKS } from '@/config/audio-config';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
@@ -60,6 +61,8 @@ export function Game() {
   const deckClickBlocked = useGameStore((state) => state.deckClickBlocked);
   
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
+  const { playAudio } = useGameStore();
+  const openEffectModal = useGameStore((state) => state.openEffectModal);
 
   // Deck counter shows only the main deck
   // Launch Stacks are tracked separately with rocket indicators
@@ -123,6 +126,19 @@ export function Game() {
 
   const handleDeckClick = () => {
     tapDeck();
+  };
+
+  const handlePlayAreaClick = (owner: PlayerType) => {
+    // Only open modal if there are cards to display
+    const hasCards = owner === 'player' 
+      ? player.playedCardsInHand.length > 0 
+      : cpu.playedCardsInHand.length > 0;
+    
+    if (hasCards) {
+      setOwnerBadgeClicked(owner);
+      openEffectModal();
+      playAudio(TRACKS.HAND_VIEWER);
+    }
   };
 
   // After swap animation, decks stay in swapped visual positions (isSwapped tracks this)
@@ -245,13 +261,25 @@ export function Game() {
           {/* Play Area - Center of board */}
           <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[1.125rem] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
             {/* CPU Played Card Area */}
-            <div className="flex items-center justify-center gap-6 col-2 self-end">
+            <div 
+              className={cn(
+                "flex items-center justify-center gap-6 col-2 self-end",
+                cpu.playedCardsInHand.length > 0 && "cursor-pointer"
+              )}
+              onClick={() => handlePlayAreaClick('cpu')}
+            >
               {/* CPU Cards */}
               <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
 
             {/* Player Played Card Area */}
-            <div className="flex items-center justify-center gap-6 col-2 self-start">
+            <div 
+              className={cn(
+                "flex items-center justify-center gap-6 col-2 self-start",
+                player.playedCardsInHand.length > 0 && "cursor-pointer"
+              )}
+              onClick={() => handlePlayAreaClick('player')}
+            >
               {/* Player Cards */}
               <PlayedCards cards={player.playedCardsInHand} owner="player" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
