@@ -750,17 +750,27 @@ export const gameFlowMachine = createMachine(
         return !state.effectAccumulationPaused;
       },
       isHostileTakeoverFirstDataWar: () => {
-        // Check if this is the FIRST data war triggered by hostile takeover
-        // Skip animation only when BOTH players have exactly 1 card (original plays)
-        // Once either has more cards, it means data war already started (show animation for subsequent ties)
+        // Check if this is a data war triggered by hostile takeover that should skip animation
+        // Two cases:
+        // 1. First data war: both have exactly 1 card (HT played as initial card)
+        // 2. HT as face-up: both have equal cards > 1 (HT revealed as face-up in existing Data War)
         const { player, cpu } = useGameStore.getState();
         const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
         const cpuHasHT = cpu.playedCard?.specialType === 'hostile_takeover';
 
         if (!playerHasHT && !cpuHasHT) return false;
 
-        // Skip animation only if BOTH players have exactly 1 card each
-        return player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
+        // Case 1: Skip animation if both players have exactly 1 card each (first data war)
+        if (player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1) {
+          return true;
+        }
+
+        // Case 2: Skip animation if HT was played as face-up (equal cards > 1)
+        if (player.playedCardsInHand.length === cpu.playedCardsInHand.length && player.playedCardsInHand.length > 1) {
+          return true;
+        }
+
+        return false;
       },
       isDataGrab: () => {
         // Check if a Data Grab card was played and there are enough cards in play
