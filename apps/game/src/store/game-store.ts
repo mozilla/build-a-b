@@ -110,7 +110,7 @@ export const useGameStore = create<GameStore>()(
       showDataGrabCookies: false, // Debug option - disabled by default
 
       // Debug Options
-      gameSpeedMultiplier: 0.4, // Default: slower speed for better UX
+      gameSpeedMultiplier: 0.6, // Default: slower speed for better UX
 
       // Temper Tantrum Card Selection State
       showTemperTantrumModal: false,
