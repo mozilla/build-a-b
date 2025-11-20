@@ -176,7 +176,7 @@ export default async function Page() {
         </p>
       </CardsSection>
 
-      {/* <ImageGallery images={imagesForGallery} /> */}
+      {!isPhase4 && <ImageGallery images={imagesForGallery} />}
 
       {/* {!isLaunchCompleted && (
         <section className="mb-4 landscape:mb-8 flex flex-col-reverse gap-4 landscape:flex-row landscape:gap-8">
@@ -352,6 +352,8 @@ export default async function Page() {
           className="landscape:w-[30%] aspect-square border-none"
         />
       </section>
+
+      {isPhase4 && <ImageGallery images={imagesForGallery} />}
 
       {!isPhase4 && (
         <section className="mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8">
