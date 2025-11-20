@@ -69,11 +69,11 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
   const videoUrls = useMemo(() => {
     const urls: string[] = [];
 
-    // TODO: Jesse - Revisit caching of special animations for other platforms
-    // as the webm files are large. On Safari the mov files are much smaller
-    if (isSafari()) {
-      urls.push(...getAllAnimationVideoSrc());
-    }
+    // TODO: Jesse - Disable special effect animation preloading as they are large and are causing issue
+    // and revisit at a later time
+    // if (isSafari()) {
+    //   urls.push(...getAllAnimationVideoSrc());
+    // }
 
     if (!selectedBillionaire || !cpuBillionaire) return urls;
 
