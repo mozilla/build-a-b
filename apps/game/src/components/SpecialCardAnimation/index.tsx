@@ -1,3 +1,5 @@
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { useEffect, useRef } from 'react';
 import type { SpecialCardAnimationProps } from './types';
@@ -17,27 +19,33 @@ export const SpecialCardAnimation = ({
   loop = true,
   controls = false,
   removeBlur = false,
+  audioTrack,
 }: SpecialCardAnimationProps) => {
+  const { playAudio } = useGameStore();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioPlayedRef = useRef(false);
 
   // Auto-play video when component becomes visible
   useEffect(() => {
     if (show && videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.error('Failed to play special card animation:', error);
-      });
+      videoRef.current
+        .play()
+        .then(() => {
+          if (!audioPlayedRef.current) {
+            audioPlayedRef.current = true;
+            playAudio(audioTrack || TRACKS.EVENT_TAKEOVER);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to play special card animation:', error);
+        });
     }
-  }, [show]);
+  }, [show, playAudio, audioTrack]);
 
   if (!show) return null;
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center',
-        className,
-      )}
-    >
+    <div className={cn('fixed inset-0 z-50 flex items-center justify-center', className)}>
       {/* Board-constrained container matching game board dimensions */}
       <div
         className={`relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 ${

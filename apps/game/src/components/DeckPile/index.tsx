@@ -3,6 +3,8 @@
  */
 
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store/game-store';
 import { cn } from '@/utils/cn';
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { type FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -33,6 +35,8 @@ export const DeckPile: FC<DeckPileProps> = ({
   const [playingCard, setPlayingCard] = useState(false);
   const [cardsPlayedThisTurn, setCardsPlayedThisTurn] = useState(0);
   const swapProgress = useMotionValue(0);
+  const playAudio = useGameStore((state) => state.playAudio);
+  const audioPlayedRef = useRef(false);
   /**
    * Arcs the flight path of the decks throughout the course of the swap animation.
    * Uses sin(π * progress) which peaks at progress 0.5
@@ -57,10 +61,20 @@ export const DeckPile: FC<DeckPileProps> = ({
    */
   useEffect(() => {
     if (deckSwapCount !== prevDeckSwapCountRef.current) {
+      // Play audio when swap animation starts (only from player deck to avoid duplicate)
+      if (owner === 'player' && !audioPlayedRef.current) {
+        playAudio(TRACKS.DECK_SWAP);
+        audioPlayedRef.current = true;
+      }
+
       const controls = animate(swapProgress, 1, {
         duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
         ease: [0.33, 0.0, 0.67, 1.0],
-        onComplete: () => swapProgress.set(0),
+        onComplete: () => {
+          swapProgress.set(0);
+          // Reset audio flag when animation completes
+          audioPlayedRef.current = false;
+        },
       });
 
       prevDeckSwapCountRef.current = deckSwapCount;
@@ -69,7 +83,7 @@ export const DeckPile: FC<DeckPileProps> = ({
         controls.stop();
       };
     }
-  }, [deckSwapCount, swapProgress]);
+  }, [deckSwapCount, swapProgress, owner, playAudio]);
   /**
    * Card play animations
    */

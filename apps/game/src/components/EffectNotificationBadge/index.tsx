@@ -5,6 +5,8 @@
 import { Icon } from '@/components/Icon';
 import type { IconName } from '@/components/Icon/registry';
 import Text from '@/components/Text';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import type { EffectNotification } from '@/types/game';
 import { type FC } from 'react';
 
@@ -35,9 +37,13 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   progressPercentage = 0,
 }) => {
   const effectCount = accumulatedEffects.length;
+  const { playAudio } = useGameStore();
 
   return (
-    <div className="max-w-[5.875rem] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20">
+    <div
+      onMouseEnter={() => playAudio(TRACKS.WHOOSH)}
+      className="max-w-[5.875rem] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
+    >
       {/* Stacked icons - similar to TurnValue with ~50% overlap */}
       <div
         className={`relative h-[1.875rem] flex items-center justify-center ${
@@ -56,7 +62,12 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
                 transform: index > 0 ? `translateX(-${index * 0.625}rem)` : undefined, // Overlap by 0.625rem per icon
               }}
             >
-              <Icon name={iconName} size={30} aria-label={`${effect.effectType} effect`} className="w-[1.875rem] h-[1.875rem]" />
+              <Icon
+                name={iconName}
+                size={30}
+                aria-label={`${effect.effectType} effect`}
+                className="w-[1.875rem] h-[1.875rem]"
+              />
             </div>
           );
         })}

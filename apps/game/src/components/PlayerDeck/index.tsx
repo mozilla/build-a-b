@@ -1,6 +1,10 @@
 import { SpecialCardAnimation, Text } from '@/components';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
-import { SPECIAL_EFFECT_ANIMATIONS, getAnimationVideoSrc } from '@/config/special-effect-animations';
+import { TRACKS } from '@/config/audio-config';
+import {
+  SPECIAL_EFFECT_ANIMATIONS,
+  getAnimationVideoSrc,
+} from '@/config/special-effect-animations';
 import { useGameStore, usePlayer } from '@/store';
 import type { PlayerType } from '@/types';
 import { cn } from '@/utils/cn';
@@ -52,6 +56,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const showingWinEffect = useGameStore((state) => state.showingWinEffect);
+  const { playAudio } = useGameStore();
   const isSwapped = deckSwapCount % 2 === 1;
   // Get the correct player based on owner prop
   const currentPlayer = owner === 'player' ? player : cpu;
@@ -162,11 +167,17 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     };
   }, [currentPlayer.launchStackCount]);
 
+  useEffect(() => {
+    if (!showWinEffect) return;
+    if (owner === 'player') playAudio(TRACKS.PLAYER_WIN);
+    if (owner === 'cpu') playAudio(TRACKS.OPPONENT_WIN, { volume: 0.5 });
+  }, [playAudio, showWinEffect, owner]);
+
   // Get Launch Stack Won animation from config
   const launchStackWonAnimation = SPECIAL_EFFECT_ANIMATIONS.launch_stack_won;
   const animationVideoSrc = getAnimationVideoSrc(
     launchStackWonAnimation,
-    currentPlayer.id === 'player'
+    currentPlayer.id === 'player',
   );
 
   return (
@@ -176,6 +187,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         show={showAnimation}
         videoSrc={animationVideoSrc}
         className="z-1!"
+        audioTrack={TRACKS.LAUNCH_STACK_ROCKET}
       />
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (

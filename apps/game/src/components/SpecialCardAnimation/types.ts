@@ -1,3 +1,5 @@
+import type { AudioTrackId } from '@/config/audio-config';
+
 export type SpecialCardAnimationProps = {
   /** Controls visibility of the animation */
   show: boolean;
@@ -19,4 +21,6 @@ export type SpecialCardAnimationProps = {
   controls?: boolean;
   /** Remove bg blur */
   removeBlur?: boolean;
+  /** Optional audio track to play (defaults to EVENT_TAKEOVER) */
+  audioTrack?: AudioTrackId;
 };

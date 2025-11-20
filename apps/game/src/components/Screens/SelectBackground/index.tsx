@@ -3,6 +3,7 @@ import { type FC, useState } from 'react';
 import { Button } from '@/components/Button';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
+import { TRACKS } from '@/config/audio-config';
 import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
@@ -11,10 +12,11 @@ import { BACKGROUNDS } from './backgrounds';
 import { selectBackgroundMicrocopy } from './microcopy';
 
 export const SelectBackground: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
-  const { selectedBackground } = useGameStore();
+  const { selectedBackground, playAudio } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBackground || BACKGROUNDS[0].id);
 
   const handleBackgroundSelect = (backgroundId: string) => {
+    playAudio(TRACKS.OPTION_FOCUS);
     setLocalSelection(backgroundId);
   };
 
