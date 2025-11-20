@@ -1,14 +1,16 @@
+import { Button, Text } from '@/components';
+import { TRACKS } from '@/config/audio-config';
+import { capitalize } from '@/utils/capitalize';
 import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
 import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
-import { Button, Text } from '@/components';
-import { capitalize } from '@/utils/capitalize';
 import { CardCarousel } from '../CardCarousel';
 
 export const OpenWhatYouWantModal = () => {
+  const { playAudio } = useGameStore();
   const { send } = useGameMachineActor();
   const { cards, showModal, isActive } = useOpenWhatYouWantState();
   const playSelectedCardFromOWYW = useGameStore((state) => state.playSelectedCardFromOWYW);
@@ -27,8 +29,10 @@ export const OpenWhatYouWantModal = () => {
   useEffect(() => {
     if (!showModal) {
       setSelectedCard(null);
+    } else {
+      playAudio(TRACKS.HAND_VIEWER);
     }
-  }, [showModal]);
+  }, [showModal, playAudio]);
 
   const handleConfirm = () => {
     if (selectedCard && isActive) {
@@ -68,7 +72,11 @@ export const OpenWhatYouWantModal = () => {
             </span>
           </div>
           {cards.length > 0 ? (
-            <CardCarousel cards={cards} selectedCard={selectedCard} onCardSelect={handleCardSelect} />
+            <CardCarousel
+              cards={cards}
+              selectedCard={selectedCard}
+              onCardSelect={handleCardSelect}
+            />
           ) : (
             <div className="text-center text-gray-400 py-8">No cards available</div>
           )}

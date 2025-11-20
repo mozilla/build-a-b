@@ -1,11 +1,11 @@
 import { type FC } from 'react';
 
 import { Button } from '@/components/Button';
-import { Link } from '@heroui/react';
 import { Icon } from '@/components/Icon';
 import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
+import { Link } from '@heroui/react';
 
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';

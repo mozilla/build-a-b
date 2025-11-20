@@ -1,5 +1,6 @@
+import { TRACKS } from '@/config/audio-config';
 import { motion } from 'framer-motion';
-import type { FC } from 'react';
+import { type FC, useEffect, useRef } from 'react';
 import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import { useGameStore } from '../../store';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
@@ -10,8 +11,10 @@ import type { PlayedCardsProps } from './types';
 import { calculateRenderOrder, generateLandedKey, getBatchCardIndices } from './utils';
 
 export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeClicked }) => {
+  const { playAudio } = useGameStore();
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const winner = useGameStore((state) => state.collecting?.primaryWinner ?? null);
+  const audioPlayedRef = useRef(false);
 
   // Effect notification badge state
   const showEffectNotificationBadge = useGameStore((state) => state.showEffectNotificationBadge);
@@ -27,6 +30,17 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   const isCPU = owner === 'cpu';
   const isSwapped = deckSwapCount % 2 === 1;
   const shouldCollect = winner !== null;
+
+  // Play card collection audio when collection animation starts
+  // Only play once per collection cycle (use player component to avoid duplicate)
+  useEffect(() => {
+    if (shouldCollect && !audioPlayedRef.current && owner === 'player') {
+      audioPlayedRef.current = true;
+      playAudio(TRACKS.CARD_COLLECT);
+    } else if (!shouldCollect) {
+      audioPlayedRef.current = false;
+    }
+  }, [shouldCollect, owner, playAudio]);
 
   // Custom hooks for measurements and batch tracking
   const { playAreaRef, deckOffset, playerCollectionOffset, cpuCollectionOffset } =
@@ -68,6 +82,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
 
     // Open modal and pause game
     openEffectModal();
+    playAudio(TRACKS.HAND_VIEWER);
 
     // Notify parent component that badge was clicked
     if (onBadgeClicked) {

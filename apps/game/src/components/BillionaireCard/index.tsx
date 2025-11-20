@@ -1,4 +1,6 @@
 import Text from '@/components/Text';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { Button } from '@heroui/react';
 import { type FC } from 'react';
@@ -12,10 +14,14 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
   className,
   ...cardProps
 }) => {
+  const { playAudio } = useGameStore();
   return (
     <Button
       disableRipple
-      onPress={onPress}
+      onPress={(e) => {
+        playAudio(TRACKS.BUTTON_PRESS, { volume: 0.5 });
+        onPress?.(e);
+      }}
       className={cn(
         'flex flex-col items-center gap-2 cursor-pointer transition-transform-opacity h-auto px-0 whitespace-normal ',
         isSelected && 'scale-110 opacity-100',

@@ -5,9 +5,11 @@
  * No React Context needed - uses Zustand store directly.
  */
 
+import { getAudioByPriority } from '@/config/audio-config';
 import { BILLIONAIRES } from '@/config/billionaires';
 import { CARD_BACK_IMAGE, DEFAULT_GAME_CONFIG } from '@/config/game-config';
 import { useAssetPreloader, type AssetPreloadPriority } from '@/hooks/use-asset-preloader';
+import { useAudioPreloader } from '@/hooks/use-audio-preloader';
 import { useVideoPreloader } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
@@ -80,10 +82,53 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     preloadStrategy: 'auto',
   });
 
+  // Preload audio assets (4-tier priority system)
+  const criticalAudio = useMemo(() => getAudioByPriority('critical'), []);
+  const highAudio = useMemo(() => getAudioByPriority('high'), []);
+  const mediumAudio = useMemo(() => getAudioByPriority('medium'), []);
+  const lowAudio = useMemo(() => getAudioByPriority('low'), []);
+
+  const criticalAudioState = useAudioPreloader(criticalAudio, {
+    enabled: true,
+    batchDelay: 50,
+    preloadStrategy: 'auto',
+  });
+
+  const highAudioState = useAudioPreloader(highAudio, {
+    enabled: criticalAudioState.isReady, // Only after critical completes
+    batchDelay: 50,
+    preloadStrategy: 'auto',
+  });
+
+  const mediumAudioState = useAudioPreloader(mediumAudio, {
+    enabled: highAudioState.isReady, // Only after high completes
+    batchDelay: 50,
+    preloadStrategy: 'auto',
+  });
+
+  const lowAudioState = useAudioPreloader(lowAudio, {
+    enabled: mediumAudioState.isReady, // Only after medium completes
+    batchDelay: 50,
+    preloadStrategy: 'auto',
+  });
+
   // Update game store with combined preloading state
   useEffect(() => {
-    const assetsTotal = imagePreloadState.totalAssets + videoPreloadState.totalCount;
-    const assetsLoaded = imagePreloadState.totalLoaded + videoPreloadState.readyToPlayCount;
+    // Calculate audio totals
+    const audioLoaded =
+      criticalAudioState.loadedCount +
+      highAudioState.loadedCount +
+      mediumAudioState.loadedCount +
+      lowAudioState.loadedCount;
+    const audioTotal =
+      criticalAudioState.totalCount +
+      highAudioState.totalCount +
+      mediumAudioState.totalCount +
+      lowAudioState.totalCount;
+
+    const assetsTotal = imagePreloadState.totalAssets + videoPreloadState.totalCount + audioTotal;
+    const assetsLoaded =
+      imagePreloadState.totalLoaded + videoPreloadState.readyToPlayCount + audioLoaded;
     const essentialAssetsReady = imagePreloadState.essentialReady;
     const highPriorityAssetsReady = imagePreloadState.highPriorityReady;
     const criticalPriorityAssetsReady =
@@ -122,6 +167,7 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
           `High Priority: ${highPriorityAssetsReady ? '✓' : '⏳'} | ` +
           `Essential: ${essentialAssetsReady ? '✓' : '⏳'} | ` +
           `VS Video: ${vsVideoReady ? '✓' : '⏳'} | ` +
+          `Audio: ${audioLoaded}/${audioTotal} | ` +
           `Ready: ${preloadingComplete ? '✓' : '⏳'}`,
       );
     }
@@ -136,6 +182,14 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     imagePreloadState.stats.critical.total,
     videoPreloadState.totalCount,
     videoPreloadState.readyToPlayCount,
+    criticalAudioState.loadedCount,
+    criticalAudioState.totalCount,
+    highAudioState.loadedCount,
+    highAudioState.totalCount,
+    mediumAudioState.loadedCount,
+    mediumAudioState.totalCount,
+    lowAudioState.loadedCount,
+    lowAudioState.totalCount,
     videoUrls.length,
     updatePreloadingProgress,
   ]);

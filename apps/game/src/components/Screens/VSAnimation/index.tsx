@@ -3,6 +3,7 @@ import { type FC, useEffect, useMemo, useRef } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
+import { TRACKS } from '@/config/audio-config';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { getPreloadedVideo } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
@@ -17,9 +18,10 @@ import { cn } from '@/utils/cn';
  * Auto-transitions to gameplay when video ends.
  */
 export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) => {
-  const { selectedBillionaire } = useGameStore();
+  const { selectedBillionaire, playAudio } = useGameStore();
   const cpuBillionaireId = useCpuBillionaire();
   const containerRef = useRef<HTMLDivElement>(null);
+  const goTrackFiredRef = useRef(false);
 
   const playerBillionaire = useMemo(
     () => BILLIONAIRES.find((b) => b.id === selectedBillionaire),
@@ -72,25 +74,45 @@ export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) 
       send?.({ type: 'VS_ANIMATION_COMPLETE' });
     };
 
+    const handleTimeUpdate = () => {
+      const timeRemaining = preloadedVideo.duration - preloadedVideo.currentTime;
+      /**
+       * We don't have fine-grained control over when the timeupdate event fires,
+       * but this seems to be "close enough" while still ensuring we don't miss it.
+       */
+      if (timeRemaining < 1 && !goTrackFiredRef.current) {
+        goTrackFiredRef.current = true;
+        playAudio(TRACKS.GO);
+      }
+    };
+
     preloadedVideo.addEventListener('ended', handleVideoEnd);
+    preloadedVideo.addEventListener('timeupdate', handleTimeUpdate);
 
     // Append to container
     container.appendChild(preloadedVideo);
 
     // Play the video
-    preloadedVideo.play().catch((error) => {
-      console.error('Failed to play VS animation:', error);
-    });
+    preloadedVideo
+      .play()
+      .then(() => {
+        playAudio(TRACKS.VS_SEQUENCE);
+        playAudio(TRACKS.REVERSE_BUILDUP);
+      })
+      .catch((error) => {
+        console.error('Failed to play VS animation:', error);
+      });
 
     return () => {
       preloadedVideo.removeEventListener('ended', handleVideoEnd);
+      preloadedVideo.removeEventListener('timeupdate', handleTimeUpdate);
       // Don't remove the video from DOM - keep it in global preload cache
       // Just remove from this specific container
       if (preloadedVideo.parentElement === container) {
         container.removeChild(preloadedVideo);
       }
     };
-  }, [preloadedVideo, playerBillionaire?.name, cpuBillionaire?.name, send]);
+  }, [preloadedVideo, playerBillionaire?.name, cpuBillionaire?.name, send, playAudio]);
 
   return (
     <motion.div

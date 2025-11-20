@@ -2,6 +2,8 @@
  * LaunchStackIndicator - Displays rocket indicators for launch stack collection
  */
 
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FC } from 'react';
@@ -28,6 +30,8 @@ export const LaunchStackIndicator: FC<LaunchStackIndicatorProps> = ({
   maxStacks = 3,
   className = '',
 }) => {
+  const { playAudio } = useGameStore();
+
   return (
     <div
       className={cn(
@@ -58,6 +62,7 @@ export const LaunchStackIndicator: FC<LaunchStackIndicatorProps> = ({
                     stiffness: 300,
                     damping: 20,
                   }}
+                  onAnimationStart={() => playAudio(TRACKS.CHA_CHING)}
                 />
               ) : (
                 <motion.img

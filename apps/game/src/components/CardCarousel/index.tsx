@@ -3,13 +3,15 @@
  * Extracted from OpenWhatYouWantModal for reuse in EffectNotificationModal
  */
 
+import { CARD_BACK_IMAGE } from '@/config/game-config';
+import { capitalize } from '@/utils/capitalize';
 import { useEffect, useMemo, useRef } from 'react';
 import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import type { Swiper as SwiperType, SwiperOptions } from 'swiper/types';
-import { capitalize } from '@/utils/capitalize';
-import { CARD_BACK_IMAGE } from '@/config/game-config';
+import type { SwiperOptions, Swiper as SwiperType } from 'swiper/types';
 
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import 'swiper/css';
 import type { CardCarouselProps } from './types';
 
@@ -27,6 +29,7 @@ export const CardCarousel = ({
   cardClassName,
   cardRotation = 'rotate-[-15deg]',
 }: CardCarouselProps) => {
+  const { playAudio } = useGameStore();
   const swiperRef = useRef<SwiperType | null>(null);
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
@@ -54,7 +57,7 @@ export const CardCarousel = ({
   };
 
   // Get initial slide index based on selectedCard
-  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;  
+  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;
 
   // Navigate to selected card when it changes externally
   useEffect(() => {
@@ -76,6 +79,7 @@ export const CardCarousel = ({
           if (currentCard) {
             onCardSelect(currentCard);
           }
+          playAudio(TRACKS.OPTION_FOCUS);
         }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
@@ -95,8 +99,13 @@ export const CardCarousel = ({
                 } ${scaleSelectedCards ? (isSelected ? 'scale-100' : 'scale-[0.8]') : ''}`}
                 onClick={() => (onCardClick ? onCardClick(card) : onCardSelect(card))}
               >
-                <div className={`relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl`}
-                     style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' } : undefined}
+                <div
+                  className={`relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl`}
+                  style={
+                    !scaleSelectedCards && isSelected
+                      ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' }
+                      : undefined
+                  }
                 >
                   <img
                     src={cardImage}
