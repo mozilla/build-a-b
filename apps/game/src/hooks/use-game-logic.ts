@@ -6,6 +6,7 @@
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
 import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
+import { TRACKS } from '../config/audio-config';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
@@ -170,6 +171,9 @@ export function useGameLogic() {
   const handleRevealCards = () => {
     const store = useGameStore.getState();
 
+    // Play card flip SFX
+    store.playAudio(TRACKS.CARD_FLIP);
+
     // Safety: Only clear BLOCKING states that prevent transitions
     // Do NOT clear effect notification states - those are managed by the effect system
     const currentState = useGameStore.getState();
@@ -249,9 +253,11 @@ export function useGameLogic() {
 
     // Check if either player has an instant animation card
     const instantAnimationTypes = ['forced_empathy', 'tracker_smacker', 'hostile_takeover'];
-    const playerHasInstantAnimation = store.player.playedCard?.specialType &&
+    const playerHasInstantAnimation =
+      store.player.playedCard?.specialType &&
       instantAnimationTypes.includes(store.player.playedCard.specialType);
-    const cpuHasInstantAnimation = store.cpu.playedCard?.specialType &&
+    const cpuHasInstantAnimation =
+      store.cpu.playedCard?.specialType &&
       instantAnimationTypes.includes(store.cpu.playedCard.specialType);
     const hasInstantAnimation = playerHasInstantAnimation || cpuHasInstantAnimation;
 
@@ -292,7 +298,6 @@ export function useGameLogic() {
   };
 
   const handleCompareTurnContinued = () => {
-
     // After animations complete, check for special game states and trigger transitions
     // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
     // but animations take 3000ms. By the time blockTransitions is cleared, the automatic
@@ -381,7 +386,7 @@ export function useGameLogic() {
         // Check if there are pending effects with UNSEEN animations
         // Only send SPECIAL_EFFECT if animations haven't been shown yet
         const hasUnseenAnimations = currentStore.pendingEffects.some(
-          (effect) => !currentStore.shownAnimationCardIds.has(effect.card.id)
+          (effect) => !currentStore.shownAnimationCardIds.has(effect.card.id),
         );
 
         // Check if all pending effects are post-resolution effects
@@ -392,7 +397,7 @@ export function useGameLogic() {
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
-            effect.type === 'mandatory_recall'
+            effect.type === 'mandatory_recall',
         );
 
         if (hasUnseenAnimations && !allEffectsArePostResolution) {
@@ -419,13 +424,15 @@ export function useGameLogic() {
     const playerTriggersAnother =
       playerCard &&
       shouldTriggerAnotherPlay(playerCard) &&
-      (playerCard.specialType === 'launch_stack' || !isEffectBlocked(store.trackerSmackerActive, 'player'));
+      (playerCard.specialType === 'launch_stack' ||
+        !isEffectBlocked(store.trackerSmackerActive, 'player'));
 
     const cpuCard = store.cpu.playedCard;
     const cpuTriggersAnother =
       cpuCard &&
       shouldTriggerAnotherPlay(cpuCard) &&
-      (cpuCard.specialType === 'launch_stack' || !isEffectBlocked(store.trackerSmackerActive, 'cpu'));
+      (cpuCard.specialType === 'launch_stack' ||
+        !isEffectBlocked(store.trackerSmackerActive, 'cpu'));
 
     if (playerTriggersAnother || cpuTriggersAnother) {
       return true;
@@ -668,26 +675,28 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player: playerHasHostileTakeover && isFirstDataWar
-        ? store.player
-        : {
-            ...store.player,
-            deck: updatedPlayerDeck,
-            playedCardsInHand: [
-              ...store.player.playedCardsInHand,
-              ...playerCards.map((card) => ({ card, isFaceDown: true })),
-            ],
-          },
-      cpu: cpuHasHostileTakeover && isFirstDataWar
-        ? store.cpu
-        : {
-            ...store.cpu,
-            deck: updatedCpuDeck,
-            playedCardsInHand: [
-              ...store.cpu.playedCardsInHand,
-              ...cpuCards.map((card) => ({ card, isFaceDown: true })),
-            ],
-          },
+      player:
+        playerHasHostileTakeover && isFirstDataWar
+          ? store.player
+          : {
+              ...store.player,
+              deck: updatedPlayerDeck,
+              playedCardsInHand: [
+                ...store.player.playedCardsInHand,
+                ...playerCards.map((card) => ({ card, isFaceDown: true })),
+              ],
+            },
+      cpu:
+        cpuHasHostileTakeover && isFirstDataWar
+          ? store.cpu
+          : {
+              ...store.cpu,
+              deck: updatedCpuDeck,
+              playedCardsInHand: [
+                ...store.cpu.playedCardsInHand,
+                ...cpuCards.map((card) => ({ card, isFaceDown: true })),
+              ],
+            },
       cardsInPlay: [
         ...store.cardsInPlay,
         ...(playerHasHostileTakeover && isFirstDataWar ? [] : playerCards),
@@ -786,7 +795,7 @@ export function useGameLogic() {
         // Check if there are pending effects with UNSEEN animations
         // Only send SPECIAL_EFFECT if animations haven't been shown yet
         const hasUnseenAnimations = store.pendingEffects.some(
-          (effect) => !store.shownAnimationCardIds.has(effect.card.id)
+          (effect) => !store.shownAnimationCardIds.has(effect.card.id),
         );
 
         // Check if all pending effects are post-resolution effects
@@ -797,7 +806,7 @@ export function useGameLogic() {
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
-            effect.type === 'mandatory_recall'
+            effect.type === 'mandatory_recall',
         );
 
         if (hasUnseenAnimations && !allEffectsArePostResolution) {

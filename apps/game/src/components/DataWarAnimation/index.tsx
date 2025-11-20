@@ -1,3 +1,4 @@
+import { TRACKS } from '@/config/audio-config';
 import { DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
@@ -16,7 +17,7 @@ interface DataWarAnimationProps {
  * Similar to VS animation but for gameplay phase.
  */
 export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
-  const { selectedBillionaire } = useGameStore();
+  const { selectedBillionaire, playAudio } = useGameStore();
   const cpuBillionaire = useCpuBillionaire();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -34,9 +35,14 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
   // Auto-play video when component mounts
   useEffect(() => {
     if (videoRef.current && animationSrc && show) {
-      videoRef.current.play().catch((error) => {
-        console.error('Failed to play Data War animation:', error);
-      });
+      videoRef.current
+        .play()
+        .then(() => {
+          playAudio(TRACKS.DATA_WAR);
+        })
+        .catch((error) => {
+          console.error('Failed to play Data War animation:', error);
+        });
     }
 
     // Reset video playing state when animation is hidden
@@ -48,7 +54,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
     return () => {
       useGameStore.setState({ dataWarVideoPlaying: false });
     };
-  }, [animationSrc, show]);
+  }, [animationSrc, show, playAudio]);
 
   // Handle video play/end to control glow state
   const handleVideoPlay = () => {

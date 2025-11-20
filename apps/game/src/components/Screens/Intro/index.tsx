@@ -6,18 +6,24 @@ import { Text } from '@/components/Text';
 import { useGameStore } from '@/store';
 import { getBillionaireImage } from '@/utils/selectors';
 
+import { TRACKS } from '@/config/audio-config';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { introMicrocopy } from './microcopy';
 
 export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
-  const { selectedBillionaire } = useGameStore();
+  const { selectedBillionaire, playAudio, stopAudio } = useGameStore();
 
   const handleShowGuide = () => {
+    playAudio(TRACKS.WHOOSH);
     send?.({ type: 'SHOW_GUIDE' });
   };
 
   const handleSkipInstructions = () => {
+    stopAudio({
+      channel: 'music',
+      trackId: TRACKS.TITLE_MUSIC,
+    });
     send?.({ type: 'SKIP_INSTRUCTIONS' });
   };
 

@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn';
 
 import { Drawer } from '@/components/Screens/SelectBillionaire/Drawer';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { TRACKS } from '@/config/audio-config';
 import { BILLIONAIRES, type Billionaire } from '@/config/billionaires';
 import { motion } from 'framer-motion';
 import { selectBillionaireMicrocopy } from './microcopy';
@@ -22,24 +23,26 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
   isFramed,
   ...props
 }) => {
-  const { selectedBillionaire, selectBillionaire } = useGameStore();
+  const { selectedBillionaire, selectBillionaire, playAudio } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBillionaire);
   const [selectedBillionaireData, setSelectedBillionaireData] = useState<Billionaire | null>(null);
 
   const handleBillionaireClick = useCallback(
     (billionaire: Billionaire) => {
+      playAudio(TRACKS.WHOOSH);
       setLocalSelection(billionaire.id);
       setSelectedBillionaireData(billionaire);
       setDrawerOpen(true);
     },
-    [setDrawerOpen],
+    [setDrawerOpen, playAudio],
   );
 
   const handleDrawerClose = useCallback(() => {
     setDrawerOpen(false);
+    playAudio(TRACKS.WHOOSH);
     // Reset selection if not confirmed
     setLocalSelection(selectedBillionaire);
-  }, [selectedBillionaire, setDrawerOpen]);
+  }, [selectedBillionaire, setDrawerOpen, playAudio]);
 
   const handleDrawerConfirm = useCallback(() => {
     if (selectedBillionaireData) {

@@ -1,3 +1,4 @@
+import type { AudioTrackId } from '@/config/audio-config';
 import type { CardTypeId } from '@/config/game-config';
 import type { SpecialEffectAnimationType } from '@/config/special-effect-animations';
 import type {
@@ -9,6 +10,7 @@ import type {
   PreRevealEffect,
   SpecialEffect,
 } from '@/types';
+import type { AudioManagerState, PlayOptions, StopOptions } from '@/types/audio';
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
 
 /**
@@ -161,6 +163,17 @@ export type GameStore = {
   soundEffectsEnabled: boolean;
   showTooltip: boolean;
 
+  // Audio Manager State
+  audioMusicChannel: HTMLAudioElement | null;
+  audioSfxChannels: (HTMLAudioElement | null)[]; // Multiple channels for overlapping SFX
+  audioMusicTrackId: string | null;
+  audioSfxTrackIds: (string | null)[]; // Track IDs for each SFX channel
+  audioMusicVolume: number;
+  audioSfxVolume: number;
+  audioMusicFading: boolean;
+  audioSfxFading: boolean;
+  audioTracksReady: Set<AudioTrackId>;
+
   // Asset Preloading State
   assetsLoaded: number; // Number of essential assets loaded (images + VS video)
   assetsTotal: number; // Total essential assets to load
@@ -185,7 +198,12 @@ export type GameStore = {
   ) => void;
   playCard: (playerId: PlayerType) => void;
   collectCards: (winnerId: PlayerType, cards: Card[], launchStackCount?: number) => void; // Backward compatibility wrapper
-  collectCardsDistributed: (distributions: CardDistribution[], primaryWinner?: PlayerType, visualOnly?: boolean, launchStackCount?: number) => void; // New enhanced collection
+  collectCardsDistributed: (
+    distributions: CardDistribution[],
+    primaryWinner?: PlayerType,
+    visualOnly?: boolean,
+    launchStackCount?: number,
+  ) => void; // New enhanced collection
   addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
   stealCards: (from: PlayerType, to: PlayerType, count: number) => void;
@@ -308,6 +326,17 @@ export type GameStore = {
   toggleSoundEffects: () => void;
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
+
+  // Actions - Audio Manager
+  playAudio: (trackId: AudioTrackId, options?: PlayOptions) => Promise<boolean>;
+  stopAudio: (options: StopOptions) => void;
+  pauseAudio: (channel: 'music' | 'sfx') => void;
+  resumeAudio: (channel: 'music' | 'sfx') => void;
+  setAudioVolume: (channel: 'music' | 'sfx', volume: number) => void;
+  isAudioReady: (trackId: AudioTrackId) => boolean;
+  getAudioState: () => AudioManagerState;
+  markAudioReady: (trackId: AudioTrackId) => void;
+  markAudioFailed: (trackId: AudioTrackId) => void;
   resetGame: (
     playerStrategy?: DeckOrderStrategy,
     cpuStrategy?: DeckOrderStrategy,

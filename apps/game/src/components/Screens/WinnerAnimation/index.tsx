@@ -3,6 +3,7 @@ import { type FC, memo, useEffect, useMemo, useRef } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
+import { TRACKS } from '@/config/audio-config';
 import { BILLIONAIRES, DEFAULT_BILLIONAIRE_ID } from '@/config/billionaires';
 import { getPreloadedVideo } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
@@ -21,10 +22,11 @@ const CROSS_FADE_DURATION = 0.25; // in seconds
 
 export const WinnerAnimation: FC<BaseScreenProps> = memo(
   ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, ...props }) => {
-    const { selectedBillionaire, winner } = useGameStore();
+    const { selectedBillionaire, winner, playAudio } = useGameStore();
     const cpuBillionaireId = useCpuBillionaire();
     const containerRef = useRef<HTMLDivElement>(null);
     const crossfadeTriggeredRef = useRef(false);
+    const audioPlayedRef = useRef(false);
 
     // Determine which billionaire's video to show and which winner type
     // If player wins: show "You win" video with player's billionaire
@@ -68,6 +70,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
 
       const container = containerRef.current; // Copy ref for cleanup
       crossfadeTriggeredRef.current = false; // Reset flag
+      audioPlayedRef.current = false; // Reset audio flag
 
       // Style the video for full coverage
       preloadedVideo.className = 'w-full h-full object-cover';
@@ -98,13 +101,20 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       // Append to container
       container.appendChild(preloadedVideo);
 
-      // Play the video
-      preloadedVideo.play().catch((error) => {
-        console.error('Failed to play winner animation:', error);
-        // Fallback: trigger crossfade immediately if play fails
-        onGameOverCrossfadeStart?.();
-        setTimeout(() => onGameOverCrossfadeComplete?.(), CROSS_FADE_DURATION * 1000);
-      });
+      preloadedVideo
+        .play()
+        .then(() => {
+          if (!audioPlayedRef.current) {
+            audioPlayedRef.current = true;
+            playAudio(TRACKS.END_SEQUENCE);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to play winner animation:', error);
+          // Fallback: trigger crossfade immediately if play fails
+          onGameOverCrossfadeStart?.();
+          setTimeout(() => onGameOverCrossfadeComplete?.(), CROSS_FADE_DURATION * 1000);
+        });
 
       return () => {
         preloadedVideo.removeEventListener('timeupdate', handleTimeUpdate);
@@ -119,6 +129,8 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       preloadedVideo,
       animationSrc,
       winnerBillionaire?.name,
+      winnerType,
+      playAudio,
       onGameOverCrossfadeStart,
       onGameOverCrossfadeComplete,
     ]);

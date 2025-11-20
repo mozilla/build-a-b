@@ -7,12 +7,13 @@ import { QuickStart } from '@/components/Screens/QuickStart';
 import { BackgroundCarousel } from '@/components/Screens/SelectBackground/BackgroundCarousel';
 import { Text } from '@/components/Text';
 import { AudioToggle } from '@/components/Toggle';
+import { TRACKS } from '@/config/audio-config';
 import { useGameLogic } from '@/hooks/use-game-logic';
 import { NON_GAMEPLAY_PHASES } from '@/machines/game-flow-machine';
 import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Fragment, useState, type FC } from 'react';
+import { Fragment, useEffect, useState, type FC } from 'react';
 import { menuMicrocopy } from './microcopy';
 
 export const Menu: FC = () => {
@@ -26,6 +27,9 @@ export const Menu: FC = () => {
     toggleSoundEffects,
     musicEnabled,
     soundEffectsEnabled,
+    playAudio,
+    pauseAudio,
+    resumeAudio,
   } = useGameStore();
   const { quitGame, restartGame, phase } = useGameLogic();
   const phaseKey = typeof phase === 'string' ? phase : String(phase);
@@ -35,11 +39,31 @@ export const Menu: FC = () => {
     phaseKey as (typeof NON_GAMEPLAY_PHASES)[number],
   );
 
+  // Pause/resume music when music toggle changes
+  useEffect(() => {
+    if (musicEnabled) {
+      resumeAudio('music');
+    } else {
+      pauseAudio('music');
+    }
+  }, [musicEnabled, pauseAudio, resumeAudio]);
+
+  // Pause/resume SFX when sound effects toggle changes
+  useEffect(() => {
+    if (!soundEffectsEnabled) {
+      pauseAudio('sfx');
+    }
+    // Note: We don't resume SFX because they're short-lived effects
+    // They'll play automatically when needed if soundEffectsEnabled is true
+  }, [soundEffectsEnabled, pauseAudio]);
+
   const handleQuickGuide = () => {
+    playAudio(TRACKS.WHOOSH);
     setShowGuide(true);
   };
 
   const handleRestart = () => {
+    playAudio(TRACKS.WHOOSH);
     setShowRestartConfirm(true);
   };
 
@@ -49,19 +73,28 @@ export const Menu: FC = () => {
   };
 
   const handleRestartCancel = () => {
+    playAudio(TRACKS.WHOOSH);
     setShowRestartConfirm(false);
   };
 
   const handleQuit = () => {
+    playAudio(TRACKS.WHOOSH);
     setShowQuitConfirm(true);
   };
 
   const handleQuitConfirm = () => {
+    playAudio(TRACKS.WHOOSH);
+    playAudio(TRACKS.TITLE_MUSIC, {
+      loop: true,
+      volume: 0.66,
+      fadeIn: 1000,
+    });
     setShowQuitConfirm(false);
     quitGame();
   };
 
   const handleQuitCancel = () => {
+    playAudio(TRACKS.WHOOSH);
     setShowQuitConfirm(false);
   };
 
@@ -109,11 +142,7 @@ export const Menu: FC = () => {
                 </Button>
               </header>
               {/* Title */}
-              <Text
-                variant="title-2"
-                align="center"
-                className="text-common-ash mb-8 mx-auto"
-              >
+              <Text variant="title-2" align="center" className="text-common-ash mb-8 mx-auto">
                 {menuMicrocopy.title}
               </Text>
 
@@ -200,7 +229,13 @@ export const Menu: FC = () => {
                             className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
                             onPress={() => setShowGuide(false)}
                           >
-                            <Icon name="close" width={8} height={8} label="close" className="w-2 h-2" />
+                            <Icon
+                              name="close"
+                              width={8}
+                              height={8}
+                              label="close"
+                              className="w-2 h-2"
+                            />
                           </Button>
                         </div>
                       </QuickStart>
