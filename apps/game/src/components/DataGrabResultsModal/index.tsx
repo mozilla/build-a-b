@@ -4,6 +4,7 @@
  */
 
 import { Frame, Text } from '@/components';
+import { TRACKS } from '@/config/audio-config';
 import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
 import { useEffect, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
@@ -15,6 +16,7 @@ import { CardCarousel } from '../CardCarousel';
 type ViewMode = 'player' | 'opponent';
 
 export const DataGrabResultsModal: FC = () => {
+  const { playAudio } = useGameStore();
   const actorRef = GameMachineContext.useActorRef();
   const showModal = useGameStore((state) => state.showDataGrabResults);
   const playerCards = useGameStore((state) => state.dataGrabCollectedByPlayer);
@@ -47,14 +49,16 @@ export const DataGrabResultsModal: FC = () => {
   // Reset to player view when modal opens
   useEffect(() => {
     if (showModal) {
+      playAudio(TRACKS.HAND_VIEWER);
       setViewMode('player');
       setDisplayMode('player');
       setIsTransitioning(false);
     }
-  }, [showModal]);
+  }, [showModal, playAudio]);
 
   const handleClose = () => {
     setShowDataGrabResults(false);
+    playAudio(TRACKS.BUTTON_PRESS);
   };
 
   const handleCardSelect = (card: Card) => {
@@ -71,15 +75,16 @@ export const DataGrabResultsModal: FC = () => {
 
   const handleViewModeChange = (newMode: ViewMode) => {
     if (newMode === viewMode || isTransitioning) return;
-    
+    playAudio(TRACKS.BUTTON_PRESS);
+
     setViewMode(newMode);
     setIsTransitioning(true);
-    
+
     // Fade out current content
     setTimeout(() => {
       // Switch content at the midpoint
       setDisplayMode(newMode);
-      
+
       // Allow React to render, then fade in
       setTimeout(() => {
         setIsTransitioning(false);

@@ -1,3 +1,5 @@
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { getPhysicalDeckOwner } from './utils';
 
@@ -102,13 +104,14 @@ export function useDeckMeasurements(
  * Custom hook to track card batches and landing state
  * Manages batch IDs, landed cards, and cleanup on round end
  */
-export function useBatchTracking(cards: Array<{ card: { id: string } }>) {
+export function useBatchTracking(cards: Array<{ card: { id: string; isFaceDown?: boolean } }>) {
   const prevCardCountRef = useRef(cards.length);
   const batchIdRef = useRef(0);
   const cardBatchMapRef = useRef<Record<string, number>>({});
   const elementRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const settledZRef = useRef<Record<string, number>>({});
   const [landedMap, setLandedMap] = useState<Record<string, boolean>>({});
+  const { playAudio } = useGameStore();
 
   useLayoutEffect(() => {
     // Detect any cards that don't yet have a batch assigned and assign them a new batch id
@@ -118,6 +121,13 @@ export function useBatchTracking(cards: Array<{ card: { id: string } }>) {
       const newBatchId = batchIdRef.current;
       for (const c of unassigned) {
         cardBatchMapRef.current[c.card.id] = newBatchId;
+      }
+
+      // Play 3-card war sound when face-down cards are added (data war animation)
+      // Check if this batch contains face-down cards (data war scenario)
+      const hasFaceDownCards = unassigned.some((c) => c.card.isFaceDown === true);
+      if (hasFaceDownCards && unassigned.length === 3) {
+        playAudio(TRACKS.WAR_THREE_CARD);
       }
     }
 
@@ -129,7 +139,7 @@ export function useBatchTracking(cards: Array<{ card: { id: string } }>) {
     }
 
     prevCardCountRef.current = cards.length;
-  }, [cards]);
+  }, [cards, playAudio]);
 
   return {
     batchIdRef,

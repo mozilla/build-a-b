@@ -10,6 +10,7 @@ import { PoweredByFirefox } from '@/components/PoweredByFirefox';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import { TRACKS } from '@/config/audio-config';
 import { BILLIONAIRES } from '@/config/billionaires';
 import { useShare } from '@/hooks/use-share';
 import { useCpuBillionaire, useGameStore } from '@/store';
@@ -30,7 +31,7 @@ export const GameOver: FC<BaseScreenProps> = ({
   isCrossFadeComplete,
   ...props
 }) => {
-  const { selectedBillionaire, winner } = useGameStore();
+  const { selectedBillionaire, winner, playAudio } = useGameStore();
   const cpuBillionaireId = useCpuBillionaire();
   const [linkCopied, setLinkCopied] = useState(false);
   const [isRocketRevealed, setIsRocketRevealed] = useState(false);
@@ -63,6 +64,11 @@ export const GameOver: FC<BaseScreenProps> = ({
       }
     };
   }, [isCrossFadeComplete]);
+
+  useEffect(() => {
+    if (!isRocketRevealed) return;
+    playAudio(TRACKS.ROCKET_FLYBY);
+  }, [isRocketRevealed, playAudio]);
 
   // Handle share functionality
   const handleShare = async () => {

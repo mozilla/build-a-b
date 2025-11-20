@@ -5,10 +5,13 @@ import type { SwiperOptions } from 'swiper/types';
 
 import 'swiper/css';
 
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import CardFeature from './CardFeature';
 import { cardFeatures } from './cardData';
 
 export const CardCarousel: FC = () => {
+  const { playAudio } = useGameStore();
   const swiperOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [A11y, Keyboard],
@@ -25,7 +28,11 @@ export const CardCarousel: FC = () => {
 
   return (
     <div className="w-full">
-      <Swiper {...swiperOptions} className="w-full h-auto">
+      <Swiper
+        {...swiperOptions}
+        className="w-full h-auto"
+        onSlideChange={() => playAudio(TRACKS.OPTION_FOCUS)}
+      >
         {cardFeatures.map((card) => (
           <SwiperSlide key={card.cardTitle}>
             <div className="flex items-center justify-center h-full px-4">

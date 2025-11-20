@@ -37,6 +37,9 @@ export { VideoPreloader } from './VideoPreloader';
 export { AssetPreloader } from './AssetPreloader';
 export type { AssetPreloaderProps } from './AssetPreloader';
 
+export { AudioPreloader } from './AudioPreloader';
+export type { AudioPreloaderProps } from './AudioPreloader';
+
 export { PreloadLinks } from './PreloadLinks';
 
 export { LoadingScreen } from './LoadingScreen';

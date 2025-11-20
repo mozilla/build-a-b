@@ -3,6 +3,7 @@
  */
 
 import { Frame, Text } from '@/components';
+import { TRACKS } from '@/config/audio-config';
 import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
 import { useEffect, useMemo, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
@@ -14,6 +15,7 @@ import type { EffectNotificationModalProps } from './types';
 export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
   ownerBadgeClicked,
 }) => {
+  const { playAudio } = useGameStore();
   const showModal = useGameStore((state) => state.showEffectNotificationModal);
   const closeEffectModal = useGameStore((state) => state.closeEffectModal);
   const playedCardsInHandPlayer = useGameStore((state) => state.player.playedCardsInHand);
@@ -39,15 +41,19 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
   }, [displayOwner, playedCardsInHandPlayer, playedCardsInHandCPU]);
 
   const handleClose = () => {
+    playAudio(TRACKS.BUTTON_PRESS);
+    playAudio(TRACKS.WHOOSH);
     closeEffectModal();
   };
 
   const handleCardSelect = (card: Card) => {
+    playAudio(TRACKS.OPTION_FOCUS);
     setSelectedCard(card);
   };
 
   const handleOwnerChange = (newOwner: PlayerType) => {
     if (newOwner === owner || isTransitioning) return;
+    playAudio(TRACKS.BUTTON_PRESS);
 
     setOwner(newOwner);
     setIsTransitioning(true);

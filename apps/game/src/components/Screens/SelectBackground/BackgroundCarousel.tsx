@@ -6,6 +6,7 @@ import type { SwiperOptions } from 'swiper/types';
 import { BackgroundCard } from './BackgroundCard';
 import { BACKGROUNDS } from './backgrounds';
 
+import { TRACKS } from '@/config/audio-config';
 import { QUERIES, useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/utils/cn';
 import 'swiper/css';
@@ -28,7 +29,7 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
   variant,
   className,
 }) => {
-  const { selectedBackground, selectBackground } = useGameStore();
+  const { selectedBackground, selectBackground, playAudio } = useGameStore();
   const isFramedX = useMediaQuery(QUERIES.framedX);
   const isFramedY = useMediaQuery(QUERIES.framedY);
 
@@ -51,7 +52,11 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
 
   const handleBackgroundSelect = (backgroundId: string) => {
     selectBackground(backgroundId);
-    onSelect?.(backgroundId);
+    if (onSelect) {
+      onSelect?.(backgroundId);
+    } else {
+      playAudio(TRACKS.OPTION_FOCUS);
+    }
   };
 
   // Get initial slide index based on selectedBackground
