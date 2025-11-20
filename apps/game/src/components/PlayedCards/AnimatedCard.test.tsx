@@ -195,7 +195,11 @@ describe('AnimatedCard Component', () => {
   });
 
   it('should show card as initial state when collecting', () => {
-    render(<AnimatedCard {...defaultProps} shouldCollect={true} />);
+    // Set collectingState to enable collection (required for cardShouldCollect)
+    useGameStore.setState({
+      collecting: { primaryWinner: 'player', distributions: [] },
+    });
+    render(<AnimatedCard {...defaultProps} shouldCollect={true} winner="player" />);
 
     const card = screen.getByTestId('card');
     expect(card.getAttribute('data-state')).toBe('initial');

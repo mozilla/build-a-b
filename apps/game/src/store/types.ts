@@ -54,6 +54,7 @@ export type GameStore = {
   shouldTransitionToWin: boolean; // Flag to trigger automatic win transition after animations
   showingWinEffect: PlayerType | null; // Player currently showing win celebration (before collection)
   collecting: CollectingState | null; // Enhanced collection system with per-card destinations
+  deckClickBlocked: boolean; // Blocks deck clicks during collection animation + brief delay after
 
   // Launch Stack Collections - Cards removed from playable decks when collected
   // These count towards player's total cards but cannot be played
@@ -126,6 +127,13 @@ export type GameStore = {
   temperTantrumMaxSelections: number; // Always 2 (or less if fewer cards available)
   temperTantrumWinner: 'player' | 'cpu' | null; // Who won the turn (to return remaining cards)
   temperTantrumLoserCards: Card[]; // Loser's cards (stored to preserve for distribution)
+  temperTantrumFaceDownCardIds: Set<string>; // IDs of cards that are face-down on board
+
+  // Sequential Effect Processing State
+  effectsQueue: SpecialEffect[]; // Queue of effects to process one at a time
+  effectsWinner: PlayerType | 'tie' | null; // Winner for current effect processing
+  launchStacksForWinnerCount: number; // Count of launch stacks going to winner (for rocket timing)
+  needsDataWarAfterEffects: boolean; // True when effects completed with a tie
 
   // Effect Notification System
   seenEffectTypes: string[]; // Effect types user has seen (e.g., 'tracker', 'blocker', 'hostile_takeover') - stored as array, used as Set
@@ -203,6 +211,7 @@ export type GameStore = {
     primaryWinner?: PlayerType,
     visualOnly?: boolean,
     launchStackCount?: number,
+    skipBoardClear?: boolean,
   ) => void; // New enhanced collection
   addLaunchStack: (playerId: PlayerType, launchStackCard: Card) => void;
   swapDecks: () => void;
@@ -223,6 +232,7 @@ export type GameStore = {
   addPendingEffect: (effect: SpecialEffect) => void;
   clearPendingEffects: () => void;
   processPendingEffects: (winner: PlayerType | 'tie') => boolean; // Returns true if post-resolution animations queued
+  processNextEffect: () => void; // Process the next effect in the sequential queue
   addPreRevealEffect: (effect: PreRevealEffect) => void;
   clearPreRevealEffects: () => void;
   hasPreRevealEffects: () => boolean;

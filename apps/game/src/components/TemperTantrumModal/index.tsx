@@ -15,6 +15,7 @@ export const TemperTantrumModal: FC = () => {
   const availableCards = useGameStore((state) => state.temperTantrumAvailableCards);
   const selectedCards = useGameStore((state) => state.temperTantrumSelectedCards);
   const maxSelections = useGameStore((state) => state.temperTantrumMaxSelections);
+  const faceDownCardIds = useGameStore((state) => state.temperTantrumFaceDownCardIds);
   const selectCard = useGameStore((state) => state.selectTemperTantrumCard);
   const confirmSelection = useGameStore((state) => state.confirmTemperTantrumSelection);
 
@@ -86,7 +87,7 @@ export const TemperTantrumModal: FC = () => {
               onCardSelect={handleCardSlideChange} // Called on scroll - just highlights
               onCardClick={selectCard} // Called on click - toggles selection
               selectedCard={highlightedCard}
-              faceDownCardIds={new Set()} // All cards are face-up
+              faceDownCardIds={faceDownCardIds} // Show cards with their board face state
               glowCardIds={new Set(selectedCards.map((c) => c.id))} // Track selected cards
               scaleSelectedCards={true} // Scale selected cards instead of glowing
             />

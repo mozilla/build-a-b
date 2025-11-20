@@ -27,27 +27,35 @@ const SPECIAL_TYPE_TO_ICON: Record<string, IconName> = {
 
 interface EffectNotificationBadgeProps {
   accumulatedEffects: EffectNotification[]; // Array of accumulated effects
-  showProgressBar?: boolean; // For future implementation
   progressPercentage?: number; // For future implementation (0-100)
 }
 
 export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   accumulatedEffects,
-  showProgressBar = false,
-  progressPercentage = 0,
 }) => {
+  // Separate regular effects from launch stacks
+  const regularEffects = accumulatedEffects.filter(
+    (effect) => effect.specialType !== 'launch_stack',
+  );
+  const launchStackEffects = accumulatedEffects.filter(
+    (effect) => effect.specialType === 'launch_stack',
+  );
+
+  const regularCount = regularEffects.length;
+  const launchStackCount = launchStackEffects.length;
+
   const effectCount = accumulatedEffects.length;
   const { playAudio } = useGameStore();
 
   return (
     <div
       onMouseEnter={() => playAudio(TRACKS.WHOOSH)}
-      className="max-w-[5.875rem] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
+      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
     >
       {/* Stacked icons - similar to TurnValue with ~50% overlap */}
       <div
         className={`relative h-[1.875rem] flex items-center justify-center ${
-          accumulatedEffects.length > 1 ? 'pl-4' : 0
+          effectCount > 1 ? 'pl-4' : ''
         }`}
       >
         {accumulatedEffects.map((effect, index) => {
@@ -59,7 +67,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
               key={`${effect.card.id}-${index}`}
               style={{
                 zIndex: effectCount + index,
-                transform: index > 0 ? `translateX(-${index * 0.625}rem)` : undefined, // Overlap by 0.625rem per icon
+                transform: index > 0 ? `translateX(-${index * 0.625}rem)` : undefined,
               }}
             >
               <Icon
@@ -73,24 +81,28 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
         })}
       </div>
 
-      {/* Effect count */}
-      <Text
-        variant="badge-xs"
-        className="whitespace-nowrap p-2 bg-charcoal rounded-md"
-        color="text-common-ash"
-        weight="extrabold"
-      >
-        {effectCount} {effectCount === 1 ? 'Effect' : 'Effects'}
-      </Text>
+      {/* Regular effects count pill */}
+      {regularCount > 0 && (
+        <Text
+          variant="badge-xs"
+          className="whitespace-nowrap p-2 bg-charcoal rounded-md w-full text-center"
+          color="text-common-ash"
+          weight="extrabold"
+        >
+          {regularCount} {regularCount === 1 ? 'Effect' : 'Effects'}
+        </Text>
+      )}
 
-      {/* Future: Progress bar space (hidden for now) */}
-      {showProgressBar && (
-        <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-accent transition-all duration-100"
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
+      {/* Launch stack count pill */}
+      {launchStackCount > 0 && (
+        <Text
+          variant="badge-xs"
+          className="whitespace-nowrap p-2 bg-charcoal rounded-md w-full text-center"
+          color="text-common-ash"
+          weight="extrabold"
+        >
+          {launchStackCount} {launchStackCount === 1 ? 'Launch Stack' : 'Launch Stacks'}
+        </Text>
       )}
     </div>
   );
