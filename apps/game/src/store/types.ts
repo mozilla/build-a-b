@@ -127,6 +127,7 @@ export type GameStore = {
   temperTantrumMaxSelections: number; // Always 2 (or less if fewer cards available)
   temperTantrumWinner: 'player' | 'cpu' | null; // Who won the turn (to return remaining cards)
   temperTantrumLoserCards: Card[]; // Loser's cards (stored to preserve for distribution)
+  temperTantrumFaceDownCardIds: Set<string>; // IDs of cards that are face-down on board
 
   // Sequential Effect Processing State
   effectsQueue: SpecialEffect[]; // Queue of effects to process one at a time

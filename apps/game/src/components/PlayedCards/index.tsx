@@ -177,7 +177,7 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
             }}
           >
             <div className="cursor-pointer" onClick={handleBadgeClick}>
-              <EffectNotificationBadge accumulatedEffects={ownerEffects} showProgressBar={false} />
+              <EffectNotificationBadge accumulatedEffects={ownerEffects} />
             </div>
           </Tooltip>
         </motion.div>

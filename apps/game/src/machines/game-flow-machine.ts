@@ -280,10 +280,16 @@ export const gameFlowMachine = createMachine(
           const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
           const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-          // Only apply hostile takeover logic if this is the FIRST data war
-          // (both players have exactly 1 card = original plays only)
+          // Check if HT effect applies (preserves HT owner's value)
+          // First data war: both have exactly 1 card
+          // HT as face-up: both have equal cards > 1
           const isFirstDataWar =
             player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
+          const htAsFaceUp =
+            (playerHasHostileTakeover || cpuHasHostileTakeover) &&
+            player.playedCardsInHand.length === cpu.playedCardsInHand.length &&
+            player.playedCardsInHand.length > 1;
+          const htEffectApplies = isFirstDataWar || htAsFaceUp;
 
           useGameStore.setState({
             player: {
@@ -291,14 +297,14 @@ export const gameFlowMachine = createMachine(
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
               currentTurnValue:
-                playerHasHostileTakeover && isFirstDataWar ? player.playedCard?.value ?? 6 : 0,
+                playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
             },
             cpu: {
               ...cpu,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
               currentTurnValue:
-                cpuHasHostileTakeover && isFirstDataWar ? cpu.playedCard?.value ?? 6 : 0,
+                cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
             anotherPlayMode: false, // Clear another play mode (Data War is fresh start)

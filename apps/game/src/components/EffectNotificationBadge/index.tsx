@@ -27,21 +27,18 @@ const SPECIAL_TYPE_TO_ICON: Record<string, IconName> = {
 
 interface EffectNotificationBadgeProps {
   accumulatedEffects: EffectNotification[]; // Array of accumulated effects
-  showProgressBar?: boolean; // For future implementation
   progressPercentage?: number; // For future implementation (0-100)
 }
 
 export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   accumulatedEffects,
-  showProgressBar = false,
-  progressPercentage = 0,
 }) => {
   // Separate regular effects from launch stacks
   const regularEffects = accumulatedEffects.filter(
-    (effect) => effect.specialType !== 'launch_stack'
+    (effect) => effect.specialType !== 'launch_stack',
   );
   const launchStackEffects = accumulatedEffects.filter(
-    (effect) => effect.specialType === 'launch_stack'
+    (effect) => effect.specialType === 'launch_stack',
   );
 
   const regularCount = regularEffects.length;
@@ -53,7 +50,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   return (
     <div
       onMouseEnter={() => playAudio(TRACKS.WHOOSH)}
-      className="flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
+      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
     >
       {/* Stacked icons - similar to TurnValue with ~50% overlap */}
       <div
@@ -106,16 +103,6 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
         >
           {launchStackCount} {launchStackCount === 1 ? 'Launch Stack' : 'Launch Stacks'}
         </Text>
-      )}
-
-      {/* Future: Progress bar space (hidden for now) */}
-      {showProgressBar && (
-        <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-accent transition-all duration-100"
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
       )}
     </div>
   );
