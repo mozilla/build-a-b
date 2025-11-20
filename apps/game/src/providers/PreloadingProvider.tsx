@@ -26,8 +26,6 @@ import poindexterBg from '@/assets/backgrounds/color_poindexter.webp';
 import prudenceBg from '@/assets/backgrounds/color_prudence.webp';
 import savannahBg from '@/assets/backgrounds/color_savannah.webp';
 import walterBg from '@/assets/backgrounds/color_walter.webp';
-import { getAllAnimationVideoSrc } from '@/config/special-effect-animations';
-import { isSafari } from '@/utils/browser-detect';
 
 export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
   const { selectedBillionaire, updatePreloadingProgress } = useGameStore();
