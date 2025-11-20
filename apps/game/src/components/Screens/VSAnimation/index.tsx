@@ -66,9 +66,6 @@ export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) 
       `${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`,
     );
 
-    // Call load() to ensure Safari re-processes the video
-    preloadedVideo.load();
-
     // Listen for video end event to trigger state machine transition
     const handleVideoEnd = () => {
       send?.({ type: 'VS_ANIMATION_COMPLETE' });
