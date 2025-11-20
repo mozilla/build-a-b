@@ -94,6 +94,10 @@ export function useVideoPreloader(
       video.muted = true; // Required for autoplay policies
       video.playsInline = true;
 
+      // Jesse - 11/19/2025
+      // On Safari preloading was failing and not calling the loadeddata and canplaythrough callbacks
+      // without setting autoplay and calling play directly.
+      // I still do not think safari is fully preoloading the video but this allows it to move past
       if (isSafari()) {
         video.autoplay = true;
         video.play();
