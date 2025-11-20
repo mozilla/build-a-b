@@ -22,9 +22,11 @@ export const DataGrabResultsModal: FC = () => {
   const setShowDataGrabResults = useGameStore((state) => state.setShowDataGrabResults);
 
   const [viewMode, setViewMode] = useState<ViewMode>('player');
+  const [displayMode, setDisplayMode] = useState<ViewMode>('player');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const currentCards = viewMode === 'player' ? playerCards : cpuCards;
+  const currentCards = displayMode === 'player' ? playerCards : cpuCards;
 
   // Create a Set of face-down card IDs from current cards
   const faceDownCardIds = new Set(
@@ -40,12 +42,14 @@ export const DataGrabResultsModal: FC = () => {
       setSelectedCard(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, currentCards.length]);
+  }, [displayMode, currentCards.length]);
 
   // Reset to player view when modal opens
   useEffect(() => {
     if (showModal) {
       setViewMode('player');
+      setDisplayMode('player');
+      setIsTransitioning(false);
     }
   }, [showModal]);
 
@@ -63,6 +67,24 @@ export const DataGrabResultsModal: FC = () => {
     // Send CHECK_WIN_CONDITION to continue game flow
     // The state machine will either go to game_over or start a new turn
     actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+  };
+
+  const handleViewModeChange = (newMode: ViewMode) => {
+    if (newMode === viewMode || isTransitioning) return;
+    
+    setViewMode(newMode);
+    setIsTransitioning(true);
+    
+    // Fade out current content
+    setTimeout(() => {
+      // Switch content at the midpoint
+      setDisplayMode(newMode);
+      
+      // Allow React to render, then fade in
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 100);
   };
 
   if (playerCards.length === 0 && cpuCards.length === 0) {
@@ -85,7 +107,7 @@ export const DataGrabResultsModal: FC = () => {
       }}
     >
       <ModalContent className="relative h-dvh w-screen flex items-center justify-center">
-        <Frame className="overflow-y-auto">
+        <Frame className="overflow-y-auto overflow-x-hidden">
           {/* Custom Close Button */}
           <Button
             isIconOnly
@@ -96,7 +118,7 @@ export const DataGrabResultsModal: FC = () => {
             <img src={CloseIcon} alt="Close" className="w-10 h-10" />
           </Button>
 
-          <ModalBody className="flex flex-col items-center justify-center gap-6">
+          <ModalBody className="flex flex-col items-center justify-center gap-6 mt-8">
             {/* Title */}
             <Text variant="title-2" className="text-white">
               Data Grabbed!
@@ -108,20 +130,20 @@ export const DataGrabResultsModal: FC = () => {
             {/* Player/Opponent Tabs */}
             <div className="flex gap-3 px-6">
               <button
-                onClick={() => setViewMode('player')}
+                onClick={() => handleViewModeChange('player')}
                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
                   viewMode === 'player'
-                    ? 'bg-accent text-black'
+                    ? 'bg-accent border-2 border-accent text-black'
                     : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
                 }`}
               >
                 Your Cards
               </button>
               <button
-                onClick={() => setViewMode('opponent')}
+                onClick={() => handleViewModeChange('opponent')}
                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all cursor-pointer ${
                   viewMode === 'opponent'
-                    ? 'bg-accent text-black'
+                    ? 'bg-accent border-2 border-accent text-black'
                     : 'bg-transparent border-2 border-white text-white hover:bg-white/10'
                 }`}
               >
@@ -130,25 +152,33 @@ export const DataGrabResultsModal: FC = () => {
             </div>
 
             {/* Card Carousel */}
-            {currentCards.length > 0 ? (
-              <CardCarousel
-                cards={currentCards.map((pcs) => pcs.card)}
-                selectedCard={selectedCard}
-                onCardSelect={handleCardSelect}
-                faceDownCardIds={faceDownCardIds}
-              />
-            ) : (
-              <div className="h-[25rem] flex flex-col items-center justify-center px-6">
-                <Text variant="title-2" className="text-common-ash">
-                  Nada.Zip.Zilch
-                </Text>
-                <Text variant="body-large" className="text-common-ash">
-                  {viewMode === 'player'
-                    ? "You didn't collect any data."
-                    : 'No data left for them.'}
-                </Text>
-              </div>
-            )}
+            <div
+              className="transition-opacity duration-100 ease-in-out w-full"
+              style={{ opacity: isTransitioning ? 0 : 1 }}
+            >
+              {currentCards.length > 0 ? (
+                <div className="relative w-full">
+                  <CardCarousel
+                    key={displayMode}
+                    cards={currentCards.map((pcs) => pcs.card)}
+                    selectedCard={selectedCard}
+                    onCardSelect={handleCardSelect}
+                    faceDownCardIds={faceDownCardIds}
+                  />
+                </div>
+              ) : (
+                <div className="h-[25rem] flex flex-col items-center justify-center">
+                  <Text variant="title-2" className="text-common-ash">
+                    Nada.Zip.Zilch
+                  </Text>
+                  <Text variant="body-large" className="text-common-ash">
+                    {displayMode === 'player'
+                      ? "You didn't collect any data."
+                      : 'No data left for them.'}
+                  </Text>
+                </div>
+              )}
+            </div>
 
             {/* Collect Cards Button */}
             <Button

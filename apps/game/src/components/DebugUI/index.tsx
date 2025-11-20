@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import Text from '@/components/Text';
 import { BILLIONAIRES, type BillionaireId } from '@/config/billionaires';
 import { DEFAULT_GAME_CONFIG, type CardTypeId } from '@/config/game-config';
+import { DATA_GRAB_CONFIG } from '@/config/data-grab-config';
 import { GameMachineContext } from '@/providers/GameProvider';
 import { useGameStore } from '@/store/game-store';
 import { Autocomplete, AutocompleteItem } from '@heroui/react';
@@ -44,6 +45,14 @@ export function DebugUI() {
   const [cpuCards, setCpuCards] = useState<CardTypeId[]>([]);
   const [winnerSelection, setWinnerSelection] = useState<'player' | 'cpu'>('player');
   const [winnerBillionaire, setWinnerBillionaire] = useState<BillionaireId>('chaz');
+  
+  // Data Grab animation config state
+  const [fallDuration, setFallDuration] = useState<number>(DATA_GRAB_CONFIG.CARD_FALL_DURATION_MS);
+  const [speedVariation, setSpeedVariation] = useState<number>(DATA_GRAB_CONFIG.CARD_SPEED_VARIATION_PERCENT);
+  const [initialDelay, setInitialDelay] = useState<number>(DATA_GRAB_CONFIG.INITIAL_CARD_DELAY_MS);
+  const [delayMin, setDelayMin] = useState<number>(DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MIN_MS);
+  const [delayMax, setDelayMax] = useState<number>(DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MAX_MS);
+  
   const keySequenceRef = useRef('');
   const actorRef = GameMachineContext.useActorRef();
   const initializeGame = useGameStore((state) => state.initializeGame);
@@ -157,6 +166,97 @@ export function DebugUI() {
     actorRef.send({ type: 'WIN' });
   };
 
+  const handleApplyDataGrabConfig = () => {
+    // Apply the config changes by directly mutating the config object
+    // @ts-expect-error - Mutating const config for debug purposes
+    DATA_GRAB_CONFIG.CARD_FALL_DURATION_MS = fallDuration;
+    // @ts-expect-error - Mutating const config for debug purposes
+    DATA_GRAB_CONFIG.CARD_SPEED_VARIATION_PERCENT = speedVariation;
+    // @ts-expect-error - Mutating const config for debug purposes
+    DATA_GRAB_CONFIG.INITIAL_CARD_DELAY_MS = initialDelay;
+    // @ts-expect-error - Mutating const config for debug purposes
+    DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MIN_MS = delayMin;
+    // @ts-expect-error - Mutating const config for debug purposes
+    DATA_GRAB_CONFIG.CARD_DELAY_INCREMENT_MAX_MS = delayMax;
+  };
+
+  const handleResetDataGrabConfig = () => {
+    setFallDuration(3000);
+    setSpeedVariation(20);
+    setInitialDelay(500);
+    setDelayMin(250);
+    setDelayMax(750);
+  };
+
+  const handleTriggerDataGrab = () => {
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
+
+    // Find all data grab cards in both decks
+    const playerDataGrabIndices: number[] = [];
+    const cpuDataGrabIndices: number[] = [];
+
+    player.deck.forEach((card, index) => {
+      if (card.specialType === 'data_grab') {
+        playerDataGrabIndices.push(index);
+      }
+    });
+
+    cpu.deck.forEach((card, index) => {
+      if (card.specialType === 'data_grab') {
+        cpuDataGrabIndices.push(index);
+      }
+    });
+
+    // Determine which deck has more data grab cards
+    let targetDeck: 'player' | 'cpu';
+    let targetIndices: number[];
+
+    if (playerDataGrabIndices.length > cpuDataGrabIndices.length) {
+      targetDeck = 'player';
+      targetIndices = playerDataGrabIndices;
+    } else if (cpuDataGrabIndices.length > playerDataGrabIndices.length) {
+      targetDeck = 'cpu';
+      targetIndices = cpuDataGrabIndices;
+    } else {
+      // Tie - use player deck
+      targetDeck = 'player';
+      targetIndices = playerDataGrabIndices;
+    }
+
+    if (targetIndices.length === 0) {
+      alert('No Data Grab cards found in decks!');
+      return;
+    }
+
+    // Find the data grab card closest to the top (smallest index)
+    const closestIndex = Math.min(...targetIndices);
+
+    // Move that card to the top of the deck
+    const deck = targetDeck === 'player' ? [...player.deck] : [...cpu.deck];
+    const [dataGrabCard] = deck.splice(closestIndex, 1);
+    deck.unshift(dataGrabCard); // Add to beginning
+
+    // Update the store
+    if (targetDeck === 'player') {
+      useGameStore.setState({
+        player: {
+          ...player,
+          deck,
+        },
+      });
+    } else {
+      useGameStore.setState({
+        cpu: {
+          ...cpu,
+          deck,
+        },
+      });
+    }
+
+    alert(`Moved Data Grab card from position ${closestIndex + 1} to top of ${targetDeck} deck!`);
+  };
+
   const debugUI = (
     <AnimatePresence>
       {isOpen && (
@@ -257,6 +357,122 @@ export function DebugUI() {
                       />
                       <span className="text-sm">Show floating cookies during Data Grab</span>
                     </label>
+                  </div>
+                </div>
+
+                {/* Data Grab Configuration */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
+                  <p className="font-semibold text-green-300">🎯 Data Grab Config:</p>
+                  
+                  {/* Fall Duration */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-300">
+                      Card Fall Duration: {fallDuration}ms
+                    </label>
+                    <input
+                      type="number"
+                      min="500"
+                      max="10000"
+                      step="100"
+                      value={fallDuration}
+                      onChange={(e) => setFallDuration(parseInt(e.target.value))}
+                      className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  {/* Speed Variation */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-300">
+                      Speed Variation: ±{speedVariation}%
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="50"
+                      step="5"
+                      value={speedVariation}
+                      onChange={(e) => setSpeedVariation(parseInt(e.target.value))}
+                      className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  {/* Initial Delay */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-300">
+                      Initial Delay: {initialDelay}ms
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="5000"
+                      step="50"
+                      value={initialDelay}
+                      onChange={(e) => setInitialDelay(parseInt(e.target.value))}
+                      className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  {/* Delay Increment Range */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-300">
+                      Delay Increment Min: {delayMin}ms
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="2000"
+                      step="50"
+                      value={delayMin}
+                      onChange={(e) => setDelayMin(parseInt(e.target.value))}
+                      className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-300">
+                      Delay Increment Max: {delayMax}ms
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="2000"
+                      step="50"
+                      value={delayMax}
+                      onChange={(e) => setDelayMax(parseInt(e.target.value))}
+                      className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={handleApplyDataGrabConfig}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                      title="Apply these values to Data Grab config"
+                    >
+                      Apply Config
+                    </button>
+                    <button
+                      onClick={handleResetDataGrabConfig}
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-3 rounded transition-colors text-sm"
+                      title="Reset to default values"
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  {/* Trigger Data Grab Button */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <button
+                      onClick={handleTriggerDataGrab}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                      title="Move a Data Grab card to the top of the deck"
+                    >
+                      🃏 Trigger Data Grab on Next Play
+                    </button>
+                    <p className="text-xs text-gray-400 mt-1 italic">
+                      Moves a Data Grab card to the top of the deck with most Data Grab cards (or player deck if tied)
+                    </p>
                   </div>
                 </div>
 
