@@ -122,7 +122,7 @@ export default async function Page() {
       className={`mb-4 landscape:mb-8 flex flex-col gap-4 landscape:flex-row landscape:gap-8`}
     >
       <Bento
-        image={isPhase4 ? '/assets/images/holoboxSection2.webp' : '/assets/images/doll.webp'}
+        image={isPhase4 ? '/assets/images/holoboxSection3.webp' : '/assets/images/doll.webp'}
         imageAlt="Billionaire in a box"
         className={`landscape:w-[30%] aspect-[377/275] border-none order-2`}
       />
