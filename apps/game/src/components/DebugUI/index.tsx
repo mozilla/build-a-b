@@ -1,7 +1,7 @@
 /**
  * Debug UI Component - For testing card scenarios
  * Allows manual card selection for player and CPU decks
- * Toggle by typing "debug" (works regardless of focus)
+ * Toggle with arrow keys: ↑ ↑ ↓ ↓ (keyboard) or swipe: ↑ ↑ ↓ ↓ (mobile)
  */
 
 import { Button } from '@/components/Button';
@@ -105,6 +105,62 @@ export function DebugUI() {
       clearTimeout(resetTimer);
     };
   }, []); // Empty dependency array - only set up once
+
+  // Toggle debug UI with touch swipe sequence (up, up, down, down) for mobile
+  useEffect(() => {
+    let resetTimer: ReturnType<typeof setTimeout>;
+    const targetSwipeSequence = ['SwipeUp', 'SwipeUp', 'SwipeDown', 'SwipeDown'];
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    const swipeThreshold = 50; // Minimum distance in pixels to register as swipe
+    const swipeTimeThreshold = 300; // Maximum time in ms for a swipe gesture
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndTime = Date.now();
+      const deltaY = touchStartY - touchEndY;
+      const deltaTime = touchEndTime - touchStartTime;
+
+      // Only register quick, definitive swipes
+      if (Math.abs(deltaY) > swipeThreshold && deltaTime < swipeTimeThreshold) {
+        const swipeDirection = deltaY > 0 ? 'SwipeUp' : 'SwipeDown';
+        const prev = keySequenceRef.current;
+        const newSequence = prev + swipeDirection + ',';
+
+        // Check if sequence matches the target
+        const currentSwipes = newSequence.split(',').filter((k) => k);
+        const isMatch = targetSwipeSequence.every(
+          (swipe, index) => currentSwipes[index] === swipe
+        );
+
+        if (isMatch && currentSwipes.length === targetSwipeSequence.length) {
+          setIsOpen((prev) => !prev);
+          keySequenceRef.current = ''; // Reset after trigger
+        } else {
+          keySequenceRef.current = newSequence;
+        }
+
+        // Reset sequence after 3 seconds of inactivity
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          keySequenceRef.current = '';
+        }, 3000);
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+      clearTimeout(resetTimer);
+    };
+  }, []);
 
   const handleAddPlayerCard = (typeId: CardTypeId) => {
     setPlayerCards((prev) => [...prev, typeId]);
@@ -305,7 +361,7 @@ export function DebugUI() {
                     <li>Selected cards will be at the top of the deck</li>
                     <li>Remaining deck slots will be filled randomly</li>
                     <li>Leave empty for fully random decks</li>
-                    <li>Press ↑ ↑ ↓ ↓ to toggle this panel</li>
+                    <li>Press ↑ ↑ ↓ ↓ (keyboard) or swipe ↑ ↑ ↓ ↓ (mobile) to toggle this panel</li>
                   </ul>
                 </div>
 
