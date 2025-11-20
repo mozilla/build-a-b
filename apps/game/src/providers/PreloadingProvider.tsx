@@ -69,6 +69,8 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
   const videoUrls = useMemo(() => {
     const urls: string[] = [];
 
+    // TODO: Jesse - Revisit caching of special animations for other platforms
+    // as the webm files are large. On Safari the mov files are much smaller
     if (isSafari()) {
       urls.push(...getAllAnimationVideoSrc());
     }
