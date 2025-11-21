@@ -134,6 +134,7 @@ export const useGameStore = create<GameStore>()(
       selectedBackground: '',
       isPaused: false,
       showMenu: false,
+      showGameOverScreen: false,
       audioEnabled: true,
       showHandViewer: false,
       handViewerPlayer: 'player',
@@ -2297,7 +2298,6 @@ export const useGameStore = create<GameStore>()(
       // ===== Audio Manager Actions =====
 
       playAudio: async (trackId: AudioTrackId, options: PlayOptions = {}): Promise<boolean> => {
-        console.log({ trackId, options });
         const track = AUDIO_TRACKS[trackId];
         if (!track) {
           console.error(`Unknown audio track: ${trackId}`);
@@ -2308,7 +2308,7 @@ export const useGameStore = create<GameStore>()(
         const enabled = track.category === 'music' ? state.musicEnabled : state.soundEffectsEnabled;
         if (!enabled) return false;
 
-        const audio = getPreloadedAudio(trackId);
+        const audio = getPreloadedAudio(trackId, track.category === 'music');
         if (!audio) {
           console.warn(`Audio not preloaded: ${trackId}`);
           return false;
@@ -2389,13 +2389,16 @@ export const useGameStore = create<GameStore>()(
         };
 
         // Handle fade out of current track
-        if (currentAudio && options.fadeOut && options.fadeOut > 0) {
-          await fadeVolume(currentAudio, 0, options.fadeOut);
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-        } else if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
+        if (currentAudio && currentAudio !== audio) {
+          // Only fade/stop if it's a different track
+          if (options.fadeOut && options.fadeOut > 0) {
+            await fadeVolume(currentAudio, 0, options.fadeOut);
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+          } else {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+          }
         }
 
         // Setup new audio (music only - SFX handled above)
@@ -3017,6 +3020,7 @@ export const useGameStore = create<GameStore>()(
           cpuLaunchStacks: [],
           isPaused: false,
           showMenu: false,
+          showGameOverScreen: false,
           audioEnabled: true,
           showHandViewer: false,
           showTooltip: false,
