@@ -12,6 +12,7 @@ export const EventLogPanel: FC = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [copySuccess, setCopySuccess] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Subscribe to events from the store
@@ -35,6 +36,39 @@ export const EventLogPanel: FC = () => {
   const handleClearLog = () => {
     useGameStore.setState({ eventLog: [] });
     setEvents([]);
+  };
+
+  const handleCopyLog = async () => {
+    if (events.length === 0) {
+      return;
+    }
+
+    // Format events as readable text
+    const logText = events
+      .map((event) => {
+        const time = new Date(event.timestamp).toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          fractionalSecondDigits: 3,
+        });
+        const level = event.level.toUpperCase().padEnd(7);
+        let line = `[${time}] ${level} [${event.type}] ${event.message}`;
+        if (event.details) {
+          line += `\n    ${event.details}`;
+        }
+        return line;
+      })
+      .join('\n');
+
+    try {
+      await navigator.clipboard.writeText(logText);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy log:', err);
+    }
   };
 
   const getLevelColor = (level: GameEvent['level']) => {
@@ -90,6 +124,14 @@ export const EventLogPanel: FC = () => {
         <div className="flex items-center gap-2">
           {!isMinimized && (
             <>
+              <button
+                onClick={handleCopyLog}
+                disabled={events.length === 0}
+                className="text-cyan-400 hover:text-cyan-300 px-2 py-1 text-xs font-mono bg-cyan-900/30 hover:bg-cyan-900/50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Copy log to clipboard"
+              >
+                {copySuccess ? '✓ Copied' : 'Copy'}
+              </button>
               <button
                 onClick={handleClearLog}
                 className="text-cyan-400 hover:text-cyan-300 px-2 py-1 text-xs font-mono bg-cyan-900/30 hover:bg-cyan-900/50 rounded transition-colors"
