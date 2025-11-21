@@ -25,20 +25,25 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
   const [owner, setOwner] = useState<PlayerType>();
   const [displayOwner, setDisplayOwner] = useState<PlayerType>();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Snapshot cards when modal opens to prevent premature unmounting
+  const [snapshotPlayerCards, setSnapshotPlayerCards] = useState<typeof playedCardsInHandPlayer>([]);
+  const [snapshotCPUCards, setSnapshotCPUCards] = useState<typeof playedCardsInHandCPU>([]);
 
-  const thereIsCardsInPlayerHand = playedCardsInHandPlayer.length > 0;
-  const thereIsCardsInCPUHand = playedCardsInHandCPU.length > 0;
+  // Use snapshot cards to prevent modal from closing when playedCardsInHand is cleared during collection
+  const thereIsCardsInPlayerHand = snapshotPlayerCards.length > 0;
+  const thereIsCardsInCPUHand = snapshotCPUCards.length > 0;
   const indexLastCardInPlayerHand =
-    playedCardsInHandPlayer.length > 0 ? playedCardsInHandPlayer.length - 1 : 0;
+    snapshotPlayerCards.length > 0 ? snapshotPlayerCards.length - 1 : 0;
   const indexLastCardInCPUHand =
-    playedCardsInHandCPU.length > 0 ? playedCardsInHandCPU.length - 1 : 0;
+    snapshotCPUCards.length > 0 ? snapshotCPUCards.length - 1 : 0;
 
   const playedCards = useMemo(() => {
     if (displayOwner === 'player') {
-      return playedCardsInHandPlayer.map((card) => card.card);
+      return snapshotPlayerCards.map((card) => card.card);
     }
-    return playedCardsInHandCPU.map((card) => card.card);
-  }, [displayOwner, playedCardsInHandPlayer, playedCardsInHandCPU]);
+    return snapshotCPUCards.map((card) => card.card);
+  }, [displayOwner, snapshotPlayerCards, snapshotCPUCards]);
 
   const handleClose = () => {
     playAudio(TRACKS.BUTTON_PRESS);
@@ -63,11 +68,11 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
       // Switch content at the midpoint
       setDisplayOwner(newOwner);
 
-      // Select appropriate card for new owner
+      // Select appropriate card for new owner (use snapshot)
       if (newOwner === 'player' && thereIsCardsInPlayerHand) {
-        setSelectedCard(playedCardsInHandPlayer[indexLastCardInPlayerHand].card);
+        setSelectedCard(snapshotPlayerCards[indexLastCardInPlayerHand].card);
       } else if (newOwner === 'cpu' && thereIsCardsInCPUHand) {
-        setSelectedCard(playedCardsInHandCPU[indexLastCardInCPUHand].card);
+        setSelectedCard(snapshotCPUCards[indexLastCardInCPUHand].card);
       }
 
       // Allow React to render, then fade in
@@ -85,6 +90,19 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
     handleOwnerChange('cpu');
   };
 
+  // Take snapshot of cards when modal opens (prevents premature unmounting during collection)
+  useEffect(() => {
+    if (showModal) {
+      // Only take snapshot if we don't have one yet (modal just opened)
+      if (snapshotPlayerCards.length === 0 && playedCardsInHandPlayer.length > 0) {
+        setSnapshotPlayerCards(playedCardsInHandPlayer);
+      }
+      if (snapshotCPUCards.length === 0 && playedCardsInHandCPU.length > 0) {
+        setSnapshotCPUCards(playedCardsInHandCPU);
+      }
+    }
+  }, [showModal, playedCardsInHandPlayer, playedCardsInHandCPU, snapshotPlayerCards.length, snapshotCPUCards.length]);
+
   // Hydrate owner when modal opens and owner is undefined
   useEffect(() => {
     if (showModal && owner === undefined) {
@@ -94,40 +112,44 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
     }
   }, [showModal, owner, ownerBadgeClicked]);
 
-  // Reset selected card when modal closes
+  // Reset selected card and snapshots when modal closes
   useEffect(() => {
     if (!showModal) {
       setSelectedCard(null);
       setOwner(undefined);
       setDisplayOwner(undefined);
       setIsTransitioning(false);
+      setSnapshotPlayerCards([]);
+      setSnapshotCPUCards([]);
     }
-  }, [showModal, setSelectedCard, setOwner]);
+  }, [showModal]);
 
   // Select last card played when modal opens (if there is no selected card)
   useEffect(() => {
     if (showModal && !selectedCard) {
       if (owner === 'player' && thereIsCardsInPlayerHand) {
-        setSelectedCard(playedCardsInHandPlayer[indexLastCardInPlayerHand].card);
+        setSelectedCard(snapshotPlayerCards[indexLastCardInPlayerHand].card);
       } else if (owner === 'cpu' && thereIsCardsInCPUHand) {
-        setSelectedCard(playedCardsInHandCPU[indexLastCardInCPUHand].card);
+        setSelectedCard(snapshotCPUCards[indexLastCardInCPUHand].card);
       }
     }
   }, [
     indexLastCardInCPUHand,
     indexLastCardInPlayerHand,
     owner,
-    playedCardsInHandCPU,
-    playedCardsInHandPlayer,
+    snapshotCPUCards,
+    snapshotPlayerCards,
     selectedCard,
     showModal,
     thereIsCardsInCPUHand,
     thereIsCardsInPlayerHand,
   ]);
 
-  if (
-    (displayOwner === 'player' && playedCardsInHandPlayer.length === 0) ||
-    (displayOwner === 'cpu' && playedCardsInHandCPU.length === 0)
+  // Only return null if modal is not shown or if snapshots are empty
+  // This prevents premature unmounting when playedCardsInHand is cleared during collection
+  if (!showModal || 
+    (displayOwner === 'player' && snapshotPlayerCards.length === 0) ||
+    (displayOwner === 'cpu' && snapshotCPUCards.length === 0)
   ) {
     return null;
   }
