@@ -1901,6 +1901,7 @@ export const useGameStore = create<GameStore>()(
           dataGrabCollectedByCPU: updatedCPUCards, // Store for modal display
           dataGrabGameActive: false,
           showDataGrabResults: true, // Modal opens immediately
+          blockTransitions: true, // Block deck clicks while modal is open and during collection
           cardsInPlay: [], // Don't add yet - will do after modal opens
           anotherPlayExpected: false,
           // Store distributions AND Launch Stacks for processing after modal closes
