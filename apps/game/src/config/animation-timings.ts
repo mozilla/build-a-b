@@ -62,6 +62,7 @@ export const ANIMATION_DURATIONS = {
   LOADING_SCREEN_COMPLETE_DELAY: 800, // Delay after reaching 100% before proceeding (if user saw LoadingScreen)
   // Card animations
   CARD_FLIP: 700, // Card flip animation duration (used by Card component) - DO NOT SPEED ADJUST
+  CARD_STAGGER_DELAY: 600, // Time between cards when playing multiple cards sequentially - DO NOT SPEED ADJUST
   CARD_COMPARISON: 1800, // Increased for data war glow pause (special cards/data war) - SPEED ADJUSTABLE
   CARD_COMPARISON_FAST: 200, // Fast comparison for common cards/trackers/blockers - quick badge interaction - SPEED ADJUSTABLE
   CARD_COMPARISON_ANOTHER_PLAY: 300, // Super fast for "another play" sequences (next card coming immediately) - SPEED ADJUSTABLE
@@ -100,7 +101,7 @@ export const ANIMATION_DURATIONS = {
   FORCED_EMPATHY_VIDEO_DURATION: 5000, // How long the video overlay stays visible (total effect time)
   FORCED_EMPATHY_SETTLE_DELAY: 1000, // Delay after deck swap completes before continuing game flow (prevents overlap with subsequent animations)
   DATA_WAR_ANIMATION_DURATION: 2000, // Data war character animation duration
-  DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 2500, // CARD_PLAY_FROM_DECK (800) + 2 staggers (600ms x 2 = 1200) + settle (500)
+  DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION: 2500, // CARD_PLAY_FROM_DECK (800) + 2 staggers (CARD_STAGGER_DELAY x 2 = 1200) + settle (500)
 
   // Data Grab mini-game
   DATA_GRAB_TAKEOVER: 5000, // Takeover intro animation - DO NOT SPEED ADJUST

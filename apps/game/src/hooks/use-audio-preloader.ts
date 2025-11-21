@@ -45,15 +45,23 @@ interface UseAudioPreloaderOptions {
  *
  * For multiple simultaneous plays (e.g., overlapping SFX), this creates
  * a NEW audio element with the same src, allowing independent playback.
- * The original cached element ensures the file is already loaded.
+ * For music, returns the SAME element to prevent multiple concurrent playback.
  */
-export function getPreloadedAudio(trackId: AudioTrackId): HTMLAudioElement | null {
+export function getPreloadedAudio(
+  trackId: AudioTrackId,
+  isMusicTrack: boolean = false,
+): HTMLAudioElement | null {
   const cached = globalPreloadedAudio.get(trackId);
   if (!cached?.ready) {
     return null;
   }
 
-  // Create a new Audio element with the same src for independent playback
+  // Music: Return the same shared element to prevent multiple instances
+  if (isMusicTrack) {
+    return cached.element;
+  }
+
+  // SFX: Create a new Audio element with the same src for independent playback
   // The browser will use the cached audio data, so no additional network request
   const newAudio = new Audio();
   newAudio.src = cached.element.src;

@@ -121,8 +121,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK;
 
   // Calculate stagger delay for sequential play (600ms between cards)
-  const CARD_STAGGER_DELAY = 600;
-  const staggerDelay = isNewCard ? playIndex * CARD_STAGGER_DELAY : 0;
+  const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_STAGGER_DELAY : 0;
 
   // Get rotation class for visual variety
   const rotationClass = getRotationClass(
