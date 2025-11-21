@@ -2986,6 +2986,7 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
+          hostileTakeoverDataWar: false,
           // Reset Data Grab state
           dataGrabActive: false,
           dataGrabCards: [],
