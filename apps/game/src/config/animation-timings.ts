@@ -80,7 +80,7 @@ export const ANIMATION_DURATIONS = {
   INSTANT_ANIMATION_DELAY: 1500, // Breathing room before showing instant animations - SPEED ADJUSTABLE
 
   // Player deck win effect
-  WIN_EFFECT_DELAY: 500, // Delay before showing win effect
+  WIN_EFFECT_DELAY: 750, // Delay before showing win effect
   WIN_EFFECT_DURATION: 2500, // Total time win effect is visible
 
   // CPU player automation
@@ -110,7 +110,7 @@ export const ANIMATION_DURATIONS = {
   DATA_GRAB_CARD_RESTORE_DELAY: 200, // Fast card restore to tableau delay (hidden behind modal) - SPEED ADJUSTABLE
 
   // LaunchStack
-  LAUNCH_STACK_WON_TOKEN_DURATION: 1500,
+  LAUNCH_STACK_WON_TOKEN_DURATION: 1000,
 
   // GameOver
   ROCKET_REVEAL_TIMEOUT: 2500, // Triggers the rocket/button reveal after 4 seconds if it wasn't already triggered

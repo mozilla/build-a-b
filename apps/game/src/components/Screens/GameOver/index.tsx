@@ -109,6 +109,10 @@ export const GameOver: FC<BaseScreenProps> = ({
 
   // Handle play again
   const handlePlayAgain = () => {
+    const { resetGame, selectBackground, selectBillionaire } = useGameStore.getState();
+    resetGame();
+    selectBackground('');
+    selectBillionaire('');
     send?.({ type: 'QUIT_GAME' });
   };
 

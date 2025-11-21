@@ -18,7 +18,7 @@ export const SpecialCardAnimation = ({
   videoClassName = '',
   loop = true,
   controls = false,
-  removeBlur = false,
+  removeBlur = true,
   audioTrack,
 }: SpecialCardAnimationProps) => {
   const { playAudio } = useGameStore();

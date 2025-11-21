@@ -3,7 +3,6 @@ import { TRACKS } from '@/config/audio-config';
 import { capitalize } from '@/utils/capitalize';
 import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import OwywImage from '../../assets/special-effects/owyw.webp';
 import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
 import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
@@ -55,21 +54,22 @@ export const OpenWhatYouWantModal = () => {
 
   return (
     <Modal
+      hideCloseButton
       isOpen={showModal}
       size="3xl"
       backdrop="blur"
       classNames={{
-        base: 'bg-[rgba(0,0,0,0.8)]',
+        wrapper: 'overflow-hidden',
+        base: 'bg-[rgba(0,0,0,0.8)] overflow-y-auto',
         body: 'py-6',
       }}
     >
       <ModalContent>
         <ModalBody className="flex flex-col items-center">
           <div className="flex justify-between items-center">
-            <img src={OwywImage} width={160} height={160} />
-            <span className="text-body">
-              Look at the top 3 cards of your deck and select one to play:
-            </span>
+            <Text variant="title-2">
+              Choose a card to play:
+            </Text>
           </div>
           {cards.length > 0 ? (
             <CardCarousel
