@@ -114,11 +114,14 @@ export function Game() {
   };
 
   const handlePlayAreaClick = (owner: PlayerType) => {
+    // Don't open modal during collection animation
+    if (collecting) return;
+
     // Only open modal if there are cards to display
-    const hasCards = owner === 'player' 
-      ? player.playedCardsInHand.length > 0 
+    const hasCards = owner === 'player'
+      ? player.playedCardsInHand.length > 0
       : cpu.playedCardsInHand.length > 0;
-    
+
     if (hasCards) {
       setOwnerBadgeClicked(owner);
       openEffectModal();
