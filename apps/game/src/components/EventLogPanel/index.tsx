@@ -13,7 +13,6 @@ export const EventLogPanel: FC = () => {
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const logEvent = useGameStore((state) => state.logEvent);
 
   // Subscribe to events from the store
   useEffect(() => {
