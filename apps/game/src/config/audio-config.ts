@@ -359,7 +359,7 @@ export function getAudioByPriority(
 /**
  * Browser format support detection (cached)
  */
-let _supportsWebM: boolean | null = false;
+let _supportsWebM: boolean | null = null;
 
 export function supportsWebM(): boolean {
   if (_supportsWebM !== null) return _supportsWebM;
