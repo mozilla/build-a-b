@@ -8,6 +8,7 @@ import { TRACKS } from '@/config/audio-config';
 import { usePreloading } from '@/hooks/use-preloading';
 import {
   useCpuBillionaire,
+  useDeckSwapCount,
   useSelectedBackground,
   useSelectedBillionaire,
 } from '@/store';
@@ -67,6 +68,10 @@ export function Game() {
   // Launch Stacks are tracked separately with rocket indicators
   const playerTotalCards = player.deck.length;
   const cpuTotalCards = cpu.deck.length;
+
+  // Check if decks are visually swapped (for determining which deck gets heartbeat)
+  const deckSwapCount = useDeckSwapCount();
+  const isSwapped = deckSwapCount % 2 === 1;
 
   const backgroundImage =
     getBackgroundImage(selectedBackground) ||
@@ -141,6 +146,13 @@ export function Game() {
   // Player interaction zone is ALWAYS at bottom (never moves)
   // CPU has no interaction zone (automated)
   // Visual deck positions can swap, but interaction stays fixed
+  
+  // HEARTBEAT ANIMATION LOGIC
+  // Heartbeat should appear on whichever deck is visually at the bottom (player's side)
+  // When NOT swapped: player deck at bottom → player deck gets heartbeat
+  // When SWAPPED: cpu deck at bottom → cpu deck gets heartbeat
+  const topDeckActiveIndicator = isSwapped && canClickPlayerDeck;
+  const bottomDeckActiveIndicator = !isSwapped && canClickPlayerDeck;
 
   useEffect(() => {
     switch (phase) {
@@ -236,7 +248,7 @@ export function Game() {
             turnValueActiveEffects={cpu.activeEffects}
             owner="cpu"
             billionaireId={cpuBillionaire}
-            activeIndicator={false}
+            activeIndicator={topDeckActiveIndicator}
           />
 
           {/* Play Area - Center of board */}
@@ -273,7 +285,7 @@ export function Game() {
             turnValueActiveEffects={player.activeEffects}
             owner="player"
             billionaireId={selectedBillionaire}
-            activeIndicator={canClickPlayerDeck}
+            activeIndicator={bottomDeckActiveIndicator}
           />
 
           {/* Fixed Player Interaction Zone - Always at bottom */}
