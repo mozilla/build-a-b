@@ -140,10 +140,7 @@ export const gameFlowMachine = createMachine(
         }),
         on: {
           SHOW_GUIDE: 'quick_start_guide',
-          SKIP_INSTRUCTIONS: {
-            target: 'vs_animation',
-            guard: 'assetsPreloaded',
-          },
+          SKIP_INSTRUCTIONS: 'your_mission',
           SKIP_TO_GAME: 'ready', // Allow skipping directly to ready for testing
         },
       },

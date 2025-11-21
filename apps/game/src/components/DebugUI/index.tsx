@@ -340,6 +340,75 @@ export function DebugUI() {
     showToast(`✅ Moved Data Grab card from position ${closestIndex + 1} to top of ${targetDeck} deck!`);
   };
 
+  const handleTriggerLaunchStack = () => {
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
+
+    // Find all launch stack cards in both decks
+    const playerLaunchStackIndices: number[] = [];
+    const cpuLaunchStackIndices: number[] = [];
+
+    player.deck.forEach((card, index) => {
+      if (card.specialType === 'launch_stack') {
+        playerLaunchStackIndices.push(index);
+      }
+    });
+
+    cpu.deck.forEach((card, index) => {
+      if (card.specialType === 'launch_stack') {
+        cpuLaunchStackIndices.push(index);
+      }
+    });
+
+    // Determine which deck has more launch stack cards
+    let targetDeck: 'player' | 'cpu';
+    let targetIndices: number[];
+
+    if (playerLaunchStackIndices.length > cpuLaunchStackIndices.length) {
+      targetDeck = 'player';
+      targetIndices = playerLaunchStackIndices;
+    } else if (cpuLaunchStackIndices.length > playerLaunchStackIndices.length) {
+      targetDeck = 'cpu';
+      targetIndices = cpuLaunchStackIndices;
+    } else {
+      // Tie - use player deck
+      targetDeck = 'player';
+      targetIndices = playerLaunchStackIndices;
+    }
+
+    if (targetIndices.length === 0) {
+      showToast('❌ No Launch Stack cards found in decks!');
+      return;
+    }
+
+    // Find the launch stack card closest to the top (smallest index)
+    const closestIndex = Math.min(...targetIndices);
+
+    // Move that card to the top of the deck
+    const deck = targetDeck === 'player' ? [...player.deck] : [...cpu.deck];
+    const [launchStackCard] = deck.splice(closestIndex, 1);
+    deck.unshift(launchStackCard); // Add to beginning
+
+    // Update the store
+    if (targetDeck === 'player') {
+      useGameStore.setState({
+        player: {
+          ...player,
+          deck,
+        },
+      });
+    } else {
+      useGameStore.setState({
+        cpu: {
+          ...cpu,
+          deck,
+        },
+      });
+    }
+
+    showToast(`✅ Moved Launch Stack card from position ${closestIndex + 1} to top of ${targetDeck} deck!`);
+  };
+
   const handleTriggerForcedEmpathy = () => {
     const store = useGameStore.getState();
     const { player, cpu } = store;
@@ -396,6 +465,124 @@ export function DebugUI() {
       });
 
       showToast(`✅ Moved Forced Empathy from position ${cpuForcedEmpathyIndex + 1} to top of CPU deck!`);
+    }
+  };
+
+  const handleTriggerTemperTantrum = () => {
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
+
+    // Check if Temper Tantrum is already on the table (played)
+    const isTemperTantrumPlayed = 
+      player.playedCardsInHand.some((pcs) => pcs.card.specialType === 'temper_tantrum') ||
+      cpu.playedCardsInHand.some((pcs) => pcs.card.specialType === 'temper_tantrum');
+
+    if (isTemperTantrumPlayed) {
+      showToast('⚠️ Temper Tantrum is already on the table!');
+      return;
+    }
+
+    // Find Temper Tantrum in player deck
+    const playerTemperTantrumIndex = player.deck.findIndex(
+      (card) => card.specialType === 'temper_tantrum'
+    );
+
+    // Find Temper Tantrum in CPU deck
+    const cpuTemperTantrumIndex = cpu.deck.findIndex(
+      (card) => card.specialType === 'temper_tantrum'
+    );
+
+    if (playerTemperTantrumIndex === -1 && cpuTemperTantrumIndex === -1) {
+      showToast('❌ Temper Tantrum card not found in any deck!');
+      return;
+    }
+
+    // Move card to top of the deck it's in
+    if (playerTemperTantrumIndex !== -1) {
+      const deck = [...player.deck];
+      const [temperTantrumCard] = deck.splice(playerTemperTantrumIndex, 1);
+      deck.unshift(temperTantrumCard); // Add to beginning
+
+      useGameStore.setState({
+        player: {
+          ...player,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Temper Tantrum from position ${playerTemperTantrumIndex + 1} to top of player deck!`);
+    } else if (cpuTemperTantrumIndex !== -1) {
+      const deck = [...cpu.deck];
+      const [temperTantrumCard] = deck.splice(cpuTemperTantrumIndex, 1);
+      deck.unshift(temperTantrumCard); // Add to beginning
+
+      useGameStore.setState({
+        cpu: {
+          ...cpu,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Temper Tantrum from position ${cpuTemperTantrumIndex + 1} to top of CPU deck!`);
+    }
+  };
+
+  const handleTriggerHostileTakeover = () => {
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
+
+    // Check if Hostile Takeover is already on the table (played)
+    const isHostileTakeoverPlayed = 
+      player.playedCardsInHand.some((pcs) => pcs.card.specialType === 'hostile_takeover') ||
+      cpu.playedCardsInHand.some((pcs) => pcs.card.specialType === 'hostile_takeover');
+
+    if (isHostileTakeoverPlayed) {
+      showToast('⚠️ Hostile Takeover is already on the table!');
+      return;
+    }
+
+    // Find Hostile Takeover in player deck
+    const playerHostileTakeoverIndex = player.deck.findIndex(
+      (card) => card.specialType === 'hostile_takeover'
+    );
+
+    // Find Hostile Takeover in CPU deck
+    const cpuHostileTakeoverIndex = cpu.deck.findIndex(
+      (card) => card.specialType === 'hostile_takeover'
+    );
+
+    if (playerHostileTakeoverIndex === -1 && cpuHostileTakeoverIndex === -1) {
+      showToast('❌ Hostile Takeover card not found in any deck!');
+      return;
+    }
+
+    // Move card to top of the deck it's in
+    if (playerHostileTakeoverIndex !== -1) {
+      const deck = [...player.deck];
+      const [hostileTakeoverCard] = deck.splice(playerHostileTakeoverIndex, 1);
+      deck.unshift(hostileTakeoverCard); // Add to beginning
+
+      useGameStore.setState({
+        player: {
+          ...player,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Hostile Takeover from position ${playerHostileTakeoverIndex + 1} to top of player deck!`);
+    } else if (cpuHostileTakeoverIndex !== -1) {
+      const deck = [...cpu.deck];
+      const [hostileTakeoverCard] = deck.splice(cpuHostileTakeoverIndex, 1);
+      deck.unshift(hostileTakeoverCard); // Add to beginning
+
+      useGameStore.setState({
+        cpu: {
+          ...cpu,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Hostile Takeover from position ${cpuHostileTakeoverIndex + 1} to top of CPU deck!`);
     }
   };
 
@@ -755,11 +942,35 @@ export function DebugUI() {
                   </button>
 
                   <button
+                    onClick={handleTriggerLaunchStack}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                    title="Move a Launch Stack card to the top of the deck"
+                  >
+                    Trigger Launch Stack on Next Play
+                  </button>
+
+                  <button
                     onClick={handleTriggerForcedEmpathy}
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded transition-colors text-sm"
                     title="Move Forced Empathy card to the top of the deck"
                   >
                     Trigger Forced Empathy on Next Play
+                  </button>
+
+                  <button
+                    onClick={handleTriggerTemperTantrum}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                    title="Move Temper Tantrum card to the top of the deck"
+                  >
+                    Trigger Temper Tantrum on Next Play
+                  </button>
+
+                  <button
+                    onClick={handleTriggerHostileTakeover}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                    title="Move Hostile Takeover card to the top of the deck"
+                  >
+                    Trigger Hostile Takeover on Next Play
                   </button>
 
                   {/* Toast Message */}

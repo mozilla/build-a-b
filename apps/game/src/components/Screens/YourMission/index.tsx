@@ -58,7 +58,7 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
         </div>
 
         {/* Text Content - centered */}
-        <div className="flex flex-col items-center gap-4 px-9 flex-grow justify-center pb-8">
+        <div className="flex flex-col items-center gap-4 px-9 flex-grow justify-center">
           <div className="flex flex-col items-center">
             <Text as="h1" variant="title-2" align="center" className="text-common-ash leading-9">
               {yourMissionMicrocopy.title}
@@ -75,10 +75,10 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
         </div>
 
         {/* Launch Stack Icons */}
-        <div className="flex items-start justify-center gap-2 pb-8 relative">
+        <div className="flex flex-grow items-center justify-center gap-2 pb-12 relative">
           {/* Confetti burst animation behind rockets */}
           {showConfetti && (
-            <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none -top-8">
               <LottieAnimation
                 animationData={burstAnimation}
                 loop={true}
