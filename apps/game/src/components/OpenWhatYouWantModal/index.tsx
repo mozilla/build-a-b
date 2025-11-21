@@ -59,9 +59,9 @@ export const OpenWhatYouWantModal = () => {
       size="3xl"
       backdrop="blur"
       classNames={{
-        wrapper: 'overflow-hidden',
-        base: 'bg-[rgba(0,0,0,0.8)] overflow-y-auto',
-        body: 'py-6',
+        wrapper: 'overflow-hidden items-center',
+        base: 'frame bg-[rgba(0,0,0,0.8)] overflow-y-auto',
+        body: 'px-0 py-6',
       }}
     >
       <ModalContent>
