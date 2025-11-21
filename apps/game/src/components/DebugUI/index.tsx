@@ -15,6 +15,8 @@ import { Autocomplete, AutocompleteItem } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { DeckDebugPanel } from '../DeckDebugPanel';
+import { EventLogPanel } from '../EventLogPanel';
 
 interface CardOption {
   typeId: CardTypeId;
@@ -40,11 +42,15 @@ const TrashIcon = () => (
 
 export function DebugUI() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [playerCards, setPlayerCards] = useState<CardTypeId[]>([]);
   const [cpuCards, setCpuCards] = useState<CardTypeId[]>([]);
   const [winnerSelection, setWinnerSelection] = useState<'player' | 'cpu'>('player');
   const [winnerBillionaire, setWinnerBillionaire] = useState<BillionaireId>('chaz');
+  const [showDeckDebug, setShowDeckDebug] = useState(false);
+  const [showEventLog, setShowEventLog] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Data Grab animation config state
   const [fallDuration, setFallDuration] = useState<number>(DATA_GRAB_CONFIG.CARD_FALL_DURATION_MS);
@@ -105,6 +111,15 @@ export function DebugUI() {
       clearTimeout(resetTimer);
     };
   }, []); // Empty dependency array - only set up once
+
+  // Cleanup toast timer on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
   // Toggle debug UI with touch swipe sequence (up, up, down, down) for mobile
   useEffect(() => {
@@ -201,7 +216,7 @@ export function DebugUI() {
         cpuCards.length > 0 ? cpuCards : undefined,
       );
     }
-    setIsExpanded(false);
+    setIsMinimized(true);
   };
 
   const handleInstantWin = () => {
@@ -244,6 +259,18 @@ export function DebugUI() {
     setDelayMax(750);
   };
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    // Clear any existing timer
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    // Auto-hide after 10 seconds
+    toastTimerRef.current = setTimeout(() => {
+      setToastMessage(null);
+    }, 10000);
+  };
+
   const handleTriggerDataGrab = () => {
     const store = useGameStore.getState();
     const { player, cpu } = store;
@@ -281,7 +308,7 @@ export function DebugUI() {
     }
 
     if (targetIndices.length === 0) {
-      alert('No Data Grab cards found in decks!');
+      showToast('❌ No Data Grab cards found in decks!');
       return;
     }
 
@@ -310,64 +337,239 @@ export function DebugUI() {
       });
     }
 
-    alert(`Moved Data Grab card from position ${closestIndex + 1} to top of ${targetDeck} deck!`);
+    showToast(`✅ Moved Data Grab card from position ${closestIndex + 1} to top of ${targetDeck} deck!`);
+  };
+
+  const handleTriggerForcedEmpathy = () => {
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
+
+    // Check if Forced Empathy is already on the table (played)
+    const isForcedEmpathyPlayed = 
+      player.playedCardsInHand.some((pcs) => pcs.card.specialType === 'forced_empathy') ||
+      cpu.playedCardsInHand.some((pcs) => pcs.card.specialType === 'forced_empathy');
+
+    if (isForcedEmpathyPlayed) {
+      showToast('⚠️ Forced Empathy is already on the table!');
+      return;
+    }
+
+    // Find Forced Empathy in player deck
+    const playerForcedEmpathyIndex = player.deck.findIndex(
+      (card) => card.specialType === 'forced_empathy'
+    );
+
+    // Find Forced Empathy in CPU deck
+    const cpuForcedEmpathyIndex = cpu.deck.findIndex(
+      (card) => card.specialType === 'forced_empathy'
+    );
+
+    if (playerForcedEmpathyIndex === -1 && cpuForcedEmpathyIndex === -1) {
+      showToast('❌ Forced Empathy card not found in any deck!');
+      return;
+    }
+
+    // Move card to top of the deck it's in
+    if (playerForcedEmpathyIndex !== -1) {
+      const deck = [...player.deck];
+      const [forcedEmpathyCard] = deck.splice(playerForcedEmpathyIndex, 1);
+      deck.unshift(forcedEmpathyCard); // Add to beginning
+
+      useGameStore.setState({
+        player: {
+          ...player,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Forced Empathy from position ${playerForcedEmpathyIndex + 1} to top of player deck!`);
+    } else if (cpuForcedEmpathyIndex !== -1) {
+      const deck = [...cpu.deck];
+      const [forcedEmpathyCard] = deck.splice(cpuForcedEmpathyIndex, 1);
+      deck.unshift(forcedEmpathyCard); // Add to beginning
+
+      useGameStore.setState({
+        cpu: {
+          ...cpu,
+          deck,
+        },
+      });
+
+      showToast(`✅ Moved Forced Empathy from position ${cpuForcedEmpathyIndex + 1} to top of CPU deck!`);
+    }
   };
 
   const debugUI = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-4 right-4 z-[100] font-sans md:bottom-4 md:right-4 isolate"
+          drag
+          dragMomentum={false}
+          dragElastic={0}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="fixed top-4 right-4 z-[100] bg-gray-900 text-white rounded-lg shadow-2xl backdrop-blur-sm border-2 border-purple-500"
+          style={{ width: isMinimized ? '200px' : '600px', maxWidth: '95vw' }}
         >
-          {!isExpanded ? (
-            // Collapsed state - small floating button
-            <Button onPress={() => setIsExpanded(true)} title="Open Debug UI">
-              Debug
-            </Button>
-          ) : (
-            // Expanded state - drawer on mobile, panel on desktop
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 100 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              className="bg-gray-900 text-white rounded-t-lg md:rounded-lg shadow-2xl 
-                       fixed bottom-0 left-0 right-0 h-[80dvh] z-[10000]
-                       md:relative md:w-[37.5rem] md:max-h-[80dvh] md:bottom-auto md:left-auto md:right-auto
-                       overflow-hidden flex flex-col"
+          {/* Header */}
+          <div className="bg-purple-500/20 border-b-2 border-purple-500 px-4 py-2 flex items-center justify-between cursor-move shrink-0">
+            <div className="flex items-center gap-2">
+              <h2 className="font-bold text-lg text-purple-300">Debug Panel</h2>
+            </div>
+            <button
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="hover:bg-purple-700 rounded p-1 transition-colors"
+              title={isMinimized ? 'Expand' : 'Minimize'}
             >
-              {/* Header */}
-              <div className="bg-neutral-700 px-4 py-2 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-bold text-lg">Debug Panel</h2>
-                </div>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="hover:bg-purple-700 rounded p-1 transition-colors"
-                  title="Minimize"
-                >
-                  <XIcon />
-                </button>
-              </div>
+              {isMinimized ? '▼' : '▲'}
+            </button>
+          </div>
 
-              {/* Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Instructions */}
-                <div className="bg-gray-800 rounded-lg p-3 text-sm text-gray-300 border border-gray-700">
-                  <p className="font-semibold mb-2 text-purple-300">💡 Card Deck Builder:</p>
-                  <ul className="list-disc list-inside space-y-1 text-xs">
-                    <li>Select cards in the order you want them in each deck</li>
-                    <li>Selected cards will be at the top of the deck</li>
-                    <li>Remaining deck slots will be filled randomly</li>
-                    <li>Leave empty for fully random decks</li>
-                    <li>Press ↑ ↑ ↓ ↓ (keyboard) or swipe ↑ ↑ ↓ ↓ (mobile) to toggle this panel</li>
-                  </ul>
+          {/* Content - Scrollable */}
+          {!isMinimized && (
+            <div className="p-4 max-h-[80vh] overflow-y-auto space-y-4">
+                {/* Card Deck Builder */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-4">
+                  <p className="font-semibold text-purple-300">💡 Card Deck Builder:</p>
+                  
+                  {/* Instructions */}
+                  <div className="text-sm text-gray-300">
+                    <ul className="list-disc list-inside space-y-1 text-xs">
+                      <li>Select cards in the order you want them in each deck</li>
+                      <li>Selected cards will be at the top of the deck</li>
+                      <li>Remaining deck slots will be filled randomly</li>
+                      <li>Leave empty for fully random decks</li>
+                      <li>Press ↑ ↑ ↓ ↓ (keyboard) or swipe ↑ ↑ ↓ ↓ (mobile) to toggle this panel</li>
+                    </ul>
+                  </div>
+
+                  {/* Player Deck */}
+                  <div className="space-y-3 bg-purple-900/20 rounded-lg p-2 border border-purple-700/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-purple-300">👤 Player Deck ({playerCards.length} cards)</h3>
+                      {playerCards.length > 0 && (
+                        <button
+                          onClick={handleClearPlayer}
+                          className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
+                          title="Remove all player cards"
+                        >
+                          <TrashIcon />
+                          Clear All
+                        </button>
+                      )}
+                    </div>
+
+                    <CardSelector options={cardOptions} onSelect={handleAddPlayerCard} />
+
+                    {/* Selected cards */}
+                    {playerCards.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400 font-medium">
+                          Selected cards (in order):
+                        </p>
+                        <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
+                          {playerCards.map((typeId, index) => {
+                            const card = cardOptions.find((c) => c.typeId === typeId);
+                            return (
+                              <div
+                                key={`player-${index}`}
+                                className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
+                              >
+                                <span className="font-medium">
+                                  <span className="text-purple-400">#{index + 1}</span> {card?.name}{' '}
+                                  <span className="text-gray-400">(Val: {card?.value})</span>
+                                </span>
+                                <button
+                                  onClick={() => handleRemovePlayerCard(index)}
+                                  className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                  title="Remove this card"
+                                >
+                                  <XIcon />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CPU Deck */}
+                  <div className="space-y-3 bg-blue-900/20 rounded-lg p-2 border border-blue-700/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-blue-300">🤖 CPU Deck ({cpuCards.length} cards)</h3>
+                      {cpuCards.length > 0 && (
+                        <button
+                          onClick={handleClearCpu}
+                          className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
+                          title="Remove all CPU cards"
+                        >
+                          <TrashIcon />
+                          Clear All
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Add card selector - at top for easy access */}
+                    <CardSelector options={cardOptions} onSelect={handleAddCpuCard} />
+
+                    {/* Selected cards */}
+                    {cpuCards.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400 font-medium">
+                          Selected cards (in order):
+                        </p>
+                        <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
+                          {cpuCards.map((typeId, index) => {
+                            const card = cardOptions.find((c) => c.typeId === typeId);
+                            return (
+                              <div
+                                key={`cpu-${index}`}
+                                className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
+                              >
+                                <span className="font-medium">
+                                  <span className="text-blue-400">#{index + 1}</span> {card?.name}{' '}
+                                  <span className="text-gray-400">(Val: {card?.value})</span>
+                                </span>
+                                <button
+                                  onClick={() => handleRemoveCpuCard(index)}
+                                  className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                  title="Remove this card"
+                                >
+                                  <XIcon />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-stretch justify-end gap-2 pt-2 border-t border-gray-700">
+                    <Button
+                      disabled
+                      // onPress={handleSkipToGame}
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-2 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2 disabled:grayscale-100"
+                      title="Skip all intro/setup screens and start gameplay immediately"
+                    >
+                      Skip to Game
+                    </Button>
+                    <button
+                      onClick={handleApply}
+                      className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-2 rounded-lg transition-all shadow-lg"
+                      title="Start a new game with the selected cards"
+                    >
+                      Initialize Game
+                    </button>
+                  </div>
                 </div>
 
-                {/* Debug Options */}
+                {/* Gameplay Options */}
                 <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
-                  <p className="font-semibold text-cyan-300">⚙️ Debug Options:</p>
+                  <p className="font-semibold text-cyan-300">⚙️ Gameplay Options:</p>
 
                   {/* Game Speed Control */}
                   <div className="space-y-2">
@@ -407,11 +609,20 @@ export function DebugUI() {
                     <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
                       <input
                         type="checkbox"
-                        checked={showDataGrabCookies}
-                        onChange={(e) => setShowDataGrabCookies(e.target.checked)}
+                        checked={showDeckDebug}
+                        onChange={(e) => setShowDeckDebug(e.target.checked)}
                         className="w-4 h-4 cursor-pointer"
                       />
-                      <span className="text-sm">Show floating cookies during Data Grab</span>
+                      <span className="text-sm">Show Deck Debug Panel 🃏</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showEventLog}
+                        onChange={(e) => setShowEventLog(e.target.checked)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">Show Event Log 📋</span>
                     </label>
                   </div>
                 </div>
@@ -499,6 +710,19 @@ export function DebugUI() {
                     />
                   </div>
 
+                  {/* Visual Options */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showDataGrabCookies}
+                        onChange={(e) => setShowDataGrabCookies(e.target.checked)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">Show floating cookies during Data Grab</span>
+                    </label>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
                     <button
@@ -516,20 +740,41 @@ export function DebugUI() {
                       Reset
                     </button>
                   </div>
+                </div>
 
-                  {/* Trigger Data Grab Button */}
-                  <div className="pt-2 border-t border-gray-700">
-                    <button
-                      onClick={handleTriggerDataGrab}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded transition-colors text-sm"
-                      title="Move a Data Grab card to the top of the deck"
-                    >
-                      🃏 Trigger Data Grab on Next Play
-                    </button>
-                    <p className="text-xs text-gray-400 mt-1 italic">
-                      Moves a Data Grab card to the top of the deck with most Data Grab cards (or player deck if tied)
-                    </p>
-                  </div>
+                {/* Trigger Card Events */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
+                  <p className="font-semibold text-purple-300">🃏 Trigger Card Events:</p>
+                  
+                  <button
+                    onClick={handleTriggerDataGrab}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                    title="Move a Data Grab card to the top of the deck"
+                  >
+                    Trigger Data Grab on Next Play
+                  </button>
+
+                  <button
+                    onClick={handleTriggerForcedEmpathy}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded transition-colors text-sm"
+                    title="Move Forced Empathy card to the top of the deck"
+                  >
+                    Trigger Forced Empathy on Next Play
+                  </button>
+
+                  {/* Toast Message */}
+                  <AnimatePresence>
+                    {toastMessage && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="bg-gray-700 border border-gray-600 rounded p-3 text-sm text-gray-200"
+                      >
+                        {toastMessage}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Instant Win Controls */}
@@ -570,138 +815,21 @@ export function DebugUI() {
                     </button>
                   </div>
                 </div>
-
-                {/* Player Deck */}
-                <div className="space-y-3 bg-purple-900/20 rounded-lg p-2 border border-purple-700/50">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-purple-300">👤 Player Deck ({playerCards.length} cards)</h3>
-                    {playerCards.length > 0 && (
-                      <button
-                        onClick={handleClearPlayer}
-                        className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
-                        title="Remove all player cards"
-                      >
-                        <TrashIcon />
-                        Clear All
-                      </button>
-                    )}
-                  </div>
-
-                  <CardSelector options={cardOptions} onSelect={handleAddPlayerCard} />
-
-                  {/* Selected cards */}
-                  {playerCards.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs text-gray-400 font-medium">
-                        Selected cards (in order):
-                      </p>
-                      <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
-                        {playerCards.map((typeId, index) => {
-                          const card = cardOptions.find((c) => c.typeId === typeId);
-                          return (
-                            <div
-                              key={`player-${index}`}
-                              className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
-                            >
-                              <span className="font-medium">
-                                <span className="text-purple-400">#{index + 1}</span> {card?.name}{' '}
-                                <span className="text-gray-400">(Val: {card?.value})</span>
-                              </span>
-                              <button
-                                onClick={() => handleRemovePlayerCard(index)}
-                                className="text-red-400 hover:text-red-300 transition-colors p-1"
-                                title="Remove this card"
-                              >
-                                <XIcon />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* CPU Deck */}
-                <div className="space-y-3 bg-blue-900/20 rounded-lg p-2 border border-blue-700/50">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-blue-300">🤖 CPU Deck ({cpuCards.length} cards)</h3>
-                    {cpuCards.length > 0 && (
-                      <button
-                        onClick={handleClearCpu}
-                        className="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors font-medium"
-                        title="Remove all CPU cards"
-                      >
-                        <TrashIcon />
-                        Clear All
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Add card selector - at top for easy access */}
-                  <CardSelector options={cardOptions} onSelect={handleAddCpuCard} />
-
-                  {/* Selected cards */}
-                  {cpuCards.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs text-gray-400 font-medium">
-                        Selected cards (in order):
-                      </p>
-                      <div className="bg-gray-800/50 rounded-lg p-2 space-y-1.5">
-                        {cpuCards.map((typeId, index) => {
-                          const card = cardOptions.find((c) => c.typeId === typeId);
-                          return (
-                            <div
-                              key={`cpu-${index}`}
-                              className="flex items-center justify-between bg-gray-700 rounded px-3 py-2 text-sm hover:bg-gray-650 transition-colors"
-                            >
-                              <span className="font-medium">
-                                <span className="text-blue-400">#{index + 1}</span> {card?.name}{' '}
-                                <span className="text-gray-400">(Val: {card?.value})</span>
-                              </span>
-                              <button
-                                onClick={() => handleRemoveCpuCard(index)}
-                                className="text-red-400 hover:text-red-300 transition-colors p-1"
-                                title="Remove this card"
-                              >
-                                <XIcon />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
-
-              {/* Footer - Fixed at bottom */}
-              <div className="border-t border-gray-700 px-4 py-4 flex items-stretch justify-end bg-gray-800 shrink-0">
-                <Button
-                  disabled
-                  // onPress={handleSkipToGame}
-                  className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-3 rounded-lg transition-colors shadow-lg flex items-center justify-center gap-2 mr-4 disabled:grayscale-100"
-                  title="Skip all intro/setup screens and start gameplay immediately"
-                >
-                  Skip to Game
-                </Button>
-                <button
-                  onClick={handleApply}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-2.5 rounded-lg transition-all shadow-lg"
-                  title="Start a new game with the selected cards"
-                >
-                  Initialize Game
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
+            )}
+          </motion.div>
       )}
     </AnimatePresence>
   );
 
   // Render using portal to bypass overflow-hidden on parent containers
-  return typeof document !== 'undefined' ? createPortal(debugUI, document.body) : null;
+  return typeof document !== 'undefined' ? (
+    <>
+      {createPortal(debugUI, document.body)}
+      {showDeckDebug && createPortal(<DeckDebugPanel />, document.body)}
+      {showEventLog && createPortal(<EventLogPanel />, document.body)}
+    </>
+  ) : null;
 }
 
 interface CardSelectorProps {
