@@ -2,6 +2,7 @@ import { useGameStore } from '@/store';
 import {
   SPECIAL_EFFECT_ANIMATIONS,
   getAnimationVideoSrc,
+  isAnimationLottie,
 } from '@/config/special-effect-animations';
 import { SpecialCardAnimation } from './index';
 
@@ -69,7 +70,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -82,7 +84,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -95,7 +98,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -108,7 +112,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -121,7 +126,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -134,7 +140,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -147,7 +154,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -163,7 +171,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction, count.toString())}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction, count.toString())}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -178,7 +187,12 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction, launchStackCounter.toString())}
+        animationSrc={getAnimationVideoSrc(
+          animation,
+          isPlayerAction,
+          launchStackCounter.toString(),
+        )}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -191,7 +205,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -204,7 +219,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
@@ -217,7 +233,8 @@ export const EffectAnimationOrchestrator = () => {
     return (
       <SpecialCardAnimation
         show={true}
-        videoSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+        isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
       />
