@@ -3,8 +3,10 @@ import type { AudioTrackId } from '@/config/audio-config';
 export type SpecialCardAnimationProps = {
   /** Controls visibility of the animation */
   show: boolean;
-  /** Video source URL (WebM file) */
-  videoSrc: string;
+  /** Video source URL (WebM file) or lottie animation */
+  animationSrc?: string | unknown;
+  /** boolean set if animation is a lottie */
+  isLottie?: unknown;
   /** Optional title/label to display */
   title?: string;
   /** Custom className for the overlay container */
