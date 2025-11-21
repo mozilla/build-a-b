@@ -4,6 +4,7 @@ import { TRACKS } from '@/config/audio-config';
 import {
   SPECIAL_EFFECT_ANIMATIONS,
   getAnimationVideoSrc,
+  isAnimationLottie,
 } from '@/config/special-effect-animations';
 import { useGameStore, usePlayer } from '@/store';
 import type { PlayerType } from '@/types';
@@ -182,7 +183,8 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     <>
       <SpecialCardAnimation
         show={showAnimation}
-        videoSrc={animationVideoSrc}
+        animationSrc={animationVideoSrc}
+        isLottie={isAnimationLottie(launchStackWonAnimation)}
         className="z-1!"
         audioTrack={TRACKS.LAUNCH_STACK_ROCKET}
       />

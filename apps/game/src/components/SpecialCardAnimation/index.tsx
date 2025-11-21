@@ -3,6 +3,7 @@ import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { useEffect, useRef } from 'react';
 import type { SpecialCardAnimationProps } from './types';
+import { LottieAnimation } from '../LottieAnimation';
 
 /**
  * Generic Special Card Animation Component
@@ -12,7 +13,8 @@ import type { SpecialCardAnimationProps } from './types';
  */
 export const SpecialCardAnimation = ({
   show,
-  videoSrc,
+  animationSrc,
+  isLottie,
   title,
   className = '',
   videoClassName = '',
@@ -53,16 +55,20 @@ export const SpecialCardAnimation = ({
         }`}
       >
         {/* Video fills full board */}
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          loop={loop}
-          muted
-          playsInline
-          controls={controls}
-          className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
-          aria-label={title ? `${title} animation` : 'Special card animation'}
-        />
+        {isLottie ? (
+          <LottieAnimation animationData={animationSrc} loop={loop} autoplay={true} />
+        ) : (
+          <video
+            ref={videoRef}
+            src={animationSrc as string}
+            loop={loop}
+            muted
+            playsInline
+            controls={controls}
+            className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
+            aria-label={title ? `${title} animation` : 'Special card animation'}
+          />
+        )}
       </div>
     </div>
   );

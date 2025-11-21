@@ -5,6 +5,17 @@
  * Animations are loaded from Supabase storage
  */
 
+import mandatoryRecallPlayer1 from '@/assets/special-effects/mandatory_recall_player_1.json';
+import mandatoryRecallPlayer2 from '@/assets/special-effects/mandatory_recall_player_2.json';
+import mandatoryRecallPlayer3 from '@/assets/special-effects/mandatory_recall_player_3.json';
+import mandatoryRecallCpu1 from '@/assets/special-effects/mandatory_recall_cpu_1.json';
+import mandatoryRecallCpu2 from '@/assets/special-effects/mandatory_recall_cpu_2.json';
+import mandatoryRecallCpu3 from '@/assets/special-effects/mandatory_recall_cpu_3.json';
+import theftWonCpu from '@/assets/special-effects/theft_won_cpu.json';
+import theftWonPlayer from '@/assets/special-effects/theft_won_player.json';
+import wonLaunchStackCpu from '@/assets/special-effects/won_launchstack_cpu.json';
+import wonLaunchStackPlayer from '@/assets/special-effects/won_launchstack_player.json';
+
 export const SUPABASE_BASE_URL =
   'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
 
@@ -25,8 +36,13 @@ export type SpecialEffectAnimationType =
 
 export interface SpecialEffectAnimation {
   videoSrc: string | { player: string; cpu: string };
+  lottie?: unknown | { player: unknown[]; cpu: unknown[] };
   title: string;
   loop?: boolean;
+}
+
+export function isAnimationLottie(animation: SpecialEffectAnimation) {
+  return !!animation.lottie;
 }
 
 /**
@@ -39,8 +55,25 @@ export function getAnimationVideoSrc(
   animation: SpecialEffectAnimation,
   isPlayerAction: boolean = true,
   counter?: string,
-): string {
-  const { videoSrc } = animation;
+): string | unknown {
+  const { videoSrc, lottie } = animation;
+
+  if (lottie) {
+    if (typeof lottie === 'string') {
+      return lottie;
+    }
+
+    if (typeof lottie === 'object' && 'player' in lottie && 'cpu' in lottie) {
+      const lottieAction = isPlayerAction ? lottie.player : lottie.cpu;
+
+      if (Array.isArray(lottieAction)) {
+        const index = Number(counter ?? 0);
+        return lottieAction[index];
+      } else {
+        return lottieAction;
+      }
+    }
+  }
 
   // If videoSrc is a string, return it directly (used for both player and CPU)
   if (typeof videoSrc === 'string') {
@@ -89,6 +122,10 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
       videoSrc: {
         player: `${SUPABASE_BASE_URL}won_launchstack_player.webm`,
         cpu: `${SUPABASE_BASE_URL}won_launchstack_cpu.webm`,
+      },
+      lottie: {
+        player: wonLaunchStackPlayer,
+        cpu: wonLaunchStackCpu,
       },
       title: 'Launch Stack Won',
       loop: false,
@@ -140,6 +177,10 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         player: `${SUPABASE_BASE_URL}theft_won_player.webm`,
         cpu: `${SUPABASE_BASE_URL}theft_won_cpu.webm`,
       },
+      lottie: {
+        player: theftWonPlayer,
+        cpu: theftWonCpu,
+      },
       title: 'Launch Stack Stolen',
       loop: false,
     },
@@ -147,6 +188,10 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
       videoSrc: {
         player: `${SUPABASE_BASE_URL}recall_cpu_{counter}.webm`,
         cpu: `${SUPABASE_BASE_URL}recall_player_{counter}.webm`,
+      },
+      lottie: {
+        player: [mandatoryRecallPlayer1, mandatoryRecallPlayer2, mandatoryRecallPlayer3],
+        cpu: [mandatoryRecallCpu1, mandatoryRecallCpu2, mandatoryRecallCpu3],
       },
       title: 'Launch Stack Stolen',
       loop: false,
