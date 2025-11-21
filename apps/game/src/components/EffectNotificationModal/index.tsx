@@ -40,9 +40,17 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
 
   const playedCards = useMemo(() => {
     if (displayOwner === 'player') {
-      return snapshotPlayerCards.map((card) => card.card);
+      return snapshotPlayerCards.map((pcs) => pcs.card);
     }
-    return snapshotCPUCards.map((card) => card.card);
+    return snapshotCPUCards.map((pcs) => pcs.card);
+  }, [displayOwner, snapshotPlayerCards, snapshotCPUCards]);
+
+  // Create set of face-down card IDs for the current display owner
+  const faceDownCardIds = useMemo(() => {
+    const cards = displayOwner === 'player' ? snapshotPlayerCards : snapshotCPUCards;
+    return new Set(
+      cards.filter((pcs) => pcs.isFaceDown).map((pcs) => pcs.card.id)
+    );
   }, [displayOwner, snapshotPlayerCards, snapshotCPUCards]);
 
   const handleClose = () => {
@@ -219,20 +227,24 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
                   cards={playedCards}
                   selectedCard={selectedCard}
                   onCardSelect={handleCardSelect}
+                  faceDownCardIds={faceDownCardIds}
                 />
               </div>
 
               {/* Effect Details for selected card - fixed height to prevent layout shift */}
-              <div className="max-w-md flex flex-col px-10">
-                <Text variant="card-modal-title" color="text-common-ash" className="mb-4">
-                  {selectedCard?.name}
-                </Text>
-                {selectedCard?.specialActionDescription && (
-                  <Text variant="title-4" color="text-common-ash" weight="extrabold" align="left">
-                    {selectedCard?.specialActionDescription}
+              {/* Hide title and description for face-down cards */}
+              {selectedCard && !faceDownCardIds.has(selectedCard.id) && (
+                <div className="max-w-md flex flex-col px-10">
+                  <Text variant="card-modal-title" color="text-common-ash" className="mb-4">
+                    {selectedCard.name}
                   </Text>
-                )}
-              </div>
+                  {selectedCard.specialActionDescription && (
+                    <Text variant="title-4" color="text-common-ash" weight="extrabold" align="left">
+                      {selectedCard.specialActionDescription}
+                    </Text>
+                  )}
+                </div>
+              )}
             </div>
           </ModalBody>
         </Frame>
