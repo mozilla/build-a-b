@@ -339,6 +339,13 @@ export function useGameLogic() {
     // Re-fetch state after potential additional plays
     const updatedStore = useGameStore.getState();
 
+    // Re-check for Data Grab after additional plays (e.g., tracker + data grab)
+    // Data Grab ALWAYS has priority over everything
+    if (updatedStore.checkForDataGrab()) {
+      actorRef.send({ type: 'DATA_GRAB' });
+      return;
+    }
+
     // PRIORITY 3: Hostile Takeover ALWAYS triggers Data War immediately
     // checkForDataWar() includes re-trigger prevention (checks if opponent already played)
     const playerPlayedHt = updatedStore.player.playedCard?.specialType === 'hostile_takeover';
