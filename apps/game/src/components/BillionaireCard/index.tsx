@@ -38,7 +38,7 @@ export const BillionaireCard: FC<BillionaireCardProps> = ({
         <img src={imageSrc} alt={name} className="w-full h-full object-cover" />
       </div>
       <Text
-        className="max-w-[6.1rem] leading-none"
+        className="max-w-[6.1rem]"
         variant="label-extrabold"
         color="text-common-ash"
       >
