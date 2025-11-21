@@ -50,6 +50,7 @@ export function DebugUI() {
   const [showDeckDebug, setShowDeckDebug] = useState(false);
   const [showEventLog, setShowEventLog] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isDeckBuilderMinimized, setIsDeckBuilderMinimized] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Data Grab animation config state
@@ -616,20 +617,90 @@ export function DebugUI() {
           {/* Content - Scrollable */}
           {!isMinimized && (
             <div className="p-4 max-h-[80vh] overflow-y-auto space-y-4">
-                {/* Card Deck Builder */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-4">
-                  <p className="font-semibold text-purple-300">💡 Card Deck Builder:</p>
-                  
-                  {/* Instructions */}
-                  <div className="text-sm text-gray-300">
-                    <ul className="list-disc list-inside space-y-1 text-xs">
-                      <li>Select cards in the order you want them in each deck</li>
-                      <li>Selected cards will be at the top of the deck</li>
-                      <li>Remaining deck slots will be filled randomly</li>
-                      <li>Leave empty for fully random decks</li>
-                      <li>Press ↑ ↑ ↓ ↓ (keyboard) or swipe ↑ ↑ ↓ ↓ (mobile) to toggle this panel</li>
-                    </ul>
+                {/* Gameplay Options */}
+                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
+                  <p className="font-semibold text-cyan-300">⚙️ Gameplay Options:</p>
+
+                  {/* Game Speed Control */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Game Speed: {gameSpeedMultiplier.toFixed(1)}x
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.1"
+                        value={gameSpeedMultiplier}
+                        onChange={(e) => setGameSpeedMultiplier(parseFloat(e.target.value))}
+                        className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                      />
+                      <button
+                        onClick={() => setGameSpeedMultiplier(1)}
+                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded transition-colors"
+                        title="Reset to normal speed"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>0.1x (Slowest)</span>
+                      <span>0.5x</span>
+                      <span>1.0x (Normal)</span>
+                    </div>
+                    <p className="text-xs text-gray-400 italic">
+                      Affects delays and viewing times (not CSS animations or videos)
+                    </p>
                   </div>
+
+                  {/* Visual Options */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showDeckDebug}
+                        onChange={(e) => setShowDeckDebug(e.target.checked)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">Show Deck Debug Panel 🃏</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showEventLog}
+                        onChange={(e) => setShowEventLog(e.target.checked)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">Show Event Log 📋</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Card Deck Builder - Collapsible */}
+                <div className="bg-gray-800 rounded-lg border border-gray-700">
+                  <button 
+                    onClick={() => setIsDeckBuilderMinimized(!isDeckBuilderMinimized)}
+                    className="w-full p-3 flex items-center justify-between hover:bg-gray-750 transition-colors rounded-t-lg"
+                  >
+                    <p className="font-semibold text-purple-300">💡 Card Deck Builder</p>
+                    <span className="text-purple-300 text-sm">
+                      {isDeckBuilderMinimized ? '▼' : '▲'}
+                    </span>
+                  </button>
+                  
+                  {!isDeckBuilderMinimized && (
+                    <div className="p-3 pt-0 space-y-4">
+                      {/* Instructions */}
+                      <div className="text-sm text-gray-300">
+                        <ul className="list-disc list-inside space-y-1 text-xs">
+                          <li>Select cards in the order you want them in each deck</li>
+                          <li>Selected cards will be at the top of the deck</li>
+                          <li>Remaining deck slots will be filled randomly</li>
+                          <li>Leave empty for fully random decks</li>
+                          <li>Press ↑ ↑ ↓ ↓ (keyboard) or swipe ↑ ↑ ↓ ↓ (mobile) to toggle this panel</li>
+                        </ul>
+                      </div>
 
                   {/* Player Deck */}
                   <div className="space-y-3 bg-purple-900/20 rounded-lg p-2 border border-purple-700/50">
@@ -752,66 +823,8 @@ export function DebugUI() {
                       Initialize Game
                     </button>
                   </div>
-                </div>
-
-                {/* Gameplay Options */}
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 space-y-3">
-                  <p className="font-semibold text-cyan-300">⚙️ Gameplay Options:</p>
-
-                  {/* Game Speed Control */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-300">
-                      Game Speed: {gameSpeedMultiplier.toFixed(1)}x
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.1"
-                        value={gameSpeedMultiplier}
-                        onChange={(e) => setGameSpeedMultiplier(parseFloat(e.target.value))}
-                        className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                      />
-                      <button
-                        onClick={() => setGameSpeedMultiplier(1)}
-                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded transition-colors"
-                        title="Reset to normal speed"
-                      >
-                        Reset
-                      </button>
                     </div>
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>0.1x (Slowest)</span>
-                      <span>0.5x</span>
-                      <span>1.0x (Normal)</span>
-                    </div>
-                    <p className="text-xs text-gray-400 italic">
-                      Affects delays and viewing times (not CSS animations or videos)
-                    </p>
-                  </div>
-
-                  {/* Visual Options */}
-                  <div className="pt-2 border-t border-gray-700">
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={showDeckDebug}
-                        onChange={(e) => setShowDeckDebug(e.target.checked)}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">Show Deck Debug Panel 🃏</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={showEventLog}
-                        onChange={(e) => setShowEventLog(e.target.checked)}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">Show Event Log 📋</span>
-                    </label>
-                  </div>
+                  )}
                 </div>
 
                 {/* Data Grab Configuration */}
