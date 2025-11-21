@@ -14,6 +14,19 @@ import type { AudioManagerState, PlayOptions, StopOptions } from '@/types/audio'
 import type { DeckOrderStrategy } from '@/utils/deck-builder';
 
 /**
+ * Game Event - Debug event log entry
+ */
+export interface GameEvent {
+  id: string;
+  timestamp: number;
+  type: string;
+  message: string;
+  details?: string;
+  level: 'info' | 'success' | 'warning' | 'error';
+  data?: unknown;
+}
+
+/**
  * Card Distribution - Defines where a card should animate to and from
  * Used by the enhanced collection system to support both board-to-deck and deck-to-deck animations
  */
@@ -120,6 +133,7 @@ export type GameStore = {
 
   // Debug Options
   gameSpeedMultiplier: number; // Speed multiplier for delays and viewing times (0.5 = half speed, 1 = normal, 2 = double speed)
+  eventLog: GameEvent[]; // Debug event log for tracking game events
 
   // Temper Tantrum Card Selection State
   showTemperTantrumModal: boolean; // Show modal for player card selection
@@ -289,6 +303,7 @@ export type GameStore = {
 
   // Debug Actions
   setGameSpeedMultiplier: (multiplier: number) => void; // Set game speed multiplier
+  logEvent: (type: string, message: string, details?: string, level?: 'info' | 'success' | 'warning' | 'error') => void; // Log a game event
 
   // Temper Tantrum Actions
   initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void; // Prepare modal state with winner info
