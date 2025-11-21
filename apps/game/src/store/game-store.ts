@@ -111,6 +111,7 @@ export const useGameStore = create<GameStore>()(
 
       // Debug Options
       gameSpeedMultiplier: 0.6, // Default: slower speed for better UX
+      eventLog: [], // Debug event log for tracking game events
 
       // Temper Tantrum Card Selection State
       showTemperTantrumModal: false,
@@ -195,6 +196,9 @@ export const useGameStore = create<GameStore>()(
         playerCustomOrder,
         cpuCustomOrder,
       ) => {
+        // Clear event log on new game
+        set({ eventLog: [] });
+        
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
@@ -202,6 +206,15 @@ export const useGameStore = create<GameStore>()(
           playerCustomOrder,
           cpuCustomOrder,
         );
+        
+        // Log game initialization
+        get().logEvent(
+          'GAME_INIT',
+          'Game initialized',
+          `Player: ${playerStrategy}, CPU: ${cpuStrategy}`,
+          'success'
+        );
+        
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
           cpu: { ...createInitialPlayer('cpu'), deck: cpuDeck },
@@ -248,10 +261,19 @@ export const useGameStore = create<GameStore>()(
 
         if (!card) {
           // This shouldn't happen - win condition should have caught it before calling playCard
+          get().logEvent('PLAY_CARD', `${playerId} has no cards to play`, undefined, 'error');
           return;
         }
 
         const opponentId = playerId === 'player' ? 'cpu' : 'player';
+        
+        // Log card play
+        get().logEvent(
+          'PLAY_CARD',
+          `${playerId.toUpperCase()} played ${card.name} (${card.value})`,
+          card.specialType ? `Special: ${card.specialType}` : undefined,
+          'info'
+        );
 
         /**
          * Helper: Determines if a tracker/blocker card's effect should be negated
@@ -537,6 +559,14 @@ export const useGameStore = create<GameStore>()(
        * Backward compatibility wrapper - Converts old format to new CardDistribution format
        */
       collectCards: (winnerId, cards, launchStackCount = 0) => {
+        // Log collection
+        get().logEvent(
+          'COLLECT_CARDS',
+          `${winnerId.toUpperCase()} collected ${cards.length} card(s)`,
+          launchStackCount > 0 ? `Launch Stacks: ${launchStackCount}` : undefined,
+          'success'
+        );
+        
         // Convert to new format - all cards from board go to winner
         const distributions: CardDistribution[] = cards.map((card) => ({
           card,
@@ -578,11 +608,21 @@ export const useGameStore = create<GameStore>()(
       },
 
       swapDecks: () => {
-        // REFACTORED: No longer swaps actual deck data
-        // Only increments deckSwapCount to trigger visual animation
-        // Decks stay with their owners - only visuals swap positions
-        // This simplifies interaction logic (player deck is always player's data)
-        set({ deckSwapCount: get().deckSwapCount + 1 });
+        const { player, cpu } = get();
+        // Swap deck arrays between player and cpu
+        // Visual positions reset after animation, but data actually swaps
+        // If player had 40 cards and CPU had 24, after swap player has 24 and CPU has 40
+        set({
+          player: {
+            ...player,
+            deck: cpu.deck,
+          },
+          cpu: {
+            ...cpu,
+            deck: player.deck,
+          },
+          deckSwapCount: get().deckSwapCount + 1, // Increment for animation trigger
+        });
       },
 
       stealCards: (from, to, count) => {
@@ -655,6 +695,7 @@ export const useGameStore = create<GameStore>()(
           cpu.playedCard === null &&
           get().cpuLaunchStacks.length === 0
         ) {
+          get().logEvent('WIN_CONDITION', 'PLAYER wins by collecting all cards!', undefined, 'success');
           set({ winner: 'player', winCondition: 'all_cards' });
           return true;
         }
@@ -665,17 +706,20 @@ export const useGameStore = create<GameStore>()(
           player.playedCard === null &&
           get().playerLaunchStacks.length === 0
         ) {
+          get().logEvent('WIN_CONDITION', 'CPU wins by collecting all cards!', undefined, 'success');
           set({ winner: 'cpu', winCondition: 'all_cards' });
           return true;
         }
 
         // Check launch stacks (already handled in addLaunchStack)
         if (player.launchStackCount >= DEFAULT_GAME_CONFIG.launchStacksToWin) {
+          get().logEvent('WIN_CONDITION', `PLAYER wins with ${player.launchStackCount} Launch Stacks!`, undefined, 'success');
           set({ winner: 'player', winCondition: 'launch_stacks' });
           return true;
         }
 
         if (cpu.launchStackCount >= DEFAULT_GAME_CONFIG.launchStacksToWin) {
+          get().logEvent('WIN_CONDITION', `CPU wins with ${cpu.launchStackCount} Launch Stacks!`, undefined, 'success');
           set({ winner: 'cpu', winCondition: 'launch_stacks' });
           return true;
         }
@@ -934,9 +978,9 @@ export const useGameStore = create<GameStore>()(
                 get().setShowForcedEmpathyAnimation(false);
                 get().setForcedEmpathySwapping(true);
 
-                // STEP 3: After deck piles finish moving (DURATION only, no delay), increment swap counter and hide animation
+                // STEP 3: After deck piles finish moving (DURATION only, no delay), swap decks and hide animation
                 setTimeout(() => {
-                  get().swapDecks(); // Only increments deckSwapCount now, doesn't swap data
+                  get().swapDecks(); // Swaps deck data and increments deckSwapCount
                   get().setForcedEmpathySwapping(false);
 
                   // Wait for deck swap to visually settle before unblocking game
@@ -1963,6 +2007,20 @@ export const useGameStore = create<GameStore>()(
       // Debug Actions
       setGameSpeedMultiplier: (multiplier) => {
         set({ gameSpeedMultiplier: multiplier });
+      },
+
+      logEvent: (type, message, details?, level = 'info') => {
+        const event = {
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          timestamp: Date.now(),
+          type,
+          message,
+          details,
+          level,
+        };
+        set((state) => ({
+          eventLog: [...state.eventLog, event],
+        }));
       },
 
       // Temper Tantrum Actions

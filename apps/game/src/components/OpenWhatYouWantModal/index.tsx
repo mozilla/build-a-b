@@ -59,7 +59,7 @@ export const OpenWhatYouWantModal = () => {
       size="3xl"
       backdrop="blur"
       classNames={{
-        base: 'bg-[rgba(0,0,0,0.8)]',
+        base: 'frame bg-[rgba(0,0,0,0.8)]',
         body: 'py-6',
       }}
     >

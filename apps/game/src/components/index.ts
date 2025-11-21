@@ -47,6 +47,8 @@ export type { LoadingScreenProps } from './LoadingScreen';
 
 // Debug Components
 export { DebugUI } from './DebugUI';
+export { DeckDebugPanel } from './DeckDebugPanel';
+export { EventLogPanel } from './EventLogPanel';
 
 export { Menu } from './Menu';
 export { Text } from './Text';
