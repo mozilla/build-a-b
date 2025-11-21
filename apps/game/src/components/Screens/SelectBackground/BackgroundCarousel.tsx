@@ -1,7 +1,8 @@
 import { useGameStore } from '@/store';
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useRef } from 'react';
 import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperType } from 'swiper';
 import type { SwiperOptions } from 'swiper/types';
 import { BackgroundCard } from './BackgroundCard';
 import { BACKGROUNDS } from './backgrounds';
@@ -32,6 +33,7 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
   const { selectedBackground, selectBackground, playAudio } = useGameStore();
   const isFramedX = useMediaQuery(QUERIES.framedX);
   const isFramedY = useMediaQuery(QUERIES.framedY);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   const swiperOptions: Partial<SwiperOptions> = useMemo(
     () => ({
@@ -59,6 +61,13 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
     }
   };
 
+  const handleCardClick = (backgroundId: string) => {
+    const clickedIndex = BACKGROUNDS.findIndex((bg) => bg.id === backgroundId);
+    if (clickedIndex !== -1 && swiperRef.current) {
+      swiperRef.current.slideTo(clickedIndex);
+    }
+  };
+
   // Get initial slide index based on selectedBackground
   const initialSlide = selectedBackground
     ? BACKGROUNDS.findIndex((bg) => bg.id === selectedBackground)
@@ -69,6 +78,9 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
       <Swiper
         {...swiperOptions}
         initialSlide={Math.max(0, initialSlide)}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+        }}
         onSlideChange={(swiper) => {
           const currentBackground = BACKGROUNDS[swiper.activeIndex];
           if (currentBackground) handleBackgroundSelect(currentBackground.id);
@@ -85,7 +97,7 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
               imageSrc={background.imageSrc}
               name={background.name}
               isSelected={selectedBackground === background.id}
-              onPress={() => handleBackgroundSelect(background.id)}
+              onPress={() => handleCardClick(background.id)}
             />
           </SwiperSlide>
         ))}
