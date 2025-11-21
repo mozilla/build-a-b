@@ -6,6 +6,7 @@
 import { useEffect } from 'react';
 import type { GamePhase } from '../types';
 import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
+import { useGameStore } from '../store/game-store';
 
 interface useCpuPlayerOptions {
   enabled?: boolean; // Whether CPU automation is enabled (default: true)
@@ -29,11 +30,20 @@ export function useCpuPlayer(
 ) {
   const { enabled = true, delay = ANIMATION_DURATIONS.CPU_TURN_DELAY, isPaused = false } = options;
 
+  const hostileTakeoverDataWar = useGameStore((state) => state.hostileTakeoverDataWar);
+  const playerHasHT = useGameStore((state) => state.player.playedCard?.specialType === 'hostile_takeover');
+
   useEffect(() => {
     // Only automate during regular ready phase when it's CPU's turn
     // Data War phases require manual player click (both players reveal simultaneously)
+    // Exception: During HT data war when PLAYER has HT, CPU auto-plays data war cards
+    // (When CPU has HT, player still clicks manually)
     // Also check if game is not paused (e.g., effect modal is open)
-    const shouldTap = enabled && activePlayer === 'cpu' && currentPhase === 'ready' && !isPaused;
+    const isDataWarPhase =
+      currentPhase === 'data_war.reveal_face_down' || currentPhase === 'data_war.reveal_face_up.ready';
+    const shouldAutoPlayDataWar = hostileTakeoverDataWar && playerHasHT && isDataWarPhase;
+    const shouldTapReady = activePlayer === 'cpu' && currentPhase === 'ready';
+    const shouldTap = enabled && (shouldTapReady || shouldAutoPlayDataWar) && !isPaused;
 
     if (!shouldTap) {
       return;
@@ -48,5 +58,5 @@ export function useCpuPlayer(
     return () => {
       clearTimeout(timer);
     };
-  }, [enabled, activePlayer, currentPhase, delay, isPaused, onCPUTurn]);
+  }, [enabled, activePlayer, currentPhase, delay, isPaused, onCPUTurn, hostileTakeoverDataWar, playerHasHT]);
 }

@@ -59,6 +59,7 @@ export function Game() {
   const cpuBillionaire = useCpuBillionaire();
   const collecting = useGameStore((state) => state.collecting);
   const deckClickBlocked = useGameStore((state) => state.deckClickBlocked);
+  const blockTransitions = useGameStore((state) => state.blockTransitions);
   
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
   const { playAudio } = useGameStore();
@@ -88,27 +89,10 @@ export function Game() {
   // During pre_reveal.awaiting_interaction, player can tap to see modal
   // Disable clicking during card collection animation and during settling
   // IMPORTANT: Only the PLAYER's deck is ever clickable - CPU plays are automated
-  // Check if HT effect applies and player shouldn't click (CPU auto-plays)
-  // Two cases where player's deck is not clickable:
-  // 1. Player plays HT as first card → CPU auto-plays Data War cards
-  // 2. Player plays HT as face-up in existing Data War → CPU auto-plays Data War cards
-  const playerPlayedHT = player.playedCard?.specialType === 'hostile_takeover';
-  const cpuPlayedHT = cpu.playedCard?.specialType === 'hostile_takeover';
 
-  // First HT Data War: HT player has 1 card, opponent has fewer than 5
-  const isFirstHTDataWar =
-    (playerPlayedHT && player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length < 5) ||
-    (cpuPlayedHT && cpu.playedCardsInHand.length === 1 && player.playedCardsInHand.length < 5);
-
-  // HT as face-up: player has HT and has more than 1 card (not first data war)
-  // and has equal or fewer cards than CPU (before or after face-down phase)
-  const playerHTAsFaceUp =
-    playerPlayedHT &&
-    player.playedCardsInHand.length > 1 &&
-    player.playedCardsInHand.length <= cpu.playedCardsInHand.length;
-
-  // Combined: should auto-advance when player has HT (either first or face-up)
-  const shouldAutoAdvanceHT = isFirstHTDataWar || playerHTAsFaceUp;
+  // Player always clicks during data war, even HT data war
+  // CPU auto-plays as usual
+  const shouldAutoAdvanceHT = false;
 
   // Never clickable during comparison/resolution phases or win effects
   const isComparisonPhase = phase === 'comparing' || phase === 'resolving';
@@ -117,6 +101,7 @@ export function Game() {
   const canClickPlayerDeck =
     !collecting &&
     !deckClickBlocked &&
+    !blockTransitions &&
     !isComparisonPhase &&
     !showingWinEffect &&
     ((phase === 'ready' && activePlayer === 'player') ||
