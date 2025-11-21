@@ -81,6 +81,7 @@ export const NON_GAMEPLAY_PHASES = [
   'quick_start_guide',
   'your_mission',
   'vs_animation',
+  'game_over',
 ] as const;
 
 /**

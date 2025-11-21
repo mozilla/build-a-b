@@ -29,7 +29,6 @@ export const Menu: FC = () => {
     soundEffectsEnabled,
     playAudio,
     pauseAudio,
-    resumeAudio,
   } = useGameStore();
   const { quitGame, restartGame, phase } = useGameLogic();
   const phaseKey = typeof phase === 'string' ? phase : String(phase);
@@ -38,15 +37,6 @@ export const Menu: FC = () => {
   const isNonGameplayPhase = NON_GAMEPLAY_PHASES.includes(
     phaseKey as (typeof NON_GAMEPLAY_PHASES)[number],
   );
-
-  // Pause/resume music when music toggle changes
-  useEffect(() => {
-    if (musicEnabled) {
-      resumeAudio('music');
-    } else {
-      pauseAudio('music');
-    }
-  }, [musicEnabled, pauseAudio, resumeAudio]);
 
   // Pause/resume SFX when sound effects toggle changes
   useEffect(() => {
@@ -84,11 +74,6 @@ export const Menu: FC = () => {
 
   const handleQuitConfirm = () => {
     playAudio(TRACKS.WHOOSH);
-    playAudio(TRACKS.TITLE_MUSIC, {
-      loop: true,
-      volume: 0.66,
-      fadeIn: 1000,
-    });
     setShowQuitConfirm(false);
     quitGame();
   };

@@ -19,29 +19,29 @@ export const AUDIO_TRACKS = {
   /** Title music - plays during setup/menu/pause */
   title_music: {
     webm: `audio-title-music.webm`,
-    mp3: 'title-music.mp3',
+    mp3: 'audio-title-music.mp3',
     priority: 'critical',
     category: 'music',
     loop: true,
-    volume: 0.8,
-    fadeDuration: 3000, // 3s fade for VS transition
+    volume: 0.66,
+    fadeDuration: 1000,
   },
 
   /** Gameplay music - upbeat loop during turns */
   gameplay_music: {
     webm: `audio-gameplay-loop.webm`,
-    mp3: 'gameplay-music.mp3',
+    mp3: 'audio-gameplay-loop.mp3',
     priority: 'high',
     category: 'music',
     loop: true,
-    volume: 0.6,
-    fadeDuration: 2000,
+    volume: 0.5,
+    fadeDuration: 500,
   },
 
   /** Victory music - player wins */
   victory_music: {
     webm: `audio-player-win.webm`,
-    mp3: 'victory-music.mp3',
+    mp3: 'audio-player-win.mp3',
     priority: 'medium',
     category: 'music',
     loop: false,
@@ -51,7 +51,7 @@ export const AUDIO_TRACKS = {
   /** Defeat music - player loses */
   defeat_music: {
     webm: `audio-opponent-win.webm`,
-    mp3: 'defeat-music.mp3',
+    mp3: 'audio-opponent-win.mp3',
     priority: 'medium',
     category: 'music',
     loop: false,
@@ -63,7 +63,7 @@ export const AUDIO_TRACKS = {
   /** Button press - common UI interactions */
   button_press: {
     webm: `audio-button-d.webm`,
-    mp3: 'button-press.mp3',
+    mp3: 'audio-button-d.mp3',
     priority: 'critical',
     category: 'sfx',
     loop: false,
@@ -73,7 +73,7 @@ export const AUDIO_TRACKS = {
   /** Whoosh - drawer/menu/special card */
   whoosh: {
     webm: `audio-drawer_start-turn.webm`,
-    mp3: 'whoosh.mp3',
+    mp3: 'audio-drawer_start-turn.mp3',
     priority: 'critical',
     category: 'sfx',
     loop: false,
@@ -82,7 +82,7 @@ export const AUDIO_TRACKS = {
 
   cha_ching: {
     webm: 'audio-launch-stack-cha-ching.webm',
-    mp3: 'launch-stack-cha-ching.mp3',
+    mp3: 'audio-launch-stack-cha-ching.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -91,7 +91,7 @@ export const AUDIO_TRACKS = {
 
   bonk: {
     webm: 'audio-bonk.webm',
-    mp3: 'bonk.mp3',
+    mp3: 'audio-bonk.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -101,7 +101,7 @@ export const AUDIO_TRACKS = {
   /** Option focus - carousel/list item focus */
   option_focus: {
     webm: `audio-select-bg.webm`,
-    mp3: 'option-focus.mp3',
+    mp3: 'audio-select-bg.mp3',
     priority: 'critical',
     category: 'sfx',
     loop: false,
@@ -113,7 +113,7 @@ export const AUDIO_TRACKS = {
   /** Card flip - revealing cards */
   card_flip: {
     webm: `audio-card-flip.webm`,
-    mp3: 'card-flip.mp3',
+    mp3: 'audio-card-flip.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -123,7 +123,7 @@ export const AUDIO_TRACKS = {
   /** Card collect - winner takes cards */
   card_collect: {
     webm: `audio-card-collect.webm`,
-    mp3: 'card-collect.mp3',
+    mp3: 'audio-card-collect.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -133,7 +133,7 @@ export const AUDIO_TRACKS = {
   /** Turn value update */
   turn_value: {
     webm: `audio-turn-value.webm`,
-    mp3: 'turn-value.mp3',
+    mp3: 'audio-turn-value.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -142,7 +142,7 @@ export const AUDIO_TRACKS = {
 
   war_three_card: {
     webm: 'audio-war-3-card.webm',
-    mp3: 'war-3-card.mp3',
+    mp3: 'audio-war-3-card.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -154,7 +154,7 @@ export const AUDIO_TRACKS = {
   /** VS sequence - dramatic intro (synced to video) */
   vs_sequence: {
     webm: `audio-vs-animation.webm`,
-    mp3: 'vs-sequence.mp3',
+    mp3: 'audio-vs-animation.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -164,7 +164,7 @@ export const AUDIO_TRACKS = {
   /** Reverse build up - pin to front of VS options */
   reverse_buildup: {
     webm: `audio-vs-animation-reverse-build-up.webm`,
-    mp3: 'reverse-buildup.mp3',
+    mp3: 'audio-vs-animation-reverse-build-up.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -174,7 +174,7 @@ export const AUDIO_TRACKS = {
   /** GO! - end of VS sequence */
   go: {
     webm: `audio-go.webm`,
-    mp3: 'go-sfx.mp3',
+    mp3: 'audio-go.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -183,19 +183,9 @@ export const AUDIO_TRACKS = {
 
   // ===== SPECIAL EFFECTS =====
 
-  /** Special card - general effect notification */
-  special_card: {
-    webm: 'special-card.webm',
-    mp3: 'special-card.mp3',
-    priority: 'medium',
-    category: 'sfx',
-    loop: false,
-    volume: 0.9,
-  },
-
   data_war: {
     webm: 'audio-data-war.webm',
-    mp3: 'data-war.mp3',
+    mp3: 'audio-data-war.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -204,7 +194,7 @@ export const AUDIO_TRACKS = {
 
   event_takeover: {
     webm: 'audio-event-takeover.webm',
-    mp3: 'event-takeover.mp3',
+    mp3: 'audio-event-takeover.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -213,7 +203,7 @@ export const AUDIO_TRACKS = {
 
   launch_stack_rocket: {
     webm: 'audio-launch-stack-rocket.webm',
-    mp3: 'launch-stack-rocket.mp3',
+    mp3: 'audio-launch-stack-rocket.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -222,7 +212,7 @@ export const AUDIO_TRACKS = {
 
   launch_stack_collect: {
     webm: 'audio-launch-stack-card-collect.webm',
-    mp3: 'launch-stack-card-collect.mp3',
+    mp3: 'audio-launch-stack-card-collect.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -232,7 +222,7 @@ export const AUDIO_TRACKS = {
   /** Hand viewer */
   hand_viewer: {
     webm: `audio-hand-viewer_deck-swap.webm`,
-    mp3: 'hand-viewer.mp3',
+    mp3: 'audio-hand-viewer_deck-swap.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -242,7 +232,7 @@ export const AUDIO_TRACKS = {
   /** Deck swap - Forced Empathy */
   deck_swap: {
     webm: `audio-hand-viewer_deck-swap.webm`,
-    mp3: 'hand-viewer.mp3',
+    mp3: 'audio-hand-viewer_deck-swap.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -254,7 +244,7 @@ export const AUDIO_TRACKS = {
   /** Player victory - win notification */
   player_win: {
     webm: 'audio-player-win.webm',
-    mp3: 'player-win.mp3',
+    mp3: 'audio-player-win.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -264,7 +254,7 @@ export const AUDIO_TRACKS = {
   /** Opponent victory - lose notification */
   opponent_win: {
     webm: 'audio-opponent-win.webm',
-    mp3: 'opponent-win.mp3',
+    mp3: 'audio-opponent-win.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -273,7 +263,7 @@ export const AUDIO_TRACKS = {
 
   end_sequence: {
     webm: 'audio-end-sequence.webm',
-    mp3: 'end-sequence.mp3',
+    mp3: 'audio-end-sequence.mp3',
     priority: 'high',
     category: 'sfx',
     loop: false,
@@ -282,7 +272,7 @@ export const AUDIO_TRACKS = {
 
   rocket_flyby: {
     webm: 'audio-rocket-flyby.webm',
-    mp3: 'rocket-flyby.mp3',
+    mp3: 'audio-rocket-flyby.mp3',
     priority: 'medium',
     category: 'sfx',
     loop: false,
@@ -325,7 +315,6 @@ export const TRACKS = {
   GO: 'go',
 
   // Special Effects
-  SPECIAL_CARD: 'special_card',
   HAND_VIEWER: 'hand_viewer',
   LAUNCH_STACK_COLLECT: 'launch_stack_collect',
   LAUNCH_STACK_ROCKET: 'launch_stack_rocket',
@@ -370,7 +359,7 @@ export function getAudioByPriority(
 /**
  * Browser format support detection (cached)
  */
-let _supportsWebM: boolean | null = null;
+let _supportsWebM: boolean | null = false;
 
 export function supportsWebM(): boolean {
   if (_supportsWebM !== null) return _supportsWebM;

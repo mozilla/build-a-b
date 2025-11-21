@@ -178,6 +178,7 @@ export type GameStore = {
   selectedBackground: string;
   isPaused: boolean;
   showMenu: boolean;
+  showGameOverScreen: boolean; // True when GameOver screen appears (during winner video crossfade)
   audioEnabled: boolean;
   showHandViewer: boolean;
   handViewerPlayer: PlayerType;

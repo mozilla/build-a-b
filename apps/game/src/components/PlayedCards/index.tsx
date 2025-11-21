@@ -1,3 +1,4 @@
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { TRACKS } from '@/config/audio-config';
 import { motion } from 'framer-motion';
 import { type FC, useEffect, useRef } from 'react';
@@ -15,6 +16,11 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const winner = useGameStore((state) => state.collecting?.primaryWinner ?? null);
   const audioPlayedRef = useRef(false);
+  const player = useGameStore((state) => state.player);
+  const cpu = useGameStore((state) => state.cpu);
+  const cardFlipTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const prevPlayerCardsInHandLength = useRef(0);
+  const prevCpuCardsInHandLength = useRef(0);
 
   // Effect notification badge state
   const showEffectNotificationBadge = useGameStore((state) => state.showEffectNotificationBadge);
@@ -48,6 +54,61 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
 
   const { batchIdRef, cardBatchMapRef, elementRefs, settledZRef, landedMap, setLandedMap } =
     useBatchTracking(cards);
+
+  /**
+   * Plays singular card flip audio for each card as it begins its flight to the table
+   */
+  useEffect(() => {
+    /**
+     * Clear out any existing timers to keep the sfx channels clear
+     */
+    cardFlipTimersRef.current.forEach((timer) => clearTimeout(timer));
+    cardFlipTimersRef.current = [];
+
+    // Get new cards from this batch (cards that were just added)
+    const newCards = cards.filter((c) => {
+      const cardBatchId = cardBatchMapRef.current[c.card.id];
+      return cardBatchId === batchIdRef.current;
+    });
+
+    if (newCards.length === 0) return;
+    /**
+     * Detect simultaneous play to avoid overlapping sfx channels
+     */
+    const playerCardsInHandIncreased =
+      player.playedCardsInHand.length > prevPlayerCardsInHandLength.current;
+    const cpuCardsInHandIncreased = cpu.playedCardsInHand.length > prevCpuCardsInHandLength.current;
+    const bothPlayingSimultaneously = playerCardsInHandIncreased && cpuCardsInHandIncreased;
+
+    // Update refs for next render
+    prevPlayerCardsInHandLength.current = player.playedCardsInHand.length;
+    prevCpuCardsInHandLength.current = cpu.playedCardsInHand.length;
+
+    const shouldPlayAudio = bothPlayingSimultaneously ? owner === 'player' : true;
+    if (!shouldPlayAudio) return;
+
+    /**
+     * Schedule card flip audio for each new card being played
+     */
+    newCards.forEach((_, index) => {
+      const timer = setTimeout(() => {
+        playAudio(TRACKS.CARD_FLIP);
+      }, index * ANIMATION_DURATIONS.CARD_STAGGER_DELAY);
+      cardFlipTimersRef.current.push(timer);
+    });
+
+    return () => {
+      cardFlipTimersRef.current.forEach((timer) => clearTimeout(timer));
+      cardFlipTimersRef.current = [];
+    };
+    /**
+     * batchIdRef and cardBatchMapRef are stable refs from useBatchTracking.
+     *
+     * cpu.playedCardsInHand and player.playedCardsInHand are only read for detecting new cards
+     * being played, so using their lengths as dependencies should be sufficient.
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards, owner, playAudio, player.playedCardsInHand.length, cpu.playedCardsInHand.length]);
 
   // Handle card landing updates
   const handleLandedChange = (landedKey: string) => {

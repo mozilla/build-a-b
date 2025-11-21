@@ -6,7 +6,6 @@
 import { useSelector } from '@xstate/react';
 import { useEffect } from 'react';
 import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
-import { TRACKS } from '../config/audio-config';
 import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
@@ -172,9 +171,6 @@ export function useGameLogic() {
    */
   const handleRevealCards = () => {
     const store = useGameStore.getState();
-
-    // Play card flip SFX
-    store.playAudio(TRACKS.CARD_FLIP);
 
     // Safety: Only clear BLOCKING states that prevent transitions
     // Do NOT clear effect notification states - those are managed by the effect system
@@ -763,25 +759,25 @@ export function useGameLogic() {
 
     useGameStore.setState({
       player: playerHasHostileTakeover && htEffectApplies
-        ? store.player
-        : {
-            ...store.player,
-            deck: updatedPlayerDeck,
-            playedCardsInHand: [
-              ...store.player.playedCardsInHand,
-              ...playerCards.map((card) => ({ card, isFaceDown: true })),
-            ],
-          },
+          ? store.player
+          : {
+              ...store.player,
+              deck: updatedPlayerDeck,
+              playedCardsInHand: [
+                ...store.player.playedCardsInHand,
+                ...playerCards.map((card) => ({ card, isFaceDown: true })),
+              ],
+            },
       cpu: cpuHasHostileTakeover && htEffectApplies
-        ? store.cpu
-        : {
-            ...store.cpu,
-            deck: updatedCpuDeck,
-            playedCardsInHand: [
-              ...store.cpu.playedCardsInHand,
-              ...cpuCards.map((card) => ({ card, isFaceDown: true })),
-            ],
-          },
+          ? store.cpu
+          : {
+              ...store.cpu,
+              deck: updatedCpuDeck,
+              playedCardsInHand: [
+                ...store.cpu.playedCardsInHand,
+                ...cpuCards.map((card) => ({ card, isFaceDown: true })),
+              ],
+            },
       cardsInPlay: [
         ...store.cardsInPlay,
         ...(playerHasHostileTakeover && htEffectApplies ? [] : playerCards),
