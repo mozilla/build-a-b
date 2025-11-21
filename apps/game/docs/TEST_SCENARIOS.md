@@ -786,6 +786,48 @@ initializeGame(playerStrategy?, cpuStrategy?, playerCustomOrder?, cpuCustomOrder
   - Hostile Takeover triggers war
   - Blockers ignored entirely
 
+#### Scenario: Hostile Takeover after multiple data wars (complex)
+- **Init**:
+```typescript
+initializeGame(
+  'custom',
+  'custom',
+  [
+    'ls-ai-platform',
+    'common-3',
+    'move-tantrum',
+    'tracker-1',
+    'tracker-2',
+    'tracker-3',
+    'common-2',
+    'move-theft',
+    'data-grab',
+    'data-grab',
+    'common-4',
+  ],
+  [
+    'ls-government',
+    'common-1',
+    'firewall-recall',
+    'blocker-1',
+    'blocker-2',
+    'move-buyout',
+    'common-2',
+    'ls-newspaper',
+    'ls-energy-grid',
+    'ls-rocket-company',
+    'move-takeover',
+  ],
+);
+```
+- **Setup**: High complexity scenario with multiple data wars and special effect cards. CPU plays Hostile Takeover as face-up card after 2+ data wars.
+- **Expected**:
+  - HT triggers one-sided data war regardless of previous data war count
+  - No data war animation plays (instant effect)
+  - CPU auto-plays data war cards (player clicks manually)
+  - All trackers/blockers ignored during HT data war
+  - HT player wins all data war cards automatically
+
 ---
 
 ## Data War Scenarios

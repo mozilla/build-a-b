@@ -181,7 +181,6 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   return (
     <>
       <SpecialCardAnimation
-        removeBlur
         show={showAnimation}
         videoSrc={animationVideoSrc}
         className="z-1!"

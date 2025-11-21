@@ -114,6 +114,7 @@ export type GameStore = {
   isPlayingQueuedAnimation: boolean; // True when processing queued animations
   animationsPaused: boolean; // Internal: Animation queue is processing
   blockTransitions: boolean; // External: Game is paused (blocks state machine transitions during animations OR modals)
+  hostileTakeoverDataWar: boolean; // True during one-sided data war triggered by Hostile Takeover
   currentAnimationPlayer: PlayerType | null; // Tracks which player's animation is currently playing
   shownAnimationCardIds: Set<string>; // Track which card IDs have already shown animations (prevents duplicates)
 

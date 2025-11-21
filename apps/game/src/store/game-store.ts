@@ -92,6 +92,7 @@ export const useGameStore = create<GameStore>()(
       isPlayingQueuedAnimation: false,
       animationsPaused: false,
       blockTransitions: false,
+      hostileTakeoverDataWar: false,
       currentAnimationPlayer: null,
       animationCompletionCallback: null,
       shownAnimationCardIds: new Set(),
@@ -249,6 +250,7 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
+          hostileTakeoverDataWar: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -851,6 +853,7 @@ export const useGameStore = create<GameStore>()(
           // Case 1: HT player has MORE cards - HT was just played as initial card
           // This is the first time seeing HT - trigger HT's special Data War
           if (htPlayer.playedCardsInHand.length > opponent.playedCardsInHand.length) {
+            set({ hostileTakeoverDataWar: true });
             return true;
           }
 
@@ -859,18 +862,16 @@ export const useGameStore = create<GameStore>()(
           // But this should be handled differently - only opponent plays
           if (htPlayer.playedCardsInHand.length === opponent.playedCardsInHand.length) {
             // HT as face-up still triggers its effect - opponent must play alone
+            set({ hostileTakeoverDataWar: true });
             return true;
           }
 
           // Case 3: Opponent has MORE cards - returning from HT Data War
-          // Check if there's a normal tie that should trigger another Data War
-          if (opponent.playedCardsInHand.length > htPlayer.playedCardsInHand.length) {
-            if (player.playedCard && cpu.playedCard) {
-              return player.currentTurnValue === cpu.currentTurnValue;
-            }
-            return false;
+          // HT data war is complete, check for normal tie
+          set({ hostileTakeoverDataWar: false });
+          if (player.playedCard && cpu.playedCard) {
+            return player.currentTurnValue === cpu.currentTurnValue;
           }
-
           return false;
         }
 
@@ -1325,26 +1326,40 @@ export const useGameStore = create<GameStore>()(
             }
             break;
 
-          case 'launch_stack':
+          case 'launch_stack': {
+            // Gather all launch_stack effects (current one + remaining in queue)
+            const remainingQueue = get().effectsQueue;
+            const allLaunchStacks = [effect, ...remainingQueue.filter((e) => e.type === 'launch_stack')];
+
+            // Play ONE animation for all launch stacks
             get().queueAnimation('launch_stack', effect.playedBy);
             set({
               animationCompletionCallback: () => {
-                // Use destination override if set (e.g., stolen by Temper Tantrum)
-                if (effect.destinationOverride) {
-                  get().addLaunchStack(effect.destinationOverride, effect.card);
-                } else if (winner === effect.playedBy) {
-                  // Won - goes to player who played it
-                  get().addLaunchStack(effect.playedBy, effect.card);
-                } else if (winner !== 'tie') {
-                  // Lost - goes to winner
-                  const winnerId = effect.playedBy === 'player' ? 'cpu' : 'player';
-                  get().addLaunchStack(winnerId, effect.card);
+                // Process ALL launch_stack effects
+                for (const lsEffect of allLaunchStacks) {
+                  // Use destination override if set (e.g., stolen by Temper Tantrum)
+                  if (lsEffect.destinationOverride) {
+                    get().addLaunchStack(lsEffect.destinationOverride, lsEffect.card);
+                  } else if (winner === lsEffect.playedBy) {
+                    // Won - goes to player who played it
+                    get().addLaunchStack(lsEffect.playedBy, lsEffect.card);
+                  } else if (winner !== 'tie') {
+                    // Lost - goes to winner
+                    const winnerId = lsEffect.playedBy === 'player' ? 'cpu' : 'player';
+                    get().addLaunchStack(winnerId, lsEffect.card);
+                  }
                 }
+
+                // Remove remaining launch_stack effects from queue
+                const filteredQueue = get().effectsQueue.filter((e) => e.type !== 'launch_stack');
+                set({ effectsQueue: filteredQueue });
+
                 // Continue to next effect
                 get().processNextEffect();
               },
             });
             break;
+          }
         }
       },
 
@@ -1645,6 +1660,7 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
+          hostileTakeoverDataWar: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -1918,6 +1934,7 @@ export const useGameStore = create<GameStore>()(
           dataGrabCollectedByCPU: updatedCPUCards, // Store for modal display
           dataGrabGameActive: false,
           showDataGrabResults: true, // Modal opens immediately
+          blockTransitions: true, // Block deck clicks while modal is open and during collection
           cardsInPlay: [], // Don't add yet - will do after modal opens
           anotherPlayExpected: false,
           // Store distributions AND Launch Stacks for processing after modal closes
@@ -3017,6 +3034,7 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
+          hostileTakeoverDataWar: false,
           // Reset Data Grab state
           dataGrabActive: false,
           dataGrabCards: [],
