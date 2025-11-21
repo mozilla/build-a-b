@@ -89,7 +89,35 @@ export const TemperTantrumModal: FC = () => {
               selectedCard={highlightedCard}
               faceDownCardIds={faceDownCardIds} // Show cards with their board face state
               glowCardIds={new Set(selectedCards.map((c) => c.id))} // Track selected cards
-              scaleSelectedCards={true} // Scale selected cards instead of glowing
+              scaleSelectedCards={false} // Don't scale - use checkbox instead
+              renderCardContent={(card) => {
+                const isSelected = selectedCards.some((c) => c.id === card.id);
+                return (
+                  <div className="flex items-center justify-center mt-4">
+                    <div
+                      className={`w-8 h-8 rounded-[6px] border-2 border-accent flex items-center justify-center transition-all ${
+                        isSelected ? 'bg-transparent' : ''
+                      }`}
+                    >
+                      {isSelected && (
+                        <svg
+                          className="w-6 h-6 text-accent"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                );
+              }}
             />
           </div>
 

@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 
 import { Button } from '@/components/Button';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
@@ -12,8 +12,15 @@ import { BACKGROUNDS } from './backgrounds';
 import { selectBackgroundMicrocopy } from './microcopy';
 
 export const SelectBackground: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
-  const { selectedBackground, playAudio } = useGameStore();
+  const { selectedBackground, selectBackground, playAudio } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBackground || BACKGROUNDS[0].id);
+
+  // Automatically select the first background if none is selected (first game)
+  useEffect(() => {
+    if (!selectedBackground) {
+      selectBackground(BACKGROUNDS[0].id);
+    }
+  }, [selectedBackground, selectBackground]);
 
   const handleBackgroundSelect = (backgroundId: string) => {
     playAudio(TRACKS.OPTION_FOCUS);
