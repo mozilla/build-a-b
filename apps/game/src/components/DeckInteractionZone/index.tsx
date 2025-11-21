@@ -25,7 +25,7 @@ export const DeckInteractionZone: FC<DeckInteractionZoneProps> = ({
   position,
   onClick,
   tooltipContent,
-  activeIndicator = false,
+  activeIndicator: _activeIndicator = false,
   className,
 }) => {
   const isClickable = !!onClick;
