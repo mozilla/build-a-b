@@ -146,12 +146,14 @@ export const ScreenRenderer: FC = () => {
     if (phaseKey !== 'game_over') {
       setShowGameOverCrossfade(false);
       setIsCrossfadeComplete(false);
+      useGameStore.setState({ showGameOverScreen: false });
     }
   }, [phaseKey]);
 
   // Memoize callbacks to prevent WinnerAnimation from re-rendering
   const handleGameOverCrossfadeStart = useCallback(() => {
     setShowGameOverCrossfade(true);
+    useGameStore.setState({ showGameOverScreen: true });
   }, []);
 
   const handleGameOverCrossfadeComplete = useCallback(() => {
