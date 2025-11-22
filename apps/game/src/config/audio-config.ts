@@ -37,25 +37,17 @@ export const AUDIO_TRACKS = {
     volume: 0.5,
     fadeDuration: 500,
   },
-
-  /** Victory music - player wins */
-  victory_music: {
-    webm: `audio-player-win.webm`,
-    mp3: 'audio-player-win.mp3',
-    priority: 'medium',
+  /**
+   * This plays on the music channel and serves as the bridge between
+   * the gameplay music and the game over title music, similarly to vs_sequence.
+   */
+  end_sequence: {
+    webm: 'audio-end-sequence.webm',
+    mp3: 'audio-end-sequence.mp3',
+    priority: 'high',
     category: 'music',
     loop: false,
-    volume: 0.9,
-  },
-
-  /** Defeat music - player loses */
-  defeat_music: {
-    webm: `audio-opponent-win.webm`,
-    mp3: 'audio-opponent-win.mp3',
-    priority: 'medium',
-    category: 'music',
-    loop: false,
-    volume: 0.9,
+    volume: 1.0,
   },
 
   // ===== UI SOUND EFFECTS =====
@@ -149,14 +141,34 @@ export const AUDIO_TRACKS = {
     volume: 1.0,
   },
 
-  // ===== VS ANIMATION SOUNDS =====
+  player_hand_win: {
+    webm: `audio-player-win.webm`,
+    mp3: 'audio-player-win.mp3',
+    priority: 'medium',
+    category: 'sfx',
+    loop: false,
+    volume: 0.9,
+  },
 
-  /** VS sequence - dramatic intro (synced to video) */
+  cpu_hand_win: {
+    webm: `audio-opponent-win.webm`,
+    mp3: 'audio-opponent-win.mp3',
+    priority: 'medium',
+    category: 'sfx',
+    loop: false,
+    volume: 0.75,
+  },
+
+  // ===== VS ANIMATION SOUNDS =====
+  /**
+   * This plays on the music channel and serves as the bridge between
+   * the title music and the gameplay music, similarly to end_sequence.
+   */
   vs_sequence: {
     webm: `audio-vs-animation.webm`,
     mp3: 'audio-vs-animation.mp3',
     priority: 'high',
-    category: 'sfx',
+    category: 'music',
     loop: false,
     volume: 1.0,
   },
@@ -239,36 +251,7 @@ export const AUDIO_TRACKS = {
     volume: 0.8,
   },
 
-  // ===== WIN/LOSE SOUNDS =====
-
-  /** Player victory - win notification */
-  player_win: {
-    webm: 'audio-player-win.webm',
-    mp3: 'audio-player-win.mp3',
-    priority: 'high',
-    category: 'sfx',
-    loop: false,
-    volume: 1.0,
-  },
-
-  /** Opponent victory - lose notification */
-  opponent_win: {
-    webm: 'audio-opponent-win.webm',
-    mp3: 'audio-opponent-win.mp3',
-    priority: 'high',
-    category: 'sfx',
-    loop: false,
-    volume: 1.0,
-  },
-
-  end_sequence: {
-    webm: 'audio-end-sequence.webm',
-    mp3: 'audio-end-sequence.mp3',
-    priority: 'high',
-    category: 'sfx',
-    loop: false,
-    volume: 1.0,
-  },
+  // ===== GAME OVER SOUNDS =====
 
   rocket_flyby: {
     webm: 'audio-rocket-flyby.webm',
@@ -293,8 +276,6 @@ export const TRACKS = {
   // Music
   TITLE_MUSIC: 'title_music',
   GAMEPLAY_MUSIC: 'gameplay_music',
-  VICTORY_MUSIC: 'victory_music',
-  DEFEAT_MUSIC: 'defeat_music',
 
   // UI Sound Effects
   BUTTON_PRESS: 'button_press',
@@ -308,6 +289,8 @@ export const TRACKS = {
   CARD_COLLECT: 'card_collect',
   TURN_VALUE: 'turn_value',
   WAR_THREE_CARD: 'war_three_card',
+  PLAYER_HAND_WIN: 'player_hand_win',
+  CPU_HAND_WIN: 'cpu_hand_win',
 
   // VS Animation
   VS_SEQUENCE: 'vs_sequence',
@@ -322,12 +305,8 @@ export const TRACKS = {
   EVENT_TAKEOVER: 'event_takeover',
   DECK_SWAP: 'deck_swap',
 
-  // Win/Lose
-  PLAYER_WIN: 'player_win',
-  OPPONENT_WIN: 'opponent_win',
+  // End Sequence / Post Game
   END_SEQUENCE: 'end_sequence',
-
-  // Game Over
   ROCKET_FLYBY: 'rocket_flyby',
 } as const satisfies Record<string, AudioTrackId>;
 

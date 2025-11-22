@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 import { introMicrocopy } from './microcopy';
 
 export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
-  const { selectedBillionaire, playAudio, stopAudio } = useGameStore();
+  const { selectedBillionaire, playAudio } = useGameStore();
 
   const handleShowGuide = () => {
     playAudio(TRACKS.WHOOSH);
@@ -20,10 +20,6 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
   };
 
   const handleSkipInstructions = () => {
-    stopAudio({
-      channel: 'music',
-      trackId: TRACKS.TITLE_MUSIC,
-    });
     send?.({ type: 'SKIP_INSTRUCTIONS' });
   };
 

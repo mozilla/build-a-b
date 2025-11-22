@@ -17,7 +17,6 @@ import { TRACKS } from '@/config/audio-config';
 import { useGameLogic } from '@/hooks/use-game-logic';
 import { QUERIES, useMediaQuery } from '@/hooks/use-media-query';
 import { usePreloading } from '@/hooks/use-preloading';
-import { NON_GAMEPLAY_PHASES } from '@/machines/game-flow-machine';
 import { useGameStore } from '@/store';
 import { getBackgroundImage } from '@/utils/selectors';
 import { Button } from '@heroui/react';
@@ -26,7 +25,6 @@ import {
   Fragment,
   useCallback,
   useEffect,
-  useRef,
   useState,
   type FC,
   type PropsWithChildren,
@@ -88,9 +86,6 @@ export const ScreenRenderer: FC = () => {
   } = useGameStore();
 
   const playAudio = useGameStore((state) => state.playAudio);
-  const stopAudio = useGameStore((state) => state.stopAudio);
-  const isTitleMusicReady = useGameStore((state) => state.audioTracksReady.has(TRACKS.TITLE_MUSIC));
-  const titleMusicPlaying = useRef(false);
 
   // State for GameOver screen crossfade
   const [showGameOverCrossfade, setShowGameOverCrossfade] = useState(false);
@@ -159,32 +154,6 @@ export const ScreenRenderer: FC = () => {
   const handleGameOverCrossfadeComplete = useCallback(() => {
     setIsCrossfadeComplete(true);
   }, []);
-
-  // Play title music during non-gameplay phases (welcome through vs_animation)
-  // Stop it when entering the 'ready' state (gameplay starts)
-  useEffect(() => {
-    const phaseKey = typeof currentPhase === 'string' ? currentPhase : String(currentPhase);
-    const isNonGameplayPhase = NON_GAMEPLAY_PHASES.includes(
-      phaseKey as (typeof NON_GAMEPLAY_PHASES)[number],
-    );
-
-    if (isNonGameplayPhase && isTitleMusicReady && !titleMusicPlaying.current) {
-      playAudio(TRACKS.TITLE_MUSIC, {
-        loop: true,
-        volume: 0.66,
-        fadeIn: 1000,
-      }).then((isPlaying) => {
-        titleMusicPlaying.current = isPlaying;
-      });
-    } else if (!isNonGameplayPhase) {
-      // Stop title music when entering gameplay (ready state)
-      stopAudio({
-        channel: 'music',
-        trackId: TRACKS.TITLE_MUSIC,
-        fadeOut: 2000,
-      });
-    }
-  }, [currentPhase, isTitleMusicReady, playAudio, stopAudio]);
 
   // Fallback if phase not found
   if (!ScreenComponent) {

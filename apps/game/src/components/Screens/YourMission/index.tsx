@@ -8,14 +8,13 @@ import { useGameStore } from '@/store';
 import { getBillionaireImage } from '@/utils/selectors';
 
 import burstAnimation from '@/assets/animations/effects/burst.json';
-import { TRACKS } from '@/config/audio-config';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { AnimatedRocket } from './AnimatedRocket';
 import { yourMissionMicrocopy } from './microcopy';
 
 export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
-  const { selectedBillionaire, stopAudio } = useGameStore();
+  const { selectedBillionaire } = useGameStore();
   const [showConfetti, setShowConfetti] = useState(false);
 
   // Start confetti after third rocket completes its pulse (1.3s delay + 0.8s duration = 2.1s)
@@ -28,10 +27,6 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
   }, []);
 
   const handleContinue = () => {
-    stopAudio({
-      channel: 'music',
-      trackId: TRACKS.TITLE_MUSIC,
-    });
     send?.({ type: 'START_PLAYING' });
   };
 
