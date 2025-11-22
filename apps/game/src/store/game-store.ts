@@ -1258,7 +1258,8 @@ export const useGameStore = create<GameStore>()(
                   if (launchStackCount > 0) {
                     set({ recallReturnCount: launchStackCount });
                     get().removeLaunchStacks(opponentId, launchStackCount);
-                    get().queueAnimation('mandatory_recall_won', effect.playedBy);
+                    // Animation shows from opponent's side (they're losing the cards)
+                    get().queueAnimation('mandatory_recall_won', opponentId);
                   }
                   // Continue to next effect
                   get().processNextEffect();
