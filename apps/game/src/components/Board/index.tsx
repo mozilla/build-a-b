@@ -1,5 +1,4 @@
 import { Icon } from '@/components/Icon';
-import { useMusicManager } from '@/hooks/use-music-manager';
 import { useGameStore } from '@/store';
 import { Button } from '@heroui/react';
 import { type FC, type PropsWithChildren } from 'react';
@@ -8,9 +7,6 @@ import type { BoardProps } from './types';
 
 export const Board: FC<PropsWithChildren<BoardProps>> = ({ children, bgSrc }) => {
   const toggleMenu = useGameStore((state) => state.toggleMenu);
-
-  // Centralized music management - handles all music transitions
-  useMusicManager();
 
   return (
     <Frame backgroundSrc={bgSrc} className="px-6 pt-7 pb-4 flex flex-col justify-center">

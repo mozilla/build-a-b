@@ -32,6 +32,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   const isEffectTimerActive = useGameStore((state) => state.isEffectTimerActive);
   const stopEffectBadgeTimer = useGameStore((state) => state.stopEffectBadgeTimer);
 
+  const showDataGrabResults = useGameStore((state) => state.showDataGrabResults);
+
   // Determine derived state
   const isCPU = owner === 'cpu';
   const isSwapped = deckSwapCount % 2 === 1;
@@ -88,6 +90,13 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
     if (!shouldPlayAudio) return;
 
     /**
+     * The collection method for data grab involves putting cards back into each
+     * player's hand, which subsequently triggers this effect. Using the same store
+     * property that displays the modal to gate audio playback.
+     */
+    if (showDataGrabResults) return;
+
+    /**
      * Schedule card flip audio for each new card being played
      */
     newCards.forEach((_, index) => {
@@ -108,7 +117,14 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
      * being played, so using their lengths as dependencies should be sufficient.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, owner, playAudio, player.playedCardsInHand.length, cpu.playedCardsInHand.length]);
+  }, [
+    cards,
+    owner,
+    playAudio,
+    player.playedCardsInHand.length,
+    cpu.playedCardsInHand.length,
+    showDataGrabResults,
+  ]);
 
   // Handle card landing updates
   const handleLandedChange = (landedKey: string) => {
