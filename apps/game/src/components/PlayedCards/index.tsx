@@ -136,8 +136,8 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   const ownerEffects = accumulatedEffects.filter((effect) => effect.playedBy === owner);
   const ownerLaunchStacksCards =
     owner === 'player'
-      ? player.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack')
-      : cpu.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack');
+      ? player.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack' && !c.isFaceDown)
+      : cpu.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack' && !c.isFaceDown);
   const shouldShowBadge = showEffectNotificationBadge && ownerEffects.length > 0;
 
   // Tooltip configuration

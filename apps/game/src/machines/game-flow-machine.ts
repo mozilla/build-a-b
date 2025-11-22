@@ -317,19 +317,14 @@ export const gameFlowMachine = createMachine(
           reveal_face_down: {
             entry: () => {
               // Reset turn values after animation completes (fresh start for Data War cards)
-              const { player, cpu } = useGameStore.getState();
+              const store = useGameStore.getState();
+              const { player, cpu } = store;
               const playerHasHostileTakeover =
                 player.playedCard?.specialType === 'hostile_takeover';
               const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-              // Check if HT effect applies (preserves HT owner's value)
-              const isFirstDataWar =
-                player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
-              const htAsFaceUp =
-                (playerHasHostileTakeover || cpuHasHostileTakeover) &&
-                player.playedCardsInHand.length === cpu.playedCardsInHand.length &&
-                player.playedCardsInHand.length > 1;
-              const htEffectApplies = isFirstDataWar || htAsFaceUp;
+              // Use the hostileTakeoverDataWar flag set by checkForDataWar
+              const htEffectApplies = store.hostileTakeoverDataWar;
 
               useGameStore.setState({
                 player: {

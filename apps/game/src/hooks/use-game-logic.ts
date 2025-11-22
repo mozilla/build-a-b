@@ -323,17 +323,40 @@ export function useGameLogic() {
 
     // PRIORITY 2: Handle CPU "another play" cards BEFORE Data War checks
     // CPU auto-plays their additional card; player clicks to play theirs
-    // EXCEPTION: HT ignores opponent's trackers/blockers, so skip their "another play"
+    // EXCEPTION: HT ignores opponent's trackers/blockers, but only on FIRST card
     const playerHasHT = store.player.playedCard?.specialType === 'hostile_takeover';
     const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
 
-    // Skip CPU's "another play" if player has HT (HT ignores trackers/blockers)
+    // HT only negates opponent's FIRST card (original play), not data war face-up cards
+    const htNegatesCPU = playerHasHT && store.cpu.playedCardsInHand.length === 1;
+
+    // Skip CPU's "another play" if HT negates their first card
     // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
-    if (cpuTriggersAnother && store.cpu.deck.length > 0 && !playerHasHT) {
+    if (cpuTriggersAnother && store.cpu.deck.length > 0 && !htNegatesCPU) {
       playCard('cpu');
       const newState = useGameStore.getState();
       if (newState.cpu.playedCard) {
         handleCardEffect(newState.cpu.playedCard, 'cpu');
+
+        // If CPU played an instant-animation card as "another play", show animation before continuing
+        // This handles HT, and any future instant-animation cards that can be played as "another play"
+        const instantAnimationTypes = ['hostile_takeover', 'tracker_smacker', 'forced_empathy'];
+        if (instantAnimationTypes.includes(newState.cpu.playedCard.specialType || '')) {
+          // Wait for card to settle on board before showing animation
+          const settleDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY);
+          setTimeout(() => {
+            const currentState = useGameStore.getState();
+            const hasAnimations = currentState.queueSpecialCardAnimations();
+            if (hasAnimations) {
+              currentState.setAnimationCompletionCallback(() => {
+                handleCompareTurnContinued();
+              });
+            } else {
+              handleCompareTurnContinued();
+            }
+          }, settleDelay);
+          return;
+        }
       }
     }
 
@@ -352,7 +375,8 @@ export function useGameLogic() {
     const playerPlayedHt = updatedStore.player.playedCard?.specialType === 'hostile_takeover';
     const cpuPlayedHt = updatedStore.cpu.playedCard?.specialType === 'hostile_takeover';
     if (playerPlayedHt || cpuPlayedHt) {
-      if (updatedStore.checkForDataWar()) {
+      const dataWarResult = updatedStore.checkForDataWar();
+      if (dataWarResult) {
         // Trigger Data War immediately
         actorRef.send({ type: 'TIE' });
 
@@ -362,9 +386,12 @@ export function useGameLogic() {
           updatedStore.prepareEffectNotification();
         }, ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION);
 
+        console.log('[HT CHECK] Returning after TIE event');
         return;
       }
     }
+
+    console.log('[HT CHECK] Did NOT trigger HT data war - continuing to normal flow');
 
     // PRIORITY 4: Normal Data War (tie)
     // Skip data war if we're in another play mode and expecting more cards
@@ -444,24 +471,28 @@ export function useGameLogic() {
 
     // Check if either card triggers "another play"
     // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
-    // HT ignores opponent's trackers/blockers, so their "another play" is skipped
+    // HT ignores opponent's trackers/blockers, but only on FIRST card
     const playerCard = store.player.playedCard;
     const cpuCard = store.cpu.playedCard;
     const playerHasHT = playerCard?.specialType === 'hostile_takeover';
     const cpuHasHT = cpuCard?.specialType === 'hostile_takeover';
 
-    // Player triggers another play (unless CPU has HT which ignores it)
+    // HT only negates opponent's FIRST card (original play), not data war face-up cards
+    const htNegatesPlayer = cpuHasHT && store.player.playedCardsInHand.length === 1;
+    const htNegatesCPU = playerHasHT && store.cpu.playedCardsInHand.length === 1;
+
+    // Player triggers another play (unless CPU has HT which ignores their first card)
     const playerTriggersAnother =
       playerCard &&
-      !cpuHasHT && // HT ignores opponent's tracker/blocker
+      !htNegatesPlayer && // HT only ignores opponent's FIRST card
       shouldTriggerAnotherPlay(playerCard) &&
       (playerCard.specialType === 'launch_stack' ||
         !isEffectBlocked(store.trackerSmackerActive, 'player'));
 
-    // CPU triggers another play (unless player has HT which ignores it)
+    // CPU triggers another play (unless player has HT which ignores their first card)
     const cpuTriggersAnother =
       cpuCard &&
-      !playerHasHT && // HT ignores opponent's tracker/blocker
+      !htNegatesCPU && // HT only ignores opponent's FIRST card
       shouldTriggerAnotherPlay(cpuCard) &&
       (cpuCard.specialType === 'launch_stack' ||
         !isEffectBlocked(store.trackerSmackerActive, 'cpu'));
@@ -521,21 +552,25 @@ export function useGameLogic() {
     } else {
       // Normal mode - check both players
       // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
-      // HT ignores opponent's trackers/blockers, so their "another play" is skipped
+      // HT ignores opponent's trackers/blockers, but only on FIRST card
       const playerHasHT = p.playedCard?.specialType === 'hostile_takeover';
       const cpuHasHT = c.playedCard?.specialType === 'hostile_takeover';
 
-      // Player triggers another play (unless CPU has HT which ignores it)
+      // HT only negates opponent's FIRST card (original play), not data war face-up cards
+      const htNegatesPlayer = cpuHasHT && p.playedCardsInHand.length === 1;
+      const htNegatesCPU = playerHasHT && c.playedCardsInHand.length === 1;
+
+      // Player triggers another play (unless CPU has HT which ignores their first card)
       const playerTriggersAnother =
         p.playedCard &&
-        !cpuHasHT && // HT ignores opponent's tracker/blocker
+        !htNegatesPlayer && // HT only ignores opponent's FIRST card
         shouldTriggerAnotherPlay(p.playedCard) &&
         (p.playedCard.specialType === 'launch_stack' || !checkIfBlocked('player'));
 
-      // CPU triggers another play (unless player has HT which ignores it)
+      // CPU triggers another play (unless player has HT which ignores their first card)
       const cpuTriggersAnother =
         c.playedCard &&
-        !playerHasHT && // HT ignores opponent's tracker/blocker
+        !htNegatesCPU && // HT only ignores opponent's FIRST card
         shouldTriggerAnotherPlay(c.playedCard) &&
         (c.playedCard.specialType === 'launch_stack' || !checkIfBlocked('cpu'));
 
@@ -762,16 +797,9 @@ export function useGameLogic() {
     const playerHasHostileTakeover = store.player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = store.cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Check if HT effect applies (either first data war OR HT was just played as face-up)
-    // First data war: both players have exactly 1 card
-    // HT as face-up: both have equal cards > 1 (HT was revealed as face-up in existing Data War)
-    const isFirstDataWar =
-      store.player.playedCardsInHand.length === 1 && store.cpu.playedCardsInHand.length === 1;
-    const htPlayedAsFaceUp =
-      (playerHasHostileTakeover || cpuHasHostileTakeover) &&
-      store.player.playedCardsInHand.length === store.cpu.playedCardsInHand.length &&
-      store.player.playedCardsInHand.length > 1;
-    const htEffectApplies = isFirstDataWar || htPlayedAsFaceUp;
+    // Use the hostileTakeoverDataWar flag set by checkForDataWar
+    // This correctly handles all HT scenarios including HT played as "another play"
+    const htEffectApplies = store.hostileTakeoverDataWar;
 
     // Add 3 cards face-down from each player ONLY if not hostile takeover is played
     const playerCards = store.player.deck.slice(0, 3);
@@ -815,21 +843,14 @@ export function useGameLogic() {
    */
   const handleDataWarFaceUp = () => {
     // Play one card from each player that does not have hostile_takeover in hand.
-    const { player, cpu } = useGameStore.getState();
+    const store = useGameStore.getState();
+    const { player, cpu } = store;
     const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
     const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-    // Check if HT effect applies (first HT Data War only, not subsequent ties)
-    // HT effect applies when opponent just played 3 face-down cards (difference is exactly 3)
-    // After a tie, the difference becomes 4+, so HT effect no longer applies
-    const playerCards = player.playedCardsInHand.length;
-    const cpuCards = cpu.playedCardsInHand.length;
-
-    // First turn HT: player 1, CPU 4, diff = 3
-    // HT as face-up: player N, CPU N+3, diff = 3
-    const htEffectApplies =
-      (playerHasHostileTakeover && cpuCards - playerCards === 3) ||
-      (cpuHasHostileTakeover && playerCards - cpuCards === 3);
+    // Use the hostileTakeoverDataWar flag set by checkForDataWar
+    // This correctly handles all HT scenarios including HT played as "another play"
+    const htEffectApplies = store.hostileTakeoverDataWar;
 
     // Track who plays in this phase
     const playerPlays = !(playerHasHostileTakeover && htEffectApplies);

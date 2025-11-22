@@ -107,8 +107,9 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     },
     hostile_takeover: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+        // This should be fixed in supabase, but for now I'm doing a code change to fix animation
+        player: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+        cpu: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
       },
       title: 'Hostile Takeover',
       loop: true,
