@@ -479,6 +479,8 @@ export const useGameStore = create<GameStore>()(
                 const hasWon = get().checkWinCondition();
                 if (hasWon) {
                   set({ shouldTransitionToWin: true });
+                  // Clear pre-reveal effects (like OWYW) - game is over, don't need them
+                  get().clearPreRevealEffects();
                 }
               }
 
@@ -543,6 +545,8 @@ export const useGameStore = create<GameStore>()(
               const hasWon = get().checkWinCondition();
               if (hasWon) {
                 set({ shouldTransitionToWin: true });
+                // Clear pre-reveal effects (like OWYW) - game is over, don't need them
+                get().clearPreRevealEffects();
               }
             }
           }, ANIMATION_DURATIONS.CARD_COLLECTION);

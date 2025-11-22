@@ -73,7 +73,7 @@ export const ANIMATION_DURATIONS = {
   WIN_ANIMATION: 1200, // Normal win animation for turns that resolve
   WIN_ANIMATION_FAST: 400, // Fast for "another play" (trackers/blockers/launch stacks)
   OWYW_ANIMATION: 2000,
-  SPECIAL_EFFECT_DISPLAY: 4000,
+  SPECIAL_EFFECT_DISPLAY: 6000,
   VS_ANIMATION_DURATION: 3000, // Approximate duration - actual transition triggered by video 'ended' event
 
   // Instant animation delay (used for all animations that play immediately when card is revealed)
