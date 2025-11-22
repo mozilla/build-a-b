@@ -9,6 +9,7 @@ import { useGameStore } from '../../store';
 import { Text } from '@/components';
 import { CardCarousel } from '../CardCarousel';
 import type { Card } from '../../types';
+import TantrumImage from '../../assets/special-effects/tantrum.webp';
 
 export const TemperTantrumModal: FC = () => {
   const showModal = useGameStore((state) => state.showTemperTantrumModal);
@@ -64,14 +65,12 @@ export const TemperTantrumModal: FC = () => {
       <ModalContent className="relative">
         <ModalBody className="flex flex-col items-center justify-center gap-6">
           {/* Title */}
-          <Text variant="title-2" className="text-common-ash text-center">
-            Temper Tantrum - Steal Cards
-          </Text>
-
-          {/* Subtitle */}
-          <Text variant="body-large" className="text-common-ash text-center">
-            Select {maxSelections} {maxSelections === 1 ? 'card' : 'cards'} from the winner's pile
-          </Text>
+          <div className="flex justify-between items-center">
+            <img src={TantrumImage} width={160} height={160} />
+            <Text variant="title-6" className="text-common-ash text-left text-balance">
+              Choose 2 cards to steal from the winner's win pile:
+            </Text>
+          </div>
 
           {/* Selection Counter */}
           <div className="flex items-center gap-2">

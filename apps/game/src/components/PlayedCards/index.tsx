@@ -118,6 +118,10 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   // Check if badge should show (persists until modal shown or turn ends)
   // Only show badge on the side that has accumulated effects
   const ownerEffects = accumulatedEffects.filter((effect) => effect.playedBy === owner);
+  const ownerLaunchStacksCards =
+    owner === 'player'
+      ? player.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack')
+      : cpu.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack');
   const shouldShowBadge = showEffectNotificationBadge && ownerEffects.length > 0;
 
   // Tooltip configuration
@@ -238,7 +242,10 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
             }}
           >
             <div className="cursor-pointer" onClick={handleBadgeClick}>
-              <EffectNotificationBadge accumulatedEffects={ownerEffects} />
+              <EffectNotificationBadge
+                accumulatedEffects={ownerEffects}
+                accumulatedLaunchStackCards={ownerLaunchStacksCards.length}
+              />
             </div>
           </Tooltip>
         </motion.div>
