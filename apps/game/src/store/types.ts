@@ -351,6 +351,7 @@ export type GameStore = {
   toggleHandViewer: (player?: PlayerType) => void;
   toggleMusic: () => void;
   toggleSoundEffects: () => void;
+  toggleAllSound: () => void; // Toggle both music and sound: if either is on → both off, if both off → both on
   toggleInstructions: () => void;
   setShowTooltip: (show: boolean) => void;
 

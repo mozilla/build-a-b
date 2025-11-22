@@ -76,6 +76,9 @@ export const ScreenRenderer: FC = () => {
   const { phase: currentPhase, send } = useGameLogic();
   const {
     toggleMenu,
+    toggleAllSound,
+    musicEnabled,
+    soundEffectsEnabled,
     selectedBackground,
     selectedBillionaire,
     criticalPriorityAssetsReady,
@@ -86,6 +89,9 @@ export const ScreenRenderer: FC = () => {
   } = useGameStore();
 
   const playAudio = useGameStore((state) => state.playAudio);
+
+  // Show muted icon only when BOTH music and sound effects are off
+  const isAllSoundOff = !musicEnabled && !soundEffectsEnabled;
 
   // State for GameOver screen crossfade
   const [showGameOverCrossfade, setShowGameOverCrossfade] = useState(false);
@@ -268,12 +274,23 @@ export const ScreenRenderer: FC = () => {
                 className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
               >
                 {showCloseIcon && (
-                  <div className="absolute top-5 right-5">
+                  <div className="absolute top-5 right-5 flex items-center gap-4">
+                    <Button
+                      onPress={() => {
+                        playAudio(TRACKS.BUTTON_PRESS, { volume: 0.5 });
+                        toggleAllSound();
+                      }}
+                      className="px-0 w-6 h-8"
+                      aria-label={isAllSoundOff ? 'Unmute all sound' : 'Mute all sound'}
+                    >
+                      <Icon name={isAllSoundOff ? 'soundOff' : 'soundOn'} className="w-6 h-8" />
+                    </Button>
                     <Button
                       onPress={() => {
                         playAudio(TRACKS.BUTTON_PRESS, { volume: 0.5 });
                         toggleMenu();
                       }}
+                      className="px-0 w-6 h-[1.375rem]"
                     >
                       <Icon name="pause" label="pause" className="w-6 h-[1.375rem]" />
                     </Button>

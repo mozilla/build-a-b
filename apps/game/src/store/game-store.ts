@@ -2268,6 +2268,29 @@ export const useGameStore = create<GameStore>()(
         localStorage.setItem('soundEffectsEnabled', String(newValue));
       },
 
+      toggleAllSound: () => {
+        const state = get();
+        const bothOff = !state.musicEnabled && !state.soundEffectsEnabled;
+        
+        if (bothOff) {
+          // Both are OFF → Turn both ON
+          set({
+            musicEnabled: true,
+            soundEffectsEnabled: true,
+          });
+          localStorage.setItem('musicEnabled', 'true');
+          localStorage.setItem('soundEffectsEnabled', 'true');
+        } else {
+          // Either or both are ON → Turn both OFF
+          set({
+            musicEnabled: false,
+            soundEffectsEnabled: false,
+          });
+          localStorage.setItem('musicEnabled', 'false');
+          localStorage.setItem('soundEffectsEnabled', 'false');
+        }
+      },
+
       toggleInstructions: () => {
         set({ showInstructions: !get().showInstructions });
       },
