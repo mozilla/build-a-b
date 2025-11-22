@@ -92,7 +92,6 @@ export const useGameStore = create<GameStore>()(
       isPlayingQueuedAnimation: false,
       animationsPaused: false,
       blockTransitions: false,
-      hostileTakeoverDataWar: false,
       currentAnimationPlayer: null,
       animationCompletionCallback: null,
       shownAnimationCardIds: new Set(),
@@ -112,7 +111,6 @@ export const useGameStore = create<GameStore>()(
 
       // Debug Options
       gameSpeedMultiplier: 0.6, // Default: slower speed for better UX
-      eventLog: [], // Debug event log for tracking game events
 
       // Temper Tantrum Card Selection State
       showTemperTantrumModal: false,
@@ -134,7 +132,6 @@ export const useGameStore = create<GameStore>()(
       selectedBackground: '',
       isPaused: false,
       showMenu: false,
-      showGameOverScreen: false,
       audioEnabled: true,
       showHandViewer: false,
       handViewerPlayer: 'player',
@@ -198,9 +195,6 @@ export const useGameStore = create<GameStore>()(
         playerCustomOrder,
         cpuCustomOrder,
       ) => {
-        // Clear event log on new game
-        set({ eventLog: [] });
-
         const { playerDeck, cpuDeck } = initializeGameDeck(
           DEFAULT_GAME_CONFIG,
           playerStrategy,
@@ -208,15 +202,6 @@ export const useGameStore = create<GameStore>()(
           playerCustomOrder,
           cpuCustomOrder,
         );
-
-        // Log game initialization
-        get().logEvent(
-          'GAME_INIT',
-          'Game initialized',
-          `Player: ${playerStrategy}, CPU: ${cpuStrategy}`,
-          'success',
-        );
-
         set({
           player: { ...createInitialPlayer('player'), deck: playerDeck },
           cpu: { ...createInitialPlayer('cpu'), deck: cpuDeck },
@@ -251,7 +236,6 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
-          hostileTakeoverDataWar: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -264,26 +248,18 @@ export const useGameStore = create<GameStore>()(
 
         if (!card) {
           // This shouldn't happen - win condition should have caught it before calling playCard
-          get().logEvent('PLAY_CARD', `${playerId} has no cards to play`, undefined, 'error');
           return;
         }
 
         const opponentId = playerId === 'player' ? 'cpu' : 'player';
 
-        // Log card play
-        get().logEvent(
-          'PLAY_CARD',
-          `${playerId.toUpperCase()} played ${card.name} (${card.value})`,
-          card.specialType ? `Special: ${card.specialType}` : undefined,
-          'info',
-        );
-
         /**
          * Helper: Determines if a tracker/blocker card's effect should be negated
          * Effects are negated if:
          * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
-         * 2. Hostile Takeover data war is active (HT ignores opponent's trackers/blockers), OR
-         * 3. Opponent has HT (HT ignores this player's trackers/blockers)
+         * 2. Hostile Takeover is in play AND it's the original play (first Data War)
+         *    - HT only ignores trackers/blockers on the original play
+         *    - During Data War face-up reveals, trackers/blockers should work normally
          */
         const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
           if (cardType !== 'tracker' && cardType !== 'blocker') {
@@ -293,15 +269,20 @@ export const useGameStore = create<GameStore>()(
           // Check if blocked by Tracker Smacker
           const blockedBySmacker = isEffectBlocked(get().trackerSmackerActive, playerId);
 
-          // Check if we're in a Hostile Takeover data war
-          // During HT data war, opponent's trackers/blockers are ignored
-          const inHTDataWar = get().hostileTakeoverDataWar;
+          // Check if Hostile Takeover is in play (either player)
+          const { player: p, cpu: c } = get();
+          const hostileTakeoverInPlay =
+            p.playedCard?.specialType === 'hostile_takeover' ||
+            c.playedCard?.specialType === 'hostile_takeover';
 
-          // Check if opponent has HT (their HT ignores this player's tracker/blocker)
-          const opponentState = get()[opponentId];
-          const opponentHasHT = opponentState.playedCard?.specialType === 'hostile_takeover';
+          // Only ignore tracker/blocker if HT is in play AND it's the ORIGINAL play
+          // Original play: BOTH players have exactly 1 card (before Data War starts)
+          // Once Data War cards are added, trackers/blockers should work normally
+          const isOriginalPlay =
+            p.playedCardsInHand.length === 1 && c.playedCardsInHand.length === 1;
+          const shouldIgnoreDueToHT = hostileTakeoverInPlay && isOriginalPlay;
 
-          return blockedBySmacker || inHTDataWar || opponentHasHT;
+          return blockedBySmacker || shouldIgnoreDueToHT;
         };
 
         // Determine if this card's value should be negated
@@ -418,6 +399,12 @@ export const useGameStore = create<GameStore>()(
 
         setTimeout(() => {
           // Start card collection animation (confetti already shown/cleared)
+          console.log(
+            '[collectCardsDistributed] Setting collecting state with',
+            distributions.length,
+            'cards, visualOnly:',
+            visualOnly,
+          );
           set({
             collecting: { distributions, primaryWinner: winnerId },
             deckClickBlocked: true, // Block deck clicks during collection
@@ -469,7 +456,7 @@ export const useGameStore = create<GameStore>()(
 
                 // Unblock deck clicks after a short delay
                 setTimeout(() => {
-                  set({ deckClickBlocked: false, blockTransitions: false });
+                  set({ deckClickBlocked: false });
                 }, 200);
 
                 // Check win condition after all animations complete (rockets + collection)
@@ -550,14 +537,6 @@ export const useGameStore = create<GameStore>()(
        * Backward compatibility wrapper - Converts old format to new CardDistribution format
        */
       collectCards: (winnerId, cards, launchStackCount = 0) => {
-        // Log collection
-        get().logEvent(
-          'COLLECT_CARDS',
-          `${winnerId.toUpperCase()} collected ${cards.length} card(s)`,
-          launchStackCount > 0 ? `Launch Stacks: ${launchStackCount}` : undefined,
-          'success',
-        );
-
         // Convert to new format - all cards from board go to winner
         const distributions: CardDistribution[] = cards.map((card) => ({
           card,
@@ -680,49 +659,33 @@ export const useGameStore = create<GameStore>()(
           return true;
         }
 
-        // Check if player has all cards (opponent has no deck cards left)
-        if (cpu.deck.length === 0 && cpu.playedCard === null) {
-          get().logEvent(
-            'WIN_CONDITION',
-            'PLAYER wins by collecting all cards!',
-            undefined,
-            'success',
-          );
+        // Check if player has all cards (including Launch Stacks in collection)
+        if (
+          cpu.deck.length === 0 &&
+          cpu.playedCard === null &&
+          get().cpuLaunchStacks.length === 0
+        ) {
           set({ winner: 'player', winCondition: 'all_cards' });
           return true;
         }
 
-        // Check if CPU has all cards (opponent has no deck cards left)
-        if (player.deck.length === 0 && player.playedCard === null) {
-          get().logEvent(
-            'WIN_CONDITION',
-            'CPU wins by collecting all cards!',
-            undefined,
-            'success',
-          );
+        // Check if CPU has all cards (including Launch Stacks in collection)
+        if (
+          player.deck.length === 0 &&
+          player.playedCard === null &&
+          get().playerLaunchStacks.length === 0
+        ) {
           set({ winner: 'cpu', winCondition: 'all_cards' });
           return true;
         }
 
         // Check launch stacks (already handled in addLaunchStack)
         if (player.launchStackCount >= DEFAULT_GAME_CONFIG.launchStacksToWin) {
-          get().logEvent(
-            'WIN_CONDITION',
-            `PLAYER wins with ${player.launchStackCount} Launch Stacks!`,
-            undefined,
-            'success',
-          );
           set({ winner: 'player', winCondition: 'launch_stacks' });
           return true;
         }
 
         if (cpu.launchStackCount >= DEFAULT_GAME_CONFIG.launchStacksToWin) {
-          get().logEvent(
-            'WIN_CONDITION',
-            `CPU wins with ${cpu.launchStackCount} Launch Stacks!`,
-            undefined,
-            'success',
-          );
           set({ winner: 'cpu', winCondition: 'launch_stacks' });
           return true;
         }
@@ -751,6 +714,13 @@ export const useGameStore = create<GameStore>()(
       },
 
       collectCardsAfterEffects: (winner: 'player' | 'cpu' | 'tie', launchStackCount = 0) => {
+        console.log(
+          '[collectCardsAfterEffects] Called with winner:',
+          winner,
+          'Stack trace:',
+          new Error().stack,
+        );
+
         if (winner === 'tie') {
           // Set flag for use-game-logic to detect and trigger Data War
           set({ needsDataWarAfterEffects: true });
@@ -760,11 +730,13 @@ export const useGameStore = create<GameStore>()(
         // Don't collect cards if Temper Tantrum modal is active
         // Cards will be distributed manually after user selection
         if (get().showTemperTantrumModal) {
+          console.log('[collectCardsAfterEffects] Skipping - Tantrum modal active');
           return;
         }
 
         // Collect remaining cards in play after effects have been processed
         const { cardsInPlay } = get();
+        console.log('[collectCardsAfterEffects] Cards in play:', cardsInPlay.length);
         if (cardsInPlay.length > 0) {
           get().collectCards(winner, cardsInPlay, launchStackCount);
         }
@@ -845,7 +817,6 @@ export const useGameStore = create<GameStore>()(
           // Case 1: HT player has MORE cards - HT was just played as initial card
           // This is the first time seeing HT - trigger HT's special Data War
           if (htPlayer.playedCardsInHand.length > opponent.playedCardsInHand.length) {
-            set({ hostileTakeoverDataWar: true });
             return true;
           }
 
@@ -854,16 +825,18 @@ export const useGameStore = create<GameStore>()(
           // But this should be handled differently - only opponent plays
           if (htPlayer.playedCardsInHand.length === opponent.playedCardsInHand.length) {
             // HT as face-up still triggers its effect - opponent must play alone
-            set({ hostileTakeoverDataWar: true });
             return true;
           }
 
           // Case 3: Opponent has MORE cards - returning from HT Data War
-          // HT data war is complete, check for normal tie
-          set({ hostileTakeoverDataWar: false });
-          if (player.playedCard && cpu.playedCard) {
-            return player.currentTurnValue === cpu.currentTurnValue;
+          // Check if there's a normal tie that should trigger another Data War
+          if (opponent.playedCardsInHand.length > htPlayer.playedCardsInHand.length) {
+            if (player.playedCard && cpu.playedCard) {
+              return player.currentTurnValue === cpu.currentTurnValue;
+            }
+            return false;
           }
+
           return false;
         }
 
@@ -983,18 +956,14 @@ export const useGameStore = create<GameStore>()(
 
                     // Only call callback if no animations are queued
                     // If animations are queued (e.g., OWYW), let the queue system handle the callback
-                    const {
-                      animationQueue,
-                      animationCompletionCallback,
-                      isPlayingQueuedAnimation,
-                    } = get();
-                    if (
-                      animationCompletionCallback &&
-                      animationQueue.length === 0 &&
-                      !isPlayingQueuedAnimation
-                    ) {
+                    const { animationQueue, animationCompletionCallback, isPlayingQueuedAnimation } = get();
+                    console.log('[forced_empathy] Animation complete. Queue:', animationQueue.length, 'isPlaying:', isPlayingQueuedAnimation, 'hasCallback:', !!animationCompletionCallback);
+                    if (animationCompletionCallback && animationQueue.length === 0 && !isPlayingQueuedAnimation) {
+                      console.log('[forced_empathy] Calling callback (no queued animations)');
                       set({ animationCompletionCallback: null });
                       animationCompletionCallback();
+                    } else {
+                      console.log('[forced_empathy] NOT calling callback - queue will handle it');
                     }
                   }, ANIMATION_DURATIONS.FORCED_EMPATHY_SETTLE_DELAY);
                 }, ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
@@ -1162,6 +1131,13 @@ export const useGameStore = create<GameStore>()(
           return wonByPlayer || lostByPlayer;
         }).length;
 
+        // Store for sequential processing
+        console.log(
+          '[processPendingEffects] Setting queue:',
+          orderedEffects.map((e) => e.type),
+          'Winner:',
+          winner,
+        );
         set({
           effectsQueue: orderedEffects,
           effectsWinner: winner,
@@ -1181,15 +1157,18 @@ export const useGameStore = create<GameStore>()(
       },
 
       processNextEffect: () => {
-        const {
-          effectsQueue,
-          effectsWinner: winner,
-          dataGrabPlayerLaunchStacks,
-          dataGrabCPULaunchStacks,
-        } = get();
+        const { effectsQueue, effectsWinner: winner } = get();
+
+        console.log(
+          '[processNextEffect] Queue length:',
+          effectsQueue.length,
+          'Effects:',
+          effectsQueue.map((e) => e.type),
+        );
 
         // If no more effects, do final card collection
         if (effectsQueue.length === 0) {
+          console.log('[processNextEffect] Queue empty, collecting cards');
           const launchStacksForWinner = get().launchStacksForWinnerCount;
           // Release blockTransitions before card collection since all effects are done
           set({ blockTransitions: false });
@@ -1200,6 +1179,12 @@ export const useGameStore = create<GameStore>()(
         // Get next effect and update queue
         const effect = effectsQueue[0];
         const remainingEffects = effectsQueue.slice(1);
+        console.log(
+          '[processNextEffect] Processing:',
+          effect.type,
+          'Remaining:',
+          remainingEffects.map((e) => e.type),
+        );
         set({ effectsQueue: remainingEffects });
 
         // Queue animation and set callback to process effect + continue
@@ -1306,57 +1291,26 @@ export const useGameStore = create<GameStore>()(
             }
             break;
 
-          case 'launch_stack': {
-            // Gather all launch_stack effects (current one + remaining in queue)
-            const remainingQueue = get().effectsQueue;
-            const allLaunchStacks = [
-              effect,
-              ...remainingQueue.filter((e) => e.type === 'launch_stack'),
-            ];
-
-            // Play ONE animation for all launch stacks
+          case 'launch_stack':
             get().queueAnimation('launch_stack', effect.playedBy);
             set({
               animationCompletionCallback: () => {
-                // Process ALL launch_stack effects
-                for (const lsEffect of allLaunchStacks) {
-                  // Use destination override if set (e.g., stolen by Temper Tantrum)
-                  if (lsEffect.destinationOverride) {
-                    get().addLaunchStack(lsEffect.destinationOverride, lsEffect.card);
-                  } else {
-                    // Check if this specific launch stack was collected in Data Grab
-                    const matchedByCPU = dataGrabCPULaunchStacks.find(
-                      (c) => c.card.id === lsEffect.card.id,
-                    );
-                    const matchedByPlayer = dataGrabPlayerLaunchStacks.find(
-                      (c) => c.card.id === lsEffect.card.id,
-                    );
-
-                    if (matchedByCPU) {
-                      get().addLaunchStack('cpu', matchedByCPU.card);
-                    } else if (matchedByPlayer) {
-                      get().addLaunchStack('player', matchedByPlayer.card);
-                    } else if (winner === lsEffect.playedBy) {
-                      // Won - goes to player who played it
-                      get().addLaunchStack(lsEffect.playedBy, lsEffect.card);
-                    } else if (winner !== 'tie') {
-                      // Lost - goes to winner
-                      const winnerId = lsEffect.playedBy === 'player' ? 'cpu' : 'player';
-                      get().addLaunchStack(winnerId, lsEffect.card);
-                    }
-                  }
+                // Use destination override if set (e.g., stolen by Temper Tantrum)
+                if (effect.destinationOverride) {
+                  get().addLaunchStack(effect.destinationOverride, effect.card);
+                } else if (winner === effect.playedBy) {
+                  // Won - goes to player who played it
+                  get().addLaunchStack(effect.playedBy, effect.card);
+                } else if (winner !== 'tie') {
+                  // Lost - goes to winner
+                  const winnerId = effect.playedBy === 'player' ? 'cpu' : 'player';
+                  get().addLaunchStack(winnerId, effect.card);
                 }
-
-                // Remove remaining launch_stack effects from queue
-                const filteredQueue = get().effectsQueue.filter((e) => e.type !== 'launch_stack');
-                set({ effectsQueue: filteredQueue });
-
                 // Continue to next effect
                 get().processNextEffect();
               },
             });
             break;
-          }
         }
       },
 
@@ -1577,8 +1531,11 @@ export const useGameStore = create<GameStore>()(
       processNextAnimation: () => {
         const { animationQueue, animationCompletionCallback } = get();
 
+        console.log('[processNextAnimation] Queue length:', animationQueue.length, 'hasCallback:', !!animationCompletionCallback);
+
         // No more animations to process
         if (animationQueue.length === 0) {
+          console.log('[processNextAnimation] Queue empty, clearing flags');
           set({
             isPlayingQueuedAnimation: false,
             animationsPaused: false, // Internal: Queue is free
@@ -1595,9 +1552,12 @@ export const useGameStore = create<GameStore>()(
 
           // Call completion callback if set
           if (animationCompletionCallback) {
+            console.log('[processNextAnimation] Calling completion callback');
             const callback = animationCompletionCallback;
             set({ animationCompletionCallback: null }); // Clear callback
             callback(); // Execute callback to resume game flow
+          } else {
+            console.log('[processNextAnimation] No callback, done');
           }
           return;
         }
@@ -1651,7 +1611,6 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
-          hostileTakeoverDataWar: false,
           currentAnimationPlayer: null,
           animationCompletionCallback: null,
           shownAnimationCardIds: new Set(),
@@ -1733,6 +1692,7 @@ export const useGameStore = create<GameStore>()(
         set({ shownAnimationCardIds });
 
         // Queue all animations
+        console.log('[queueSpecialCardAnimations] Queuing animations:', animationsToQueue.map(a => a.type));
         animationsToQueue.forEach(({ type, playedBy }) => {
           get().queueAnimation(type as SpecialEffectAnimationType, playedBy);
         });
@@ -1924,7 +1884,6 @@ export const useGameStore = create<GameStore>()(
           dataGrabCollectedByCPU: updatedCPUCards, // Store for modal display
           dataGrabGameActive: false,
           showDataGrabResults: true, // Modal opens immediately
-          blockTransitions: true, // Block deck clicks while modal is open and during collection
           cardsInPlay: [], // Don't add yet - will do after modal opens
           anotherPlayExpected: false,
           // Store distributions AND Launch Stacks for processing after modal closes
@@ -1960,7 +1919,6 @@ export const useGameStore = create<GameStore>()(
             (pcs) => pcs.card.specialType === 'launch_stack' && pcs.isFaceDown,
           ),
         ];
-
         const faceDownLaunchStackIds = new Set(allFaceDownLaunchStacks.map((pcs) => pcs.card.id));
 
         // Special effect types to remove (all except launch_stack)
@@ -1981,7 +1939,6 @@ export const useGameStore = create<GameStore>()(
             !specialEffectTypes.includes(e.type) &&
             !(e.type === 'launch_stack' && faceDownLaunchStackIds.has(e.card.id)),
         );
-
         set({ pendingEffects: updatedEffects });
       },
 
@@ -2018,20 +1975,6 @@ export const useGameStore = create<GameStore>()(
         set({ gameSpeedMultiplier: multiplier });
       },
 
-      logEvent: (type, message, details?, level = 'info') => {
-        const event = {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          timestamp: Date.now(),
-          type,
-          message,
-          details,
-          level,
-        };
-        set((state) => ({
-          eventLog: [...state.eventLog, event],
-        }));
-      },
-
       // Temper Tantrum Actions
       initializeTemperTantrumSelection: (winner) => {
         const state = get();
@@ -2044,7 +1987,9 @@ export const useGameStore = create<GameStore>()(
 
         // Extract face-down card IDs from winner's cards (only winner's cards are shown in modal)
         const faceDownCardIds = new Set(
-          state[winner].playedCardsInHand.filter((pcs) => pcs.isFaceDown).map((pcs) => pcs.card.id),
+          state[winner].playedCardsInHand
+            .filter((pcs) => pcs.isFaceDown)
+            .map((pcs) => pcs.card.id),
         );
 
         set({
@@ -2150,12 +2095,12 @@ export const useGameStore = create<GameStore>()(
         const launchStacksInQueue = new Set(
           currentQueue
             .filter((e) => e.type === 'launch_stack' && stolenLaunchStackIds.has(e.card.id))
-            .map((e) => e.card.id),
+            .map((e) => e.card.id)
         );
 
         // Face-down Launch Stacks won't be in the queue - add them directly to deck
         const faceDownStolenLaunchStacks = stolenLaunchStacks.filter(
-          (ls) => !launchStacksInQueue.has(ls.id),
+          (ls) => !launchStacksInQueue.has(ls.id)
         );
 
         if (faceDownStolenLaunchStacks.length > 0) {
@@ -2190,6 +2135,9 @@ export const useGameStore = create<GameStore>()(
         // Set callback to continue processing after card animation completes
         set({
           animationCompletionCallback: () => {
+            console.log(
+              '[confirmTemperTantrumSelection] Animation complete, calling processNextEffect',
+            );
             // Remove stolen cards from playedCardsInHand so they don't reappear
             const currentState = get();
             set({
@@ -2212,6 +2160,11 @@ export const useGameStore = create<GameStore>()(
 
         // Use visual-only collection animation for Tantrum cards (decks already updated)
         // skipBoardClear=true keeps remaining cards on the board for later collection
+        console.log(
+          '[confirmTemperTantrumSelection] Calling collectCardsDistributed with',
+          distributions.length,
+          'cards',
+        );
         get().collectCardsDistributed(distributions, winner, true, 0, true);
       },
 
@@ -2279,6 +2232,7 @@ export const useGameStore = create<GameStore>()(
       // ===== Audio Manager Actions =====
 
       playAudio: async (trackId: AudioTrackId, options: PlayOptions = {}): Promise<boolean> => {
+        console.log({ trackId, options });
         const track = AUDIO_TRACKS[trackId];
         if (!track) {
           console.error(`Unknown audio track: ${trackId}`);
@@ -2289,7 +2243,7 @@ export const useGameStore = create<GameStore>()(
         const enabled = track.category === 'music' ? state.musicEnabled : state.soundEffectsEnabled;
         if (!enabled) return false;
 
-        const audio = getPreloadedAudio(trackId, track.category === 'music');
+        const audio = getPreloadedAudio(trackId);
         if (!audio) {
           console.warn(`Audio not preloaded: ${trackId}`);
           return false;
@@ -2370,16 +2324,13 @@ export const useGameStore = create<GameStore>()(
         };
 
         // Handle fade out of current track
-        if (currentAudio && currentAudio !== audio) {
-          // Only fade/stop if it's a different track
-          if (options.fadeOut && options.fadeOut > 0) {
-            await fadeVolume(currentAudio, 0, options.fadeOut);
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-          } else {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-          }
+        if (currentAudio && options.fadeOut && options.fadeOut > 0) {
+          await fadeVolume(currentAudio, 0, options.fadeOut);
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        } else if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
         }
 
         // Setup new audio (music only - SFX handled above)
@@ -3001,7 +2952,6 @@ export const useGameStore = create<GameStore>()(
           cpuLaunchStacks: [],
           isPaused: false,
           showMenu: false,
-          showGameOverScreen: false,
           audioEnabled: true,
           showHandViewer: false,
           showTooltip: false,
@@ -3019,7 +2969,6 @@ export const useGameStore = create<GameStore>()(
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
-          hostileTakeoverDataWar: false,
           // Reset Data Grab state
           dataGrabActive: false,
           dataGrabCards: [],
