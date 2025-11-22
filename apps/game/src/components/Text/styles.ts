@@ -11,6 +11,7 @@ export const variantStyles: Record<TextVariant, string> = {
   'title-3': 'text-2xl leading-[1.333] font-extrabold', // 24px / 32px (32/24 = 1.333)
   'title-4': 'text-xl leading-[1.4] font-extrabold', // 20px / 28px (28/20 = 1.4)
   'title-5': 'text-base leading-[1.5] font-extrabold', // 16px / 24px (24/16 = 1.5)
+  'title-6': 'title-6 leading-[1.5] font-extrabold', // 16px / 24px (24/16 = 1.5)
 
   'card-modal-title': 'text-[1.75rem] leading-none font-extrabold', // 28px / 28px (28/28 = 1)
 

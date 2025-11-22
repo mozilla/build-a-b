@@ -81,14 +81,8 @@ describe('gameStore', () => {
       const state = useGameStore.getState();
       expect(state.cpu.playedCard).toEqual(topCard);
 
-      // Tracker cards have 0 value when first played (value applied to next card)
-      const expectedValue = topCard.specialType === 'tracker' ? 1 : topCard.value;
-      expect(state.cpu.currentTurnValue).toBe(expectedValue);
-
-      // If tracker, verify bonus is stored for next card
-      if (topCard.specialType === 'tracker') {
-        expect(state.cpu.pendingTrackerBonus).toBe(topCard.value);
-      }
+      // Tracker cards now show their value immediately (no longer use pending bonus)
+      expect(state.cpu.currentTurnValue).toBe(topCard.value);
     });
 
     it('should add played card to cardsInPlay', () => {

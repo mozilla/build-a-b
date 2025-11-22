@@ -7,6 +7,7 @@ import { useGameMachineActor } from '../../hooks/use-game-machine-actor';
 import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
 import { CardCarousel } from '../CardCarousel';
+import OwywImage from '../../assets/special-effects/owyw.webp';
 
 export const OpenWhatYouWantModal = () => {
   const { playAudio } = useGameStore();
@@ -67,8 +68,9 @@ export const OpenWhatYouWantModal = () => {
       <ModalContent>
         <ModalBody className="flex flex-col items-center">
           <div className="flex justify-between items-center">
-            <Text variant="title-2">
-              Choose a card to play:
+            <img src={OwywImage} width={160} height={160} />
+            <Text variant="title-6" className="text-common-ash text-left text-balance">
+              Look at the top 3 cards in your deck and select one to play:
             </Text>
           </div>
           {cards.length > 0 ? (
