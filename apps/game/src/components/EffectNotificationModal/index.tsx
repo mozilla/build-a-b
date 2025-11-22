@@ -5,11 +5,13 @@
 import { Frame, Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
 import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
-import { useEffect, useMemo, useState, type FC } from 'react';
+import { useEffect, useMemo, useRef, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
 import { useGameStore } from '../../store';
 import type { Card, PlayerType } from '../../types';
+import { cn } from '@/utils/cn';
 import { CardCarousel } from '../CardCarousel';
+import type { CardCarouselRef } from '../CardCarousel/types';
 import type { EffectNotificationModalProps } from './types';
 
 export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
@@ -21,10 +23,13 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
   const playedCardsInHandPlayer = useGameStore((state) => state.player.playedCardsInHand);
   const playedCardsInHandCPU = useGameStore((state) => state.cpu.playedCardsInHand);
 
+  const carouselRef = useRef<CardCarouselRef>(null);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [owner, setOwner] = useState<PlayerType>();
   const [displayOwner, setDisplayOwner] = useState<PlayerType>();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isBeginning, setIsBeginning] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
   
   // Snapshot cards when modal opens to prevent premature unmounting
   const [snapshotPlayerCards, setSnapshotPlayerCards] = useState<typeof playedCardsInHandPlayer>([]);
@@ -62,6 +67,11 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
   const handleCardSelect = (card: Card) => {
     playAudio(TRACKS.OPTION_FOCUS);
     setSelectedCard(card);
+    // Sync arrow states when card changes
+    if (carouselRef.current) {
+      setIsBeginning(carouselRef.current.isBeginning);
+      setIsEnd(carouselRef.current.isEnd);
+    }
   };
 
   const handleOwnerChange = (newOwner: PlayerType) => {
@@ -98,6 +108,34 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
     handleOwnerChange('cpu');
   };
 
+  const handlePrevClick = () => {
+    if (carouselRef.current) {
+      carouselRef.current.slidePrev();
+      playAudio(TRACKS.OPTION_FOCUS);
+      // Update arrow states after navigation
+      setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 50);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (carouselRef.current) {
+      carouselRef.current.slideNext();
+      playAudio(TRACKS.OPTION_FOCUS);
+      // Update arrow states after navigation
+      setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 50);
+    }
+  };
+
   // Take snapshot of cards when modal opens (prevents premature unmounting during collection)
   useEffect(() => {
     if (showModal) {
@@ -129,6 +167,8 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
       setIsTransitioning(false);
       setSnapshotPlayerCards([]);
       setSnapshotCPUCards([]);
+      setIsBeginning(false);
+      setIsEnd(false);
     }
   }, [showModal]);
 
@@ -152,6 +192,20 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
     thereIsCardsInCPUHand,
     thereIsCardsInPlayerHand,
   ]);
+
+  // Sync arrow states when carousel is ready or owner changes
+  useEffect(() => {
+    if (showModal && selectedCard && carouselRef.current) {
+      // Small delay to ensure carousel has initialized
+      const timer = setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal, selectedCard, displayOwner, playedCards.length]);
 
   // Only return null if modal is not shown or if snapshots are empty
   // This prevents premature unmounting when playedCardsInHand is cleared during collection
@@ -223,12 +277,82 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
             >
               <div className="relative w-full">
                 <CardCarousel
+                  ref={carouselRef}
                   key={displayOwner}
                   cards={playedCards}
                   selectedCard={selectedCard}
                   onCardSelect={handleCardSelect}
                   faceDownCardIds={faceDownCardIds}
                 />
+
+                {/* Navigation Arrows - Only show if more than one card */}
+                {playedCards.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevClick}
+                      disabled={isBeginning}
+                      aria-label="Previous card"
+                      className={cn(
+                        'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
+                        'w-[2.125rem] h-[2.125rem] rounded-full',
+                        'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                        'flex items-center justify-center',
+                        'transition-opacity duration-200',
+                        'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                        isBeginning && 'opacity-30 cursor-not-allowed',
+                      )}
+                    >
+                      <svg
+                        width="0.5rem"
+                        height="0.875rem"
+                        viewBox="0 0 8 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-accent"
+                      >
+                        <path
+                          d="M7 1L1 7L7 13"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={handleNextClick}
+                      disabled={isEnd}
+                      aria-label="Next card"
+                      className={cn(
+                        'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
+                        'w-[2.125rem] h-[2.125rem] rounded-full',
+                        'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                        'flex items-center justify-center',
+                        'transition-opacity duration-200',
+                        'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                        isEnd && 'opacity-30 cursor-not-allowed',
+                      )}
+                    >
+                      <svg
+                        width="0.5rem"
+                        height="0.875rem"
+                        viewBox="0 0 8 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-accent"
+                      >
+                        <path
+                          d="M1 1L7 7L1 13"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Effect Details for selected card - fixed height to prevent layout shift */}
