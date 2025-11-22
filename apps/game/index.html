@@ -35,6 +35,12 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/icon.png" />
+
+    <!-- Content Security Policy - Allow web workers for XState Inspector -->
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ws: wss:; font-src 'self' data:;"
+    /> -->
   </head>
   <body>
     <div id="root"></div>
