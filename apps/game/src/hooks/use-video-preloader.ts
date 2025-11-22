@@ -93,6 +93,7 @@ export function useVideoPreloader(
       video.muted = true; // Required for autoplay policies
       video.playsInline = true;
       video.loop = false; // Prevent video from looping
+      video.crossOrigin = 'anonymous';
 
       const preloadedVideo: PreloadedVideo = {
         url,
@@ -105,7 +106,7 @@ export function useVideoPreloader(
         preloadedVideo.loaded = true;
         setUpdateCount((prev) => prev + 1); // Trigger re-render
         if (import.meta.env.DEV) {
-          console.log(`📹 Video metadata loaded: ${url.split('/').pop()}`);
+          console.log(`� Video metadata loaded: ${url.split('/').pop()}`);
         }
       });
 

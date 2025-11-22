@@ -191,6 +191,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             }}
             className="w-full h-full object-cover"
             aria-label={`${winnerBillionaire?.name} wins animation`}
+            crossOrigin="anonymous"
           />
         ) : (
           // Fallback: Text-based display

@@ -88,6 +88,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
             aria-label="Data War animation"
             onPlay={handleVideoPlay}
             onEnded={handleVideoEnded}
+            crossOrigin="anonymous"
           />
         </div>
       </motion.div>

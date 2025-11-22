@@ -136,6 +136,7 @@ export const VSAnimation: FC<BaseScreenProps> = ({ send, className, ...props }) 
           onEnded={() => send?.({ type: 'VS_ANIMATION_COMPLETE' })}
           className="w-full h-full object-cover"
           aria-label={`${playerBillionaire?.name} versus ${cpuBillionaire?.name} animation`}
+          crossOrigin="anonymous"
         />
       ) : (
         // Fallback: Text-based display with padding
