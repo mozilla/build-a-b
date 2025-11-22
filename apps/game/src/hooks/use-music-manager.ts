@@ -29,6 +29,7 @@ export function useMusicManager() {
   const isGameplayMusicReady = useGameStore((state) =>
     state.audioTracksReady.has(TRACKS.GAMEPLAY_MUSIC),
   );
+  const musicChannel = useGameStore((state) => state.audioMusicChannel);
 
   const { phase } = useGameLogic();
   const phaseKey = typeof phase === 'string' ? phase : String(phase);
@@ -48,7 +49,7 @@ export function useMusicManager() {
    * Stop all music immediately (used when music is disabled)
    */
   const stopAllMusic = () => {
-    stopAudio({ channel: 'music', fadeOut: 250 });
+    stopAudio({ channel: 'music' });
     currentMusicTrack.current = null;
   };
 
@@ -78,34 +79,17 @@ export function useMusicManager() {
     return { trackId: null, isReady: true };
   };
 
-  /**
-   * Play the specified music track with appropriate fade-in/out
-   */
   const playMusicTrack = async (trackId: MusicTrack) => {
-    const config =
-      trackId === TRACKS.TITLE_MUSIC
-        ? { loop: true, volume: 0.66, fadeIn: 1000 }
-        : { loop: true, volume: 0.5, fadeIn: 500 };
-
-    await playAudio(trackId, config);
+    await playAudio(trackId);
     currentMusicTrack.current = trackId;
   };
 
-  /**
-   * Switch from one track to another with crossfade
-   */
   const switchTrack = async (fromTrack: MusicTrack, toTrack: MusicTrack) => {
-    // Stop current track with fade-out
     stopAudio({
       channel: 'music',
       trackId: fromTrack,
-      fadeOut: 500,
     });
 
-    // Wait for fade-out to complete
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Play new track with fade-in
     await playMusicTrack(toTrack);
   };
 
@@ -126,6 +110,15 @@ export function useMusicManager() {
   // Effect 2: Handle phase transitions
   useEffect(() => {
     if (!musicEnabled) return;
+
+    if (
+      phaseKey === 'select_billionaire' &&
+      musicChannel &&
+      musicChannel.paused &&
+      isTitleMusicReady
+    ) {
+      playMusicTrack(TRACKS.TITLE_MUSIC);
+    }
 
     // Special handling for game_over phase
     if (phaseKey === 'game_over' && previousPhase.current !== 'game_over') {
@@ -170,7 +163,7 @@ export function useMusicManager() {
   useEffect(() => {
     return () => {
       if (currentMusicTrack.current) {
-        stopAudio({ channel: 'music', fadeOut: 250 });
+        stopAudio({ channel: 'music' });
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
