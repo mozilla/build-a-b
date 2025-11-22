@@ -28,3 +28,9 @@
 # (Optional) If you have custom serverless/edge functions you want Netlify to pick up from source:
 #[functions]
 #  directory = "netlify/functions"
+
+[[headers]]
+  for = "/assets/game/sw.js"
+  [headers.values]
+    Service-Worker-Allowed = "/"
+    Cache-Control = "no-cache, no-store, must-revalidate"
