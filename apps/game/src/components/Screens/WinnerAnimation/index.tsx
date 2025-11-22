@@ -9,6 +9,7 @@ import { getPreloadedVideo } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
 import { cn } from '@/utils/cn';
+import { gtagEvent } from '@/utils/gtag';
 
 /**
  * WinnerAnimation Screen
@@ -27,6 +28,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
     const containerRef = useRef<HTMLDivElement>(null);
     const crossfadeTriggeredRef = useRef(false);
     const audioPlayedRef = useRef(false);
+    const eventTrackedRef = useRef(false);
 
     // Determine which billionaire's video to show and which winner type
     // If player wins: show "You win" video with player's billionaire
@@ -52,6 +54,20 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       () => (animationSrc ? getPreloadedVideo(animationSrc) : null),
       [animationSrc],
     );
+
+    useEffect(() => {
+      if (!winner) return;
+
+      if (!eventTrackedRef.current) {
+        eventTrackedRef.current = true;
+
+        gtagEvent({
+          action: 'game_complete',
+          category: 'gameplay',
+          label: winner === 'player' ? 'player_wins' : 'opponent_wins',
+        });
+      }
+    }, [winner]);
 
     // Mount the preloaded video element into the container
     useEffect(() => {
