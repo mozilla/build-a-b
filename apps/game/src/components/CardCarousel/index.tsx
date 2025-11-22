@@ -3,15 +3,13 @@
  * Extracted from OpenWhatYouWantModal for reuse in EffectNotificationModal
  */
 
-import { CARD_BACK_IMAGE } from '@/config/game-config';
-import { capitalize } from '@/utils/capitalize';
 import { useEffect, useMemo, useRef } from 'react';
 import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import type { SwiperOptions, Swiper as SwiperType } from 'swiper/types';
+import type { Swiper as SwiperType, SwiperOptions } from 'swiper/types';
+import { capitalize } from '@/utils/capitalize';
+import { CARD_BACK_IMAGE } from '@/config/game-config';
 
-import { TRACKS } from '@/config/audio-config';
-import { useGameStore } from '@/store';
 import 'swiper/css';
 import type { CardCarouselProps } from './types';
 
@@ -27,15 +25,14 @@ export const CardCarousel = ({
   scaleSelectedCards = false,
   swiperOptions = {},
   cardClassName,
-  cardRotation = 'rotate-[-15deg]',
+  cardRotation = 'rotate-[-8deg]',
 }: CardCarouselProps) => {
-  const { playAudio } = useGameStore();
   const swiperRef = useRef<SwiperType | null>(null);
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [A11y, Keyboard],
       centeredSlides: true,
-      spaceBetween: -80, // Negative spacing creates visual card overlap
+      spaceBetween: -120, // Negative spacing creates visual card overlap
       slidesPerView: 1,
       keyboard: {
         enabled: true,
@@ -57,7 +54,7 @@ export const CardCarousel = ({
   };
 
   // Get initial slide index based on selectedCard
-  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;
+  const initialSlide = selectedCard ? cards.findIndex((c) => c.id === selectedCard.id) : 0;  
 
   // Navigate to selected card when it changes externally
   useEffect(() => {
@@ -79,12 +76,11 @@ export const CardCarousel = ({
           if (currentCard) {
             onCardSelect(currentCard);
           }
-          playAudio(TRACKS.OPTION_FOCUS);
         }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
-        className="w-full h-[25rem]"
+        className="w-full h-[22.625rem]"
       >
         {cards.map((card) => {
           const isFaceDown = faceDownCardIds?.has(card.id) ?? false;
@@ -99,13 +95,8 @@ export const CardCarousel = ({
                 } ${scaleSelectedCards ? (isSelected ? 'scale-100' : 'scale-[0.8]') : ''}`}
                 onClick={() => (onCardClick ? onCardClick(card) : onCardSelect(card))}
               >
-                <div
-                  className={`relative w-[15.3125rem] h-[21.4375rem] rounded-lg overflow-hidden shadow-2xl`}
-                  style={
-                    !scaleSelectedCards && isSelected
-                      ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' }
-                      : undefined
-                  }
+                <div className={`relative w-[14.75rem] h-[20.75rem] rounded-lg overflow-hidden shadow-2xl`}
+                     style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' } : undefined}
                 >
                   <img
                     src={cardImage}
