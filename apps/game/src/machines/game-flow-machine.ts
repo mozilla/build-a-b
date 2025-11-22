@@ -449,6 +449,10 @@ export const gameFlowMachine = createMachine(
                         .getState()
                         .collectCardsDistributed(dataGrabDistributions, undefined, true);
 
+                      // Re-block transitions AFTER collectCardsDistributed
+                      // (clearAccumulatedEffects inside may have set it to false)
+                      useGameStore.setState({ blockTransitions: true });
+
                       useGameStore.setState({
                         dataGrabDistributions: [],
                         dataGrabPlayerLaunchStacks: [],

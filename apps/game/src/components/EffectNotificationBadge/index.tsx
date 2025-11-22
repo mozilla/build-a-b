@@ -27,22 +27,19 @@ const SPECIAL_TYPE_TO_ICON: Record<string, IconName> = {
 
 interface EffectNotificationBadgeProps {
   accumulatedEffects: EffectNotification[]; // Array of accumulated effects
-  progressPercentage?: number; // For future implementation (0-100)
+  accumulatedLaunchStackCards: number;
 }
 
 export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   accumulatedEffects,
+  accumulatedLaunchStackCards = 0,
 }) => {
   // Separate regular effects from launch stacks
   const regularEffects = accumulatedEffects.filter(
     (effect) => effect.specialType !== 'launch_stack',
   );
-  const launchStackEffects = accumulatedEffects.filter(
-    (effect) => effect.specialType === 'launch_stack',
-  );
 
   const regularCount = regularEffects.length;
-  const launchStackCount = launchStackEffects.length;
 
   const effectCount = accumulatedEffects.length;
   const { playAudio } = useGameStore();
@@ -94,14 +91,15 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
       )}
 
       {/* Launch stack count pill */}
-      {launchStackCount > 0 && (
+      {accumulatedLaunchStackCards > 0 && (
         <Text
           variant="badge-xs"
           className="whitespace-nowrap p-2 bg-charcoal rounded-md w-full text-center"
           color="text-common-ash"
           weight="extrabold"
         >
-          {launchStackCount} {launchStackCount === 1 ? 'Launch Stack' : 'Launch Stacks'}
+          {accumulatedLaunchStackCards}{' '}
+          {accumulatedLaunchStackCards === 1 ? 'Launch Stack' : 'Launch Stacks'}
         </Text>
       )}
     </div>

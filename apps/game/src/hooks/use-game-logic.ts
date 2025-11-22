@@ -303,8 +303,6 @@ export function useGameLogic() {
 
   const handleCompareTurnContinued = () => {
     const store = useGameStore.getState();
-    console.log('[handleCompareTurnContinued] Called. blockTransitions:', store.blockTransitions);
-
     // After animations complete, check for special game states and trigger transitions
     // NOTE: We use manual event sending here because automatic transitions fire at 1500ms,
     // but animations take 3000ms. By the time blockTransitions is cleared, the automatic
@@ -313,7 +311,6 @@ export function useGameLogic() {
     // If game is blocked (animations or modals), don't send any events
     // Set awaitingResolution flag so the useEffect will retry when blockTransitions clears
     if (store.blockTransitions) {
-      console.log('[handleCompareTurnContinued] Blocked, setting awaitingResolution');
       useGameStore.setState({ awaitingResolution: true });
       return;
     }
@@ -326,9 +323,13 @@ export function useGameLogic() {
 
     // PRIORITY 2: Handle CPU "another play" cards BEFORE Data War checks
     // CPU auto-plays their additional card; player clicks to play theirs
+    // EXCEPTION: HT ignores opponent's trackers/blockers, so skip their "another play"
+    const playerHasHT = store.player.playedCard?.specialType === 'hostile_takeover';
     const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
 
-    if (cpuTriggersAnother && store.cpu.deck.length > 0) {
+    // Skip CPU's "another play" if player has HT (HT ignores trackers/blockers)
+    // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
+    if (cpuTriggersAnother && store.cpu.deck.length > 0 && !playerHasHT) {
       playCard('cpu');
       const newState = useGameStore.getState();
       if (newState.cpu.playedCard) {
@@ -443,16 +444,24 @@ export function useGameLogic() {
 
     // Check if either card triggers "another play"
     // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
+    // HT ignores opponent's trackers/blockers, so their "another play" is skipped
     const playerCard = store.player.playedCard;
+    const cpuCard = store.cpu.playedCard;
+    const playerHasHT = playerCard?.specialType === 'hostile_takeover';
+    const cpuHasHT = cpuCard?.specialType === 'hostile_takeover';
+
+    // Player triggers another play (unless CPU has HT which ignores it)
     const playerTriggersAnother =
       playerCard &&
+      !cpuHasHT && // HT ignores opponent's tracker/blocker
       shouldTriggerAnotherPlay(playerCard) &&
       (playerCard.specialType === 'launch_stack' ||
         !isEffectBlocked(store.trackerSmackerActive, 'player'));
 
-    const cpuCard = store.cpu.playedCard;
+    // CPU triggers another play (unless player has HT which ignores it)
     const cpuTriggersAnother =
       cpuCard &&
+      !playerHasHT && // HT ignores opponent's tracker/blocker
       shouldTriggerAnotherPlay(cpuCard) &&
       (cpuCard.specialType === 'launch_stack' ||
         !isEffectBlocked(store.trackerSmackerActive, 'cpu'));
@@ -512,13 +521,21 @@ export function useGameLogic() {
     } else {
       // Normal mode - check both players
       // Tracker Smacker only blocks tracker/blocker effects, NOT Launch Stack
+      // HT ignores opponent's trackers/blockers, so their "another play" is skipped
+      const playerHasHT = p.playedCard?.specialType === 'hostile_takeover';
+      const cpuHasHT = c.playedCard?.specialType === 'hostile_takeover';
+
+      // Player triggers another play (unless CPU has HT which ignores it)
       const playerTriggersAnother =
         p.playedCard &&
+        !cpuHasHT && // HT ignores opponent's tracker/blocker
         shouldTriggerAnotherPlay(p.playedCard) &&
         (p.playedCard.specialType === 'launch_stack' || !checkIfBlocked('player'));
 
+      // CPU triggers another play (unless player has HT which ignores it)
       const cpuTriggersAnother =
         c.playedCard &&
+        !playerHasHT && // HT ignores opponent's tracker/blocker
         shouldTriggerAnotherPlay(c.playedCard) &&
         (c.playedCard.specialType === 'launch_stack' || !checkIfBlocked('cpu'));
 
@@ -919,11 +936,9 @@ export function useGameLogic() {
   // Continue game flow when blockTransitions becomes false and we were waiting
   useEffect(() => {
     const store = useGameStore.getState();
-    console.log('[useEffect blockTransitions] blockTransitions:', blockTransitions, 'awaitingResolution:', store.awaitingResolution);
 
     // If blockTransitions just cleared and we were waiting to resolve, continue now
     if (!blockTransitions && store.awaitingResolution) {
-      console.log('[useEffect blockTransitions] Resuming - calling handleCompareTurnContinued');
       // Clear the flag
       useGameStore.setState({ awaitingResolution: false });
 
@@ -942,7 +957,6 @@ export function useGameLogic() {
       useGameStore.setState({ needsDataWarAfterEffects: false });
 
       // Trigger Data War
-      console.log('[useGameLogic] Effects completed with tie, triggering Data War');
       actorRef.send({ type: 'TIE' });
     }
   }, [needsDataWarAfterEffects, actorRef]);
