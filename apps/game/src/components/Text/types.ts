@@ -11,6 +11,7 @@ export type TextVariant =
   | 'title-3' // Extrabold, 24px - Section titles
   | 'title-4' // Extrabold, 20px - Subsection titles
   | 'title-5' // Extrabold, 16px - Minor titles
+  | 'title-6' // Extrabold, 16px - Minor titles
   // Card and Modal Titles
   | 'card-modal-title' // Regular, 28px - Card modal titles
   // Body text
