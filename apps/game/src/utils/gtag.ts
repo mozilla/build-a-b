@@ -15,7 +15,6 @@ export const gtagEvent = ({
       event_label: label,
       value,
     });
-    console.log('Gtag event sent:', { action, category, label, value });
   } else {
     console.warn('Gtag not loaded yet');
   }
