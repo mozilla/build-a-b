@@ -1,3 +1,4 @@
+import { Workbox } from 'workbox-window';
 /**
  * Preloading Provider
  *
@@ -76,6 +77,14 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
       getCharacterAnimation(cpuBillionaire, 'cpu', 'winner'),
     ].filter((url): url is string => url !== undefined);
   }, [selectedBillionaire, cpuBillionaire]);
+
+  useEffect(() => {
+    const wb = new Workbox('/assets/game/sw.js');
+
+    wb.messageSW({ type: 'CACHE_URLS', payload: { urlsToCache: videoUrls } });
+
+    wb.register();
+  }, [videoUrls]);
 
   const videoPreloadState = useVideoPreloader(videoUrls, {
     enabled: true,
