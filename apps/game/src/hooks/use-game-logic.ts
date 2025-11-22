@@ -72,6 +72,7 @@ export function useGameLogic() {
     effectAccumulationPaused,
     needsDataWarAfterEffects,
     blockTransitions,
+    shouldTransitionToWin,
     playCard,
     resolveTurn,
     collectCardsAfterEffects,
@@ -326,14 +327,21 @@ export function useGameLogic() {
     // CPU auto-plays their additional card; player clicks to play theirs
     // EXCEPTION: HT ignores opponent's trackers/blockers, but only on FIRST card
     const playerHasHT = store.player.playedCard?.specialType === 'hostile_takeover';
+    const cpuHasHT = store.cpu.playedCard?.specialType === 'hostile_takeover';
     const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
+    const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
 
     // HT only negates opponent's FIRST card (original play), not data war face-up cards
     const htNegatesCPU = playerHasHT && store.cpu.playedCardsInHand.length === 1;
+    const htNegatesPlayer = cpuHasHT && store.player.playedCardsInHand.length === 1;
 
-    // Skip CPU's "another play" if HT negates their first card
+    // If BOTH players trigger another play, skip CPU auto-play here
+    // Let handleResolveTurn handle simultaneous play (player taps deck first)
+    const bothTriggerAnother = cpuTriggersAnother && playerTriggersAnother && !htNegatesCPU && !htNegatesPlayer;
+
+    // Skip CPU's "another play" if HT negates their first card OR if both players triggered
     // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
-    if (cpuTriggersAnother && store.cpu.deck.length > 0 && !htNegatesCPU) {
+    if (cpuTriggersAnother && store.cpu.deck.length > 0 && !htNegatesCPU && !bothTriggerAnother) {
       playCard('cpu');
       const newState = useGameStore.getState();
       if (newState.cpu.playedCard) {
@@ -344,7 +352,9 @@ export function useGameLogic() {
         const instantAnimationTypes = ['hostile_takeover', 'tracker_smacker', 'forced_empathy'];
         if (instantAnimationTypes.includes(newState.cpu.playedCard.specialType || '')) {
           // Wait for card to settle on board before showing animation
-          const settleDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY);
+          const settleDelay = getGameSpeedAdjustedDuration(
+            ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY,
+          );
           setTimeout(() => {
             const currentState = useGameStore.getState();
             const hasAnimations = currentState.queueSpecialCardAnimations();
@@ -387,12 +397,9 @@ export function useGameLogic() {
           updatedStore.prepareEffectNotification();
         }, ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION);
 
-        console.log('[HT CHECK] Returning after TIE event');
         return;
       }
     }
-
-    console.log('[HT CHECK] Did NOT trigger HT data war - continuing to normal flow');
 
     // PRIORITY 4: Normal Data War (tie)
     // Skip data war if we're in another play mode and expecting more cards
@@ -987,6 +994,16 @@ export function useGameLogic() {
       actorRef.send({ type: 'TIE' });
     }
   }, [needsDataWarAfterEffects, actorRef]);
+
+  // Transition to game_over when win condition is detected (e.g., after rockets finish)
+  useEffect(() => {
+    if (shouldTransitionToWin) {
+      // Reset the flag
+      useGameStore.setState({ shouldTransitionToWin: false });
+      // Send event to transition to game_over
+      actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+    }
+  }, [shouldTransitionToWin, actorRef]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
   // Pass isPaused flag to prevent CPU from playing while effect modal is open
