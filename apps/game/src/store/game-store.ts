@@ -282,8 +282,7 @@ export const useGameStore = create<GameStore>()(
          * Helper: Determines if a tracker/blocker card's effect should be negated
          * Effects are negated if:
          * 1. Tracker Smacker is active (blocks opponent's trackers/blockers), OR
-         * 2. Hostile Takeover data war is active (HT ignores opponent's trackers/blockers), OR
-         * 3. Opponent has HT (HT ignores this player's trackers/blockers)
+         * 2. HT effect applies (only on first/original card, not data war face-up cards)
          */
         const isTrackerBlockerNegated = (cardType: string | undefined): boolean => {
           if (cardType !== 'tracker' && cardType !== 'blocker') {
@@ -294,14 +293,18 @@ export const useGameStore = create<GameStore>()(
           const blockedBySmacker = isEffectBlocked(get().trackerSmackerActive, playerId);
 
           // Check if we're in a Hostile Takeover data war
-          // During HT data war, opponent's trackers/blockers are ignored
           const inHTDataWar = get().hostileTakeoverDataWar;
 
           // Check if opponent has HT (their HT ignores this player's tracker/blocker)
           const opponentState = get()[opponentId];
           const opponentHasHT = opponentState.playedCard?.specialType === 'hostile_takeover';
 
-          return blockedBySmacker || inHTDataWar || opponentHasHT;
+          // HT effect only negates the FIRST card (original play)
+          // During data war portion (face-up card after face-down), effects should work normally
+          const isFirstCard = playerState.playedCardsInHand.length === 0;
+          const htNegationApplies = (inHTDataWar || opponentHasHT) && isFirstCard;
+
+          return blockedBySmacker || htNegationApplies;
         };
 
         // Determine if this card's value should be negated
@@ -1255,7 +1258,8 @@ export const useGameStore = create<GameStore>()(
                   if (launchStackCount > 0) {
                     set({ recallReturnCount: launchStackCount });
                     get().removeLaunchStacks(opponentId, launchStackCount);
-                    get().queueAnimation('mandatory_recall_won', effect.playedBy);
+                    // Animation shows from opponent's side (they're losing the cards)
+                    get().queueAnimation('mandatory_recall_won', opponentId);
                   }
                   // Continue to next effect
                   get().processNextEffect();
