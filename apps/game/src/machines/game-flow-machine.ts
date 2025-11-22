@@ -571,11 +571,12 @@ export const gameFlowMachine = createMachine(
 
           // Animation plays (for OWYW)
           animating: {
-            entry: assign({
-              tooltipMessage: 'EMPTY',
-            }),
             after: {
-              [ANIMATION_DURATIONS.OWYW_ANIMATION]: 'awaiting_interaction',
+              [ANIMATION_DURATIONS.OWYW_ANIMATION]: [
+                // Check win condition first - rockets may have finished during animation
+                { target: '#dataWarGame.game_over', guard: 'hasWinCondition' },
+                { target: 'awaiting_interaction' },
+              ],
             },
           },
 
@@ -586,6 +587,10 @@ export const gameFlowMachine = createMachine(
             }),
             on: {
               TAP_DECK: 'selecting',
+              // Handle win condition detected after rockets finish
+              CHECK_WIN_CONDITION: [
+                { target: '#dataWarGame.game_over', guard: 'hasWinCondition' },
+              ],
             },
           },
 

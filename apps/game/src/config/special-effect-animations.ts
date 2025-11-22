@@ -99,12 +99,12 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     forced_empathy: {
       videoSrc: `${SUPABASE_BASE_URL}firewall_empathy.webm`,
       title: 'Forced Empathy',
-      loop: true,
+      loop: false,
     },
     open_what_you_want: {
       videoSrc: `${SUPABASE_BASE_URL}firewall_owyw.webm`,
       title: 'Open What You Want',
-      loop: true,
+      loop: false,
     },
     hostile_takeover: {
       videoSrc: {
@@ -113,12 +113,12 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         cpu: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
       },
       title: 'Hostile Takeover',
-      loop: true,
+      loop: false,
     },
     launch_stack: {
       videoSrc: `${SUPABASE_BASE_URL}launchstack.webm`,
       title: 'Launch Stack',
-      loop: true,
+      loop: false,
     },
     launch_stack_won: {
       videoSrc: {
@@ -135,7 +135,7 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     data_grab: {
       videoSrc: `${SUPABASE_BASE_URL}data_grab.webm`,
       title: 'Data Grab',
-      loop: true,
+      loop: false,
     },
     firewall_recall: {
       videoSrc: {
@@ -143,12 +143,12 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         cpu: `${SUPABASE_BASE_URL}firewall_recall_cpu.webm`,
       },
       title: 'Firewall Recall',
-      loop: true,
+      loop: false,
     },
     firewall_smacker: {
       videoSrc: `${SUPABASE_BASE_URL}firewall_smacker.webm`,
       title: 'Firewall Smacker',
-      loop: true,
+      loop: false,
     },
     move_buyout: {
       videoSrc: {
@@ -156,7 +156,7 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         cpu: `${SUPABASE_BASE_URL}move_buyout_cpu.webm`,
       },
       title: 'Move Buyout',
-      loop: true,
+      loop: false,
     },
     move_tantrum: {
       videoSrc: {
@@ -164,7 +164,7 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         cpu: `${SUPABASE_BASE_URL}move_tantrum_cpu.webm`,
       },
       title: 'Move Tantrum',
-      loop: true,
+      loop: false,
     },
     move_theft: {
       videoSrc: {
@@ -172,7 +172,7 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
         cpu: `${SUPABASE_BASE_URL}move_theft_cpu.webm`,
       },
       title: 'Move Theft',
-      loop: true,
+      loop: false,
     },
     theft_won: {
       videoSrc: {
