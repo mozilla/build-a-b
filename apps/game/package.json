@@ -26,6 +26,7 @@
     "swiper": "^12.0.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
+    "workbox-window": "^7.4.0",
     "xstate": "^5.23.0",
     "zustand": "^5.0.8"
   },
@@ -50,6 +51,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
     "vite": "npm:rolldown-vite@7.1.14",
+    "vite-plugin-pwa": "^1.1.0",
     "vite-plugin-svgr": "^4.5.0",
     "vitest": "^4.0.3"
   }
