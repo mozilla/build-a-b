@@ -274,35 +274,19 @@ export const gameFlowMachine = createMachine(
         initial: 'pre_animation',
         entry: () => {
           // Clear pending bonuses/penalties (Data War = fresh start)
+          // Note: currentTurnValue is cleared later in reveal_face_down after animation
           const { player, cpu } = useGameStore.getState();
-          const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
-          const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
-
-          // Check if HT effect applies (preserves HT owner's value)
-          // First data war: both have exactly 1 card
-          // HT as face-up: both have equal cards > 1
-          const isFirstDataWar =
-            player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
-          const htAsFaceUp =
-            (playerHasHostileTakeover || cpuHasHostileTakeover) &&
-            player.playedCardsInHand.length === cpu.playedCardsInHand.length &&
-            player.playedCardsInHand.length > 1;
-          const htEffectApplies = isFirstDataWar || htAsFaceUp;
 
           useGameStore.setState({
             player: {
               ...player,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue:
-                playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
             },
             cpu: {
               ...cpu,
               pendingTrackerBonus: 0,
               pendingBlockerPenalty: 0,
-              currentTurnValue:
-                cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
             anotherPlayMode: false, // Clear another play mode (Data War is fresh start)
@@ -331,9 +315,35 @@ export const gameFlowMachine = createMachine(
             },
           },
           reveal_face_down: {
-            entry: assign({
-              tooltipMessage: 'DATA_WAR_FACE_DOWN',
-            }),
+            entry: () => {
+              // Reset turn values after animation completes (fresh start for Data War cards)
+              const { player, cpu } = useGameStore.getState();
+              const playerHasHostileTakeover =
+                player.playedCard?.specialType === 'hostile_takeover';
+              const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
+
+              // Check if HT effect applies (preserves HT owner's value)
+              const isFirstDataWar =
+                player.playedCardsInHand.length === 1 && cpu.playedCardsInHand.length === 1;
+              const htAsFaceUp =
+                (playerHasHostileTakeover || cpuHasHostileTakeover) &&
+                player.playedCardsInHand.length === cpu.playedCardsInHand.length &&
+                player.playedCardsInHand.length > 1;
+              const htEffectApplies = isFirstDataWar || htAsFaceUp;
+
+              useGameStore.setState({
+                player: {
+                  ...player,
+                  currentTurnValue:
+                    playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
+                },
+                cpu: {
+                  ...cpu,
+                  currentTurnValue:
+                    cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
+                },
+              });
+            },
             on: {
               TAP_DECK: {
                 target: 'reveal_face_up',
