@@ -168,8 +168,8 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
 
   useEffect(() => {
     if (!showWinEffect) return;
-    if (owner === 'player') playAudio(TRACKS.PLAYER_WIN);
-    if (owner === 'cpu') playAudio(TRACKS.OPPONENT_WIN, { volume: 0.5 });
+    if (owner === 'player') playAudio(TRACKS.PLAYER_HAND_WIN);
+    if (owner === 'cpu') playAudio(TRACKS.CPU_HAND_WIN);
   }, [playAudio, showWinEffect, owner]);
 
   // Get Launch Stack Won animation from config
