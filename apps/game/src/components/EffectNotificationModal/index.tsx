@@ -167,13 +167,13 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
       isOpen={showModal}
       onClose={handleClose}
       size="3xl"
-      backdrop="opaque"
+      backdrop="blur"
       hideCloseButton={true}
       isDismissable={false}
       classNames={{
-        wrapper: 'z-[9999]',
-        backdrop: 'z-[9998]',
-        base: 'bg-[rgba(0,0,0,0.9)] z-[9999]',
+        wrapper: 'overflow-hidden items-center',
+        // backdrop: 'z-[9998]',
+        base: 'frame bg-[rgba(0,0,0,0.8)] overflow-y-auto',
         body: 'pt-12 pb-8 px-0',
       }}
     >
