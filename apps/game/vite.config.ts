@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
@@ -36,6 +37,16 @@ export default defineConfig(({ command }) => ({
         // typescript: false,
         // memo: false,
         ref: true,
+      },
+    }),
+    VitePWA({
+      srcDir: 'src',
+      filename: 'sw.js',
+      strategies: 'injectManifest',
+      injectRegister: false,
+      manifest: false,
+      injectManifest: {
+        injectionPoint: undefined,
       },
     }),
   ],
