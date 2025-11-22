@@ -67,7 +67,8 @@ export function getAnimationVideoSrc(
       const lottieAction = isPlayerAction ? lottie.player : lottie.cpu;
 
       if (Array.isArray(lottieAction)) {
-        const index = Number(counter ?? 0);
+        // Counter is 1-based (1, 2, 3) but array is 0-indexed
+        const index = Math.max(0, Number(counter ?? 1) - 1);
         return lottieAction[index];
       } else {
         return lottieAction;
@@ -107,8 +108,9 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     },
     hostile_takeover: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+        // This should be fixed in supabase, but for now I'm doing a code change to fix animation
+        player: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+        cpu: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
       },
       title: 'Hostile Takeover',
       loop: true,

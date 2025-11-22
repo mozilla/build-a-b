@@ -82,7 +82,7 @@ export const EFFECT_NOTIFICATION_CONFIG = {
     'open_what_you_want',
     'tracker_smacker',
     'mandatory_recall',
-    'hostile_takeover',
+    // hostile_takeover is instant - triggers data war immediately, not queued
     'patent_theft',
     'leveraged_buyout',
     'temper_tantrum',
