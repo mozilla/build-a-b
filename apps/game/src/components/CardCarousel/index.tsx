@@ -3,7 +3,7 @@
  * Extracted from OpenWhatYouWantModal for reuse in EffectNotificationModal
  */
 
-import { useEffect, useMemo, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { A11y, Keyboard } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType, SwiperOptions } from 'swiper/types';
@@ -11,9 +11,9 @@ import { capitalize } from '@/utils/capitalize';
 import { CARD_BACK_IMAGE } from '@/config/game-config';
 
 import 'swiper/css';
-import type { CardCarouselProps } from './types';
+import type { CardCarouselProps, CardCarouselRef } from './types';
 
-export const CardCarousel = ({
+export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
   cards,
   selectedCard,
   onCardSelect,
@@ -26,8 +26,18 @@ export const CardCarousel = ({
   swiperOptions = {},
   cardClassName,
   cardRotation = 'rotate-[-8deg]',
-}: CardCarouselProps) => {
+}, ref) => {
   const swiperRef = useRef<SwiperType | null>(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+
+  // Expose navigation methods and state to parent via ref
+  useImperativeHandle(ref, () => ({
+    slidePrev: () => swiperRef.current?.slidePrev(),
+    slideNext: () => swiperRef.current?.slideNext(),
+    isBeginning,
+    isEnd,
+  }), [isBeginning, isEnd]);
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [A11y, Keyboard],
@@ -76,9 +86,13 @@ export const CardCarousel = ({
           if (currentCard) {
             onCardSelect(currentCard);
           }
+          setIsBeginning(swiper.isBeginning);
+          setIsEnd(swiper.isEnd);
         }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
+          setIsBeginning(swiper.isBeginning);
+          setIsEnd(swiper.isEnd);
         }}
         className="w-full h-[22.625rem]"
       >
@@ -112,4 +126,6 @@ export const CardCarousel = ({
       </Swiper>
     </div>
   );
-};
+});
+
+CardCarousel.displayName = 'CardCarousel';
