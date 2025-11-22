@@ -1108,8 +1108,8 @@ describe('Turn Resolution', () => {
         const callback = useGameStore.getState().animationCompletionCallback;
         if (callback) callback();
 
-        // Verify mandatory_recall_won animation was queued (in callback after effect processing)
-        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'player');
+        // Verify mandatory_recall_won animation was queued for CPU (opponent losing cards)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'cpu');
 
         // Verify count was captured BEFORE removal
         expect(useGameStore.getState().recallReturnCount).toBe(3);
@@ -1176,8 +1176,8 @@ describe('Turn Resolution', () => {
         const callback = useGameStore.getState().animationCompletionCallback;
         if (callback) callback();
 
-        // Verify mandatory_recall_won animation was queued for CPU (in callback)
-        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'cpu');
+        // Verify mandatory_recall_won animation was queued for player (opponent losing cards)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'player');
 
         // Verify count is 1
         expect(useGameStore.getState().recallReturnCount).toBe(1);

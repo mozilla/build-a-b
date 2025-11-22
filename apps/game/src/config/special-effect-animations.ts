@@ -67,7 +67,8 @@ export function getAnimationVideoSrc(
       const lottieAction = isPlayerAction ? lottie.player : lottie.cpu;
 
       if (Array.isArray(lottieAction)) {
-        const index = Number(counter ?? 0);
+        // Counter is 1-based (1, 2, 3) but array is 0-indexed
+        const index = Math.max(0, Number(counter ?? 1) - 1);
         return lottieAction[index];
       } else {
         return lottieAction;
