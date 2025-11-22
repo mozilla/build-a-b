@@ -10,6 +10,7 @@ import { TRACKS } from '@/config/audio-config';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
 import { introMicrocopy } from './microcopy';
+import { gtagEvent } from '@/utils/gtag';
 
 export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire, playAudio } = useGameStore();
@@ -21,6 +22,11 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
 
   const handleSkipInstructions = () => {
     send?.({ type: 'SKIP_INSTRUCTIONS' });
+    gtagEvent({
+      action: 'jump_in_play_click',
+      category: 'ui',
+      label: 'Jump In and Play button clicked',
+    });
   };
 
   // Get billionaire image using the selector utility

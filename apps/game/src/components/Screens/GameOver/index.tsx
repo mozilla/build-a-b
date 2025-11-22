@@ -15,6 +15,7 @@ import { BILLIONAIRES } from '@/config/billionaires';
 import { useShare } from '@/hooks/use-share';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
+import { gtagEvent } from '@/utils/gtag';
 
 /**
  * GameOver Screen
@@ -79,6 +80,12 @@ export const GameOver: FC<BaseScreenProps> = ({
 
     setIsSharing(true);
 
+    gtagEvent({
+      action: 'share_click',
+      category: 'end_sequence',
+      label: 'Share button clicked',
+    });
+
     try {
       const url = window.location.href;
 
@@ -114,6 +121,20 @@ export const GameOver: FC<BaseScreenProps> = ({
     selectBackground('');
     selectBillionaire('');
     send?.({ type: 'QUIT_GAME' });
+
+    gtagEvent({
+      action: 'play_again_click',
+      category: 'end_sequence',
+      label: 'Play Again button clicked',
+    });
+  };
+
+  const handleGoToFirefox = () => {
+    gtagEvent({
+      action: 'firefox_click',
+      category: 'end_sequence',
+      label: 'Firefox CTA clicked',
+    });
   };
 
   return (
@@ -226,6 +247,7 @@ export const GameOver: FC<BaseScreenProps> = ({
                     href="https://www.firefox.com/en-US/?utm_source=bbomicrosite&utm_medium=data-war-game&utm_campaign=fx-owyw&utm_content=download-button"
                     variant="primary"
                     target="_blank"
+                    onClick={handleGoToFirefox}
                   >
                     Download Firefox
                   </Button>
