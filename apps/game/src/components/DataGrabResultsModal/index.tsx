@@ -5,13 +5,15 @@
 
 import { Frame, Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
+import { cn } from '@/utils/cn';
 import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
-import { useEffect, useState, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
 import { GameMachineContext } from '../../providers/GameProvider';
 import { useGameStore } from '../../store';
 import type { Card } from '../../types';
 import { CardCarousel } from '../CardCarousel';
+import type { CardCarouselRef } from '../CardCarousel/types';
 
 type ViewMode = 'player' | 'opponent';
 
@@ -27,6 +29,9 @@ export const DataGrabResultsModal: FC = () => {
   const [displayMode, setDisplayMode] = useState<ViewMode>('player');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const carouselRef = useRef<CardCarouselRef>(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
 
   const currentCards = displayMode === 'player' ? playerCards : cpuCards;
 
@@ -53,8 +58,24 @@ export const DataGrabResultsModal: FC = () => {
       setViewMode('player');
       setDisplayMode('player');
       setIsTransitioning(false);
+    } else {
+      setIsBeginning(true);
+      setIsEnd(false);
     }
   }, [showModal, playAudio]);
+
+  // Sync arrow states when carousel is ready
+  useEffect(() => {
+    if (showModal && selectedCard && carouselRef.current && currentCards.length > 0) {
+      const timer = setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal, selectedCard, displayMode, currentCards.length]);
 
   const handleClose = () => {
     setShowDataGrabResults(false);
@@ -63,6 +84,39 @@ export const DataGrabResultsModal: FC = () => {
 
   const handleCardSelect = (card: Card) => {
     setSelectedCard(card);
+    // Sync arrow states when card changes
+    if (carouselRef.current) {
+      setIsBeginning(carouselRef.current.isBeginning);
+      setIsEnd(carouselRef.current.isEnd);
+    }
+  };
+
+  const handlePrevClick = () => {
+    if (carouselRef.current) {
+      carouselRef.current.slidePrev();
+      playAudio(TRACKS.OPTION_FOCUS);
+      // Update arrow states after navigation
+      setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 50);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (carouselRef.current) {
+      carouselRef.current.slideNext();
+      playAudio(TRACKS.OPTION_FOCUS);
+      // Update arrow states after navigation
+      setTimeout(() => {
+        if (carouselRef.current) {
+          setIsBeginning(carouselRef.current.isBeginning);
+          setIsEnd(carouselRef.current.isEnd);
+        }
+      }, 50);
+    }
   };
 
   const handleCollectCards = () => {
@@ -101,14 +155,14 @@ export const DataGrabResultsModal: FC = () => {
       isOpen={showModal}
       onClose={handleClose}
       size="3xl"
-      backdrop="opaque"
+      backdrop="blur"
       hideCloseButton={true}
       isDismissable={false}
       classNames={{
-        wrapper: 'z-[9999]',
-        backdrop: 'z-[9998]',
-        base: 'bg-[rgba(0,0,0,0.9)] z-[9999]',
-        body: 'py-8 px-0',
+        wrapper: 'overflow-hidden items-center',
+        // backdrop: 'z-[9998]',
+        base: 'frame bg-[rgba(0,0,0,0.9)]',
+        body: 'px-0 pt-6',
       }}
     >
       <ModalContent className="relative h-dvh w-screen flex items-center justify-center">
@@ -164,12 +218,82 @@ export const DataGrabResultsModal: FC = () => {
               {currentCards.length > 0 ? (
                 <div className="relative w-full">
                   <CardCarousel
+                    ref={carouselRef}
                     key={displayMode}
                     cards={currentCards.map((pcs) => pcs.card)}
                     selectedCard={selectedCard}
                     onCardSelect={handleCardSelect}
                     faceDownCardIds={faceDownCardIds}
                   />
+
+                  {/* Navigation Arrows - Only show if more than one card */}
+                  {currentCards.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevClick}
+                        disabled={isBeginning}
+                        aria-label="Previous card"
+                        className={cn(
+                          'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
+                          'w-[2.125rem] h-[2.125rem] rounded-full',
+                          'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                          'flex items-center justify-center',
+                          'transition-opacity duration-200',
+                          'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                          isBeginning && 'opacity-30 cursor-not-allowed',
+                        )}
+                      >
+                        <svg
+                          width="0.5rem"
+                          height="0.875rem"
+                          viewBox="0 0 8 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-accent"
+                        >
+                          <path
+                            d="M7 1L1 7L7 13"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+
+                      <button
+                        onClick={handleNextClick}
+                        disabled={isEnd}
+                        aria-label="Next card"
+                        className={cn(
+                          'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
+                          'w-[2.125rem] h-[2.125rem] rounded-full',
+                          'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                          'flex items-center justify-center',
+                          'transition-opacity duration-200',
+                          'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                          isEnd && 'opacity-30 cursor-not-allowed',
+                        )}
+                      >
+                        <svg
+                          width="0.5rem"
+                          height="0.875rem"
+                          viewBox="0 0 8 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-accent"
+                        >
+                          <path
+                            d="M1 1L7 7L1 13"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="h-[25rem] flex flex-col items-center justify-center">

@@ -16,3 +16,10 @@ export interface CardCarouselProps {
   cardClassName?: string; // Optional custom className for card container
   cardRotation?: string; // Optional rotation class (e.g., 'rotate-[-15deg]')
 }
+
+export interface CardCarouselRef {
+  slidePrev: () => void;
+  slideNext: () => void;
+  isBeginning: boolean;
+  isEnd: boolean;
+}

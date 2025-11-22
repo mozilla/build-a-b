@@ -63,12 +63,14 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
             <BackgroundCarousel onSelect={handleBackgroundSelect} />
           </div>
 
-          {/* Next Button */}
-          <div className="w-full flex justify-center pb-[clamp(1rem,-6.9781rem_+_17.02vh,2rem)] px-[2.25rem] sm:max-w-[25rem] mx-auto">
-            <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
-              {selectBackgroundMicrocopy.ctaButton}
-            </Button>
-          </div>
+          {/* Next Button - Only show when a background is selected */}
+          {localSelection && (
+            <div className="w-full flex justify-center pb-[clamp(1rem,-6.9781rem_+_17.02vh,2rem)] px-[2.25rem] sm:max-w-[25rem] mx-auto">
+              <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
+                {selectBackgroundMicrocopy.ctaButton}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
