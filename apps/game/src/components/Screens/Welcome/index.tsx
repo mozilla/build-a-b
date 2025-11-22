@@ -18,10 +18,16 @@ import floater3 from '@/assets/floaters/3.webp';
 import floater4 from '@/assets/floaters/4.webp';
 import floater5 from '@/assets/floaters/5.webp';
 import floater6 from '@/assets/floaters/6.webp';
+import { gtagEvent } from '@/utils/gtag';
 
 export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const handleStartGame = () => {
     send?.({ type: 'START_GAME' });
+    gtagEvent({
+      action: 'start_playing_click',
+      category: 'ui',
+      label: 'Start Playing button clicked',
+    });
   };
 
   return (

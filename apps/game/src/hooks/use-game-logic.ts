@@ -11,6 +11,7 @@ import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
 import { useCpuPlayer } from './use-cpu-player';
+import { gtagEvent } from '@/utils/gtag';
 
 /**
  * Determines if we should use fast timing for this turn
@@ -395,8 +396,7 @@ export function useGameLogic() {
 
     // PRIORITY 4: Normal Data War (tie)
     // Skip data war if we're in another play mode and expecting more cards
-    const skipDataWarCheck =
-      updatedStore.anotherPlayMode && updatedStore.anotherPlayExpected;
+    const skipDataWarCheck = updatedStore.anotherPlayMode && updatedStore.anotherPlayExpected;
 
     // Prepare effect notification badge BEFORE checking for Data War
     // This ensures effects are accumulated even when Data War is triggered
@@ -787,6 +787,10 @@ export function useGameLogic() {
       handleDataWarFaceUp();
       actorRef.send({ type: 'TAP_DECK' });
     }
+    gtagEvent({
+      action: 'card_click',
+      category: 'gameplay',
+    });
   };
 
   /**
@@ -810,7 +814,8 @@ export function useGameLogic() {
     const updatedCpuDeck = store.cpu.deck.slice(3);
 
     useGameStore.setState({
-      player: playerHasHostileTakeover && htEffectApplies
+      player:
+        playerHasHostileTakeover && htEffectApplies
           ? store.player
           : {
               ...store.player,
@@ -820,7 +825,8 @@ export function useGameLogic() {
                 ...playerCards.map((card) => ({ card, isFaceDown: true })),
               ],
             },
-      cpu: cpuHasHostileTakeover && htEffectApplies
+      cpu:
+        cpuHasHostileTakeover && htEffectApplies
           ? store.cpu
           : {
               ...store.cpu,
