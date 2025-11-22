@@ -92,6 +92,7 @@ export function useVideoPreloader(
       video.preload = preloadStrategy;
       video.muted = true; // Required for autoplay policies
       video.playsInline = true;
+      video.crossOrigin = 'anonymous';
 
       const preloadedVideo: PreloadedVideo = {
         url,

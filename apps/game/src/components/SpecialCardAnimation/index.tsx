@@ -67,6 +67,7 @@ export const SpecialCardAnimation = ({
             controls={controls}
             className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
             aria-label={title ? `${title} animation` : 'Special card animation'}
+            crossOrigin="anonymous"
           />
         )}
       </div>
