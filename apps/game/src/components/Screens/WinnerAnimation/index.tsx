@@ -126,6 +126,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
           }
         })
         .catch((error) => {
+          alert('Failed to play winner animation: `${error}`');
           console.error('Failed to play winner animation:', error);
           // Fallback: trigger crossfade immediately if play fails
           onGameOverCrossfadeStart?.();
@@ -187,6 +188,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             }}
             className="w-full h-full object-cover"
             aria-label={`${winnerBillionaire?.name} wins animation`}
+            crossOrigin="anonymous"
           />
         ) : (
           // Fallback: Text-based display
