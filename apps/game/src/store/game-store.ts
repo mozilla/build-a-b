@@ -190,10 +190,10 @@ export const useGameStore = create<GameStore>()(
       // Tooltip System
       tooltipDisplayCounts: JSON.parse(localStorage.getItem('tooltipDisplayCounts') || '{}'),
       tooltipPersistence: 'localStorage',
-      
+
       // Play Trigger Tracking (per playthrough, not persisted)
       seenPlayTriggers: new Set<string>(),
-      
+
       // Tableau Card Type Tracking (per playthrough, not persisted)
       seenTableauCardTypes: new Set<string>(),
 
@@ -856,42 +856,56 @@ export const useGameStore = create<GameStore>()(
           // Determine who played HT and who is the opponent
           const htPlayer = playerPlayedHt ? player : cpu;
           const opponent = playerPlayedHt ? cpu : player;
+          const htPlayerKey = playerPlayedHt ? 'player' : 'cpu';
+          const opponentKey = playerPlayedHt ? 'cpu' : 'player';
 
-          // Case 1: HT player has MORE cards - HT was just played as initial card
-          // This is the first time seeing HT - trigger HT's special Data War
-          if (htPlayer.playedCardsInHand.length > opponent.playedCardsInHand.length) {
-            // Check if opponent has enough cards for data war (3 face-down + 1 face-up = 4 cards)
-            const cardsNeededForDataWar = 4;
-            if (opponent.deck.length < cardsNeededForDataWar) {
-              // Opponent can't play enough cards - they lose
-              set({
-                winner: playerPlayedHt ? 'player' : 'cpu',
-                winCondition: 'all_cards',
-                shouldTransitionToWin: true,
-              });
-              return false; // No data war - game over
-            }
+          // Check if opponent has enough cards for data war (3 face-down + 1 face-up = 4 cards)
+          const cardsNeededForDataWar = 4;
+          if (opponent.deck.length < cardsNeededForDataWar) {
+            set({
+              winner: playerPlayedHt ? 'player' : 'cpu',
+              winCondition: 'all_cards',
+              shouldTransitionToWin: true,
+            });
+            return false;
+          }
+
+          // Case 1: Initial HT play or HT as "another play"
+          // HT player has more cards OR both have just 1 card (initial play)
+          const isInitialPlay =
+            htPlayer.playedCardsInHand.length <= 1 && opponent.playedCardsInHand.length <= 1;
+          const htHasMore = htPlayer.playedCardsInHand.length > opponent.playedCardsInHand.length;
+
+          if (isInitialPlay || htHasMore) {
             set({ hostileTakeoverDataWar: true });
             return true;
           }
 
-          // Case 2: Equal cards - HT was played as face-up card in existing Data War
-          // Only trigger Data War if HT's effect should apply (HT always forces Data War)
-          // But this should be handled differently - only opponent plays
+          // Case 2: HT was played as face-up card in existing Data War
+          // Both have multiple cards - opponent will play more cards on top
           if (htPlayer.playedCardsInHand.length === opponent.playedCardsInHand.length) {
-            // Check if opponent has enough cards for another round
-            const cardsNeededForDataWar = 4;
-            if (opponent.deck.length < cardsNeededForDataWar) {
-              // Opponent can't play enough cards - they lose
-              set({
-                winner: playerPlayedHt ? 'player' : 'cpu',
-                winCondition: 'all_cards',
-                shouldTransitionToWin: true,
-              });
-              return false; // No data war - game over
-            }
-            // HT as face-up still triggers its effect - opponent must play alone
-            set({ hostileTakeoverDataWar: true });
+            // Reset opponent's values but keep their cards on board:
+            // - HT player keeps their value (6)
+            // - Opponent's turn value resets to 0 (their tracker/blocker ignored)
+            // - Opponent will play 3 face-down + 1 face-up on top of existing cards
+            set({
+              hostileTakeoverDataWar: true,
+              [htPlayerKey]: {
+                ...get()[htPlayerKey],
+                currentTurnValue: 6, // HT value
+              },
+              [opponentKey]: {
+                ...get()[opponentKey],
+                currentTurnValue: 0, // Reset value (tracker/blocker ignored)
+                pendingTrackerBonus: 0,
+                pendingBlockerPenalty: 0,
+                // Only clear tracker/blocker effects (HT ignores them), keep other effects
+                activeEffects: get()[opponentKey].activeEffects.filter(
+                  (effect) => effect.type !== 'tracker' && effect.type !== 'blocker'
+                ),
+              },
+            });
+
             return true;
           }
 
@@ -2335,7 +2349,7 @@ export const useGameStore = create<GameStore>()(
       toggleAllSound: () => {
         const state = get();
         const bothOff = !state.musicEnabled && !state.soundEffectsEnabled;
-        
+
         if (bothOff) {
           // Both are OFF → Turn both ON
           set({
@@ -2997,7 +3011,14 @@ export const useGameStore = create<GameStore>()(
       shouldShowTableauTooltip: () => {
         const { seenTableauCardTypes } = get();
         // Show tooltip until all unique card types have been seen
-        const allCardTypes = ['common_data', 'tracker', 'blocker', 'firewall', 'billionaire_move', 'launch_stack'];
+        const allCardTypes = [
+          'common_data',
+          'tracker',
+          'blocker',
+          'firewall',
+          'billionaire_move',
+          'launch_stack',
+        ];
         return !allCardTypes.every((cardType) => seenTableauCardTypes.has(cardType));
       },
 
