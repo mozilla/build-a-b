@@ -2,10 +2,8 @@ import { ANIMATION_DURATIONS } from '@/config/animation-timings';
 import { TRACKS } from '@/config/audio-config';
 import { motion } from 'framer-motion';
 import { type FC, useEffect, useRef } from 'react';
-import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import { useGameStore } from '../../store';
 import { EffectNotificationBadge } from '../EffectNotificationBadge';
-import { Tooltip } from '../Tooltip';
 import { AnimatedCard } from './AnimatedCard';
 import { useBatchTracking, useDeckMeasurements } from './hooks';
 import type { PlayedCardsProps } from './types';
@@ -25,9 +23,6 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
   // Effect notification badge state
   const showEffectNotificationBadge = useGameStore((state) => state.showEffectNotificationBadge);
   const accumulatedEffects = useGameStore((state) => state.accumulatedEffects);
-  const showEffectNotificationModal = useGameStore((state) => state.showEffectNotificationModal);
-  const shouldShowTooltip = useGameStore((state) => state.shouldShowTooltip);
-  const incrementTooltipCount = useGameStore((state) => state.incrementTooltipCount);
   const openEffectModal = useGameStore((state) => state.openEffectModal);
   const isEffectTimerActive = useGameStore((state) => state.isEffectTimerActive);
   const stopEffectBadgeTimer = useGameStore((state) => state.stopEffectBadgeTimer);
@@ -140,21 +135,9 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
       : cpu.playedCardsInHand.filter((c) => c.card.specialType === 'launch_stack' && !c.isFaceDown);
   const shouldShowBadge = showEffectNotificationBadge && ownerEffects.length > 0;
 
-  // Tooltip configuration
-  const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
-  const shouldShowEffectTooltip =
-    shouldShowBadge &&
-    shouldShowTooltip(effectTooltipConfig.id, effectTooltipConfig.maxDisplayCount) &&
-    !showEffectNotificationModal;
-
   // Handle badge click
   const handleBadgeClick = () => {
     if (!shouldShowBadge) return;
-
-    // Increment tooltip display count if showing
-    if (shouldShowEffectTooltip) {
-      incrementTooltipCount(effectTooltipConfig.id);
-    }
 
     // Stop timer if running
     if (isEffectTimerActive()) {
@@ -244,26 +227,13 @@ export const PlayedCards: FC<PlayedCardsProps> = ({ cards = [], owner, onBadgeCl
           initial={{ scale: 0, opacity: 0, x: '100%', y: '-66%' }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="absolute top-1/2 -right-3 cursor-pointer z-[50] "
+          className="absolute top-1/2 -right-3 cursor-pointer z-[50]"
           onClick={handleBadgeClick}
         >
-          <Tooltip
-            content={effectTooltipConfig.message}
-            placement="bottom"
-            arrowDirection="left"
-            isOpen={!showEffectNotificationModal && shouldShowEffectTooltip ? true : undefined}
-            classNames={{
-              base: ['translate-x-1'],
-              content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
-            }}
-          >
-            <div className="cursor-pointer" onClick={handleBadgeClick}>
-              <EffectNotificationBadge
-                accumulatedEffects={ownerEffects}
-                accumulatedLaunchStackCards={ownerLaunchStacksCards.length}
-              />
-            </div>
-          </Tooltip>
+          <EffectNotificationBadge
+            accumulatedEffects={ownerEffects}
+            accumulatedLaunchStackCards={ownerLaunchStacksCards.length}
+          />
         </motion.div>
       )}
     </div>

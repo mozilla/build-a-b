@@ -74,7 +74,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: show ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        className="absolute inset-0 z-50 flex items-center justify-center bg-black"
+        className="absolute inset-0 z-[9998] flex items-center justify-center bg-black"
       >
         {/* Board-constrained container matching game board dimensions */}
         <div className="relative w-full h-full">

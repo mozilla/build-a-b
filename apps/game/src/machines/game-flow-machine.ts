@@ -179,19 +179,23 @@ export const gameFlowMachine = createMachine(
       ready: {
         entry: assign({
           tooltipMessage: ({ context }) => {
-            // Check if we're expecting another play (after tracker/blocker/launch stack)
             const state = useGameStore.getState();
-            if (state.anotherPlayExpected) {
-              return 'PLAY_AGAIN';
-            }
-
-            // First turn only: show "Tap to start!"
+            
+            // Mark appropriate play triggers as seen
             if (context.currentTurn === 0) {
-              return 'READY_TAP_DECK';
+              // First turn - mark game_start trigger
+              state.markPlayTriggerSeen('game_start');
+            } else if (state.anotherPlayExpected) {
+              // Playing again after special card - mark play_again trigger
+              state.markPlayTriggerSeen('play_again');
             }
 
-            // All subsequent turns: show "Tap to continue"
-            return 'TAP_TO_CONTINUE';
+            // Show TAP_TO_PLAY if not all triggers have been seen
+            if (state.shouldShowDeckTooltip()) {
+              return 'TAP_TO_PLAY';
+            }
+
+            return 'EMPTY';
           },
         }),
         on: {
@@ -318,30 +322,43 @@ export const gameFlowMachine = createMachine(
             },
           },
           reveal_face_down: {
-            entry: () => {
-              // Reset turn values after animation completes (fresh start for Data War cards)
-              const store = useGameStore.getState();
-              const { player, cpu } = store;
-              const playerHasHostileTakeover =
-                player.playedCard?.specialType === 'hostile_takeover';
-              const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
+            entry: assign({
+              tooltipMessage: () => {
+                const store = useGameStore.getState();
+                
+                // Reset turn values after animation completes (fresh start for Data War cards)
+                const { player, cpu } = store;
+                const playerHasHostileTakeover =
+                  player.playedCard?.specialType === 'hostile_takeover';
+                const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
 
-              // Use the hostileTakeoverDataWar flag set by checkForDataWar
-              const htEffectApplies = store.hostileTakeoverDataWar;
+                // Use the hostileTakeoverDataWar flag set by checkForDataWar
+                const htEffectApplies = store.hostileTakeoverDataWar;
 
-              useGameStore.setState({
-                player: {
-                  ...player,
-                  currentTurnValue:
-                    playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
-                },
-                cpu: {
-                  ...cpu,
-                  currentTurnValue:
-                    cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
-                },
-              });
-            },
+                useGameStore.setState({
+                  player: {
+                    ...player,
+                    currentTurnValue:
+                      playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
+                  },
+                  cpu: {
+                    ...cpu,
+                    currentTurnValue:
+                      cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
+                  },
+                });
+                
+                // Mark war_face_down trigger as seen
+                store.markPlayTriggerSeen('war_face_down');
+                
+                // Show TAP_TO_PLAY if not all triggers have been seen
+                if (store.shouldShowDeckTooltip()) {
+                  return 'TAP_TO_PLAY';
+                }
+                
+                return 'EMPTY';
+              },
+            }),
             on: {
               TAP_DECK: {
                 target: 'reveal_face_up',
@@ -364,7 +381,19 @@ export const gameFlowMachine = createMachine(
               },
               ready: {
                 entry: assign({
-                  tooltipMessage: 'DATA_WAR_FACE_UP',
+                  tooltipMessage: () => {
+                    const store = useGameStore.getState();
+                    
+                    // Mark war_face_up trigger as seen
+                    store.markPlayTriggerSeen('war_face_up');
+                    
+                    // Show TAP_TO_PLAY if not all triggers have been seen
+                    if (store.shouldShowDeckTooltip()) {
+                      return 'TAP_TO_PLAY';
+                    }
+                    
+                    return 'EMPTY';
+                  },
                 }),
                 on: {
                   TAP_DECK: {

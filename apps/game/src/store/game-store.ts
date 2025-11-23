@@ -190,6 +190,12 @@ export const useGameStore = create<GameStore>()(
       // Tooltip System
       tooltipDisplayCounts: JSON.parse(localStorage.getItem('tooltipDisplayCounts') || '{}'),
       tooltipPersistence: 'localStorage',
+      
+      // Play Trigger Tracking (per playthrough, not persisted)
+      seenPlayTriggers: new Set<string>(),
+      
+      // Tableau Card Type Tracking (per playthrough, not persisted)
+      seenTableauCardTypes: new Set<string>(),
 
       // Game Logic Actions
       initializeGame: (
@@ -248,6 +254,8 @@ export const useGameStore = create<GameStore>()(
           patentTheftStolenCard: null,
           patentTheftWinner: null,
           animationQueue: [],
+          seenPlayTriggers: new Set<string>(), // Reset play triggers for new playthrough
+          seenTableauCardTypes: new Set<string>(), // Reset tableau card types for new playthrough
           isPlayingQueuedAnimation: false,
           animationsPaused: false,
           blockTransitions: false,
@@ -2956,6 +2964,41 @@ export const useGameStore = create<GameStore>()(
         if (mode === 'memory') {
           localStorage.removeItem('tooltipDisplayCounts');
         }
+      },
+
+      // Play Trigger Tracking Actions
+      markPlayTriggerSeen: (trigger) => {
+        const { seenPlayTriggers } = get();
+        const newSet = new Set(seenPlayTriggers);
+        newSet.add(trigger);
+        set({ seenPlayTriggers: newSet });
+      },
+
+      hasSeenPlayTrigger: (trigger) => {
+        const { seenPlayTriggers } = get();
+        return seenPlayTriggers.has(trigger);
+      },
+
+      shouldShowDeckTooltip: () => {
+        const { seenPlayTriggers } = get();
+        // Show tooltip until all unique play triggers have been seen
+        const allTriggers = ['game_start', 'play_again', 'war_face_down', 'war_face_up'];
+        return !allTriggers.every((trigger) => seenPlayTriggers.has(trigger));
+      },
+
+      // Tableau Card Type Tracking Actions
+      markTableauCardTypeSeen: (cardType) => {
+        const { seenTableauCardTypes } = get();
+        const newSet = new Set(seenTableauCardTypes);
+        newSet.add(cardType);
+        set({ seenTableauCardTypes: newSet });
+      },
+
+      shouldShowTableauTooltip: () => {
+        const { seenTableauCardTypes } = get();
+        // Show tooltip until all unique card types have been seen
+        const allCardTypes = ['common_data', 'tracker', 'blocker', 'firewall', 'billionaire_move', 'launch_stack'];
+        return !allCardTypes.every((cardType) => seenTableauCardTypes.has(cardType));
       },
 
       // Active Effects Actions
