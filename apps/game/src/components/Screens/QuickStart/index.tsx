@@ -2,6 +2,7 @@ import { type FC } from 'react';
 
 import { Button } from '@/components/Button';
 import { GuideStep } from '@/components/GuideStep';
+import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { cn } from '@/utils/cn';
@@ -11,7 +12,7 @@ import { quickStartMicrocopy } from './microcopy';
 
 export const QuickStart: FC<
   Partial<BaseScreenProps> & { fromMenu?: boolean; onContinue: () => void }
-> = ({ send, className, children, fromMenu, onContinue, ...props }) => {
+> = ({ send, className, fromMenu, onContinue, ...props }) => {
   const handleContinue = () => {
     if (fromMenu) {
       onContinue();
@@ -21,18 +22,35 @@ export const QuickStart: FC<
     send?.({ type: 'SHOW_MISSION' });
   };
 
+  const handleClose = () => {
+    if (fromMenu) {
+      onContinue();
+      return;
+    }
+
+    send?.({ type: 'BACK_TO_INTRO' });
+  };
+
   return (
     <motion.div
       className={cn('relative flex flex-col min-h-full items-center', className)}
       {...props}
     >
+      {/* Close Button */}
+      <header className="absolute top-5 right-5 z-20">
+        <Button
+          onPress={handleClose}
+          className="cursor-pointer bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
+          aria-label={quickStartMicrocopy.menuCta}
+        >
+          <Icon name="close" width={8} height={8} className="w-2 h-2" />
+        </Button>
+      </header>
+
       {/* Main content container - scrollable */}
       <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto hide-scrollbar">
-        <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
-          {children}
-        </header>
         {/* Title Section */}
-        <div className="w-full mb-8 mt-22 px-6 sm:max-w-[25rem] mx-auto">
+        <div className="w-full mb-8 mt-16 px-6 sm:max-w-[25rem] mx-auto">
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">
             {quickStartMicrocopy.title}
           </Text>

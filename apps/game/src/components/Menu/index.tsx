@@ -208,22 +208,7 @@ export const Menu: FC = () => {
                       role="presentation"
                     />
                     <div className="max-w-[25rem] mx-auto">
-                      <QuickStart fromMenu onContinue={() => setShowGuide(false)}>
-                        <div className="absolute top-5 right-5 z-20">
-                          <Button
-                            className="absolute top-5 right-5 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
-                            onPress={() => setShowGuide(false)}
-                          >
-                            <Icon
-                              name="close"
-                              width={8}
-                              height={8}
-                              label="close"
-                              className="w-2 h-2"
-                            />
-                          </Button>
-                        </div>
-                      </QuickStart>
+                      <QuickStart fromMenu onContinue={() => setShowGuide(false)} />
                     </div>
                   </div>
                 )}
