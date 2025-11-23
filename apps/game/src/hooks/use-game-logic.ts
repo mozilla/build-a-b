@@ -331,9 +331,9 @@ export function useGameLogic() {
     const cpuTriggersAnother = store.cpu.playedCard?.triggersAnotherPlay ?? false;
     const playerTriggersAnother = store.player.playedCard?.triggersAnotherPlay ?? false;
 
-    // HT only negates opponent's FIRST card (original play), not data war face-up cards
-    const htNegatesCPU = playerHasHT && store.cpu.playedCardsInHand.length === 1;
-    const htNegatesPlayer = cpuHasHT && store.player.playedCardsInHand.length === 1;
+    // HT always negates opponent's triggersAnotherPlay (both initial play and data war face-up)
+    const htNegatesCPU = playerHasHT;
+    const htNegatesPlayer = cpuHasHT;
 
     // If BOTH players trigger another play, skip CPU auto-play here
     // Let handleResolveTurn handle simultaneous play (player taps deck first)
