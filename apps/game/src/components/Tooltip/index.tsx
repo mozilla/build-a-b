@@ -11,7 +11,7 @@ export const Tooltip: FC<TooltipProps> = ({
   placement = 'top',
   arrowDirection = 'bottom',
   classNames,
-  showArrow = true,
+  showArrow = false,
   children,
   ...props
 }) => {
@@ -52,21 +52,28 @@ export const Tooltip: FC<TooltipProps> = ({
   };
   const arrowStyles = arrowStylesMap[arrowDirection];
 
+  // Arrow styles only if showArrow is true
+  const arrowClassNames = showArrow
+    ? [
+        // Arrow styling: width: 1.03125rem, height: 0.65625rem, fill: zinc-400
+        'before:w-[1.03125rem]',
+        'before:h-[0.65625rem]',
+        'before:bg-zinc-400',
+        'before:absolute',
+        // Create triangle shape - pointing up by default
+        'before:[clip-path:polygon(50%_0%,0%_100%,100%_100%)]',
+        // Apply rotation and positioning based on arrow direction
+        ...arrowStyles,
+      ]
+    : [];
+
   // Default classNames with custom styling
   const defaultClassNames = {
     base: [
-      // Arrow styling: width: 1.03125rem, height: 0.65625rem, fill: zinc-400
-      'before:w-[1.03125rem]',
-      'before:h-[0.65625rem]',
-      'before:bg-zinc-400',
       'flex',
-      'before:absolute',
-      // Create triangle shape - pointing up by default
-      'before:[clip-path:polygon(50%_0%,0%_100%,100%_100%)]',
-      // Apply rotation and positioning based on arrow direction
-      ...arrowStyles,
-      // High z-index for tooltips, but below modals (modals use z-50+)
-      'z-[45]',
+      ...arrowClassNames,
+      // High z-index for tooltips: above cards (z-20 to z-100), below modals (z-50+) and badges (z-50)
+      'z-[48]',
     ],
     content: [
       'flex',

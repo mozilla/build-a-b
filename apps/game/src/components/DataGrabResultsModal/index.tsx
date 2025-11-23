@@ -159,7 +159,8 @@ export const DataGrabResultsModal: FC = () => {
       isDismissable={false}
       classNames={{
         wrapper: 'overflow-hidden items-center z-[9999]',
-        base: 'frame bg-[rgba(0,0,0,0.9)]',
+        backdrop: 'z-[9999]',
+        base: 'frame bg-[rgba(0,0,0,0.9)] z-[9999]',
         body: 'px-0 pt-6',
       }}
     >

@@ -14,6 +14,7 @@ import {
 } from '@/store';
 import { cn } from '@/utils/cn';
 import { getBackgroundImage } from '@/utils/selectors';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
 import { useTooltip } from '../../hooks/use-tooltip';
@@ -30,6 +31,7 @@ import { PlayedCards } from '../PlayedCards';
 import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
 import { TemperTantrumModal } from '../TemperTantrumModal';
+import { Tooltip } from '../Tooltip';
 import type { PlayerType } from '@/types/game';
 
 /**
@@ -62,8 +64,12 @@ export function Game() {
   const blockTransitions = useGameStore((state) => state.blockTransitions);
   
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
+  const [showTableauTooltipVisible, setShowTableauTooltipVisible] = useState(false);
+  const [cardAnimationComplete, setCardAnimationComplete] = useState(true);
   const { playAudio } = useGameStore();
   const openEffectModal = useGameStore((state) => state.openEffectModal);
+  const markTableauCardTypeSeen = useGameStore((state) => state.markTableauCardTypeSeen);
+  const seenTableauCardTypes = useGameStore((state) => state.seenTableauCardTypes);
 
   // Deck counter shows only the main deck
   // Launch Stacks are tracked separately with rocket indicators
@@ -114,6 +120,14 @@ export function Game() {
     tapDeck();
   };
 
+  // Helper to mark all currently visible card types as seen
+  const markCurrentCardTypesAsSeen = () => {
+    const currentCardTypes = getCurrentCardTypes();
+    currentCardTypes.forEach((cardType) => {
+      markTableauCardTypeSeen(cardType);
+    });
+  };
+
   const handlePlayAreaClick = (owner: PlayerType) => {
     // Don't open modal during collection animation
     if (collecting) return;
@@ -124,7 +138,32 @@ export function Game() {
       : cpu.playedCardsInHand.length > 0;
 
     if (hasCards) {
+      // Mark all current card types as seen (user has interacted with tableau)
+      markCurrentCardTypesAsSeen();
+      
       setOwnerBadgeClicked(owner);
+      openEffectModal();
+      playAudio(TRACKS.HAND_VIEWER);
+    }
+  };
+  
+  const handleTableauCenterClick = () => {
+    // Don't open modal during collection animation
+    if (collecting) return;
+
+    // Open modal with whichever player has cards (prefer player if both have cards)
+    if (player.playedCardsInHand.length > 0) {
+      // Mark all current card types as seen (user has interacted with tableau)
+      markCurrentCardTypesAsSeen();
+      
+      setOwnerBadgeClicked('player');
+      openEffectModal();
+      playAudio(TRACKS.HAND_VIEWER);
+    } else if (cpu.playedCardsInHand.length > 0) {
+      // Mark all current card types as seen (user has interacted with tableau)
+      markCurrentCardTypesAsSeen();
+      
+      setOwnerBadgeClicked('cpu');
       openEffectModal();
       playAudio(TRACKS.HAND_VIEWER);
     }
@@ -220,6 +259,77 @@ export function Game() {
     }
   }, [shouldTransitionToWin, send]);
 
+  // Helper to get card types currently on the table
+  const getCurrentCardTypes = (): Set<string> => {
+    const allPlayedCards = [...player.playedCardsInHand, ...cpu.playedCardsInHand];
+    const cardTypes = new Set<string>();
+    
+    allPlayedCards.forEach((playedCardState) => {
+      const card = playedCardState.card;
+      
+      // Skip face-down cards
+      if (playedCardState.isFaceDown) return;
+      
+      // Determine card type for tracking
+      let cardType: string | undefined;
+      if (card.specialType === 'tracker') {
+        cardType = 'tracker';
+      } else if (card.specialType === 'blocker') {
+        cardType = 'blocker';
+      } else if (card.specialType === 'launch_stack') {
+        cardType = 'launch_stack';
+      } else if (card.specialType === 'tracker_smacker' || card.specialType === 'open_what_you_want' || 
+                 card.specialType === 'mandatory_recall') {
+        cardType = 'firewall';
+      } else if (card.specialType === 'hostile_takeover' || card.specialType === 'temper_tantrum' || 
+                 card.specialType === 'patent_theft' || card.specialType === 'leveraged_buyout') {
+        cardType = 'billionaire_move';
+      } else if (!card.isSpecial) {
+        cardType = 'common_data';
+      }
+      
+      if (cardType) {
+        cardTypes.add(cardType);
+      }
+    });
+    
+    return cardTypes;
+  };
+
+  // Track when card play animation completes
+  useEffect(() => {
+    if (phase === 'revealing') {
+      // Card is being played, animation in progress
+      setCardAnimationComplete(false);
+    } else if (!cardAnimationComplete) {
+      // Phase changed from revealing, wait for card landing animation to complete
+      // CARD_PLAY_FROM_DECK is 800ms (not speed-adjusted)
+      const timer = setTimeout(() => {
+        setCardAnimationComplete(true);
+      }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [phase, cardAnimationComplete]);
+
+  // Control tableau tooltip visibility based on animation states and unseen card types
+  useEffect(() => {
+    const hasCardsOnTable = player.playedCardsInHand.length > 0 || cpu.playedCardsInHand.length > 0;
+    const isCardPlayPhase = phase === 'revealing';
+    const isAnimating = collecting || deckClickBlocked || isCardPlayPhase || !cardAnimationComplete;
+    
+    // Check if any current card types haven't been seen yet
+    const currentCardTypes = getCurrentCardTypes();
+    const hasUnseenCardTypes = Array.from(currentCardTypes).some(
+      (cardType) => !seenTableauCardTypes.has(cardType)
+    );
+    
+    // Show tooltip only when cards are settled on table, not animating, and there are unseen card types
+    const shouldShow = hasCardsOnTable && !isAnimating && hasUnseenCardTypes;
+    
+    setShowTableauTooltipVisible(shouldShow);
+  }, [player.playedCardsInHand, cpu.playedCardsInHand, collecting, deckClickBlocked, phase, seenTableauCardTypes, cardAnimationComplete]);
+
   return (
     <div
       className={cn(
@@ -252,6 +362,32 @@ export function Game() {
               {/* CPU Cards */}
               <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" onBadgeClicked={setOwnerBadgeClicked} />
             </div>
+
+            {/* Tableau Tooltip - positioned 1rem from left of play area, centered vertically */}
+            <AnimatePresence>
+              {showTableauTooltipVisible && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer -mt-1 -ml-12"
+                  onClick={handleTableauCenterClick}
+                >
+                  <Tooltip
+                    isOpen={true}
+                    content="Tap to View Cards"
+                    placement="right"
+                    showArrow={false}
+                    classNames={{
+                      content: ['text-green-400', 'text-xs', 'w-[7rem]'],
+                    }}
+                  >
+                    <div className="w-4 h-4" />
+                  </Tooltip>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Player Played Card Area */}
             <div 
