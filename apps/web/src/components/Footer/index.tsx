@@ -94,7 +94,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, ctaLink })
                   trackableEvent="click_social_icon_footer"
                   trackablePlatform={type}
                 >
-                  <SocialIcon type={type} />
+                  <SocialIcon type={type} className="w-8 h-8" />
                 </LinkButton>
               </li>
             ))}
