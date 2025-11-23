@@ -92,6 +92,9 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       preloadedVideo.className = 'w-full h-full object-cover';
       preloadedVideo.setAttribute('aria-label', `${winnerBillionaire?.name} wins animation`);
 
+      // Call load() to ensure Safari re-processes the video
+      preloadedVideo.load();
+
       // Listen for time updates to trigger crossfade
       const handleTimeUpdate = () => {
         const { currentTime, duration } = preloadedVideo;
