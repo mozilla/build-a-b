@@ -19,20 +19,22 @@ export const OpenWhatYouWantModal = () => {
   const setOpenWhatYouWantActive = useGameStore((state) => state.setOpenWhatYouWantActive);
   const clearPreRevealEffects = useGameStore((state) => state.clearPreRevealEffects);
   const carouselRef = useRef<CardCarouselRef>(null);
+  const [highlightedCard, setHighlightedCard] = useState<Card | null>(null);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
-  // Set the first card as selected when cards become available
+  // Set the first card as highlighted when cards become available
   useEffect(() => {
-    if (cards.length > 0 && !selectedCard) {
-      setSelectedCard(cards[0]);
+    if (cards.length > 0 && !highlightedCard) {
+      setHighlightedCard(cards[0]);
     }
-  }, [cards, selectedCard]);
+  }, [cards, highlightedCard]);
 
-  // Reset selected card when modal closes
+  // Reset when modal closes
   useEffect(() => {
     if (!showModal) {
+      setHighlightedCard(null);
       setSelectedCard(null);
       setIsBeginning(true);
       setIsEnd(false);
@@ -43,7 +45,7 @@ export const OpenWhatYouWantModal = () => {
 
   // Sync arrow states when carousel is ready
   useEffect(() => {
-    if (showModal && selectedCard && carouselRef.current) {
+    if (showModal && highlightedCard && carouselRef.current) {
       const timer = setTimeout(() => {
         if (carouselRef.current) {
           setIsBeginning(carouselRef.current.isBeginning);
@@ -52,7 +54,7 @@ export const OpenWhatYouWantModal = () => {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [showModal, selectedCard, cards.length]);
+  }, [showModal, highlightedCard, cards.length]);
 
   const handleConfirm = () => {
     if (selectedCard && isActive) {
@@ -69,13 +71,20 @@ export const OpenWhatYouWantModal = () => {
     }
   };
 
-  const handleCardSelect = (card: Card) => {
-    setSelectedCard(card);
+  // Handle card slide change (scrolling) - just updates highlight, doesn't select
+  const handleCardSlideChange = (card: Card) => {
+    setHighlightedCard(card);
     // Sync arrow states when card changes
     if (carouselRef.current) {
       setIsBeginning(carouselRef.current.isBeginning);
       setIsEnd(carouselRef.current.isEnd);
     }
+  };
+
+  // Handle checkbox click - toggles selection (radio button behavior)
+  const handleCheckboxClick = (card: Card) => {
+    // Radio button behavior: selecting a new card deselects the previous one
+    setSelectedCard(card);
   };
 
   const handlePrevClick = () => {
@@ -118,8 +127,9 @@ export const OpenWhatYouWantModal = () => {
         body: 'px-0 pt-6',
       }}
     >
-      <ModalContent>
-        <ModalBody className="flex flex-col items-center">
+      <ModalContent className="relative">
+        <ModalBody className="flex flex-col items-center justify-start gap-4">
+          {/* Title */}
           <div className="flex justify-between items-center px-8">
             <img src={OwywImage} width={160} height={160} className="w-40 h-40" />
             <Text variant="title-6" className="text-common-ash text-left text-balance">
@@ -127,13 +137,17 @@ export const OpenWhatYouWantModal = () => {
             </Text>
           </div>
           {cards.length > 0 ? (
-            <div className="relative w-full">
-              <CardCarousel
-                ref={carouselRef}
-                cards={cards}
-                selectedCard={selectedCard}
-                onCardSelect={handleCardSelect}
-              />
+            <div className="w-full flex flex-col items-center gap-6">
+              <div className="relative w-full">
+                <CardCarousel
+                  ref={carouselRef}
+                  cards={cards}
+                  onCardSelect={handleCardSlideChange}
+                  onCardClick={handleCheckboxClick}
+                  selectedCard={highlightedCard}
+                  glowCardIds={selectedCard ? new Set([selectedCard.id]) : undefined}
+                  scaleSelectedCards={false}
+                />
 
               {/* Navigation Arrows - Only show if more than one card */}
               {cards.length > 1 && (
@@ -145,10 +159,10 @@ export const OpenWhatYouWantModal = () => {
                     className={cn(
                       'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                       'w-[2.125rem] h-[2.125rem] rounded-full',
-                      'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                      'bg-accent border-2 border-accent',
                       'flex items-center justify-center',
                       'transition-opacity duration-200',
-                      'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                      'cursor-pointer hover:bg-accent/90',
                       isBeginning && 'opacity-30 cursor-not-allowed',
                     )}
                   >
@@ -158,7 +172,7 @@ export const OpenWhatYouWantModal = () => {
                       viewBox="0 0 8 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="text-accent"
+                      className="text-black"
                     >
                       <path
                         d="M7 1L1 7L7 13"
@@ -177,10 +191,10 @@ export const OpenWhatYouWantModal = () => {
                     className={cn(
                       'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                       'w-[2.125rem] h-[2.125rem] rounded-full',
-                      'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                      'bg-accent border-2 border-accent',
                       'flex items-center justify-center',
                       'transition-opacity duration-200',
-                      'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                      'cursor-pointer hover:bg-accent/90',
                       isEnd && 'opacity-30 cursor-not-allowed',
                     )}
                   >
@@ -190,7 +204,7 @@ export const OpenWhatYouWantModal = () => {
                       viewBox="0 0 8 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="text-accent"
+                      className="text-black"
                     >
                       <path
                         d="M1 1L7 7L1 13"
@@ -203,29 +217,67 @@ export const OpenWhatYouWantModal = () => {
                   </button>
                 </>
               )}
+              </div>
+
+              {/* Card Description with Checkbox - show for highlighted card */}
+              {highlightedCard && (
+                <div className="max-w-md flex items-start gap-4 px-10">
+                  {/* Checkbox to the left - clickable */}
+                  <button
+                    onClick={() => handleCheckboxClick(highlightedCard)}
+                    className={`w-8 h-8 rounded-[6px] border-2 flex items-center justify-center transition-all flex-shrink-0 mt-1 cursor-pointer hover:bg-accent/10 ${
+                      selectedCard?.id === highlightedCard.id
+                        ? 'border-accent bg-transparent'
+                        : 'border-accent bg-transparent'
+                    }`}
+                    aria-label={`${selectedCard?.id === highlightedCard.id ? 'Deselect' : 'Select'} ${highlightedCard.name}`}
+                  >
+                    {selectedCard?.id === highlightedCard.id && (
+                      <svg
+                        className="w-6 h-6 text-accent"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* Card details - show for all cards */}
+                  <div className="flex flex-col">
+                    <Text variant="title-3" color="text-common-ash" className="mb-2">
+                      {capitalize(highlightedCard.specialType || highlightedCard.name)}
+                    </Text>
+                    {highlightedCard.specialActionDescription && (
+                      <Text variant="title-5" color="text-common-ash" weight="extrabold" align="left">
+                        {highlightedCard.specialActionDescription}
+                      </Text>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center text-gray-400 py-8">No cards available</div>
           )}
-          {selectedCard?.specialType && (
-            <div className="mt-4 text-left max-w-[16rem]">
-              <Text variant="title-2">{capitalize(selectedCard.specialType)}</Text>
-              {selectedCard.specialActionDescription && (
-                <Text variant="title-3" className="font-bold mt-4">
-                  {selectedCard.specialActionDescription}
-                </Text>
-              )}
-            </div>
-          )}
         </ModalBody>
-        <ModalFooter>
-          <Button
-            className="w-full max-w-[15.5rem] mx-auto"
-            onClick={handleConfirm}
-            variant="primary"
-          >
-            Play this Card
-          </Button>
+        <ModalFooter className="mb-6">
+          {/* Play Button - only show when a card is selected */}
+          {selectedCard && (
+            <Button
+              className="w-full max-w-[15.5rem] mx-auto"
+              onClick={handleConfirm}
+              variant="primary"
+            >
+              Play this Card
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

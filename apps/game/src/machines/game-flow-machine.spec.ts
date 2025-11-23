@@ -107,6 +107,24 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
+    it('should transition from quick_start_guide back to intro when BACK_TO_INTRO event is sent', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Navigate to quick_start_guide
+      actor.send({ type: 'START_GAME' });
+      actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
+      actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
+      actor.send({ type: 'SHOW_GUIDE' });
+      expect(actor.getSnapshot().value).toBe('quick_start_guide');
+
+      // Quick Start Guide -> Intro (back)
+      actor.send({ type: 'BACK_TO_INTRO' });
+      expect(actor.getSnapshot().value).toBe('intro');
+
+      actor.stop();
+    });
+
     it('should transition from vs_animation to ready when VS_ANIMATION_COMPLETE event is sent', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
