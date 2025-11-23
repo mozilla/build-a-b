@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, type FC } from 'react';
-import { Modal, ModalBody, ModalContent, Button } from '@heroui/react';
+import { Modal, ModalBody, ModalContent, Button, ModalFooter } from '@heroui/react';
 import { useGameStore } from '../../store';
 import { Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
@@ -13,6 +13,7 @@ import { CardCarousel } from '../CardCarousel';
 import type { CardCarouselRef } from '../CardCarousel/types';
 import type { Card } from '../../types';
 import TantrumImage from '../../assets/special-effects/tantrum.webp';
+import { capitalize } from '@/utils/capitalize';
 
 export const TemperTantrumModal: FC = () => {
   const { playAudio } = useGameStore();
@@ -151,10 +152,10 @@ export const TemperTantrumModal: FC = () => {
                     className={cn(
                       'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                       'w-[2.125rem] h-[2.125rem] rounded-full',
-                      'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                      'bg-accent border-2 border-accent',
                       'flex items-center justify-center',
                       'transition-opacity duration-200',
-                      'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                      'cursor-pointer hover:bg-accent/90',
                       isBeginning && 'opacity-30 cursor-not-allowed',
                     )}
                   >
@@ -164,7 +165,7 @@ export const TemperTantrumModal: FC = () => {
                       viewBox="0 0 8 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="text-accent"
+                      className="text-black"
                     >
                       <path
                         d="M7 1L1 7L7 13"
@@ -183,10 +184,10 @@ export const TemperTantrumModal: FC = () => {
                     className={cn(
                       'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                       'w-[2.125rem] h-[2.125rem] rounded-full',
-                      'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                      'bg-accent border-2 border-accent',
                       'flex items-center justify-center',
                       'transition-opacity duration-200',
-                      'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                      'cursor-pointer hover:bg-accent/90',
                       isEnd && 'opacity-30 cursor-not-allowed',
                     )}
                   >
@@ -196,7 +197,7 @@ export const TemperTantrumModal: FC = () => {
                       viewBox="0 0 8 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="text-accent"
+                      className="text-black"
                     >
                       <path
                         d="M1 1L7 7L1 13"
@@ -243,8 +244,8 @@ export const TemperTantrumModal: FC = () => {
 
                 {/* Card details */}
                 <div className="flex flex-col">
-                  <Text variant="card-modal-title" color="text-common-ash" className="mb-2">
-                    {highlightedCard.name}
+                  <Text variant="title-3" color="text-common-ash" className="mb-2">
+                    {capitalize(highlightedCard.name)}
                   </Text>
                   {highlightedCard.specialActionDescription && (
                     <Text variant="title-5" color="text-common-ash" weight="extrabold" align="left">
@@ -255,7 +256,8 @@ export const TemperTantrumModal: FC = () => {
               </div>
             )}
           </div>
-
+        </ModalBody>
+        <ModalFooter className="mb-6">
           {/* Collect Button - only show when both cards are selected */}
           {shouldShowButton && (
             <Button
@@ -266,12 +268,7 @@ export const TemperTantrumModal: FC = () => {
               Collect Your Cards!
             </Button>
           )}
-
-          {/* Instructions */}
-          {/* <Text variant="body-small" className="text-common-ash text-center">
-            Scroll through cards and tap to select
-          </Text> */}
-        </ModalBody>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

@@ -30,6 +30,7 @@ export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
   const swiperRef = useRef<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
   // Expose navigation methods and state to parent via ref
   useImperativeHandle(ref, () => ({
@@ -38,11 +39,25 @@ export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
     isBeginning,
     isEnd,
   }), [isBeginning, isEnd]);
+
+  // Track viewport height for responsive spaceBetween values
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate spaceBetween based on viewport height
+  const spaceBetween = viewportHeight >= 844 ? -120 : -80;
+
   const defaultOptions: Partial<SwiperOptions> = useMemo(
     () => ({
       modules: [A11y, Keyboard],
       centeredSlides: true,
-      spaceBetween: -120, // Negative spacing creates visual card overlap
+      spaceBetween, // Responsive negative spacing for visual card overlap
       slidesPerView: 1,
       keyboard: {
         enabled: true,
@@ -50,7 +65,7 @@ export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
       },
       ...swiperOptions, // Allow custom options to override defaults
     }),
-    [swiperOptions],
+    [spaceBetween, swiperOptions],
   );
 
   // Generate descriptive alt text for card images
@@ -94,7 +109,7 @@ export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
           setIsBeginning(swiper.isBeginning);
           setIsEnd(swiper.isEnd);
         }}
-        className="w-full h-[22.625rem]"
+        className="w-[24.375rem] h-[23rem]"
       >
         {cards.map((card) => {
           const isFaceDown = faceDownCardIds?.has(card.id) ?? false;
@@ -109,7 +124,7 @@ export const CardCarousel = forwardRef<CardCarouselRef, CardCarouselProps>(({
                 } ${scaleSelectedCards ? (isSelected ? 'scale-100' : 'scale-[0.8]') : ''}`}
                 onClick={() => (onCardClick ? onCardClick(card) : onCardSelect(card))}
               >
-                <div className={`relative w-[14.75rem] h-[20.75rem] rounded-lg overflow-hidden shadow-2xl`}
+                <div className={`relative w-[14.75rem] h-[20.75rem] rounded-2xl overflow-hidden shadow-2xl`}
                      style={!scaleSelectedCards && isSelected ? { boxShadow: 'inset 0 0 0 3px #49C1B4, 0 0 0.5rem #49C1B4' } : undefined}
                 >
                   <img
