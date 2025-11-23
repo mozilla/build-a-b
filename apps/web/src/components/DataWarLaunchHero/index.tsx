@@ -97,7 +97,7 @@ const DataWarLaunchHero: FC = () => {
             </LinkButton>
 
             <LinkButton
-              href="/datawar/instructions"
+              href="/datawar"
               className="secondary-button border-accent text-accent hover:bg-accent hover:text-charcoal active:bg-accent active:text-charcoal"
               trackableEvent="click_see_game_details_cta"
             >

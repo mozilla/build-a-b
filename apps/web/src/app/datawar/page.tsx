@@ -257,7 +257,7 @@ export default async function Page() {
                                active:border-charcoal active:bg-charcoal active:text-common-ash"
                   trackableEvent="click_go_to_instructions"
                 >
-                  See Game Details
+                  See Instructions
                 </LinkButton>
 
                 <LinkButton
@@ -377,7 +377,7 @@ export default async function Page() {
         </section>
       )}
 
-      {showSocialFeed && (
+      {showSocialFeed && !isPhase4 && (
         <SocialFeed
           refId={FEED_REF_ID}
           src={FEED_SRC}
