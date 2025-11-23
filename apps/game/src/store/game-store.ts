@@ -852,6 +852,17 @@ export const useGameStore = create<GameStore>()(
           // Case 1: HT player has MORE cards - HT was just played as initial card
           // This is the first time seeing HT - trigger HT's special Data War
           if (htPlayer.playedCardsInHand.length > opponent.playedCardsInHand.length) {
+            // Check if opponent has enough cards for data war (3 face-down + 1 face-up = 4 cards)
+            const cardsNeededForDataWar = 4;
+            if (opponent.deck.length < cardsNeededForDataWar) {
+              // Opponent can't play enough cards - they lose
+              set({
+                winner: playerPlayedHt ? 'player' : 'cpu',
+                winCondition: 'all_cards',
+                shouldTransitionToWin: true,
+              });
+              return false; // No data war - game over
+            }
             set({ hostileTakeoverDataWar: true });
             return true;
           }
@@ -860,6 +871,17 @@ export const useGameStore = create<GameStore>()(
           // Only trigger Data War if HT's effect should apply (HT always forces Data War)
           // But this should be handled differently - only opponent plays
           if (htPlayer.playedCardsInHand.length === opponent.playedCardsInHand.length) {
+            // Check if opponent has enough cards for another round
+            const cardsNeededForDataWar = 4;
+            if (opponent.deck.length < cardsNeededForDataWar) {
+              // Opponent can't play enough cards - they lose
+              set({
+                winner: playerPlayedHt ? 'player' : 'cpu',
+                winCondition: 'all_cards',
+                shouldTransitionToWin: true,
+              });
+              return false; // No data war - game over
+            }
             // HT as face-up still triggers its effect - opponent must play alone
             set({ hostileTakeoverDataWar: true });
             return true;
@@ -879,13 +901,39 @@ export const useGameStore = create<GameStore>()(
           return false;
         }
 
-        // Normal tie logic for non-HT situations
-        return shouldTriggerDataWar(
+        // Check if this would be a tie (data war condition)
+        const wouldTie = shouldTriggerDataWar(
           player.playedCard,
           cpu.playedCard,
           player.currentTurnValue,
           cpu.currentTurnValue,
         );
+
+        // If it's a tie, check if both players have enough cards for data war
+        if (wouldTie) {
+          const cardsNeededForDataWar = 4;
+          const playerNotEnoughCards = player.deck.length < cardsNeededForDataWar;
+          const cpuNotEnoughCards = cpu.deck.length < cardsNeededForDataWar;
+
+          if (playerNotEnoughCards || cpuNotEnoughCards) {
+            // Player who doesn't have enough cards loses
+            // If both don't have enough, the one with fewer cards loses
+            let winner: 'player' | 'cpu';
+            if (playerNotEnoughCards && cpuNotEnoughCards) {
+              winner = player.deck.length < cpu.deck.length ? 'cpu' : 'player';
+            } else {
+              winner = playerNotEnoughCards ? 'cpu' : 'player';
+            }
+            set({
+              winner,
+              winCondition: 'all_cards',
+              shouldTransitionToWin: true,
+            });
+            return false; // No data war - game over
+          }
+        }
+
+        return wouldTie;
       },
 
       handleCardEffect: (card, playedBy) => {
