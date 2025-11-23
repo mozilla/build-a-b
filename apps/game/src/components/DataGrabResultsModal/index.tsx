@@ -3,12 +3,11 @@
  * Shows cards collected by Player vs Opponent in a carousel format
  */
 
-import { Frame, Text } from '@/components';
+import { Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
 import { cn } from '@/utils/cn';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
 import { useEffect, useRef, useState, type FC } from 'react';
-import CloseIcon from '../../assets/icons/close-icon.svg';
 import { GameMachineContext } from '../../providers/GameProvider';
 import { useGameStore } from '../../store';
 import type { Card } from '../../types';
