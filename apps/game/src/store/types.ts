@@ -171,6 +171,12 @@ export type GameStore = {
   // Tooltip System
   tooltipDisplayCounts: Record<string, number>; // Tooltip ID -> display count mapping
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
+  
+  // Play Trigger Tracking (per playthrough, not persisted)
+  seenPlayTriggers: Set<string>; // Tracks which play triggers have been shown (e.g., 'game_start', 'play_again', 'war_face_down', 'war_face_up')
+  
+  // Tableau Card Type Tracking (per playthrough, not persisted)
+  seenTableauCardTypes: Set<string>; // Tracks which card types have been shown on tableau (e.g., 'common_data', 'tracker', 'blocker', 'firewall', 'billionaire_move', 'launch_stack')
 
   // UI State
   selectedBillionaire: string;
@@ -339,6 +345,15 @@ export type GameStore = {
   shouldShowTooltip: (tooltipId: string, maxDisplayCount: number | null) => boolean; // Check if should show
   clearTooltipCounts: () => void; // For testing
   setTooltipPersistence: (mode: 'localStorage' | 'memory') => void;
+  
+  // Play Trigger Tracking Actions
+  markPlayTriggerSeen: (trigger: string) => void; // Mark a play trigger as seen
+  hasSeenPlayTrigger: (trigger: string) => boolean; // Check if trigger has been seen
+  shouldShowDeckTooltip: () => boolean; // Check if deck tooltip should show
+  
+  // Tableau Card Type Tracking Actions
+  markTableauCardTypeSeen: (cardType: string) => void; // Mark a card type as seen on tableau
+  shouldShowTableauTooltip: () => boolean; // Check if tableau tooltip should show
 
   // Active Effects Actions
   clearActiveEffects: (playerId: PlayerType) => void;

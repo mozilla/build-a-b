@@ -5,6 +5,7 @@
  */
 
 import { cn } from '@/utils/cn';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { FC } from 'react';
 import { Tooltip } from '../Tooltip';
 
@@ -54,14 +55,30 @@ export const DeckInteractionZone: FC<DeckInteractionZoneProps> = ({
           : undefined
       }
     >
-      {/* Tooltip */}
-      {tooltipContent && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <Tooltip isOpen={true} content={tooltipContent}>
-            <div />
-          </Tooltip>
-        </div>
-      )}
+      {/* Tooltip with fade animation */}
+      <AnimatePresence>
+        {tooltipContent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+            style={{ top: '0.5rem' }}
+          >
+            <Tooltip
+              isOpen={true}
+              content={tooltipContent}
+              showArrow={false}
+              classNames={{
+                content: ['text-green-400', 'text-sm', 'whitespace-nowrap'],
+              }}
+            >
+              <div />
+            </Tooltip>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

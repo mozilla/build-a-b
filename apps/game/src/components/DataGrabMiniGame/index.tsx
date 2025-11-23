@@ -122,7 +122,7 @@ export const DataGrabMiniGame: FC = () => {
   if (!dataGrabGameActive) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center">
       {/* Board-sized container matching game board */}
       <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] overflow-hidden">
         {/* Background Image (Static) - Single image covering full area */}
