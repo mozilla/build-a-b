@@ -240,7 +240,7 @@ export default async function Page() {
                 Play Now
               </LinkButton>
               <LinkButton
-                href="/datawar/instructions"
+                href="/datawar"
                 title="See Game Details"
                 className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash"
               >
@@ -296,14 +296,26 @@ export default async function Page() {
               {isPhase4 && (
                 <div className="w-full landscape:w-[40%]">
                   <div className="w-full aspect-video">
-                    <iframe
-                      className="w-full h-full"
-                      src="https://www.youtube.com/embed/eqUxVAsA80k?playsinline=1&rel=0"
-                      title="YouTube video player"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    ></iframe>
+                    {!isPhase4 && (
+                      <iframe
+                        className="w-full h-full"
+                        src="https://www.youtube.com/embed/eqUxVAsA80k?playsinline=1&rel=0"
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      ></iframe>
+                    )}
+                    {isPhase4 && (
+                      <iframe
+                        className="w-full h-full"
+                        src="https://www.youtube.com/embed/YMh5jK5MIgM?si=HOkpuaSagilxAUjj?playsinline=1&rel=0"
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      ></iframe>
+                    )}
                   </div>
                 </div>
               )}
@@ -513,7 +525,7 @@ export default async function Page() {
 
       {countDown}
 
-      {showSocialFeed && (
+      {showSocialFeed && !isPhase4 && (
         <SocialFeed
           refId={FEED_REF_ID}
           src={FEED_SRC}
@@ -559,7 +571,7 @@ export default async function Page() {
         </section>
       )} */}
 
-      {holoboxSection2}
+      {/* {holoboxSection2} */}
     </>
   );
 }
