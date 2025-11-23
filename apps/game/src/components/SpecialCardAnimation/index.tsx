@@ -47,7 +47,7 @@ export const SpecialCardAnimation = ({
   if (!show) return null;
 
   return (
-    <div className={cn('fixed inset-0 z-1000 flex items-center justify-center', className)}>
+    <div className={cn('fixed inset-0 z-[9998] flex items-center justify-center', className)}>
       {/* Board-constrained container matching game board dimensions */}
       <div
         className={`relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 ${

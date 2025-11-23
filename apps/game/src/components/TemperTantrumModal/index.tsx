@@ -112,9 +112,9 @@ export const TemperTantrumModal: FC = () => {
       hideCloseButton={true}
       isDismissable={false}
       classNames={{
-        wrapper: 'overflow-hidden items-center',
-        // backdrop: 'frame z-[9998]',
-        base: 'frame bg-[rgba(0,0,0,0.9)]',
+        wrapper: 'overflow-hidden items-center z-[9999]',
+        backdrop: 'z-[9999]',
+        base: 'frame bg-[rgba(0,0,0,0.9)] z-[9999]',
         body: 'px-0 py-6',
       }}
     >

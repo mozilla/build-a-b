@@ -163,3 +163,12 @@ body {
 .backface-hidden {
   backface-visibility: hidden;
 }
+
+/* ============================================================================
+   TOOLTIP OVERRIDES
+   ========================================================================= */
+
+/* Hide tooltip arrow globally */
+/* div[role="tooltip"]::before {
+  display: none !important;
+} */
