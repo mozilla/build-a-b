@@ -6,7 +6,7 @@
 import { Frame, Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
 import { cn } from '@/utils/cn';
-import { Button, Modal, ModalBody, ModalContent } from '@heroui/react';
+import { Button, Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
 import { useEffect, useRef, useState, type FC } from 'react';
 import CloseIcon from '../../assets/icons/close-icon.svg';
 import { GameMachineContext } from '../../providers/GameProvider';
@@ -164,19 +164,18 @@ export const DataGrabResultsModal: FC = () => {
         body: 'px-0 pt-6',
       }}
     >
-      <ModalContent className="relative h-dvh w-screen flex items-center justify-center">
-        <Frame className="overflow-y-auto overflow-x-hidden">
+      <ModalContent className="relative h-dvh w-screen flex items-center justify-start">
           {/* Custom Close Button */}
-          <Button
+          {/* <Button
             isIconOnly
             onPress={handleClose}
             className="absolute top-4 right-4 z-65 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex"
             aria-label="Close"
           >
             <img src={CloseIcon} alt="Close" className="w-10 h-10" />
-          </Button>
+          </Button> */}
 
-          <ModalBody className="flex flex-col items-center justify-center gap-6 mt-8">
+          <ModalBody className="flex flex-0 flex-col items-center justify-start gap-6 my-8">
             {/* Title */}
             <Text variant="title-2" className="text-white">
               Data Grabbed!
@@ -215,7 +214,7 @@ export const DataGrabResultsModal: FC = () => {
               style={{ opacity: isTransitioning ? 0 : 1 }}
             >
               {currentCards.length > 0 ? (
-                <div className="relative w-full">
+                <div className="relative w-full h-100">
                   <CardCarousel
                     ref={carouselRef}
                     key={displayMode}
@@ -235,10 +234,10 @@ export const DataGrabResultsModal: FC = () => {
                         className={cn(
                           'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                           'w-[2.125rem] h-[2.125rem] rounded-full',
-                          'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                          'bg-accent border-2 border-accent',
                           'flex items-center justify-center',
                           'transition-opacity duration-200',
-                          'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                          'cursor-pointer hover:bg-accent/90',
                           isBeginning && 'opacity-30 cursor-not-allowed',
                         )}
                       >
@@ -248,7 +247,7 @@ export const DataGrabResultsModal: FC = () => {
                           viewBox="0 0 8 14"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
-                          className="text-accent"
+                          className="text-black"
                         >
                           <path
                             d="M7 1L1 7L7 13"
@@ -267,10 +266,10 @@ export const DataGrabResultsModal: FC = () => {
                         className={cn(
                           'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                           'w-[2.125rem] h-[2.125rem] rounded-full',
-                          'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                          'bg-accent border-2 border-accent',
                           'flex items-center justify-center',
                           'transition-opacity duration-200',
-                          'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                          'cursor-pointer hover:bg-accent/90',
                           isEnd && 'opacity-30 cursor-not-allowed',
                         )}
                       >
@@ -280,7 +279,7 @@ export const DataGrabResultsModal: FC = () => {
                           viewBox="0 0 8 14"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
-                          className="text-accent"
+                          className="text-black"
                         >
                           <path
                             d="M1 1L7 7L1 13"
@@ -295,7 +294,7 @@ export const DataGrabResultsModal: FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="h-[25rem] flex flex-col items-center justify-center">
+                <div className="h-100 flex flex-col items-center justify-center">
                   <Text variant="title-2" className="text-common-ash">
                     Nada.Zip.Zilch
                   </Text>
@@ -308,6 +307,8 @@ export const DataGrabResultsModal: FC = () => {
               )}
             </div>
 
+          </ModalBody>
+          <ModalFooter className="mb-6">
             {/* Collect Cards Button */}
             <Button
               onPress={handleCollectCards}
@@ -315,8 +316,7 @@ export const DataGrabResultsModal: FC = () => {
             >
               {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
             </Button>
-          </ModalBody>
-        </Frame>
+          </ModalFooter>
       </ModalContent>
     </Modal>
   );

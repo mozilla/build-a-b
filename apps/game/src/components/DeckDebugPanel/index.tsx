@@ -53,9 +53,10 @@ interface DraggableCardRowProps {
   card: Card;
   index: number;
   colorScheme: 'red' | 'blue';
+  onMoveToTop: () => void;
 }
 
-const DraggableCardRow: FC<DraggableCardRowProps> = ({ card, index, colorScheme }) => {
+const DraggableCardRow: FC<DraggableCardRowProps> = ({ card, index, colorScheme, onMoveToTop }) => {
   const bgColor = colorScheme === 'red' ? 'bg-red-900/30' : 'bg-blue-900/30';
   const hoverColor = colorScheme === 'red' ? 'hover:bg-red-900/50' : 'hover:bg-blue-900/50';
   const borderColor = colorScheme === 'red' ? 'border-red-600/40' : 'border-blue-600/40';
@@ -88,29 +89,17 @@ const DraggableCardRow: FC<DraggableCardRowProps> = ({ card, index, colorScheme 
         <span className="text-yellow-400 text-xs flex-shrink-0">⭐</span>
       )}
 
-      {/* Preview Icon with Tooltip */}
-      <Tooltip
-        content={
-          <img
-            src={card.imageUrl}
-            alt={card.name}
-            className="w-40 h-auto rounded"
-          />
-        }
-        placement="right"
-        showArrow={false}
-        delay={200}
-        classNames={{
-          base: ['!z-[9999]'],
+      {/* Move to Top Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onMoveToTop();
         }}
-        style={{
-          zIndex: 9999,
-        }}
+        className="text-gray-400 hover:text-green-400 cursor-pointer text-xs flex-shrink-0 transition-colors"
+        title="Move to top of deck"
       >
-        <span className="text-gray-400 hover:text-gray-200 cursor-help text-xs flex-shrink-0 transition-colors">
-          👁
-        </span>
-      </Tooltip>
+        ↑
+      </button>
     </div>
   );
 };
@@ -281,6 +270,12 @@ export const DeckDebugPanel: FC = () => {
                           card={card}
                           index={idx}
                           colorScheme="red"
+                          onMoveToTop={() => {
+                            const newDeck = [...cpu.deck];
+                            const [movedCard] = newDeck.splice(idx, 1);
+                            newDeck.unshift(movedCard);
+                            handleCpuDeckReorder(newDeck);
+                          }}
                         />
                       </Reorder.Item>
                     ))}
@@ -337,6 +332,12 @@ export const DeckDebugPanel: FC = () => {
                           card={card}
                           index={idx}
                           colorScheme="blue"
+                          onMoveToTop={() => {
+                            const newDeck = [...player.deck];
+                            const [movedCard] = newDeck.splice(idx, 1);
+                            newDeck.unshift(movedCard);
+                            handlePlayerDeckReorder(newDeck);
+                          }}
                         />
                       </Reorder.Item>
                     ))}

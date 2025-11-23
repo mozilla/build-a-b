@@ -25,6 +25,7 @@ export type GameFlowEvent =
   | { type: 'SHOW_MISSION' }
   | { type: 'START_PLAYING' }
   | { type: 'SKIP_GUIDE' }
+  | { type: 'BACK_TO_INTRO' }
   | { type: 'VS_ANIMATION_COMPLETE' }
   | { type: 'REVEAL_CARDS' }
   | { type: 'CARDS_REVEALED' }
@@ -66,6 +67,7 @@ export const NON_GAMEPLAY_EVENT_TYPES = [
   'SHOW_MISSION',
   'START_PLAYING',
   'SKIP_GUIDE',
+  'BACK_TO_INTRO',
   'VS_ANIMATION_COMPLETE',
 ] as const;
 
@@ -152,6 +154,7 @@ export const gameFlowMachine = createMachine(
         on: {
           SHOW_MISSION: 'your_mission',
           SKIP_GUIDE: 'your_mission',
+          BACK_TO_INTRO: 'intro',
         },
       },
 

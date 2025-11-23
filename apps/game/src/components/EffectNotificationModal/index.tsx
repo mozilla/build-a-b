@@ -295,10 +295,10 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
                       className={cn(
                         'absolute left-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                         'w-[2.125rem] h-[2.125rem] rounded-full',
-                        'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                        'bg-accent border-2 border-accent',
                         'flex items-center justify-center',
                         'transition-opacity duration-200',
-                        'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                        'cursor-pointer hover:bg-accent/90',
                         isBeginning && 'opacity-30 cursor-not-allowed',
                       )}
                     >
@@ -308,7 +308,7 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
                         viewBox="0 0 8 14"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-accent"
+                        className="text-black"
                       >
                         <path
                           d="M7 1L1 7L7 13"
@@ -327,10 +327,10 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
                       className={cn(
                         'absolute right-[1.53125rem] top-1/2 -translate-y-1/2 z-10',
                         'w-[2.125rem] h-[2.125rem] rounded-full',
-                        'bg-[rgba(24,24,27,0.3)] border-2 border-accent',
+                        'bg-accent border-2 border-accent',
                         'flex items-center justify-center',
                         'transition-opacity duration-200',
-                        'cursor-pointer hover:bg-[rgba(24,24,27,0.5)]',
+                        'cursor-pointer hover:bg-accent/90',
                         isEnd && 'opacity-30 cursor-not-allowed',
                       )}
                     >
@@ -340,7 +340,7 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
                         viewBox="0 0 8 14"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-accent"
+                        className="text-black"
                       >
                         <path
                           d="M1 1L7 7L1 13"

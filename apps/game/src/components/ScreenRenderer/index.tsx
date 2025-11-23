@@ -68,7 +68,6 @@ const SCREENS_WITH_CLOSE_ICON = [
   'select_billionaire',
   'select_background',
   'intro',
-  'quick_start_guide',
   'your_mission',
 ];
 

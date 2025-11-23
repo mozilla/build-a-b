@@ -29,13 +29,24 @@ export const LaunchStackIndicator: FC<LaunchStackIndicatorProps> = ({
   launchStackCount,
   maxStacks = 3,
   className = '',
+  owner,
 }) => {
   const { playAudio } = useGameStore();
+
+  // CPU: 180 degrees opposite of player (-17.5deg + 180deg = 162.5deg)
+  // Player: -17.5deg rotation
+  const rotationClass = owner === 'cpu' ? 'rotate-[162.5deg]' : 'rotate-[-17.5deg]';
+  
+  // CPU: translate-x-1/4 translate-y-[-12%]
+  // Player: -translate-x-1/4 translate-y-[10%]
+  const translateClass = owner === 'cpu' ? 'translate-x-1/4 translate-y-[-12%]' : '-translate-x-1/4 translate-y-[10%]';
 
   return (
     <div
       className={cn(
-        'flex justify-between rotate-[-17.5deg] -translate-x-1/4 translate-y-[10%] mx-[12.5%]',
+        'flex justify-between mx-[12.5%]',
+        rotationClass,
+        translateClass,
         className,
       )}
     >

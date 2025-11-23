@@ -191,8 +191,13 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       {/** Avatar with Launch Stack Indicators */}
       {currentBillionaire ? (
         <div className={cn('flex flex-col items-center gap-1', gridLayoutMap[owner].avatar)}>
-          {/* Launch Stack Rocket Indicators */}
-          <LaunchStackIndicator launchStackCount={animatedLaunchStackCount} />
+          {/* Launch Stack Rocket Indicators - above avatar for player, below for CPU */}
+          {owner === 'player' && (
+            <LaunchStackIndicator
+              launchStackCount={animatedLaunchStackCount}
+              owner={owner}
+            />
+          )}
 
           {/* Avatar */}
           <div className="relative aspect-square z-2">
@@ -257,6 +262,14 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
               )}
             </AnimatePresence>
           </div>
+
+          {/* Launch Stack Rocket Indicators - below avatar for CPU */}
+          {owner === 'cpu' && (
+            <LaunchStackIndicator
+              launchStackCount={animatedLaunchStackCount}
+              owner={owner}
+            />
+          )}
         </div>
       ) : (
         <div />
