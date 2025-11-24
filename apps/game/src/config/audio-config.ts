@@ -350,8 +350,10 @@ export function supportsWebM(): boolean {
 
 /**
  * Get the appropriate audio URL for current browser
+ *
+ * Only use mp3 for better support on iOS
  */
 export function getAudioUrl(trackId: AudioTrackId): string {
   const urls = getAudioUrls(trackId);
-  return supportsWebM() ? urls.webm : urls.mp3;
+  return urls.mp3;
 }
