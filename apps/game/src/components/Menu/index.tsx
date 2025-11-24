@@ -199,15 +199,15 @@ export const Menu: FC = () => {
                 {showGuide && (
                   <div
                     key="quick-launch-wrapper"
-                    className="fixed inset-0 z-202 max-h-screen overflow-y-auto"
+                    className="frame absolute inset-0 z-202 max-h-screen overflow-y-auto flex justify-center scrollbar-hide"
                   >
                     <img
                       src={blueGridBg}
                       alt=""
-                      className="w-full h-full object-cover fixed inset-0 shadow-[inset_0_0_2rem_0_#53ffbc]"
+                      className="sticky top-0 inset-0 w-full h-full object-cover shadow-[inset_0_0_2rem_0_#53ffbc]"
                       role="presentation"
                     />
-                    <div className="max-w-[25rem] mx-auto">
+                    <div className="max-w-[25rem] mx-auto absolute top-0 z-10">
                       <QuickStart fromMenu onContinue={() => setShowGuide(false)} />
                     </div>
                   </div>

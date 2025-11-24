@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { type FC, memo, useEffect, useMemo, useRef } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
@@ -22,7 +21,7 @@ import { gtagEvent } from '@/utils/gtag';
 const CROSS_FADE_DURATION = 0.25; // in seconds
 
 export const WinnerAnimation: FC<BaseScreenProps> = memo(
-  ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, ...props }) => {
+  ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, style }) => {
     const { selectedBillionaire, winner, playAudio } = useGameStore();
     const cpuBillionaireId = useCpuBillionaire();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -155,16 +154,12 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
     ]);
 
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+      <div
+        style={{ zIndex: 'var(--z-winner-animation)', ...(style as React.CSSProperties) }}
         className={cn(
           'relative flex flex-col items-center justify-center w-full h-full',
           className,
         )}
-        {...props}
       >
         {preloadedVideo ? (
           // Container for preloaded video element
@@ -176,6 +171,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             autoPlay
             muted
             playsInline
+            loop={false}
             onEnded={() => onGameOverCrossfadeComplete?.()}
             onTimeUpdate={(e) => {
               const video = e.currentTarget;
@@ -202,7 +198,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             </Text>
           </div>
         )}
-      </motion.div>
+      </div>
     );
   },
   // Custom comparison function to prevent re-renders when only style/className changes

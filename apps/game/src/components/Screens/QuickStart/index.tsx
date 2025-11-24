@@ -37,10 +37,10 @@ export const QuickStart: FC<
       {...props}
     >
       {/* Close Button */}
-      <header className="absolute top-5 right-5 z-20">
+      <header className="mx-auto relative w-full mt-6">
         <Button
           onPress={handleClose}
-          className="cursor-pointer bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 min-w-0 w-[2.125rem] h-[2.125rem] flex items-center justify-center"
+          className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
           aria-label={quickStartMicrocopy.menuCta}
         >
           <Icon name="close" width={8} height={8} className="w-2 h-2" />

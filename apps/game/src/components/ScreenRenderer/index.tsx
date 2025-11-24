@@ -95,6 +95,7 @@ export const ScreenRenderer: FC = () => {
   // State for GameOver screen crossfade
   const [showGameOverCrossfade, setShowGameOverCrossfade] = useState(false);
   const [isCrossfadeComplete, setIsCrossfadeComplete] = useState(false);
+  const [shouldRenderGameOver, setShouldRenderGameOver] = useState(false);
   const {
     isReady,
     loadedAssets,
@@ -141,11 +142,24 @@ export const ScreenRenderer: FC = () => {
     }
   }, [isWaitingForEssentialAssets, setHasShownEssentialLoadingScreen]);
 
+  // Delay rendering GameOver screen to coincide with end of winner video (13s)
+  // Video triggers crossfade at ~12.75s, so we render GameOver just before
+  useEffect(() => {
+    if (phaseKey === 'game_over') {
+      const timer = setTimeout(() => {
+        setShouldRenderGameOver(true);
+      }, 12500); // 12.5 seconds delay - just before video crossfade triggers at 12.75s
+
+      return () => clearTimeout(timer);
+    }
+  }, [phaseKey]);
+
   // Reset crossfade state when leaving game_over phase
   useEffect(() => {
     if (phaseKey !== 'game_over') {
       setShowGameOverCrossfade(false);
       setIsCrossfadeComplete(false);
+      setShouldRenderGameOver(false);
       useGameStore.setState({ showGameOverScreen: false });
     }
   }, [phaseKey]);
@@ -231,7 +245,7 @@ export const ScreenRenderer: FC = () => {
             {/* Special dual-screen rendering for game_over phase */}
             {phaseKey === 'game_over' ? (
               <>
-                {/* Winner video - always rendered, fades out during crossfade */}
+                {/* Winner video - rendered on top with absolute positioning, fades out and stays hidden */}
                 <ScreenComponent
                   key="winner-video"
                   send={send}
@@ -240,15 +254,16 @@ export const ScreenRenderer: FC = () => {
                   setDrawerNode={setDrawerNode}
                   onGameOverCrossfadeStart={handleGameOverCrossfadeStart}
                   onGameOverCrossfadeComplete={handleGameOverCrossfadeComplete}
-                  className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
+                  className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none hide-scrollbar"
                   style={{
-                    opacity: showGameOverCrossfade ? 0 : 1,
+                    opacity: showGameOverCrossfade || isCrossfadeComplete ? 0 : 1,
                     transition: 'opacity 3s ease-in-out',
+                    pointerEvents: showGameOverCrossfade || isCrossfadeComplete ? 'none' : 'auto',
                   }}
                 />
 
-                {/* GameOver screen - rendered when crossfade starts */}
-                {showGameOverCrossfade && (
+                {/* GameOver screen - rendered after 10s delay, positioned behind */}
+                {shouldRenderGameOver && showGameOverCrossfade && (
                   <GameOver
                     key="game-over-screen"
                     send={send}
@@ -258,6 +273,10 @@ export const ScreenRenderer: FC = () => {
                     setDrawerNode={setDrawerNode}
                     isCrossFadeComplete={isCrossfadeComplete}
                     className="absolute inset-0 flex flex-col items-center justify-start w-full h-full overflow-auto overscroll-none hide-scrollbar"
+                    style={{
+                      opacity: isCrossfadeComplete ? 1 : 0,
+                      transition: 'opacity 3s ease-in-out',
+                    }}
                   />
                 )}
               </>

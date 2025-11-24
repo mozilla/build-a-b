@@ -114,13 +114,11 @@ export const GameOver: FC<BaseScreenProps> = ({
     }
   };
 
-  // Handle play again
+  // Handle play again - restart at versus animation with existing selections
   const handlePlayAgain = () => {
-    const { resetGame, selectBackground, selectBillionaire } = useGameStore.getState();
+    const { resetGame } = useGameStore.getState();
     resetGame();
-    selectBackground('');
-    selectBillionaire('');
-    send?.({ type: 'QUIT_GAME' });
+    send?.({ type: 'RESTART_GAME' });
 
     gtagEvent({
       action: 'play_again_click',
@@ -143,6 +141,7 @@ export const GameOver: FC<BaseScreenProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 2.5, ease: 'linear' }}
+      style={{ zIndex: 'var(--z-game-over-screen)' }}
       className={cn('relative flex flex-col items-center justify-between w-full h-full', className)}
       {...props}
     >

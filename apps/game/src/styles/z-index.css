@@ -1,0 +1,88 @@
+/* ============================================================================
+   Z-INDEX UTILITIES
+   Centralized z-index system for consistent layering across the application
+   ========================================================================= */
+
+@theme {
+  /* ========================================================================
+     Z-INDEX LAYERS
+     Organized from lowest to highest priority
+     ======================================================================== */
+
+  /* Base Layer (0-19) - Background elements and containers */
+  --z-base: 0;
+  --z-behind: -10;
+
+  /* Card Layer (20-100) - Game cards in various states */
+  --z-card-settled: 20;              /* Base z-index for cards that have landed */
+  --z-card-settled-max: 100;         /* Maximum z-index for settled cards */
+  --z-card-in-flight: 500;           /* Cards being played/animated */
+  
+  /* Collection Layer (150-200) - Card collection animations */
+  --z-collection-loser: 150;         /* Loser's cards during collection */
+  --z-collection-winner: 200;        /* Winner's cards during collection */
+
+  /* UI Element Layer (20-99) - Interactive elements */
+  --z-deck-interaction: 20;          /* Deck interaction zones */
+  --z-ui-element: 30;                /* General UI elements */
+  --z-badge: 50;                     /* Badges and indicators */
+
+  /* Overlay Layer (100-499) - Tooltips, popovers, dropdowns */
+  --z-tooltip-base: 48;              /* Base tooltip z-index */
+  --z-tooltip: 100;                  /* Standard tooltip */
+  --z-popover: 150;                  /* Popovers and dropdowns */
+  --z-screen-transition: 100;        /* Screen transition overlays */
+
+  /* Menu Layer (200-299) - Menu overlays */
+  --z-menu-backdrop: 200;            /* Menu backdrop overlay */
+  --z-menu-content: 201;             /* Menu content */
+  --z-menu-modal-backdrop: 202;      /* Modal within menu backdrop */
+  --z-menu-modal-bg: 203;            /* Modal within menu background */
+  --z-menu-modal-content: 204;       /* Modal within menu content */
+  
+  /* Modal & Dialog Layer (500-600) - Top priority overlays */
+  --z-modal-backdrop: 500;           /* Modal backdrop */
+  --z-modal-content: 550;            /* Modal content */
+  --z-loading-screen: 580;           /* Loading screen */
+  --z-critical: 600;                 /* Critical overlays (temp tantrums, notifications, etc.) */
+
+  /* Special Animation Layer (700-800) - Full-screen animations */
+  --z-game-over-screen: 700;         /* Game over screen (revealed when winner animation fades) */
+  --z-special-animation: 750;        /* Special card animations, Data Grab, Data War */
+  --z-winner-animation: 800;         /* Winner animation screen (highest in animation layer) */
+  
+  /* Debug Layer (9000+) - Development and testing tools */
+  --z-debug-panel: 9000;             /* Debug panels */
+  --z-debug-tooltip: 9100;           /* Debug tooltips */
+  
+  /* Maximum Layer (10000+) - Highest priority elements */
+  --z-max: 10000;                    /* Reserved for extreme edge cases */
+}
+
+/* ============================================================================
+   USAGE EXAMPLES & GUIDELINES
+   ========================================================================= 
+   
+   Use these semantic z-index values instead of arbitrary numbers:
+   
+   ✅ Good: className="z-tooltip"
+   ✅ Good: className="z-modal-content"
+   ✅ Good: style={{ zIndex: 'var(--z-winner-animation)' }}
+   
+   ❌ Bad: className="z-[150]"
+   ❌ Bad: style={{ zIndex: 150 }}
+   
+   Layer Priority (from lowest to highest):
+   1. Base Layer - Background elements (-10 to 19)
+   2. Card Layer - Game cards (20 to 500)
+   3. Collection Layer - Card collections (150 to 200)
+   4. UI Element Layer - Interactive elements (20 to 99)
+   5. Overlay Layer - Tooltips, popovers (100 to 499)
+   6. Menu Layer - Menu overlays (200 to 299)
+   7. Modal & Dialog Layer - Top overlays (500 to 600)
+   8. Special Animation Layer - Full-screen animations (700 to 800)
+   9. Debug Layer - Debug tools (9000+)
+   10. Maximum Layer - Extreme edge cases (10000+)
+   
+   ========================================================================= */
+
