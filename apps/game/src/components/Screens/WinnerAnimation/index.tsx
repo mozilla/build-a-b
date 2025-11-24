@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { type FC, memo, useEffect, useMemo, useRef } from 'react';
 
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
@@ -21,7 +22,7 @@ import { gtagEvent } from '@/utils/gtag';
 const CROSS_FADE_DURATION = 0.25; // in seconds
 
 export const WinnerAnimation: FC<BaseScreenProps> = memo(
-  ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, style }) => {
+  ({ className, onGameOverCrossfadeStart, onGameOverCrossfadeComplete, ...props }) => {
     const { selectedBillionaire, winner, playAudio } = useGameStore();
     const cpuBillionaireId = useCpuBillionaire();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -154,12 +155,16 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
     ]);
 
     return (
-      <div
-        style={{ zIndex: 'var(--z-winner-animation)', ...(style as React.CSSProperties) }}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
         className={cn(
           'relative flex flex-col items-center justify-center w-full h-full',
           className,
         )}
+        {...props}
       >
         {preloadedVideo ? (
           // Container for preloaded video element
@@ -198,7 +203,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             </Text>
           </div>
         )}
-      </div>
+      </motion.div>
     );
   },
   // Custom comparison function to prevent re-renders when only style/className changes

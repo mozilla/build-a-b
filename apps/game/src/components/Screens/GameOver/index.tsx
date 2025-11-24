@@ -141,7 +141,6 @@ export const GameOver: FC<BaseScreenProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 2.5, ease: 'linear' }}
-      style={{ zIndex: 'var(--z-game-over-screen)' }}
       className={cn('relative flex flex-col items-center justify-between w-full h-full', className)}
       {...props}
     >
