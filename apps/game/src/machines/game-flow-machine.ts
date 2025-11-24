@@ -178,24 +178,16 @@ export const gameFlowMachine = createMachine(
 
       ready: {
         entry: assign({
-          tooltipMessage: ({ context }) => {
+          tooltipMessage: () => {
             const state = useGameStore.getState();
             
-            // Mark appropriate play triggers as seen
-            if (context.currentTurn === 0) {
-              // First turn - mark game_start trigger
-              state.markPlayTriggerSeen('game_start');
-            } else if (state.anotherPlayExpected) {
-              // Playing again after special card - mark play_again trigger
-              state.markPlayTriggerSeen('play_again');
+            // Check if player is expected to play again after a special card
+            if (state.anotherPlayExpected) {
+              return 'TAP_TO_PLAY_AGAIN';
             }
-
-            // Show TAP_TO_PLAY if not all triggers have been seen
-            if (state.shouldShowDeckTooltip()) {
-              return 'TAP_TO_PLAY';
-            }
-
-            return 'EMPTY';
+            
+            // Default: show TAP_TO_PLAY
+            return 'TAP_TO_PLAY';
           },
         }),
         on: {
@@ -281,7 +273,7 @@ export const gameFlowMachine = createMachine(
         initial: 'pre_animation',
         entry: () => {
           // Clear pending bonuses/penalties (Data War = fresh start)
-          // Note: currentTurnValue is cleared later in reveal_face_down after animation
+          // Note: currentTurnValue and activeEffects are cleared later in reveal_face_down after animation
           const { player, cpu } = useGameStore.getState();
 
           useGameStore.setState({
@@ -327,6 +319,8 @@ export const gameFlowMachine = createMachine(
                 const store = useGameStore.getState();
                 
                 // Reset turn values after animation completes (fresh start for Data War cards)
+                // Clear tracker and blocker effects from activeEffects (Data War = fresh start for these effects)
+                // Note: Other special effects are not cleared by Data War
                 const { player, cpu } = store;
                 const playerHasHostileTakeover =
                   player.playedCard?.specialType === 'hostile_takeover';
@@ -340,23 +334,22 @@ export const gameFlowMachine = createMachine(
                     ...player,
                     currentTurnValue:
                       playerHasHostileTakeover && htEffectApplies ? player.playedCard?.value ?? 6 : 0,
+                    activeEffects: player.activeEffects.filter(
+                      (effect) => effect.type !== 'tracker' && effect.type !== 'blocker'
+                    ),
                   },
                   cpu: {
                     ...cpu,
                     currentTurnValue:
                       cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
+                    activeEffects: cpu.activeEffects.filter(
+                      (effect) => effect.type !== 'tracker' && effect.type !== 'blocker'
+                    ),
                   },
                 });
                 
-                // Mark war_face_down trigger as seen
-                store.markPlayTriggerSeen('war_face_down');
-                
-                // Show TAP_TO_PLAY if not all triggers have been seen
-                if (store.shouldShowDeckTooltip()) {
-                  return 'TAP_TO_PLAY';
-                }
-                
-                return 'EMPTY';
+                // Show contextual tooltip for Data War face-down cards
+                return 'TAP_TO_PLAY_WAR_FACE_DOWN';
               },
             }),
             on: {
@@ -382,17 +375,8 @@ export const gameFlowMachine = createMachine(
               ready: {
                 entry: assign({
                   tooltipMessage: () => {
-                    const store = useGameStore.getState();
-                    
-                    // Mark war_face_up trigger as seen
-                    store.markPlayTriggerSeen('war_face_up');
-                    
-                    // Show TAP_TO_PLAY if not all triggers have been seen
-                    if (store.shouldShowDeckTooltip()) {
-                      return 'TAP_TO_PLAY';
-                    }
-                    
-                    return 'EMPTY';
+                    // Show contextual tooltip for Data War face-up card
+                    return 'TAP_TO_PLAY_WAR_FACE_UP';
                   },
                 }),
                 on: {

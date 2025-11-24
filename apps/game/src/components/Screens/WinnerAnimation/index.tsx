@@ -176,6 +176,7 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
             autoPlay
             muted
             playsInline
+            loop={false}
             onEnded={() => onGameOverCrossfadeComplete?.()}
             onTimeUpdate={(e) => {
               const video = e.currentTarget;
