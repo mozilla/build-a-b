@@ -37,7 +37,7 @@ export const QuickStart: FC<
       {...props}
     >
       {/* Close Button */}
-      <header className="mx-auto relative w-full mt-6">
+      <header className="mx-auto relative w-full mt-6 h-8">
         <Button
           onPress={handleClose}
           className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
@@ -48,9 +48,9 @@ export const QuickStart: FC<
       </header>
 
       {/* Main content container - scrollable */}
-      <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto hide-scrollbar">
+      <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto">
         {/* Title Section */}
-        <div className="w-full mb-8 mt-16 px-6 sm:max-w-[25rem] mx-auto">
+        <div className="w-full mb-8 mt-8 px-6 sm:max-w-[25rem] mx-auto">
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">
             {quickStartMicrocopy.title}
           </Text>
