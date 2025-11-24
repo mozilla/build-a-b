@@ -33,12 +33,12 @@
   --z-popover: 150;                  /* Popovers and dropdowns */
   --z-screen-transition: 100;        /* Screen transition overlays */
 
-  /* Menu Layer (200-299) - Menu overlays */
-  --z-menu-backdrop: 200;            /* Menu backdrop overlay */
-  --z-menu-content: 201;             /* Menu content */
-  --z-menu-modal-backdrop: 202;      /* Modal within menu backdrop */
-  --z-menu-modal-bg: 203;            /* Modal within menu background */
-  --z-menu-modal-content: 204;       /* Modal within menu content */
+  /* Menu Layer (2000-2099) - Menu overlays */
+  --z-menu-backdrop: 2000;           /* Menu backdrop overlay */
+  --z-menu-content: 2001;            /* Menu content */
+  --z-menu-modal-backdrop: 2002;     /* Modal within menu backdrop */
+  --z-menu-modal-bg: 2003;           /* Modal within menu background */
+  --z-menu-modal-content: 2004;      /* Modal within menu content */
   
   /* Modal & Dialog Layer (500-600) - Top priority overlays */
   --z-modal-backdrop: 500;           /* Modal backdrop */
@@ -78,7 +78,7 @@
    3. Collection Layer - Card collections (150 to 200)
    4. UI Element Layer - Interactive elements (20 to 99)
    5. Overlay Layer - Tooltips, popovers (100 to 499)
-   6. Menu Layer - Menu overlays (200 to 299)
+   6. Menu Layer - Menu overlays (2000 to 2099)
    7. Modal & Dialog Layer - Top overlays (500 to 600)
    8. Special Animation Layer - Full-screen animations (700 to 800)
    9. Debug Layer - Debug tools (9000+)
