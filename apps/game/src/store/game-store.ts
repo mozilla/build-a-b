@@ -592,8 +592,9 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // Remove Launch Stack from cardsInPlay (it won't be collected by winner)
-        const updatedCardsInPlay = get().cardsInPlay.filter((c) => c.id !== launchStackCard.id);
+        // DON'T remove Launch Stack from cardsInPlay yet - let it be collected normally
+        // It will be removed during the collection animation
+        // const updatedCardsInPlay = get().cardsInPlay.filter((c) => c.id !== launchStackCard.id);
 
         // Add to player's Launch Stack collection
         const launchStackKey = playerId === 'player' ? 'playerLaunchStacks' : 'cpuLaunchStacks';
@@ -604,7 +605,7 @@ export const useGameStore = create<GameStore>()(
             launchStackCount: newCount,
           },
           [launchStackKey]: [...get()[launchStackKey], launchStackCard],
-          cardsInPlay: updatedCardsInPlay,
+          // cardsInPlay: updatedCardsInPlay, // Don't update cardsInPlay - let collection handle it
         });
 
         // Check win condition
