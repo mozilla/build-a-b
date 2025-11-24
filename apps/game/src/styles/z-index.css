@@ -23,7 +23,7 @@
   --z-collection-winner: 200;        /* Winner's cards during collection */
 
   /* UI Element Layer (20-99) - Interactive elements */
-  --z-deck-interaction: 20;          /* Deck interaction zones */
+  --z-deck-interaction: 550;         /* Deck interaction zones (must be above in-flight cards) */
   --z-ui-element: 30;                /* General UI elements */
   --z-badge: 50;                     /* Badges and indicators */
 

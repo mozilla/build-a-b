@@ -33,10 +33,10 @@ Card collection animations at end of round.
 - `--z-collection-loser: 150` - Loser's cards during collection
 - `--z-collection-winner: 200` - Winner's cards during collection
 
-### 4. UI Element Layer (20 to 99)
+### 4. UI Element Layer (20 to 99, except deck interaction at 550)
 Interactive UI elements and controls.
 
-- `--z-deck-interaction: 20` - Deck interaction zones
+- `--z-deck-interaction: 550` - Deck interaction zones (must be above in-flight cards at 500)
 - `--z-ui-element: 30` - General UI elements
 - `--z-badge: 50` - Badges and indicators
 
@@ -210,6 +210,7 @@ Common causes:
 
 Components using the new system:
 
+- ✅ `DeckInteractionZone` - Uses `--z-deck-interaction` (550)
 - ✅ `WinnerAnimation` - Uses `--z-winner-animation` (800)
 - ✅ `GameOver` - Uses `--z-game-over-screen` (700)
 
