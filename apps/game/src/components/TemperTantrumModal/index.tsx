@@ -212,9 +212,9 @@ export const TemperTantrumModal: FC = () => {
               )}
             </div>
 
-            {/* Card Description with Checkbox - only show for highlighted card */}
-            {highlightedCard && !faceDownCardIds.has(highlightedCard.id) && (
-              <div className="max-w-md flex items-start gap-4 px-10">
+            {/* Card Description with Checkbox - show for all highlighted cards */}
+            {highlightedCard && (
+              <div className="w-full max-w-md flex items-start gap-4 px-10">
                 {/* Checkbox to the left - clickable */}
                 <button
                   onClick={() => selectCard(highlightedCard)}
@@ -223,7 +223,7 @@ export const TemperTantrumModal: FC = () => {
                       ? 'border-accent bg-transparent'
                       : 'border-accent bg-transparent'
                   }`}
-                  aria-label={`${selectedCards.some((c) => c.id === highlightedCard.id) ? 'Deselect' : 'Select'} ${highlightedCard.name}`}
+                  aria-label={`${selectedCards.some((c) => c.id === highlightedCard.id) ? 'Deselect' : 'Select'} ${faceDownCardIds.has(highlightedCard.id) ? 'Unknown card' : highlightedCard.name}`}
                 >
                   {selectedCards.some((c) => c.id === highlightedCard.id) && (
                     <svg
@@ -245,9 +245,9 @@ export const TemperTantrumModal: FC = () => {
                 {/* Card details */}
                 <div className="flex flex-col">
                   <Text variant="title-3" color="text-common-ash" className="mb-2">
-                    {capitalize(highlightedCard.name)}
+                    {faceDownCardIds.has(highlightedCard.id) ? 'Unknown' : capitalize(highlightedCard.name)}
                   </Text>
-                  {highlightedCard.specialActionDescription && (
+                  {!faceDownCardIds.has(highlightedCard.id) && highlightedCard.specialActionDescription && (
                     <Text variant="title-5" color="text-common-ash" weight="extrabold" align="left">
                       {highlightedCard.specialActionDescription}
                     </Text>
