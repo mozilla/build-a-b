@@ -50,7 +50,7 @@ export function DebugUI() {
   const [showDeckDebug, setShowDeckDebug] = useState(false);
   const [showEventLog, setShowEventLog] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isDeckBuilderMinimized, setIsDeckBuilderMinimized] = useState(false);
+  const [isDeckBuilderMinimized, setIsDeckBuilderMinimized] = useState(true);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Data Grab animation config state

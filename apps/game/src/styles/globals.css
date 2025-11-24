@@ -5,6 +5,7 @@
 @import 'tailwindcss';
 @import './typography.css';
 @import './animations.css';
+@import './z-index.css';
 
 /* ============================================================================
    HERO UI CONFIGURATION

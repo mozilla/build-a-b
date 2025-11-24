@@ -17,7 +17,7 @@ import { getBackgroundImage } from '@/utils/selectors';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useGameLogic } from '../../hooks/use-game-logic';
-import { useTooltip } from '../../hooks/use-tooltip';
+import { useTooltipPreview } from '../../hooks/use-tooltip';
 import { useGameStore } from '../../store/game-store';
 import { Board } from '../Board';
 import { DataGrabMiniGame } from '../DataGrabMiniGame';
@@ -43,7 +43,7 @@ export function Game() {
     player,
     cpu,
     activePlayer,
-    tooltipMessage: tooltipKey, // This is now a key, not the actual message
+    tooltipMessage: tooltipKey,
     tapDeck,
     handlePreReveal,
     handleRevealCards,
@@ -52,9 +52,9 @@ export function Game() {
     send,
   } = useGameLogic();
   const { essentialAssetsReady } = usePreloading();
-
-  // Convert tooltip key to actual message (with display count tracking)
-  const tooltipMessage = useTooltip(tooltipKey);
+  
+  // Get tooltip message without incrementing count (always show)
+  const deckTooltipMessage = useTooltipPreview(tooltipKey);
 
   const selectedBackground = useSelectedBackground();
   const selectedBillionaire = useSelectedBillionaire();
@@ -65,11 +65,8 @@ export function Game() {
   
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
   const [showTableauTooltipVisible, setShowTableauTooltipVisible] = useState(false);
-  const [cardAnimationComplete, setCardAnimationComplete] = useState(true);
   const { playAudio } = useGameStore();
   const openEffectModal = useGameStore((state) => state.openEffectModal);
-  const markTableauCardTypeSeen = useGameStore((state) => state.markTableauCardTypeSeen);
-  const seenTableauCardTypes = useGameStore((state) => state.seenTableauCardTypes);
 
   // Deck counter shows only the main deck
   // Launch Stacks are tracked separately with rocket indicators
@@ -120,14 +117,6 @@ export function Game() {
     tapDeck();
   };
 
-  // Helper to mark all currently visible card types as seen
-  const markCurrentCardTypesAsSeen = () => {
-    const currentCardTypes = getCurrentCardTypes();
-    currentCardTypes.forEach((cardType) => {
-      markTableauCardTypeSeen(cardType);
-    });
-  };
-
   const handlePlayAreaClick = (owner: PlayerType) => {
     // Don't open modal during collection animation
     if (collecting) return;
@@ -138,9 +127,6 @@ export function Game() {
       : cpu.playedCardsInHand.length > 0;
 
     if (hasCards) {
-      // Mark all current card types as seen (user has interacted with tableau)
-      markCurrentCardTypesAsSeen();
-      
       setOwnerBadgeClicked(owner);
       openEffectModal();
       playAudio(TRACKS.HAND_VIEWER);
@@ -153,16 +139,10 @@ export function Game() {
 
     // Open modal with whichever player has cards (prefer player if both have cards)
     if (player.playedCardsInHand.length > 0) {
-      // Mark all current card types as seen (user has interacted with tableau)
-      markCurrentCardTypesAsSeen();
-      
       setOwnerBadgeClicked('player');
       openEffectModal();
       playAudio(TRACKS.HAND_VIEWER);
     } else if (cpu.playedCardsInHand.length > 0) {
-      // Mark all current card types as seen (user has interacted with tableau)
-      markCurrentCardTypesAsSeen();
-      
       setOwnerBadgeClicked('cpu');
       openEffectModal();
       playAudio(TRACKS.HAND_VIEWER);
@@ -259,76 +239,30 @@ export function Game() {
     }
   }, [shouldTransitionToWin, send]);
 
-  // Helper to get card types currently on the table
-  const getCurrentCardTypes = (): Set<string> => {
-    const allPlayedCards = [...player.playedCardsInHand, ...cpu.playedCardsInHand];
-    const cardTypes = new Set<string>();
-    
-    allPlayedCards.forEach((playedCardState) => {
-      const card = playedCardState.card;
-      
-      // Skip face-down cards
-      if (playedCardState.isFaceDown) return;
-      
-      // Determine card type for tracking
-      let cardType: string | undefined;
-      if (card.specialType === 'tracker') {
-        cardType = 'tracker';
-      } else if (card.specialType === 'blocker') {
-        cardType = 'blocker';
-      } else if (card.specialType === 'launch_stack') {
-        cardType = 'launch_stack';
-      } else if (card.specialType === 'tracker_smacker' || card.specialType === 'open_what_you_want' || 
-                 card.specialType === 'mandatory_recall') {
-        cardType = 'firewall';
-      } else if (card.specialType === 'hostile_takeover' || card.specialType === 'temper_tantrum' || 
-                 card.specialType === 'patent_theft' || card.specialType === 'leveraged_buyout') {
-        cardType = 'billionaire_move';
-      } else if (!card.isSpecial) {
-        cardType = 'common_data';
-      }
-      
-      if (cardType) {
-        cardTypes.add(cardType);
-      }
-    });
-    
-    return cardTypes;
-  };
-
-  // Track when card play animation completes
+  // Control tableau tooltip visibility
+  // Show once cards are on table (after first card animation), remain visible during card plays
+  // Only hide when collection animation starts or cards are removed (e.g., Data Grab)
   useEffect(() => {
-    if (phase === 'revealing') {
-      // Card is being played, animation in progress
-      setCardAnimationComplete(false);
-    } else if (!cardAnimationComplete) {
-      // Phase changed from revealing, wait for card landing animation to complete
-      // CARD_PLAY_FROM_DECK is 800ms (not speed-adjusted)
+    const hasCardsOnTable = player.playedCardsInHand.length > 0 || cpu.playedCardsInHand.length > 0;
+    
+    // Hide during card collection animation
+    const isCollecting = collecting !== null;
+    
+    // If cards just appeared on table and we're not already showing the tooltip
+    if (hasCardsOnTable && !isCollecting && !showTableauTooltipVisible) {
+      // Delay showing tooltip until first card animation completes (CARD_PLAY_FROM_DECK = 800ms)
       const timer = setTimeout(() => {
-        setCardAnimationComplete(true);
+        setShowTableauTooltipVisible(true);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
       
       return () => clearTimeout(timer);
     }
-  }, [phase, cardAnimationComplete]);
-
-  // Control tableau tooltip visibility based on animation states and unseen card types
-  useEffect(() => {
-    const hasCardsOnTable = player.playedCardsInHand.length > 0 || cpu.playedCardsInHand.length > 0;
-    const isCardPlayPhase = phase === 'revealing';
-    const isAnimating = collecting || deckClickBlocked || isCardPlayPhase || !cardAnimationComplete;
     
-    // Check if any current card types haven't been seen yet
-    const currentCardTypes = getCurrentCardTypes();
-    const hasUnseenCardTypes = Array.from(currentCardTypes).some(
-      (cardType) => !seenTableauCardTypes.has(cardType)
-    );
-    
-    // Show tooltip only when cards are settled on table, not animating, and there are unseen card types
-    const shouldShow = hasCardsOnTable && !isAnimating && hasUnseenCardTypes;
-    
-    setShowTableauTooltipVisible(shouldShow);
-  }, [player.playedCardsInHand, cpu.playedCardsInHand, collecting, deckClickBlocked, phase, seenTableauCardTypes, cardAnimationComplete]);
+    // If collection starts or cards are removed, hide immediately
+    if (isCollecting || !hasCardsOnTable) {
+      setShowTableauTooltipVisible(false);
+    }
+  }, [player.playedCardsInHand, cpu.playedCardsInHand, collecting, showTableauTooltipVisible]);
 
   return (
     <div
@@ -364,9 +298,10 @@ export function Game() {
             </div>
 
             {/* Tableau Tooltip - positioned 1rem from left of play area, centered vertically */}
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
               {showTableauTooltipVisible && (
                 <motion.div
+                  key="tableau-tooltip"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -376,7 +311,7 @@ export function Game() {
                 >
                   <Tooltip
                     isOpen={true}
-                    content="Tap to View Cards"
+                    content="Tap to view details"
                     placement="right"
                     showArrow={false}
                     classNames={{
@@ -416,7 +351,7 @@ export function Game() {
           <DeckInteractionZone
             position="bottom"
             onClick={canClickPlayerDeck ? handleDeckClick : undefined}
-            tooltipContent={canClickPlayerDeck ? tooltipMessage : undefined}
+            tooltipContent={canClickPlayerDeck ? deckTooltipMessage : undefined}
             activeIndicator={canClickPlayerDeck}
           />
         </div>

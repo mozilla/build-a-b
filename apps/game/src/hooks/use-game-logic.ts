@@ -816,6 +816,29 @@ export function useGameLogic() {
     const playerCards = store.player.deck.slice(0, 3);
     const cpuCards = store.cpu.deck.slice(0, 3);
 
+    // Log face-down cards played by each player
+    if (!(playerHasHostileTakeover && htEffectApplies)) {
+      playerCards.forEach((card, index) => {
+        store.logEvent(
+          'PLAY_CARD',
+          `PLAYER played ${card.name} (${card.value}) - Face-down`,
+          `Card ${index + 1} of 3 in Data War${playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''}`,
+          'info'
+        );
+      });
+    }
+
+    if (!(cpuHasHostileTakeover && htEffectApplies)) {
+      cpuCards.forEach((card, index) => {
+        store.logEvent(
+          'PLAY_CARD',
+          `CPU played ${card.name} (${card.value}) - Face-down`,
+          `Card ${index + 1} of 3 in Data War${playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''}`,
+          'info'
+        );
+      });
+    }
+
     // Update decks, playedCardsInHand (face-down), and cardsInPlay
     const updatedPlayerDeck = store.player.deck.slice(3);
     const updatedCpuDeck = store.cpu.deck.slice(3);
