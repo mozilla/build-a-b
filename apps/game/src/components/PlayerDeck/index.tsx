@@ -185,7 +185,6 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
         show={showAnimation}
         animationSrc={animationVideoSrc}
         isLottie={isAnimationLottie(launchStackWonAnimation)}
-        className="z-1!"
         audioTrack={TRACKS.LAUNCH_STACK_ROCKET}
       />
       {/** Avatar with Launch Stack Indicators */}
