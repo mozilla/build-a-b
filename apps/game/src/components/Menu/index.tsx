@@ -107,7 +107,7 @@ export const Menu: FC = () => {
             duration: 0.3,
             ease: [0.4, 0, 0.2, 1],
           }}
-          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100dvh] w-[100vw] z-[var(--z-winner-animation)]"
+          className="fixed overflow-auto inset-0 flex items-center justify-center h-[100dvh] w-[100vw] z-[var(--z-menu-content)]"
         >
           <Frame
             backgroundSrc={nightSkyBg}
@@ -199,7 +199,8 @@ export const Menu: FC = () => {
                 {showGuide && (
                   <div
                     key="quick-launch-wrapper"
-                    className="frame absolute inset-0 z-202 max-h-screen hide-scrollbar overflow-y-auto flex justify-center"
+                    className="frame absolute inset-0 max-h-screen overflow-y-auto flex justify-center scrollbar-hide"
+                    style={{ zIndex: 'var(--z-menu-modal-backdrop)' }}
                   >
                     <img
                       src={blueGridBg}
@@ -224,7 +225,8 @@ export const Menu: FC = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="fixed inset-0 bg-cyan-900/70 z-203"
+                      className="fixed inset-0 bg-cyan-900/70"
+                      style={{ zIndex: 'var(--z-menu-modal-bg)' }}
                       onClick={handleQuitCancel}
                     />
 
@@ -237,7 +239,8 @@ export const Menu: FC = () => {
                         ease: [0.35, 0, 0.15, 1],
                         duration: 0.4,
                       }}
-                      className="absolute bottom-0 left-0 right-0 z-204 w-full mx-auto"
+                      className="absolute bottom-0 left-0 right-0 w-full mx-auto"
+                      style={{ zIndex: 'var(--z-menu-modal-content)' }}
                     >
                       {/* Drawer Content */}
                       <div
@@ -305,7 +308,8 @@ export const Menu: FC = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="fixed inset-0 bg-cyan-900/70 z-203"
+                      className="fixed inset-0 bg-cyan-900/70"
+                      style={{ zIndex: 'var(--z-menu-modal-bg)' }}
                       onClick={handleRestartCancel}
                     />
 
@@ -318,7 +322,8 @@ export const Menu: FC = () => {
                         ease: [0.35, 0, 0.15, 1],
                         duration: 0.4,
                       }}
-                      className="absolute bottom-0 left-0 right-0 z-204 w-full mx-auto"
+                      className="absolute bottom-0 left-0 right-0 w-full mx-auto"
+                      style={{ zIndex: 'var(--z-menu-modal-content)' }}
                     >
                       {/* Drawer Content */}
                       <div

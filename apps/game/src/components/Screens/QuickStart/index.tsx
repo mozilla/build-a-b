@@ -33,11 +33,11 @@ export const QuickStart: FC<
 
   return (
     <motion.div
-      className={cn('relative flex flex-col min-h-full items-center', className)}
+      className={cn('relative flex-1 flex-col min-h-full items-center', className)}
       {...props}
     >
       {/* Close Button */}
-      <header className="mx-auto relative w-full mt-6 h-16">
+      <header className="mx-auto relative w-full mt-6 h-8">
         <Button
           onPress={handleClose}
           className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
@@ -48,7 +48,7 @@ export const QuickStart: FC<
       </header>
 
       {/* Main content container - scrollable */}
-      <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto hide-scrollbar">
+      <div className="w-full relative z-10 flex flex-col items-center flex-grow">
         {/* Title Section */}
         <div className="w-full mb-8 mt-4 px-6 max-w-[24.375rem] mx-auto">
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">

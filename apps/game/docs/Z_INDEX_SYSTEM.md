@@ -48,14 +48,14 @@ Tooltips, popovers, and dropdowns.
 - `--z-popover: 150` - Popovers and dropdowns
 - `--z-screen-transition: 100` - Screen transition overlays
 
-### 6. Menu Layer (200 to 299)
+### 6. Menu Layer (2000 to 2099)
 Menu overlays and navigation.
 
-- `--z-menu-backdrop: 200` - Menu backdrop overlay
-- `--z-menu-content: 201` - Menu content
-- `--z-menu-modal-backdrop: 202` - Modal within menu backdrop
-- `--z-menu-modal-bg: 203` - Modal within menu background
-- `--z-menu-modal-content: 204` - Modal within menu content
+- `--z-menu-backdrop: 2000` - Menu backdrop overlay
+- `--z-menu-content: 2001` - Menu content
+- `--z-menu-modal-backdrop: 2002` - Modal within menu backdrop
+- `--z-menu-modal-bg: 2003` - Modal within menu background
+- `--z-menu-modal-content: 2004` - Modal within menu content
 
 ### 7. Modal & Dialog Layer (500 to 600)
 Modals, dialogs, and critical overlays.
@@ -220,7 +220,7 @@ Components to migrate:
 - DataWarAnimation - Currently uses z-[9998] → Migrate to `--z-special-animation` (750)
 - DataGrabMiniGame - Currently uses z-[9998] → Migrate to `--z-special-animation` (750)
 - Modals (various) - Currently use z-[9999] → Migrate to `--z-modal-content` (550) or `--z-critical` (600)
-- Menu - Currently uses z-200 to z-204 → Already aligned with `--z-menu-*` (200-204)
+- Menu - Currently uses z-2000 to z-2004 → Already aligned with `--z-menu-*` (2000-2004)
 - Debug panels - Currently use z-[999] and z-[9999] → Migrate to `--z-debug-panel` (9000) and `--z-debug-tooltip` (9100)
 
 ## Adding New Z-Index Values

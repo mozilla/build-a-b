@@ -270,7 +270,7 @@ export const ScreenRenderer: FC = () => {
                 drawerOpen={drawerOpen}
                 setDrawerOpen={setDrawerOpen}
                 setDrawerNode={setDrawerNode}
-                className="flex flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
+                className="flex-1 flex-col items-center justify-start relative w-full h-full overflow-auto overscroll-none hide-scrollbar"
               >
                 {showCloseIcon && (
                   <div className="absolute top-5 right-5 flex items-center gap-4">
