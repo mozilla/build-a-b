@@ -1361,20 +1361,101 @@ export const useGameStore = create<GameStore>()(
                     // Don't call processNextEffect here - modal will handle continuation
                     return;
                   } else {
-                    // CPU LOSES: Automatic selection
+                    // CPU LOSES: Automatic selection from winner's played cards
                     const currentState = get();
                     const playerCards = currentState.player.playedCardsInHand.map(
                       (pcs) => pcs.card,
                     );
                     const cpuCards = currentState.cpu.playedCardsInHand.map((pcs) => pcs.card);
                     const winnerCards = actualWinner === 'player' ? playerCards : cpuCards;
-                    const cardsToSteal = winnerCards.slice(0, 2);
+
+                    // CPU prioritizes stealing launch stacks, then random regular cards
+                    const launchStacks = winnerCards.filter((c) => c.specialType === 'launch_stack');
+                    const regularCards = winnerCards.filter((c) => c.specialType !== 'launch_stack');
+                    const shuffledRegular = [...regularCards].sort(() => Math.random() - 0.5);
+
+                    // Take launch stacks first, then fill with random regular cards
+                    const cardsToSteal = [
+                      ...launchStacks.slice(0, 2),
+                      ...shuffledRegular.slice(0, Math.max(0, 2 - launchStacks.length)),
+                    ];
 
                     if (cardsToSteal.length > 0) {
-                      get().stealCards(actualWinner, loser, 2);
+                      // Separate into launch stacks and regular cards
+                      const stolenLaunchStacks = cardsToSteal.filter(
+                        (card) => card.specialType === 'launch_stack',
+                      );
+                      const stolenRegularCards = cardsToSteal.filter(
+                        (card) => card.specialType !== 'launch_stack',
+                      );
+
+                      // Remove stolen cards from cardsInPlay
+                      const stolenCardIds = new Set(cardsToSteal.map((c) => c.id));
+                      const updatedCardsInPlay = currentState.cardsInPlay.filter(
+                        (card) => !stolenCardIds.has(card.id),
+                      );
+
+                      // Add stolen regular cards to CPU's deck (loser is always 'cpu' in this branch)
+                      set({
+                        cpu: {
+                          ...currentState.cpu,
+                          deck: [...currentState.cpu.deck, ...stolenRegularCards],
+                        },
+                        cardsInPlay: updatedCardsInPlay,
+                      });
+
+                      // Set destination override for stolen Launch Stacks
+                      if (stolenLaunchStacks.length > 0) {
+                        const stolenLaunchStackIds = new Set(stolenLaunchStacks.map((ls) => ls.id));
+                        const currentQueue = get().effectsQueue;
+                        const updatedQueue = currentQueue.map((e) => {
+                          if (
+                            e.type === 'launch_stack' &&
+                            stolenLaunchStackIds.has(e.card.id)
+                          ) {
+                            return { ...e, destinationOverride: loser };
+                          }
+                          return e;
+                        });
+                        set({ effectsQueue: updatedQueue });
+                      }
+
+                      // Create distributions for animation (cards go from board to loser's deck)
+                      const distributions: CardDistribution[] = cardsToSteal.map((card) => ({
+                        card,
+                        destination: loser,
+                        source: { type: 'board' as const },
+                      }));
+
+                      // Set callback to continue after animation
+                      set({
+                        animationCompletionCallback: () => {
+                          // Remove stolen cards from playedCardsInHand
+                          const currentState = get();
+                          set({
+                            player: {
+                              ...currentState.player,
+                              playedCardsInHand: currentState.player.playedCardsInHand.filter(
+                                (pcs) => !stolenCardIds.has(pcs.card.id),
+                              ),
+                            },
+                            cpu: {
+                              ...currentState.cpu,
+                              playedCardsInHand: currentState.cpu.playedCardsInHand.filter(
+                                (pcs) => !stolenCardIds.has(pcs.card.id),
+                              ),
+                            },
+                          });
+                          get().processNextEffect();
+                        },
+                      });
+
+                      // Use visual-only collection animation (decks already updated)
+                      get().collectCardsDistributed(distributions, actualWinner, true, 0, true);
+                      return;
                     }
                   }
-                  // Continue to next effect
+                  // Continue to next effect (only if no cards to steal)
                   get().processNextEffect();
                 },
               });
