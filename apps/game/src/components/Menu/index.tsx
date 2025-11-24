@@ -107,7 +107,7 @@ export const Menu: FC = () => {
             duration: 0.3,
             ease: [0.4, 0, 0.2, 1],
           }}
-          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100dvh] w-[100vw]"
+          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100dvh] w-[100vw] z-[var(--z-winner-animation)]"
         >
           <Frame
             backgroundSrc={nightSkyBg}
@@ -199,7 +199,7 @@ export const Menu: FC = () => {
                 {showGuide && (
                   <div
                     key="quick-launch-wrapper"
-                    className="frame absolute inset-0 z-202 max-h-screen overflow-y-auto flex justify-center scrollbar-hide"
+                    className="frame absolute inset-0 z-202 max-h-screen hide-scrollbar overflow-y-auto flex justify-center"
                   >
                     <img
                       src={blueGridBg}
@@ -207,7 +207,7 @@ export const Menu: FC = () => {
                       className="sticky top-0 inset-0 w-full h-full object-cover shadow-[inset_0_0_2rem_0_#53ffbc]"
                       role="presentation"
                     />
-                    <div className="max-w-[25rem] mx-auto absolute top-0 z-10">
+                    <div className="max-w-[24.375rem] mx-auto absolute top-0 z-10">
                       <QuickStart fromMenu onContinue={() => setShowGuide(false)} />
                     </div>
                   </div>
