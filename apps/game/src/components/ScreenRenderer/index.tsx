@@ -206,7 +206,7 @@ export const ScreenRenderer: FC = () => {
   }
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-100 overflow-clip">
+    <div className="absolute inset-0 flex items-center justify-center z-100 overflow-clip z-[var(--z-winner-animation)]">
       <div className="h-[100dvh] w-[100vw] flex items-center justify-center">
         <AnimatePresence>
           <Frame

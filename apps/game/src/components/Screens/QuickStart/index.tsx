@@ -37,7 +37,7 @@ export const QuickStart: FC<
       {...props}
     >
       {/* Close Button */}
-      <header className="mx-auto relative w-full mt-6 h-8">
+      <header className="mx-auto relative w-full mt-6 h-16">
         <Button
           onPress={handleClose}
           className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
@@ -48,9 +48,9 @@ export const QuickStart: FC<
       </header>
 
       {/* Main content container - scrollable */}
-      <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto">
+      <div className="w-full relative z-10 flex flex-col items-center flex-grow overflow-y-auto hide-scrollbar">
         {/* Title Section */}
-        <div className="w-full mb-8 mt-8 px-6 sm:max-w-[25rem] mx-auto">
+        <div className="w-full mb-8 mt-4 px-6 max-w-[24.375rem] mx-auto">
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">
             {quickStartMicrocopy.title}
           </Text>
@@ -60,7 +60,7 @@ export const QuickStart: FC<
         </div>
 
         {/* Guide Steps */}
-        <div className="w-full flex flex-col gap-6 mb-8 px-6 sm:max-w-[25rem] mx-auto">
+        <div className="w-full flex flex-col gap-6 mb-8 px-6 max-w-[24.375rem] mx-auto">
           {quickStartMicrocopy.steps.map((step) => (
             <GuideStep
               key={step.number}
@@ -73,7 +73,7 @@ export const QuickStart: FC<
 
         {/* Card Carousel Section */}
         <div className="w-full mb-8">
-          <div className="px-6 mb-8 sm:max-w-[25rem] mx-auto">
+          <div className="px-6 mb-8 max-w-[24.375rem] mx-auto">
             <Text variant="title-3" color="text-common-ash">
               {quickStartMicrocopy.cardCarousel.title}
             </Text>
@@ -86,7 +86,7 @@ export const QuickStart: FC<
           <CardCarousel />
         </div>
         {/* CTA Button */}
-        <div className="relative z-10 flex justify-center pb-8 pt-4 w-full px-12 sm:max-w-[25rem] mx-auto">
+        <div className="relative z-10 flex justify-center pb-8 pt-4 w-full px-12 max-w-[24.375rem] mx-auto">
           <Button className="w-full mx-auto" onPress={handleContinue} variant="primary">
             {fromMenu ? quickStartMicrocopy.menuCta : quickStartMicrocopy.cta}
           </Button>
