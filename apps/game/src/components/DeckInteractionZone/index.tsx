@@ -34,13 +34,14 @@ export const DeckInteractionZone: FC<DeckInteractionZoneProps> = ({
   return (
     <div
       className={cn(
-        'absolute z-20',
+        'absolute',
         'w-[7rem] h-[9rem]',
         'ml-[50%] left-[-3.3rem]',
         position === 'top' ? 'top-[1rem]' : 'bottom-[1rem]',
         isClickable && 'cursor-pointer',
         className,
       )}
+      style={{ zIndex: 'var(--z-deck-interaction)' }}
       onClick={isClickable ? onClick : undefined}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
