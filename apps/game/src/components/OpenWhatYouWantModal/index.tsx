@@ -222,7 +222,7 @@ export const OpenWhatYouWantModal = () => {
 
               {/* Card Description with Checkbox - show for highlighted card */}
               {highlightedCard && (
-                <div className="max-w-md flex items-start gap-4 px-10">
+                <div className="max-w-md w-full flex items-start gap-4 px-10">
                   {/* Checkbox to the left - clickable */}
                   <button
                     onClick={() => handleCheckboxClick(highlightedCard)}
