@@ -114,13 +114,11 @@ export const GameOver: FC<BaseScreenProps> = ({
     }
   };
 
-  // Handle play again
+  // Handle play again - restart at versus animation with existing selections
   const handlePlayAgain = () => {
-    const { resetGame, selectBackground, selectBillionaire } = useGameStore.getState();
+    const { resetGame } = useGameStore.getState();
     resetGame();
-    selectBackground('');
-    selectBillionaire('');
-    send?.({ type: 'QUIT_GAME' });
+    send?.({ type: 'RESTART_GAME' });
 
     gtagEvent({
       action: 'play_again_click',

@@ -39,7 +39,22 @@ export const TOOLTIP_CONFIGS = {
   TAP_TO_PLAY: {
     id: 'tap_to_play',
     message: 'Tap to Play',
-    maxDisplayCount: null, // Managed by play trigger tracking
+    maxDisplayCount: null, // Always show
+  },
+  TAP_TO_PLAY_AGAIN: {
+    id: 'tap_to_play_again',
+    message: 'Tap to play again',
+    maxDisplayCount: null, // Always show
+  },
+  TAP_TO_PLAY_WAR_FACE_DOWN: {
+    id: 'tap_to_play_war_face_down',
+    message: 'Tap to play 3 war cards',
+    maxDisplayCount: null, // Always show
+  },
+  TAP_TO_PLAY_WAR_FACE_UP: {
+    id: 'tap_to_play_war_face_up',
+    message: 'Tap to play your next war card',
+    maxDisplayCount: null, // Always show
   },
 
   // Data War Tooltips
@@ -52,8 +67,8 @@ export const TOOLTIP_CONFIGS = {
   // Special Effects Tooltips
   OWYW_TAP_DECK: {
     id: 'owyw_tap_deck',
-    message: 'Tap to see top 3 cards',
-    maxDisplayCount: 2, // Show first 2 times
+    message: 'Tap to look at your top 3 cards',
+    maxDisplayCount: null, // Always show
   },
   
   // Tableau Tooltips
