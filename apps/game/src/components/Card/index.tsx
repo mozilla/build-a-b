@@ -12,6 +12,7 @@ export const Card: FC<CardProps> = ({
   onFrontClick,
   positions,
   fullSize = false,
+  variant,
   ...dataAttributes
 }) => {
   const handleClick = () => {
@@ -34,21 +35,28 @@ export const Card: FC<CardProps> = ({
     <motion.div
       {...dataAttributes}
       className={cn(
-        'cursor-pointer origin-center perspective-distant',
-        isFullSize
-          ? 'max-w-[125px] w-[7.8125rem] max-h-[175px] h-[10.9375rem]'
-          : 'max-w-[86px] w-[5.375rem] max-h-[120px] h-[7.5rem]',
+        'cursor-pointer origin-center perspective-distant flex justify-center items-center',
+        variant !== 'deck-pile'
+          ? isFullSize
+            ? 'w-full aspect-125/175'
+            : 'w-[5.375rem] aspect-86/120'
+          : '',
+        variant === 'deck-pile' && 'aspect-[86/120] w-[87.75%]',
+        variant === 'animated-card' && 'w-full h-full',
       )}
       onClick={handleClick}
       animate={{
         x: currentPosition.x,
         y: currentPosition.y,
-        scale: isFullSize ? 1 : 0.688,
+        scale: isFullSize || variant === 'deck-pile' ? 1 : 0.688,
       }}
       transition={{ duration: ANIMATION_DURATIONS.CARD_FLIP / 1000, ease: 'easeInOut' }}
     >
       <motion.div
-        className="relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden"
+        className={cn(
+          'relative w-full h-full [transform-style:preserve-3d] overflow-visible backface-hidden',
+          state === 'flipped' && !isFullSize && 'sm:max-w-[7.8125rem] sm:max-h-[10.9375rem]',
+        )}
         animate={{
           rotateY: isFrontVisible ? 180 : 0,
         }}

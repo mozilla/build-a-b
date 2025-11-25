@@ -5,20 +5,11 @@ import { useSelector } from '@xstate/react';
 import { motion } from 'framer-motion';
 import type { FC } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
-import { TOOLTIP_CONFIGS } from '../../config/tooltip-config';
 import { GameMachineContext } from '../../providers/GameProvider';
-import {
-  useCurrentEffectNotification,
-  useGameStore,
-  usePendingEffectNotifications,
-  useSetShowEffectNotificationModal,
-  useShowEffectNotificationBadge,
-} from '../../store';
-import type { EffectNotification, PlayedCardState } from '../../types/game';
+import { useGameStore } from '../../store';
+import type { PlayedCardState } from '../../types/game';
 import { getGamePhase } from '../../utils/get-game-phase';
 import { Card } from '../Card';
-import { EffectNotificationBadge } from '../EffectNotificationBadge';
-import { Tooltip } from '../Tooltip';
 import {
   ANIMATION_DELAYS,
   COLLECTION_ROTATION,
@@ -43,8 +34,8 @@ interface AnimatedCardProps {
   // Animation state
   deckOffset: { x: number; y: number };
   shouldCollect: boolean;
-  collectionOffset: { x: number; y: number };
-  isSwapped: boolean;
+  playerCollectionOffset: { x: number; y: number };
+  cpuCollectionOffset: { x: number; y: number };
   winner: 'player' | 'cpu' | null;
   isCPU: boolean;
   owner: 'player' | 'cpu';
@@ -55,6 +46,10 @@ interface AnimatedCardProps {
   settledZRef: React.MutableRefObject<Record<string, number>>;
   elementRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   onLandedChange: (landedKey: string) => void;
+
+  // Card interaction
+  shouldShowBadge: boolean;
+  onCardClick?: () => void;
 }
 
 /**
@@ -70,8 +65,8 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   playIndex,
   deckOffset,
   shouldCollect,
-  collectionOffset,
-  isSwapped,
+  playerCollectionOffset,
+  cpuCollectionOffset,
   winner,
   isCPU,
   owner,
@@ -80,16 +75,9 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   settledZRef,
   elementRefs,
   onLandedChange,
+  shouldShowBadge,
+  onCardClick,
 }) => {
-  // Effect notification hooks
-  const showEffectNotificationBadge = useShowEffectNotificationBadge();
-  const pendingEffectNotifications = usePendingEffectNotifications();
-  const currentEffectNotification = useCurrentEffectNotification();
-  const setShowEffectNotificationModal = useSetShowEffectNotificationModal();
-  const showEffectNotificationModal = useGameStore((state) => state.showEffectNotificationModal);
-  const shouldShowTooltip = useGameStore((state) => state.shouldShowTooltip);
-  const incrementTooltipCount = useGameStore((state) => state.incrementTooltipCount);
-
   // Get game phase to detect data war
   const actorRef = GameMachineContext.useActorRef();
   const stateValue = useSelector(actorRef, (snapshot) => snapshot.value);
@@ -100,6 +88,25 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const cpu = useGameStore((state) => state.cpu);
   const dataWarVideoPlaying = useGameStore((state) => state.dataWarVideoPlaying);
   const anotherPlayExpected = useGameStore((state) => state.anotherPlayExpected);
+  const collectingState = useGameStore((state) => state.collecting);
+  const deckSwapCount = useGameStore((state) => state.deckSwapCount);
+  const showDataGrabResults = useGameStore((state) => state.showDataGrabResults);
+
+  // Find this card's specific destination from the distribution system
+  const cardDistribution = collectingState?.distributions?.find(
+    (d) => d.card.id === playedCardState.card.id,
+  );
+
+  // Only collect this card if:
+  // 1. shouldCollect is true (winner is set)
+  // 2. collectingState exists (there's an active collection, not null)
+  // 3. Either no specific distributions (collect all) OR this card is in distributions
+  const hasDistributions = collectingState?.distributions && collectingState.distributions.length > 0;
+  const cardShouldCollect = shouldCollect && collectingState !== null && (
+    !hasDistributions || cardDistribution !== undefined
+  );
+  const cardDestination = cardDistribution?.destination || winner;
+  const isSwappedNow = deckSwapCount % 2 === 1;
   const isTiedInComparing =
     phase === 'comparing' &&
     player.playedCard &&
@@ -108,13 +115,13 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     !anotherPlayExpected;
   const shouldShowDataWarGlow = isTiedInComparing;
 
-  const effectTooltipConfig = TOOLTIP_CONFIGS.EFFECT_NOTIFICATION;
-  const shouldShowEffectTooltip =
-    shouldShowTooltip(effectTooltipConfig.id, effectTooltipConfig.maxDisplayCount) &&
-    !showEffectNotificationModal;
+  // Use faster animation for Data Grab cards (restoring to tableau behind modal)
+  const playDuration = showDataGrabResults
+    ? ANIMATION_DURATIONS.DATA_GRAB_CARD_RESTORE
+    : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK;
 
-  // Calculate stagger delay for sequential play
-  const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK : 0;
+  // Calculate stagger delay for sequential play (600ms between cards)
+  const staggerDelay = isNewCard ? playIndex * ANIMATION_DURATIONS.CARD_STAGGER_DELAY : 0;
 
   // Get rotation class for visual variety
   const rotationClass = getRotationClass(
@@ -123,16 +130,11 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     index,
     ROTATION_CLASSES,
   );
-  const rotationDelay = isTopCard ? 0 : ANIMATION_DELAYS.CARD_ROTATION;
+  // Don't apply rotation delay to face-down cards (data war) for consistent sequential timing
+  const rotationDelay = playedCardState.isFaceDown ? 0 : (isTopCard ? 0 : ANIMATION_DELAYS.CARD_ROTATION);
 
   // Determine card image (back or front)
   const cardImage = playedCardState.isFaceDown ? CARD_BACK_IMAGE : playedCardState.card.imageUrl;
-
-  // Check if this card should show the effect notification badge
-  const shouldShowBadge =
-    isTopCard &&
-    showEffectNotificationBadge &&
-    pendingEffectNotifications.some((notif) => notif.card.id === playedCardState.card.id);
 
   // Determine if this card should glow
   const glowType =
@@ -145,30 +147,11 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       : 'none';
   const glowClasses = getGlowClasses(glowType);
 
-  // Handle card click for effect notification
+  // Handle card click - opens modal when badge is visible
   const handleCardClick = () => {
-    if (!shouldShowBadge) return;
-
-    if (shouldShowEffectTooltip) {
-      incrementTooltipCount(effectTooltipConfig.id);
+    if (isTopCard && shouldShowBadge && onCardClick) {
+      onCardClick();
     }
-
-    const clickedNotification = pendingEffectNotifications.find(
-      (notif) => notif.card.id === playedCardState.card.id,
-    );
-
-    if (clickedNotification && clickedNotification !== currentEffectNotification) {
-      const reorderedNotifications = [
-        clickedNotification,
-        ...pendingEffectNotifications.filter((notif) => notif !== clickedNotification),
-      ];
-      useGameStore.setState({
-        pendingEffectNotifications: reorderedNotifications,
-        currentEffectNotification: clickedNotification,
-      });
-    }
-
-    setShowEffectNotificationModal(true);
   };
 
   // Calculate initial rotation with spread effect for multi-card batches
@@ -176,19 +159,29 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
   const spreadRotation = isNewCard ? (cardIndexInBatch - 1) * 4 : 0;
   const initialRotate = baseInitialRotation + spreadRotation;
 
-  // Animation endpoints
-  const finalX = shouldCollect ? collectionOffset.x : 0;
-  const finalY = shouldCollect ? collectionOffset.y : 0;
-  const finalScale = shouldCollect ? SCALE.DECK : SCALE.TABLE;
+  // Determine which collection offset to use based on this card's destination
+  const cardSpecificCollectionOffset = cardShouldCollect
+    ? cardDestination === 'player'
+      ? playerCollectionOffset
+      : cpuCollectionOffset
+    : { x: 0, y: 0 };
 
-  // Collection rotation based on visual position
-  const winnerIsVisuallyAtBottom = isSwapped ? winner === 'cpu' : winner === 'player';
-  const collectionRotation = winnerIsVisuallyAtBottom
+  // Animation endpoints
+  const finalX = cardShouldCollect ? cardSpecificCollectionOffset.x : 0;
+  const finalY = cardShouldCollect ? cardSpecificCollectionOffset.y : 0;
+  const finalScale = cardShouldCollect ? SCALE.DECK : SCALE.TABLE;
+
+  // Collection rotation based on visual position (use cardDestination instead of winner)
+  const destinationIsVisuallyAtBottom = isSwappedNow
+    ? cardDestination === 'cpu'
+    : cardDestination === 'player';
+  const collectionRotation = destinationIsVisuallyAtBottom
     ? COLLECTION_ROTATION.BOTTOM
     : COLLECTION_ROTATION.TOP;
-  const finalRotate = shouldCollect ? collectionRotation : 0;
+  const finalRotate = cardShouldCollect ? collectionRotation : 0;
 
-  const finalOpacity = shouldCollect ? [1, 1, 1] : 1;
+  // Fade out cards as they're collected into the deck
+  const finalOpacity = cardShouldCollect ? [1, 1, 0.25] : 1;
 
   // Z-index calculation
   const startZ = isNewCard
@@ -198,15 +191,16 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
     ? Z_INDEX_CONFIG.FINAL_BASE + playIndex
     : Z_INDEX_CONFIG.FINAL_BASE + index;
 
-  const isWinnerCard = shouldCollect && owner === winner;
-  const collectionZIndex = shouldCollect
+  // Check if this card is going to its owner's deck (winner) or opponent's deck (loser)
+  const isWinnerCard = cardShouldCollect && owner === cardDestination;
+  const collectionZIndex = cardShouldCollect
     ? isWinnerCard
       ? Z_INDEX_CONFIG.COLLECTION_WINNER_BASE + index
       : Z_INDEX_CONFIG.COLLECTION_LOSER_BASE + index
     : Z_INDEX_CONFIG.FALLBACK + index;
 
   const settledAssignedZ = settledZRef.current[landedKey];
-  const appliedZ = shouldCollect
+  const appliedZ = cardShouldCollect
     ? collectionZIndex
     : isNewCard
     ? landed
@@ -216,7 +210,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
 
   // Detect when card lands and assign settled z-index
   const handleUpdate = (latest: { [k: string]: number }) => {
-    if (!shouldCollect && isNewCard && !landed) {
+    if (!cardShouldCollect && isNewCard && !landed) {
       const currentY = typeof latest.y === 'number' ? latest.y : NaN;
       if (!Number.isNaN(currentY) && Math.abs(currentY - 0) < LANDING_EPSILON) {
         const el = elementRefs.current[landedKey];
@@ -236,7 +230,7 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
 
   // Fallback: ensure landed is set at animation complete if onUpdate missed it
   const handlePlayComplete = () => {
-    if (!shouldCollect && isNewCard) {
+    if (!cardShouldCollect && isNewCard) {
       const el = elementRefs.current[landedKey];
       if (el && !(landedKey in settledZRef.current)) {
         const assigned = assignSettledZIndex(
@@ -258,10 +252,10 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       }}
       key={landedKey}
       className={cn(
-        'absolute backface-hidden',
+        'absolute backface-hidden size-full',
         rotationClass,
-        shouldShowBadge && 'cursor-pointer',
         glowClasses,
+        isTopCard && shouldShowBadge && 'cursor-pointer',
       )}
       style={{
         zIndex: appliedZ,
@@ -286,11 +280,11 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
         opacity: finalOpacity,
       }}
       transition={{
-        duration: shouldCollect
+        duration: cardShouldCollect
           ? ANIMATION_DURATIONS.CARD_COLLECTION / 1000
-          : ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000,
+          : playDuration / 1000,
         ease: [0.43, 0.13, 0.23, 0.96],
-        delay: shouldCollect
+        delay: cardShouldCollect
           ? index * 0.05
           : (isTopCard ? 0 : rotationDelay / 1000) + staggerDelay / 1000,
       }}
@@ -299,69 +293,17 @@ export const AnimatedCard: FC<AnimatedCardProps> = ({
       onClick={handleCardClick}
     >
       <Card
+        variant="animated-card"
         cardFrontSrc={cardImage}
         state={
-          shouldCollect
+          cardShouldCollect
             ? 'initial' // Collecting: always show back
             : playedCardState.isFaceDown
             ? 'initial' // Face-down cards stay as back (no flip)
             : 'flipped' // Face-up cards show front (flipped)
         }
-        fullSize={!shouldCollect}
+        fullSize={!cardShouldCollect}
       />
-
-      {shouldShowBadge && (
-        <EffectNotificationBadgeWithTooltip
-          playedCardState={playedCardState}
-          pendingEffectNotifications={pendingEffectNotifications}
-          shouldShowEffectTooltip={shouldShowEffectTooltip}
-          effectTooltipConfig={effectTooltipConfig}
-        />
-      )}
     </motion.div>
-  );
-};
-
-/**
- * Sub-component to handle effect notification badge with tooltip
- */
-const EffectNotificationBadgeWithTooltip: FC<{
-  playedCardState: PlayedCardState;
-  pendingEffectNotifications: EffectNotification[];
-  shouldShowEffectTooltip: boolean;
-  effectTooltipConfig: { id: string; message: string };
-}> = ({
-  playedCardState,
-  pendingEffectNotifications,
-  shouldShowEffectTooltip,
-  effectTooltipConfig,
-}) => {
-  const notification = pendingEffectNotifications.find(
-    (notif) => notif.card.id === playedCardState.card.id,
-  );
-
-  if (!notification) return null;
-
-  return (
-    <div className="absolute top-1/2 -translate-y-[5rem] -right-29 z-10">
-      <Tooltip
-        content={effectTooltipConfig.message}
-        placement="bottom"
-        arrowDirection="left"
-        isOpen={shouldShowEffectTooltip}
-        classNames={{
-          base: ['translate-x-1', 'translate-y-[-0.8rem]'],
-          content: ['text-green-400', 'text-sm', 'p-1', 'max-w-[6rem]'],
-        }}
-      >
-        <div>
-          <EffectNotificationBadge
-            effectName={
-              notification.specialType === 'launch_stack' ? 'Launch Stack' : notification.effectName
-            }
-          />
-        </div>
-      </Tooltip>
-    </div>
   );
 };

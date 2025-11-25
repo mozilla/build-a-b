@@ -1,8 +1,58 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
+import { ANIMATION_DURATIONS } from '../config/animation-timings';
 import { gameFlowMachine } from './game-flow-machine';
 
+// Create mock functions that can be overridden per test
+const mockCheckForDataWar = vi.fn(() => false);
+const mockHasPreRevealEffects = vi.fn(() => false);
+const mockHasUnseenEffectNotifications = vi.fn(() => false);
+
+// Mock the store to allow tests to bypass asset preloading guards
+vi.mock('../store/game-store', () => ({
+  useGameStore: {
+    getState: vi.fn(() => ({
+      preloadingComplete: true, // Allow transitions through asset-gated states
+      highPriorityAssetsReady: true, // Allow transitions through background selection
+      criticalPriorityAssetsReady: true, // Allow transitions through billionaire selection
+      winner: null,
+      winCondition: null,
+      checkForDataWar: mockCheckForDataWar,
+      pendingEffects: [],
+      hasPreRevealEffects: mockHasPreRevealEffects,
+      hasUnseenEffectNotifications: mockHasUnseenEffectNotifications,
+      anotherPlayExpected: false,
+      player: {
+        playedCard: null,
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+      },
+      cpu: {
+        playedCard: null,
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+      },
+    })),
+    setState: vi.fn(),
+    subscribe: vi.fn(),
+  },
+}));
+
 describe('gameFlowMachine', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    // Reset mocks before each test
+    mockCheckForDataWar.mockReturnValue(false);
+    mockHasPreRevealEffects.mockReturnValue(false);
+    mockHasUnseenEffectNotifications.mockReturnValue(false);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('initial state', () => {
     it('should start in welcome state', () => {
       const actor = createActor(gameFlowMachine);
@@ -57,7 +107,25 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should auto-transition from vs_animation to ready after 2 seconds', () => {
+    it('should transition from quick_start_guide back to intro when BACK_TO_INTRO event is sent', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Navigate to quick_start_guide
+      actor.send({ type: 'START_GAME' });
+      actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
+      actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
+      actor.send({ type: 'SHOW_GUIDE' });
+      expect(actor.getSnapshot().value).toBe('quick_start_guide');
+
+      // Quick Start Guide -> Intro (back)
+      actor.send({ type: 'BACK_TO_INTRO' });
+      expect(actor.getSnapshot().value).toBe('intro');
+
+      actor.stop();
+    });
+
+    it('should transition from vs_animation to ready when VS_ANIMATION_COMPLETE event is sent', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -65,16 +133,17 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'START_GAME' });
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
-      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro and go straight to vs_animation
+      actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
 
       expect(actor.getSnapshot().value).toBe('vs_animation');
 
-      // Wait for auto-transition (2000ms + buffer)
-      setTimeout(() => {
-        expect(actor.getSnapshot().value).toBe('ready');
-        expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
-        actor.stop();
-      }, 2100);
+      // Send VS_ANIMATION_COMPLETE event (triggered by video 'ended' event)
+      actor.send({ type: 'VS_ANIMATION_COMPLETE' });
+
+      expect(actor.getSnapshot().value).toBe('ready');
+      expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
+      actor.stop();
     });
   });
 
@@ -88,6 +157,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
 
       expect(actor.getSnapshot().value).toBe('ready');
@@ -108,6 +178,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
 
@@ -117,8 +188,8 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'CARDS_REVEALED' });
       expect(actor.getSnapshot().value).toEqual({ effect_notification: 'checking' });
 
-      // Skip effect notification
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' });
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       expect(actor.getSnapshot().value).toBe('comparing');
       actor.stop();
     });
@@ -132,13 +203,18 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      // Send TIE event which directly transitions to data_war
       actor.send({ type: 'TIE' });
-      expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: 'pre_animation' });
 
       actor.stop();
     });
@@ -152,10 +228,12 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
       actor.send({ type: 'SPECIAL_EFFECT' });
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -172,10 +250,12 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'SPECIAL_EFFECT' });
 
       expect(actor.getSnapshot().value).toEqual({ special_effect: 'showing' });
@@ -195,10 +275,12 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
 
       actor.send({ type: 'RESOLVE_TURN' });
       expect(actor.getSnapshot().value).toBe('resolving');
@@ -217,14 +299,20 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
+
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      // Send TIE event to enter data_war
       actor.send({ type: 'TIE' });
 
-      // Should start in animating substate
-      expect(actor.getSnapshot().value).toEqual({ data_war: 'animating' });
+      // Should start in pre_animation substate
+      expect(actor.getSnapshot().value).toEqual({ data_war: 'pre_animation' });
 
       // After delay, should move to reveal_face_down
       setTimeout(() => {
@@ -243,6 +331,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -266,6 +355,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
@@ -295,10 +385,12 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'RESOLVE_TURN' });
 
       expect(actor.getSnapshot().context.currentTurn).toBe(1);
@@ -306,7 +398,7 @@ describe('gameFlowMachine', () => {
       actor.stop();
     });
 
-    it('should return to ready state when no win condition', async () => {
+    it('should return to ready state when no win condition', () => {
       const actor = createActor(gameFlowMachine);
       actor.start();
 
@@ -315,10 +407,12 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
       actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
       actor.send({ type: 'SKIP_INSTRUCTIONS' }); // Skip intro
+      actor.send({ type: 'START_PLAYING' }); // Transition from your_mission to vs_animation
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
       actor.send({ type: 'REVEAL_CARDS' });
       actor.send({ type: 'CARDS_REVEALED' });
-      actor.send({ type: 'EFFECT_NOTIFICATION_COMPLETE' }); // Skip effect notification
+      // Wait for effect notification delay to complete
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
       actor.send({ type: 'RESOLVE_TURN' });
 
       // Check win condition (guard returns false, transitions to pre_reveal)
@@ -328,7 +422,7 @@ describe('gameFlowMachine', () => {
       expect(actor.getSnapshot().value).toEqual({ pre_reveal: 'processing' });
 
       // Wait for WIN_ANIMATION duration (1200ms) to transition to ready
-      await new Promise((resolve) => setTimeout(resolve, 1300));
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.WIN_ANIMATION);
 
       expect(actor.getSnapshot().value).toBe('ready');
 

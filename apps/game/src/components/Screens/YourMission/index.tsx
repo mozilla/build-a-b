@@ -1,18 +1,30 @@
-import { type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
 
 import { Button } from '@/components/Button';
+import { LottieAnimation } from '@/components/LottieAnimation';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
 import { useGameStore } from '@/store';
 import { getBillionaireImage } from '@/utils/selectors';
 
-import { Icon } from '@/components/Icon';
+import burstAnimation from '@/assets/animations/effects/burst.json';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
+import { AnimatedRocket } from './AnimatedRocket';
 import { yourMissionMicrocopy } from './microcopy';
 
-export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) => {
+export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
   const { selectedBillionaire } = useGameStore();
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Start confetti after third rocket completes its pulse (1.3s delay + 0.8s duration = 2.1s)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowConfetti(true);
+    }, 2100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleContinue = () => {
     send?.({ type: 'START_PLAYING' });
@@ -24,6 +36,9 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) 
 
   return (
     <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
+      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
+        {children}
+      </header>
       {/* Main content container */}
       <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-5">
         {/* Billionaire Avatar in Porthole - centered at top */}
@@ -38,17 +53,10 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) 
         </div>
 
         {/* Text Content - centered */}
-        <div className="flex flex-col items-center gap-4 px-9 flex-grow justify-center pb-8">
+        <div className="flex flex-col items-center gap-4 px-9 flex-grow justify-center">
           <div className="flex flex-col items-center">
             <Text as="h1" variant="title-2" align="center" className="text-common-ash leading-9">
               {yourMissionMicrocopy.title}
-            </Text>
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash leading-6"
-            >
-              {yourMissionMicrocopy.subtitle}
             </Text>
           </div>
 
@@ -62,10 +70,39 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, ...props }) 
         </div>
 
         {/* Launch Stack Icons */}
-        <div className="flex items-start justify-center gap-2 pb-8">
-          <Icon name="rocket" className="-rotate-z-21 mt-3" />
-          <Icon name="rocket" />
-          <Icon name="rocket" className="rotate-z-21 mt-3" />
+        <div className="flex flex-grow items-center justify-center gap-2 pb-12 relative">
+          {/* Confetti burst animation behind rockets */}
+          {showConfetti && (
+            <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none -top-8">
+              <LottieAnimation
+                animationData={burstAnimation}
+                loop={true}
+                autoplay={true}
+                width="12.5rem"
+                height="12.5rem"
+                className="scale-150"
+              />
+            </div>
+          )}
+
+          <AnimatedRocket
+            delay={0.5}
+            gradientId="rocket-gradient-1"
+            rotation={-21}
+            className="w-[3.3125rem] h-[3.3125rem] mt-3"
+          />
+          <AnimatedRocket
+            delay={0.9}
+            gradientId="rocket-gradient-2"
+            rotation={0}
+            className="w-[3.3125rem] h-[3.3125rem]"
+          />
+          <AnimatedRocket
+            delay={1.3}
+            gradientId="rocket-gradient-3"
+            rotation={21}
+            className="w-[3.3125rem] h-[3.3125rem] mt-3"
+          />
         </div>
 
         {/* Action Button - at bottom */}

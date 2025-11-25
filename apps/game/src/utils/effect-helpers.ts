@@ -77,18 +77,15 @@ export function isInstantEffect(effectType: string): boolean {
  */
 export const EFFECT_NOTIFICATION_CONFIG = {
   showForEffects: [
-    'tracker',
-    'blocker',
     'launch_stack',
     'forced_empathy',
     'open_what_you_want',
     'tracker_smacker',
     'mandatory_recall',
-    'hostile_takeover',
+    // hostile_takeover is instant - triggers data war immediately, not queued
     'patent_theft',
     'leveraged_buyout',
     'temper_tantrum',
-    'data_grab',
   ],
 };
 

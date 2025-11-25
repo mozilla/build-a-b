@@ -19,6 +19,8 @@ export function useDeckMeasurements(
   const playAreaRef = useRef<HTMLDivElement>(null);
   const [deckOffset, setDeckOffset] = useState<Offset | null>(null);
   const [collectionOffset, setCollectionOffset] = useState<Offset>({ x: 0, y: 0 });
+  const [playerCollectionOffset, setPlayerCollectionOffset] = useState<Offset>({ x: 0, y: 0 });
+  const [cpuCollectionOffset, setCpuCollectionOffset] = useState<Offset>({ x: 0, y: 0 });
 
   useLayoutEffect(() => {
     if (!playAreaRef.current) return;
@@ -40,7 +42,34 @@ export function useDeckMeasurements(
         });
       }
 
-      // Measure the winning deck (if any)
+      // Measure BOTH player and CPU deck positions (for split card distributions)
+      const physicalPlayerDeck = getPhysicalDeckOwner('player', isSwapped);
+      const playerDeckEl = document.querySelector(
+        `[data-measure-target="${physicalPlayerDeck}"]`,
+      ) as HTMLElement | null;
+
+      if (playerDeckEl) {
+        const p = playerDeckEl.getBoundingClientRect();
+        setPlayerCollectionOffset({
+          x: p.left + p.width / 2 - (playAreaRect.left + playAreaRect.width / 2),
+          y: p.top + p.height / 2 - (playAreaRect.top + playAreaRect.height / 2),
+        });
+      }
+
+      const physicalCpuDeck = getPhysicalDeckOwner('cpu', isSwapped);
+      const cpuDeckEl = document.querySelector(
+        `[data-measure-target="${physicalCpuDeck}"]`,
+      ) as HTMLElement | null;
+
+      if (cpuDeckEl) {
+        const c = cpuDeckEl.getBoundingClientRect();
+        setCpuCollectionOffset({
+          x: c.left + c.width / 2 - (playAreaRect.left + playAreaRect.width / 2),
+          y: c.top + c.height / 2 - (playAreaRect.top + playAreaRect.height / 2),
+        });
+      }
+
+      // Measure the winning deck (if any) - kept for backward compatibility
       if (winner) {
         const winningDeckOwner = getPhysicalDeckOwner(winner, isSwapped);
         const winningDeckEl = document.querySelector(
@@ -66,14 +95,14 @@ export function useDeckMeasurements(
     };
   }, [owner, isSwapped, cardsLength, winner]);
 
-  return { playAreaRef, deckOffset, collectionOffset };
+  return { playAreaRef, deckOffset, collectionOffset, playerCollectionOffset, cpuCollectionOffset };
 }
 
 /**
  * Custom hook to track card batches and landing state
  * Manages batch IDs, landed cards, and cleanup on round end
  */
-export function useBatchTracking(cards: Array<{ card: { id: string } }>) {
+export function useBatchTracking(cards: Array<{ card: { id: string; isFaceDown?: boolean } }>) {
   const prevCardCountRef = useRef(cards.length);
   const batchIdRef = useRef(0);
   const cardBatchMapRef = useRef<Record<string, number>>({});
@@ -92,8 +121,9 @@ export function useBatchTracking(cards: Array<{ card: { id: string } }>) {
       }
     }
 
-    // If the card array shrank, a round ended — reset all tracking state
-    if (cards.length < prevCardCountRef.current) {
+    // Only reset tracking state when ALL cards are collected (actual round end)
+    // Don't reset when cards are partially removed (e.g., buyout stealing 2 cards)
+    if (cards.length === 0 && prevCardCountRef.current > 0) {
       setLandedMap({});
       cardBatchMapRef.current = {};
       settledZRef.current = {};

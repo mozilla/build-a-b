@@ -5,10 +5,8 @@
 export interface DeckPileProps {
   cardCount: number;
   owner: 'player' | 'cpu';
-  onClick?: () => void;
-  showTooltip?: boolean;
-  tooltipContent?: string;
-  activeIndicator?: boolean;
-  forcedEmpathySwapping?: boolean;
   deckSwapCount?: number;
+  className?: string;
+  layoutOwner?: 'player' | 'cpu'; // Physical position after swaps (defaults to owner if not provided)
+  activeIndicator?: boolean; // Show heartbeat animation when true
 }

@@ -9,6 +9,7 @@ export const useWinner = () => useGameStore((state) => state.winner);
 export const useWinCondition = () => useGameStore((state) => state.winCondition);
 export const useSelectedBackground = () => useGameStore((state) => state.selectedBackground);
 export const useSelectedBillionaire = () => useGameStore((state) => state.selectedBillionaire);
+export const useCpuBillionaire = () => useGameStore((state) => state.cpuBillionaire);
 export const useDeckSwapCount = () => useGameStore((state) => state.deckSwapCount);
 export const usePlayerLaunchStacks = () => useGameStore((state) => state.playerLaunchStacks);
 export const useCpuLaunchStacks = () => useGameStore((state) => state.cpuLaunchStacks);

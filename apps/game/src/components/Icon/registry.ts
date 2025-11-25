@@ -12,6 +12,9 @@ import BlockerIcon from '@/assets/icons/blocker-minus.svg?react';
 import MoveIcon from '@/assets/icons/move.svg?react';
 import FirewallIcon from '@/assets/icons/firewall.svg?react';
 import LaunchStackIcon from '@/assets/icons/launch-stack.svg?react';
+import ReturnIcon from '@/assets/icons/return.svg?react';
+import SoundOnIcon from '@/assets/icons/sound-on.svg?react';
+import SoundOffIcon from '@/assets/icons/sound-off.svg?react';
 
 import type { FC, SVGProps } from 'react';
 
@@ -31,6 +34,9 @@ export const iconName = [
   'moveIcon',
   'firewallIcon',
   'launchStackIcon',
+  'return',
+  'soundOn',
+  'soundOff',
 ] as const;
 export type IconName = (typeof iconName)[number];
 
@@ -50,4 +56,7 @@ export const iconRegistry = {
   moveIcon: MoveIcon,
   firewallIcon: FirewallIcon,
   launchStackIcon: LaunchStackIcon,
+  return: ReturnIcon,
+  soundOn: SoundOnIcon,
+  soundOff: SoundOffIcon,
 } satisfies Record<IconName, FC<SVGProps<SVGSVGElement>>>;

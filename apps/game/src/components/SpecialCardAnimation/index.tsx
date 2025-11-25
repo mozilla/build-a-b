@@ -1,5 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
+import { cn } from '@/utils/cn';
+import { useEffect, useRef } from 'react';
 import type { SpecialCardAnimationProps } from './types';
+import { LottieAnimation } from '../LottieAnimation';
 
 /**
  * Generic Special Card Animation Component
@@ -9,52 +13,61 @@ import type { SpecialCardAnimationProps } from './types';
  */
 export const SpecialCardAnimation = ({
   show,
-  videoSrc,
+  animationSrc,
+  isLottie,
   title,
   className = '',
-  animationClassName = '',
   videoClassName = '',
-  titleClassName = '',
   loop = true,
   controls = false,
+  removeBlur = true,
+  audioTrack,
 }: SpecialCardAnimationProps) => {
+  const { playAudio } = useGameStore();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioPlayedRef = useRef(false);
 
   // Auto-play video when component becomes visible
   useEffect(() => {
     if (show && videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.error('Failed to play special card animation:', error);
-      });
+      videoRef.current
+        .play()
+        .then(() => {
+          if (!audioPlayedRef.current) {
+            audioPlayedRef.current = true;
+            playAudio(audioTrack || TRACKS.EVENT_TAKEOVER);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to play special card animation:', error);
+        });
     }
-  }, [show]);
+  }, [show, playAudio, audioTrack]);
 
   if (!show) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${className}`}
-    >
+    <div className={cn('fixed inset-0 z-[9998] flex items-center justify-center', className)}>
       {/* Board-constrained container matching game board dimensions */}
-      <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 backdrop-blur-sm">
+      <div
+        className={`relative w-full h-full max-w-[25rem] max-h-[54rem] bg-black/20 ${
+          removeBlur ? '' : 'backdrop-blur-sm'
+        }`}
+      >
         {/* Video fills full board */}
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          loop={loop}
-          muted
-          playsInline
-          controls={controls}
-          className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
-          aria-label={title ? `${title} animation` : 'Special card animation'}
-        />
-        {/* Optional title overlay */}
-        {title && (
-          <div className={`absolute bottom-8 left-0 right-0 flex justify-center ${animationClassName}`}>
-            <p className={`text-xl font-bold text-white drop-shadow-lg ${titleClassName}`}>
-              {title}
-            </p>
-          </div>
+        {isLottie ? (
+          <LottieAnimation animationData={animationSrc} loop={loop} autoplay={true} />
+        ) : (
+          <video
+            ref={videoRef}
+            src={animationSrc as string}
+            loop={loop}
+            muted
+            playsInline
+            controls={controls}
+            className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
+            aria-label={title ? `${title} animation` : 'Special card animation'}
+          />
         )}
       </div>
     </div>

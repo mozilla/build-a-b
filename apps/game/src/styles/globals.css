@@ -1,15 +1,56 @@
-/* Tailwind import */
+/* ============================================================================
+   IMPORTS
+   ========================================================================= */
+
 @import 'tailwindcss';
 @import './typography.css';
+@import './animations.css';
+@import './z-index.css';
 
-/** Hero UI */
+/* ============================================================================
+   HERO UI CONFIGURATION
+   Configures the Hero UI component library plugin and theme sources
+   ========================================================================= */
+
 @plugin '../utils/hero.ts';
 @source '/node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
+/* ============================================================================
+   CUSTOM VARIANTS
+   ========================================================================= */
+
+/* Dark mode variant for nested dark theme contexts */
 @custom-variant dark (&:is(.dark *));
 
+/* Landscape: Applies to landscape orientation OR devices >= 1024px */
+@custom-variant landscape {
+  @media (orientation: landscape), (min-width: 1024px) {
+    @slot;
+  }
+}
+
+/* Portrait: Applies to portrait orientation on devices < 1024px */
+@custom-variant portrait {
+  @media (orientation: portrait) and (max-width: 1023.98px) {
+    @slot;
+  }
+}
+
+/* Framed: Applies to devices with sufficient width and height for frame view */
+@custom-variant framed {
+  @media (min-width: 768px) and (min-height: 999px) {
+    @slot;
+  }
+}
+
+/* ============================================================================
+   DESIGN TOKENS - COLORS, FONTS & BASE SIZES
+   ========================================================================= */
+
 @theme {
+  /* Color Palette */
   --color-charcoal: #333336;
+  --color-dark-charcoal: #07070f;
   --color-foreground: #11181c;
   --color-common-ash: #f8f6f4;
   --color-common-teal: #329971;
@@ -17,31 +58,34 @@
   --color-secondary-purple: #754fe0;
   --color-secondary-gray: #d4d4d8;
   --color-accent: #53ffbc;
-  --color-dark-charcoal: #07070f;
-  --font-sharp-sans: 'Sharp Sans', sans-serif;
+
+  /* Typography */
+  --font-sharp: 'Sharp Sans', sans-serif;
   --font-size-xs10: 0.714rem;
 }
 
-/* Theming overrides */
+/* ============================================================================
+   LAYOUT TOKENS - CONTAINER & FRAME DIMENSIONS
+   Inline theme variables for responsive container and frame sizing
+   ========================================================================= */
+
 @theme inline {
-  --container-width-landscape: 82.0625rem;
-  --container-width-portrait: 22.375rem;
+  /* Container widths for main content area */
+  --container-width-landscape: 82.0625rem; /* 1313px */
+  --container-width-portrait: 22.375rem;   /* 358px */
+
+  /* Frame dimensions maintain 390:844 aspect ratio (iPhone 14 Pro)
+     Uses min() to prevent overflow while maintaining aspect ratio */
+  --frame-height: min(100dvh, 216.41dvw);
+  --frame-width: min(100dvw, 46.21dvh);
 }
 
-/* Limit Portrait scaling to devices under 1024px */
-@custom-variant landscape {
-  @media (orientation: landscape), (min-width: 1024px) {
-    @slot;
-  }
-}
-
-@custom-variant portrait {
-  @media (orientation: portrait) and (max-width: 1023.98px) {
-    @slot;
-  }
-}
+/* ============================================================================
+   COMPONENT LAYER - REUSABLE COMPONENT STYLES
+   ========================================================================= */
 
 @layer components {
+  /* Main site container with responsive padding and max-width */
   .site-container {
     @apply flex flex-col w-full max-w-[var(--container-width-portrait)] mx-auto py-4 min-h-dvh;
     @variant landscape {
@@ -49,416 +93,83 @@
     }
   }
 
+  /* Site footer with nebula background image */
   .site-footer {
     @apply relative p-4 landscape:p-8 bg-[url('/assets/images/nebula.webp')] bg-right bg-no-repeat bg-cover mb-3 border-[0.125rem] border-common-ash rounded-xl;
   }
 
+  /* Primary CTA button - filled with accent color */
   .primary-button {
     @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 bg-accent border-accent text-charcoal font-bold hover:bg-transparent hover:text-accent transition-colors duration-300 cursor-pointer;
   }
 
+  /* Secondary CTA button - outlined with accent color */
   .secondary-button {
     @apply inline-flex items-center justify-center px-4 py-2 rounded-3xl border-2 border-accent text-accent font-bold hover:bg-accent hover:text-charcoal transition-colors duration-300 cursor-pointer;
   }
+}
 
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+/* ============================================================================
+   UTILITY CLASSES
+   ========================================================================= */
 
-  .hide-scrollbar::-webkit-scrollbar {
+/* Hide scrollbars while maintaining scroll functionality */
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
     display: none;
   }
 }
 
+/* Apply responsive frame dimensions */
+@utility frame-size {
+  height: var(--frame-height);
+  width: var(--frame-width);
+}
+
+/* ============================================================================
+   GAME FRAME CONTAINER
+   Mobile-first frame that maintains iPhone aspect ratio across devices
+   ========================================================================= */
+
+.frame {
+  @apply frame-size;
+  aspect-ratio: 390/844;
+
+  /* On larger screens, use viewport-based sizing for better control */
+  @variant framed {
+    height: 84.4dvh;
+    width: 39dvh;
+  }
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ========================================================================= */
+
+html {
+  /* Prevent overscroll bounce effect on mobile */
+  overscroll-behavior: none;
+}
+
 body {
-  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp-sans text-common-ash font-semibold;
+  @apply antialiased bg-no-repeat bg-cover bg-top bg-[url(/assets/images/bg.webp)] bg-[#2B2B2F] font-sharp text-common-ash font-semibold;
+  /* Prevent text/element selection across the game */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@keyframes ticker-horizontal-infinite-scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-1.25rem);
-  }
-}
-
-@keyframes float-2 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(25.48deg);
-  }
-  50% {
-    transform: translateY(-8rem) rotate(25.48deg);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.animate-scroll-without-pause {
-  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
-}
-
-.animate-scroll-with-pause {
-  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
-}
-
-/* Pause on hover */
-.animate-scroll-with-pause:hover {
-  animation-play-state: paused;
-}
-
+/* Utility for 3D transforms and animations */
 .backface-hidden {
   backface-visibility: hidden;
 }
 
-/* Header Animation Keyframes */
-@keyframes flier-1 {
-  0% {
-    transform: translateX(0) translateY(0);
-  }
-  5.555% {
-    transform: translateX(26.25rem) translateY(24.5625rem);
-  }
-  100% {
-    transform: translateX(26.25rem) translateY(24.5625rem);
-  }
-}
+/* ============================================================================
+   TOOLTIP OVERRIDES
+   ========================================================================= */
 
-@keyframes flier-2 {
-  0% {
-    transform: translateX(0) translateY(0) scale(1);
-  }
-  4.166% {
-    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
-  }
-  100% {
-    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
-  }
-}
-
-@keyframes flier-3 {
-  0% {
-    transform: translateX(0) translateY(0) scale(1);
-  }
-  26.388% {
-    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
-  }
-  100% {
-    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
-  }
-}
-
-@keyframes floater-1 {
-  0% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  1.388% {
-    transform: translateY(-11rem) rotate(11.444deg);
-  }
-  15.277% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  100% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-}
-
-@keyframes floater-2 {
-  0% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  1.388% {
-    transform: translateY(2.9375rem) rotate(11.444deg);
-  }
-  15.277% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  100% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-}
-
-@keyframes floater-3 {
-  0% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  8.333% {
-    transform: translateY(4.4375rem) rotate(11.444deg);
-  }
-  91.666% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-  100% {
-    transform: translateY(0) rotate(11.444deg);
-  }
-}
-
-@keyframes float-tilt {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3rem) rotate(20deg);
-  }
-  50% {
-    transform: translateY(0) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-2.5rem) rotate(-15deg);
-  }
-}
-
-@utility animate-float-tilt {
-  animation: float-tilt 6s ease-in-out infinite;
-}
-
-@keyframes float-tilt-left {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(-2rem, -1.5rem) rotate(-18deg);
-  }
-  50% {
-    transform: translate(0, 0.5rem) rotate(0deg);
-  }
-  75% {
-    transform: translate(-1.5rem, -2rem) rotate(-12deg);
-  }
-}
-
-@utility animate-float-tilt-left {
-  animation: float-tilt-left 7s ease-in-out infinite;
-}
-
-@keyframes float-tilt-right {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(2rem, -1.5rem) rotate(22deg);
-  }
-  50% {
-    transform: translate(0.5rem, 1rem) rotate(0deg);
-  }
-  75% {
-    transform: translate(1.5rem, -2rem) rotate(15deg);
-  }
-}
-
-@utility animate-float-tilt-right {
-  animation: float-tilt-right 7s ease-in-out infinite;
-}
-
-@keyframes float-tilt-2 {
-  0%,
-  100% {
-    transform: translateX(0) translateY(0) rotate(22.618deg);
-  }
-  50% {
-    transform: translateX(-1rem) translateY(-3.625rem) rotate(-12.849deg);
-  }
-}
-
-@keyframes float-slide-1 {
-  0%,
-  100% {
-    transform: translateX(0) translateY(0);
-  }
-  50% {
-    transform: translateX(20rem) translateY(1.5rem);
-  }
-}
-
-/* Card animations for game - cards slide from deck position to center */
-@keyframes slide-from-top {
-  0% {
-    transform: translateY(-180px) translateZ(30px) scale(0.68);
-    opacity: 1;
-  }
-  30% {
-    transform: translateY(-120px) translateZ(20px) scale(0.75);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0) translateZ(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-from-bottom {
-  0% {
-    transform: translateY(180px) translateZ(30px) scale(0.68);
-    opacity: 1;
-  }
-  30% {
-    transform: translateY(120px) translateZ(20px) scale(0.75);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0) translateZ(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@utility animate-slide-from-top {
-  animation: slide-from-top 0.5s ease-out forwards;
-}
-
-@utility animate-slide-from-bottom {
-  animation: slide-from-bottom 0.5s ease-out forwards;
-}
-
-/* Heartbeat animation for active deck indicator */
-@keyframes heartbeat {
-  0%,
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-  }
-  30% {
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
-  }
-  90% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-  }
-}
-
-@utility animate-heartbeat {
-  animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-/* Card-specific glow animations - each card type has its own color */
-
-/* Tracker cards - Teal glow (#49C1B4) */
-@keyframes tracker-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(73, 193, 180, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(73, 193, 180, 0.8));
-  }
-}
-
-@utility animate-tracker-glow {
-  animation: tracker-glow 2s ease-in-out infinite;
-}
-
-/* Firewall cards - Orange/yellow glow (#FEC560) */
-@keyframes firewall-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(254, 197, 96, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(254, 197, 96, 0.8));
-  }
-}
-
-@utility animate-firewall-glow {
-  animation: firewall-glow 2s ease-in-out infinite;
-}
-
-/* Blocker cards - Yellow glow (#FCE978) */
-@keyframes blocker-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(252, 233, 120, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(252, 233, 120, 0.8));
-  }
-}
-
-@utility animate-blocker-glow {
-  animation: blocker-glow 2s ease-in-out infinite;
-}
-
-/* Move cards - Lighter, brighter purple/blue glow (#8090D0) */
-@keyframes move-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(128, 144, 208, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(128, 144, 208, 0.9));
-  }
-}
-
-@utility animate-move-glow {
-  animation: move-glow 2s ease-in-out infinite;
-}
-
-/* Launch Stack cards - Lighter, brighter purple glow (#C77DB8) */
-@keyframes launch-stack-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(199, 125, 184, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(199, 125, 184, 0.9));
-  }
-}
-
-@utility animate-launch-stack-glow {
-  animation: launch-stack-glow 2s ease-in-out infinite;
-}
-
-/* Data Grab cards - Blue glow (#0088CC) */
-@keyframes data-grab-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(0, 136, 204, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(0, 136, 204, 0.8));
-  }
-}
-
-@utility animate-data-grab-glow {
-  animation: data-grab-glow 2s ease-in-out infinite;
-}
-
-/* Data War (common cards) - White glow */
-@keyframes data-war-glow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.9));
-  }
-}
-
-@utility animate-data-war-glow {
-  animation: data-war-glow 2s ease-in-out infinite;
-}
+/* Hide tooltip arrow globally */
+/* div[role="tooltip"]::before {
+  display: none !important;
+} */

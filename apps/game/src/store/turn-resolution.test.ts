@@ -31,7 +31,7 @@ describe('Turn Resolution', () => {
 
     it('should return cpu as winner when CPU value is higher', () => {
       const { initializeGame, playCard } = useGameStore.getState();
-      initializeGame('low-value-first');
+      initializeGame('custom', 'custom', ['common-1'], ['common-2']);
 
       // Player gets first 33 cards (low value), CPU gets remaining cards (higher value)
       playCard('player');
@@ -115,10 +115,12 @@ describe('Turn Resolution', () => {
 
   describe('Tracker Card Behavior', () => {
     beforeEach(() => {
-      useGameStore.getState().initializeGame('custom', 'custom', ['tracker-1', 'common-3'], ['common-1']);
+      useGameStore
+        .getState()
+        .initializeGame('custom', 'custom', ['tracker-1', 'common-3'], ['common-1']);
     });
 
-    it('should not apply tracker value immediately - value should be 0', () => {
+    it('should apply tracker value immediately', () => {
       const { playCard } = useGameStore.getState();
 
       // Play a tracker card as first card
@@ -127,14 +129,14 @@ describe('Turn Resolution', () => {
       const trackerCard = useGameStore.getState().player.playedCard!;
       expect(trackerCard.specialType).toBe('tracker');
 
-      // Tracker should have 0 turn value when first played
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
+      // Tracker value should be displayed immediately (just like any other card)
+      expect(useGameStore.getState().player.currentTurnValue).toBe(trackerCard.value);
 
-      // But should store the bonus for next card
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(trackerCard.value);
+      // pendingTrackerBonus is no longer used (always 0)
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
     });
 
-    it('should apply tracker value to the NEXT card', () => {
+    it('should add tracker value immediately and next card adds to total', () => {
       const { playCard, setAnotherPlayMode } = useGameStore.getState();
 
       // Play tracker as first card
@@ -142,9 +144,9 @@ describe('Turn Resolution', () => {
       const trackerCard = useGameStore.getState().player.playedCard!;
       const trackerValue = trackerCard.value;
 
-      // Verify tracker has 0 value
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(trackerValue);
+      // Tracker value is immediately visible
+      expect(useGameStore.getState().player.currentTurnValue).toBe(trackerValue);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
       // Enable another play mode (tracker triggers another play)
       setAnotherPlayMode(true);
@@ -153,40 +155,41 @@ describe('Turn Resolution', () => {
       playCard('player');
       const nextCard = useGameStore.getState().player.playedCard!;
 
-      // Turn value should be: next card value + tracker bonus
-      const expectedValue = nextCard.value + trackerValue;
+      // Turn value should be: tracker value + next card value (accumulated)
+      const expectedValue = trackerValue + nextCard.value;
       expect(useGameStore.getState().player.currentTurnValue).toBe(expectedValue);
 
-      // Pending bonus should be cleared after being applied
+      // pendingTrackerBonus is no longer used
       expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
     });
 
-    it('should handle chained trackers correctly', () => {
+    it('should handle chained trackers correctly - each adds value immediately', () => {
       const { playCard, setAnotherPlayMode } = useGameStore.getState();
 
       // Initialize with two trackers and one common card
-      useGameStore.getState().initializeGame('custom', 'custom', ['tracker-1', 'tracker-2', 'common-3'], ['common-1']);
+      useGameStore
+        .getState()
+        .initializeGame('custom', 'custom', ['tracker-1', 'tracker-2', 'common-3'], ['common-1']);
 
-      // Play first tracker
+      // Play first tracker - value is immediately visible
       playCard('player');
       const tracker1Value = useGameStore.getState().player.playedCard!.value;
 
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker1Value);
+      expect(useGameStore.getState().player.currentTurnValue).toBe(tracker1Value);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
       // Enable another play for second tracker
       setAnotherPlayMode(true);
 
-      // Play second tracker
+      // Play second tracker - adds to existing value
       playCard('player');
       const tracker2Value = useGameStore.getState().player.playedCard!.value;
 
-      // Second tracker should NOT add its value to the turn (since it's the second card)
-      // AND store its bonus for the next card
-      expect(useGameStore.getState().player.currentTurnValue).toBe(0);
-      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(tracker1Value + tracker2Value);
+      // Second tracker value is added to the first tracker's value
+      expect(useGameStore.getState().player.currentTurnValue).toBe(tracker1Value + tracker2Value);
+      expect(useGameStore.getState().player.pendingTrackerBonus).toBe(0);
 
-      // Play third card (common-3)
+      // Play third card (common-3) - adds to accumulated tracker values
       playCard('player');
       const common3Value = useGameStore.getState().player.playedCard!.value;
 
@@ -284,8 +287,8 @@ describe('Turn Resolution', () => {
 
       useGameStore.getState().applyBlockerEffect('player', blockerCard);
 
-      // Should stay at 0, not go negative
-      expect(useGameStore.getState().cpu.currentTurnValue).toBe(0);
+      // Should go negative
+      expect(useGameStore.getState().cpu.currentTurnValue).toBe(-1);
     });
 
     it('should apply blocker effect even when Tracker Smacker is active', () => {
@@ -447,17 +450,29 @@ describe('Turn Resolution', () => {
     });
 
     it('should add non-instant effects to pending queue', () => {
-      useGameStore.getState().initializeGame('tracker-first', 'common-first');
+      // Use a non-instant effect like leveraged_buyout
+      const leveragedBuyoutCard: Card = {
+        id: 'lb-1',
+        typeId: 'move-buyout',
+        value: 6,
+        imageUrl: '/test.webp',
+        isSpecial: true,
+        specialType: 'leveraged_buyout',
+        name: 'Leveraged Buyout',
+      };
 
-      const { playCard } = useGameStore.getState();
-      playCard('player');
-      const trackerCard = useGameStore.getState().player.playedCard!;
+      useGameStore.setState({
+        player: {
+          ...useGameStore.getState().player,
+          playedCard: leveragedBuyoutCard,
+        },
+      });
 
-      useGameStore.getState().handleCardEffect(trackerCard, 'player');
+      useGameStore.getState().handleCardEffect(leveragedBuyoutCard, 'player');
 
       const pendingEffects = useGameStore.getState().pendingEffects;
       expect(pendingEffects.length).toBeGreaterThan(0);
-      expect(pendingEffects[0].type).toBe('tracker');
+      expect(pendingEffects[0].type).toBe('leveraged_buyout');
     });
 
     it('should not add instant effects to pending queue', () => {
@@ -513,6 +528,10 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         expect(useGameStore.getState().player.launchStackCount).toBe(initialCount + 1);
         expect(useGameStore.getState().pendingEffects).toHaveLength(0);
       });
@@ -562,12 +581,23 @@ describe('Turn Resolution', () => {
           name: 'Patent Theft',
         };
 
-        // Give CPU a launch stack
+        // Give CPU a launch stack (both counter and actual card)
+        const cpuLaunchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 6,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+          imageUrl: 'test.webp',
+          isSpecial: false,
+        };
+
         useGameStore.setState({
           cpu: {
             ...useGameStore.getState().cpu,
             launchStackCount: 1,
           },
+          cpuLaunchStacks: [cpuLaunchStackCard], // Add actual card to collection
           pendingEffects: [
             {
               type: 'patent_theft',
@@ -580,11 +610,29 @@ describe('Turn Resolution', () => {
 
         const initialPlayerCount = useGameStore.getState().player.launchStackCount;
         const initialCpuCount = useGameStore.getState().cpu.launchStackCount;
+        const initialPlayerLaunchStacks = useGameStore.getState().playerLaunchStacks;
 
+        // Process pending effects - this queues animations and sets up callback
         useGameStore.getState().processPendingEffects('player');
 
-        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
+        // Animation completion callback should be set
+        const callback = useGameStore.getState().animationCompletionCallback;
+        expect(callback).toBeDefined();
+
+        // Manually trigger the callback to process the theft
+        if (callback) {
+          callback();
+        }
+
+        // After callback: CPU's counter should be reduced and player's should increase
         expect(useGameStore.getState().cpu.launchStackCount).toBe(initialCpuCount - 1);
+        expect(useGameStore.getState().player.launchStackCount).toBe(initialPlayerCount + 1);
+        // Stolen card should be added to player's launch stack collection
+        expect(useGameStore.getState().playerLaunchStacks.length).toBe(initialPlayerLaunchStacks.length + 1);
+        expect(useGameStore.getState().playerLaunchStacks).toContainEqual(cpuLaunchStackCard);
+        // Temporary state should be cleared
+        expect(useGameStore.getState().patentTheftStolenCard).toBeNull();
+        expect(useGameStore.getState().patentTheftWinner).toBeNull();
       });
 
       it('should not steal when player loses', () => {
@@ -686,6 +734,10 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
+        // Trigger the animation completion callback to actually process the effect
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 2);
         expect(useGameStore.getState().cpu.deck.length).toBe(initialCpuDeckSize - 2);
       });
@@ -783,8 +835,21 @@ describe('Turn Resolution', () => {
         };
 
         const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
+        const initialCpuDeckSize = useGameStore.getState().cpu.deck.length;
 
+        // Set up playedCardsInHand for both players
         useGameStore.setState({
+          player: {
+            ...useGameStore.getState().player,
+            playedCardsInHand: [{ card: tantrumCard, isFaceDown: false }],
+          },
+          cpu: {
+            ...useGameStore.getState().cpu,
+            playedCardsInHand: [
+              { card: card1, isFaceDown: false },
+              { card: card2, isFaceDown: false },
+            ],
+          },
           cardsInPlay: [card1, card2, tantrumCard],
           pendingEffects: [
             {
@@ -796,11 +861,39 @@ describe('Turn Resolution', () => {
           ],
         });
 
-        useGameStore.getState().processPendingEffects('cpu'); // Player lost
+        useGameStore.getState().processPendingEffects('cpu'); // CPU wins, player loses
 
-        // Player should have stolen 2 cards from cardsInPlay
+        // Wait for temper tantrum animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
+        // Modal should be open with available cards to steal
+        expect(useGameStore.getState().showTemperTantrumModal).toBe(true);
+        expect(useGameStore.getState().temperTantrumAvailableCards).toEqual([card1, card2]);
+        expect(useGameStore.getState().temperTantrumWinner).toBe('cpu');
+
+        // Simulate player selecting 2 cards
+        useGameStore.getState().selectTemperTantrumCard(card1);
+        useGameStore.getState().selectTemperTantrumCard(card2);
+
+        // Confirm selection
+        useGameStore.getState().confirmTemperTantrumSelection();
+
+        // Wait for all animations to complete:
+        // 1. Stolen cards animation: WIN_ANIMATION + CARD_COLLECTION = 1200 + 1200 = 2400ms
+        // 2. Final collection animation: WIN_ANIMATION + CARD_COLLECTION = 1200 + 1200 = 2400ms
+        // Total: 4800ms
+        vi.advanceTimersByTime(4800);
+
+        // New behavior: Player (loser) steals 2 cards from CPU's pile
+        // CPU (winner) gets: 0 remaining (both stolen) + player's 1 card = 1 card
+        // Player gets: 2 stolen cards (doesn't keep their own tantrum card)
         expect(useGameStore.getState().player.deck.length).toBe(initialPlayerDeckSize + 2);
-        expect(useGameStore.getState().cardsInPlay.length).toBe(1); // Only tantrum card left
+        expect(useGameStore.getState().cpu.deck.length).toBe(initialCpuDeckSize + 1);
+        expect(useGameStore.getState().cardsInPlay.length).toBe(0); // All cards distributed
       });
 
       it('should not steal when player wins', () => {
@@ -916,6 +1009,13 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('player');
 
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
         // CPU should have lost all launch stacks
         expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
         // Launch stacks should be shuffled back into CPU's deck
@@ -950,6 +1050,234 @@ describe('Turn Resolution', () => {
 
         useGameStore.getState().processPendingEffects('cpu');
 
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(2);
+      });
+
+      it('should queue recall animation with correct count when player wins', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        // Spy on queueAnimation
+        const queueAnimationSpy = vi.spyOn(useGameStore.getState(), 'queueAnimation');
+
+        // Give CPU 3 launch stacks
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 3,
+            deck: [],
+          },
+          cpuLaunchStacks: [launchStackCard, launchStackCard, launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('player');
+
+        // Verify firewall_recall animation was queued first (during processPendingEffects)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('firewall_recall', 'player');
+
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
+        // Verify mandatory_recall_won animation was queued for CPU (opponent losing cards)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'cpu');
+
+        // Verify count was captured BEFORE removal
+        expect(useGameStore.getState().recallReturnCount).toBe(3);
+
+        // Verify launch stacks were removed
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
+        expect(useGameStore.getState().cpu.deck.length).toBe(3);
+
+        queueAnimationSpy.mockRestore();
+      });
+
+      it('should queue recall animation with count 1 when opponent has 1 launch stack', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        // Spy on queueAnimation
+        const queueAnimationSpy = vi.spyOn(useGameStore.getState(), 'queueAnimation');
+
+        // CPU plays recall, player has 1 launch stack
+        useGameStore.setState({
+          player: {
+            ...useGameStore.getState().player,
+            launchStackCount: 1,
+            deck: [],
+          },
+          playerLaunchStacks: [launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'cpu',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('cpu');
+
+        // Verify firewall_recall animation was queued first (during processPendingEffects)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('firewall_recall', 'cpu');
+
+        // Wait for mandatory recall animation to complete (SPECIAL_EFFECT_DISPLAY = 4000ms)
+        vi.advanceTimersByTime(4000);
+
+        // Manually trigger animation completion callback (simulates animation finishing)
+        const callback = useGameStore.getState().animationCompletionCallback;
+        if (callback) callback();
+
+        // Verify mandatory_recall_won animation was queued for player (opponent losing cards)
+        expect(queueAnimationSpy).toHaveBeenCalledWith('mandatory_recall_won', 'player');
+
+        // Verify count is 1
+        expect(useGameStore.getState().recallReturnCount).toBe(1);
+
+        // Verify launch stack was removed from player
+        expect(useGameStore.getState().player.launchStackCount).toBe(0);
+        expect(useGameStore.getState().player.deck.length).toBe(1);
+
+        queueAnimationSpy.mockRestore();
+      });
+
+      it('should not queue animation when opponent has 0 launch stacks', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 0,
+            deck: [],
+          },
+          cpuLaunchStacks: [],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          animationQueue: [],
+          recallReturnCount: 0,
+        });
+
+        useGameStore.getState().processPendingEffects('player');
+
+        // Verify NO animation was queued
+        const animationQueue = useGameStore.getState().animationQueue;
+        expect(animationQueue.length).toBe(0);
+
+        // Verify count remains 0
+        expect(useGameStore.getState().recallReturnCount).toBe(0);
+
+        // CPU still has 0 launch stacks
+        expect(useGameStore.getState().cpu.launchStackCount).toBe(0);
+      });
+
+      it('should not queue animation when player loses with mandatory recall', () => {
+        const recallCard: Card = {
+          id: 'mr-1',
+          typeId: 'firewall-recall',
+          value: 6,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'mandatory_recall',
+          name: 'Mandatory Recall',
+        };
+
+        const launchStackCard: Card = {
+          id: 'ls-1',
+          typeId: 'ls-ai-platform',
+          value: 0,
+          imageUrl: '/test.webp',
+          isSpecial: true,
+          specialType: 'launch_stack',
+          name: 'AI Platform',
+        };
+
+        useGameStore.setState({
+          cpu: {
+            ...useGameStore.getState().cpu,
+            launchStackCount: 2,
+          },
+          cpuLaunchStacks: [launchStackCard, launchStackCard],
+          pendingEffects: [
+            {
+              type: 'mandatory_recall',
+              playedBy: 'player',
+              card: recallCard,
+              isInstant: false,
+            },
+          ],
+          animationQueue: [],
+        });
+
+        // Player loses (CPU wins)
+        useGameStore.getState().processPendingEffects('cpu');
+
+        // Verify NO animation was queued
+        const animationQueue = useGameStore.getState().animationQueue;
+        expect(animationQueue.length).toBe(0);
+
+        // CPU keeps launch stacks (player lost)
         expect(useGameStore.getState().cpu.launchStackCount).toBe(2);
       });
     });
@@ -997,10 +1325,38 @@ describe('Turn Resolution', () => {
           name: 'Data Grab',
         };
 
-        const card1: Card = { id: 'c1', typeId: 'common-1', value: 1, imageUrl: '/test.webp', isSpecial: false, name: 'C1' };
-        const card2: Card = { id: 'c2', typeId: 'common-2', value: 2, imageUrl: '/test.webp', isSpecial: false, name: 'C2' };
-        const card3: Card = { id: 'c3', typeId: 'common-3', value: 3, imageUrl: '/test.webp', isSpecial: false, name: 'C3' };
-        const card4: Card = { id: 'c4', typeId: 'common-4', value: 4, imageUrl: '/test.webp', isSpecial: false, name: 'C4' };
+        const card1: Card = {
+          id: 'c1',
+          typeId: 'common-1',
+          value: 1,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C1',
+        };
+        const card2: Card = {
+          id: 'c2',
+          typeId: 'common-2',
+          value: 2,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C2',
+        };
+        const card3: Card = {
+          id: 'c3',
+          typeId: 'common-3',
+          value: 3,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C3',
+        };
+        const card4: Card = {
+          id: 'c4',
+          typeId: 'common-4',
+          value: 4,
+          imageUrl: '/test.webp',
+          isSpecial: false,
+          name: 'C4',
+        };
 
         const initialPlayerDeckSize = useGameStore.getState().player.deck.length;
         const initialCpuDeckSize = useGameStore.getState().cpu.deck.length;
@@ -1042,7 +1398,11 @@ describe('Turn Resolution', () => {
       useGameStore.setState({
         player: {
           ...useGameStore.getState().player,
-          playedCard: { value: 6, specialType: 'hostile_takeover', playedCardsInHand: [] } as unknown as Card,
+          playedCard: {
+            value: 6,
+            specialType: 'hostile_takeover',
+            playedCardsInHand: [],
+          } as unknown as Card,
           currentTurnValue: 6,
           playedCardsInHand: [],
         },

@@ -3,63 +3,100 @@
  */
 
 import { ANIMATION_DURATIONS } from '@/config/animation-timings';
-import { motion } from 'framer-motion';
-import { type FC, useLayoutEffect, useRef, useState } from 'react';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store/game-store';
+import { cn } from '@/utils/cn';
+import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
+import { type FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CARD_BACK_IMAGE } from '../../config/game-config';
 import { Card } from '../Card';
-import Text from '../Text';
-import { Tooltip } from '../Tooltip';
 import type { DeckPileProps } from './types';
 
 export const DeckPile: FC<DeckPileProps> = ({
   cardCount,
   owner,
-  onClick,
-  showTooltip = false,
-  tooltipContent,
-  activeIndicator = false,
-  forcedEmpathySwapping = false,
   deckSwapCount = 0,
+  className,
+  layoutOwner,
+  activeIndicator = false,
 }) => {
-  const isPlayer = owner === 'player';
+  // Use layoutOwner for positioning logic (accounts for deck swaps), fallback to owner
+  const positionOwner = layoutOwner ?? owner;
+  const isPlayer = positionOwner === 'player';
   const deckRef = useRef<HTMLDivElement>(null);
-  const [swapDistance, setSwapDistance] = useState<{ y: number; x: number } | null>(null);
   const prevCardCountRef = useRef(cardCount);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isReceiving, setIsReceiving] = useState(false);
+  const prevDeckSwapCountRef = useRef(deckSwapCount);
+  const [playingCard, setPlayingCard] = useState(false);
   const [cardsPlayedThisTurn, setCardsPlayedThisTurn] = useState(0);
+  const swapProgress = useMotionValue(0);
+  const playAudio = useGameStore((state) => state.playAudio);
+  const audioPlayedRef = useRef(false);
+  /**
+   * Arcs the flight path of the decks throughout the course of the swap animation.
+   * Uses sin(π * progress) which peaks at progress 0.5
+   * The horizontal offset moves the deck sideways during the swap animation.
+   */
+  const horizontalOffset = useTransform(swapProgress, (progress) => {
+    const maxOffset = 120;
+    const swapDirection = isPlayer ? 1 : -1;
+    return `${swapDirection * maxOffset * Math.sin(Math.PI * progress)}%`;
+  });
+  /**
+   * Rotates the deck during the swap animation for visual polish.
+   * The rotation follows the same arc pattern as the horizontal movement.
+   */
+  const swapRotation = useTransform(
+    swapProgress,
+    (progress) => `${-20 * Math.sin(Math.PI * progress)}deg`,
+  );
+  /**
+   * Deck swapping animation
+   * Triggers when deckSwapCount changes, animating the deck position swap.
+   */
+  useEffect(() => {
+    if (deckSwapCount !== prevDeckSwapCountRef.current) {
+      // Play audio when swap animation starts (only from player deck to avoid duplicate)
+      if (owner === 'player' && !audioPlayedRef.current) {
+        playAudio(TRACKS.DECK_SWAP);
+        audioPlayedRef.current = true;
+      }
 
-  // Self-trigger corresponding animation when this deck's card count changes
+      const controls = animate(swapProgress, 1, {
+        duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
+        ease: [0.33, 0.0, 0.67, 1.0],
+        onComplete: () => {
+          swapProgress.set(0);
+          // Reset audio flag when animation completes
+          audioPlayedRef.current = false;
+        },
+      });
+
+      prevDeckSwapCountRef.current = deckSwapCount;
+
+      return () => {
+        controls.stop();
+      };
+    }
+  }, [deckSwapCount, swapProgress, owner, playAudio]);
+  /**
+   * Card play animations
+   */
   useLayoutEffect(() => {
     const cardDiff = prevCardCountRef.current - cardCount;
     const playingCard = cardDiff > 0;
-    const receivingCards = cardCount > prevCardCountRef.current && prevCardCountRef.current > 0;
 
     if (playingCard) {
       // Track how many cards were just played
       setCardsPlayedThisTurn(cardDiff);
 
       // A card was played from this deck
-      setIsAnimating(true);
+      setPlayingCard(true);
 
       // Reset animation state after animation completes
       const timer = setTimeout(() => {
-        setIsAnimating(false);
+        setPlayingCard(false);
         setCardsPlayedThisTurn(0);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
-
-      // Cleanup timeout if component unmounts
-      return () => clearTimeout(timer);
-    }
-
-    if (receivingCards) {
-      // Cards were added to this deck (collection)
-      setIsReceiving(true);
-
-      // Reset animation state after animation completes
-      const timer = setTimeout(() => {
-        setIsReceiving(false);
-      }, ANIMATION_DURATIONS.CARD_COLLECTION);
 
       // Cleanup timeout if component unmounts
       return () => clearTimeout(timer);
@@ -67,133 +104,56 @@ export const DeckPile: FC<DeckPileProps> = ({
     prevCardCountRef.current = cardCount;
   }, [cardCount]);
 
-  // Determine if decks are currently in swapped positions (odd swap count)
-  const isSwapped = deckSwapCount % 2 === 1;
-
-  // Measure the distance between decks when component mounts or window resizes
-  useLayoutEffect(() => {
-    const measureDistance = () => {
-      if (!deckRef.current) return;
-
-      const board = deckRef.current.closest('section'); // Find the Board component
-
-      if (!board) return;
-
-      const boardRect = board.getBoundingClientRect();
-
-      // Calculate the vertical distance as the height of the board minus some padding
-      // We want the decks to swap positions, so each travels approximately the board height
-      // Subtract deck heights and padding to stay within bounds
-      const verticalDistance = boardRect.height * 0.68; // 65% of board height for safer bounds
-
-      // Horizontal curve - use 20% of board width to avoid center cards
-      const horizontalCurve = boardRect.width * 0.2;
-
-      setSwapDistance({
-        y: verticalDistance,
-        x: horizontalCurve,
-      });
-    };
-
-    measureDistance();
-
-    // Remeasure on window resize
-    window.addEventListener('resize', measureDistance);
-    return () => window.removeEventListener('resize', measureDistance);
-  }, []);
-
-  // Animation variants for deck swapping using measured distances
-  // When swapCount is odd, decks stay in swapped positions
-  // When swapCount is even, decks return to normal positions
-  const swapAnimation =
-    forcedEmpathySwapping && swapDistance
-      ? {
-          // During animation: CPU deck moves down, Player deck moves up
-          y:
-            owner === 'cpu'
-              ? [0, swapDistance.y * 0.5, swapDistance.y]
-              : [0, -swapDistance.y * 0.5, -swapDistance.y],
-          x: owner === 'cpu' ? [0, swapDistance.x, 0] : [0, -swapDistance.x, 0],
-          scale: [1, 1.15, 1],
-          rotateY: owner === 'cpu' ? [0, 20, 0] : [0, -20, 0],
-        }
-      : isSwapped && swapDistance
-      ? {
-          // After swap: keep decks in swapped positions (no animation)
-          y: owner === 'cpu' ? swapDistance.y : -swapDistance.y,
-          x: 0,
-          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
-          rotateY: 0,
-        }
-      : {
-          // Normal positions
-          y: 0,
-          x: 0,
-          scale: isReceiving ? [1, 1.03, 1] : 1, // Subtle pulse when receiving cards
-          rotateY: 0,
-        };
-
   const shiftTransitionDuration = ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK / 1000;
 
   return (
-    <Tooltip
-      content={
-        <Text className="leading-[1.2]" variant="body-small" color="text-accent" weight="semibold">
-          {tooltipContent}
-        </Text>
-      }
-      isOpen={showTooltip}
+    <motion.div
+      layout
+      className={cn('flex flex-col items-center gap-1 w-full outline-0', className)}
+      data-deck-owner={owner}
+      data-deck={owner}
+      transition={{
+        layout: {
+          duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
+          ease: [0.33, 0.0, 0.67, 1.0],
+        },
+      }}
     >
-      <div className="flex flex-col items-center gap-1 w-full" data-deck-owner={owner}>
-        {/* Counter for CPU (top) - stays in place */}
-        {!isPlayer && (
-          <Text
-            className="tracking-[0.08em]"
-            color="text-common-ash"
-            variant="badge-xs"
-            transform="uppercase"
-          >
-            {cardCount} Cards left
-          </Text>
-        )}
-
-        {/* Card stack - only this animates during swap */}
-        <motion.div
-          ref={deckRef}
-          className="relative p-2 w-full z-19"
-          onClick={cardCount > 0 ? onClick : undefined}
-          role={cardCount > 0 ? 'button' : undefined}
-          tabIndex={cardCount > 0 ? 0 : undefined}
-          animate={swapAnimation}
-          transition={{
-            duration: ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION / 1000,
-            delay: 0, // No delay - starts immediately when forcedEmpathySwapping = true
-            ease: [0.43, 0.13, 0.23, 0.96], // Custom easing for smooth curve
-            times: [0, 0.5, 1], // Keyframe timing
-          }}
-        >
-          {/* Show stacked effect if cards > 0 */}
-          {cardCount > 0 ? (
-            <div className={`translate-x-4 relative ${activeIndicator ? 'animate-heartbeat' : ''}`}>
-              {/* Back cards for stacking effect */}
+      {/* horizontalOffset/swapRotation are applied separately from the layout
+          animation to avoid any issues with conflicting transform values being
+          applied at the same time.
+      */}
+      <motion.div
+        ref={deckRef}
+        className="relative size-full z-19 outline-0"
+        initial={false}
+        style={{
+          x: horizontalOffset,
+          rotateZ: swapRotation,
+        }}
+      >
+        {/* Show stacked effect if cards > 0 */}
+        {cardCount > 0 ? (
+          <div className={cn('relative -translate-y-1', activeIndicator && 'animate-heartbeat')}>
+            {/* Back cards for stacking effect */}
 
               {/* New card (only show if we have 4+ cards) - fades in from behind during animation */}
               {cardCount >= 4 && (
                 <motion.div
                   data-new
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
-                    opacity: isAnimating ? [0, 1] : 1,
-                    x: -8,
-                    y: -8,
+                    opacity: playingCard ? [0, 1] : 1,
+                    x: playingCard ? [-4, 0] : 0,
+                    y: playingCard ? [-4, 0] : 0,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: 'easeOut',
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
@@ -201,18 +161,18 @@ export const DeckPile: FC<DeckPileProps> = ({
               {cardCount >= 3 && (
                 <motion.div
                   data-bottom
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
-                    x: isAnimating ? [-8, -4] : -4,
-                    y: isAnimating ? [-8, -4] : -4,
+                    x: playingCard ? [0, 4] : 0,
+                    y: playingCard ? [0, 4] : 0,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: 'easeOut',
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
@@ -220,37 +180,37 @@ export const DeckPile: FC<DeckPileProps> = ({
               {cardCount >= 2 && (
                 <motion.div
                   data-mid
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none size-full"
                   initial={false}
                   animate={{
-                    x: isAnimating ? [-4, 0] : 0,
-                    y: isAnimating ? [-4, 0] : 0,
+                    x: playingCard ? [4, 8] : 4,
+                    y: playingCard ? [4, 8] : 4,
                   }}
                   transition={{
                     duration: shiftTransitionDuration,
                     ease: [0.43, 0.13, 0.23, 0.96],
                   }}
                 >
-                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                  <Card cardFrontSrc={CARD_BACK_IMAGE} state="initial" variant="deck-pile" />
                 </motion.div>
               )}
 
               {/* Top card - animated when played */}
               <motion.div
-                className="relative"
+                className="relative size-full"
                 initial={false}
                 animate={{
                   // For multi-card plays, stagger fade-outs
-                  opacity: isAnimating
+                  opacity: playingCard
                     ? cardsPlayedThisTurn > 1
                       ? [1, 0.7, 0] // Multi-card: gradual fade
                       : [1, 0] // Single card: direct fade
-                    : 0,
-                  x: 0,
-                  y: 0,
+                    : 1, // ← Should be 1 when not playing
+                  x: 8,
+                  y: 8,
                 }}
                 transition={{
-                  duration: isAnimating
+                  duration: playingCard
                     ? cardsPlayedThisTurn > 1
                       ? shiftTransitionDuration * 1.2 // Extend duration for multi-card
                       : shiftTransitionDuration * 0.5
@@ -258,7 +218,12 @@ export const DeckPile: FC<DeckPileProps> = ({
                   ease: [0.43, 0.13, 0.23, 0.96],
                 }}
               >
-                <Card data-measure-target={owner} cardFrontSrc={CARD_BACK_IMAGE} state="initial" />
+                <Card
+                  data-measure-target={owner}
+                  cardFrontSrc={CARD_BACK_IMAGE}
+                  state="initial"
+                  variant="deck-pile"
+                />
               </motion.div>
             </div>
           ) : (
@@ -267,20 +232,7 @@ export const DeckPile: FC<DeckPileProps> = ({
               <span className="text-white/50 text-xs">Empty</span>
             </div>
           )}
-        </motion.div>
-
-        {/* Counter for Player (bottom) - stays in place */}
-        {isPlayer && (
-          <Text
-            className="tracking-[0.08em]"
-            color="text-common-ash"
-            variant="badge-xs"
-            transform="uppercase"
-          >
-            {cardCount} Cards left
-          </Text>
-        )}
-      </div>
-    </Tooltip>
+      </motion.div>
+    </motion.div>
   );
 };
