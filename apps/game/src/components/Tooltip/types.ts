@@ -1,4 +1,4 @@
-import type { TooltipProps as HeroUITooltipProps } from '@heroui/tooltip';
+import type { TooltipProps as HeroUITooltipProps } from '@heroui/react';
 
 export type ArrowDirection = 'top' | 'bottom' | 'left' | 'right';
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';

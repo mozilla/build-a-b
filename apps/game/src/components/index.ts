@@ -1,4 +1,7 @@
 // Primitive UI Components for Intro and Setup
+export { Frame } from './Frame';
+export type { FrameProps } from './Frame';
+
 export { Button } from './Button';
 export type { ButtonProps } from './Button/types';
 
@@ -29,8 +32,23 @@ export type { CarouselProps } from './Carousel/types';
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip/types';
 
+export { VideoPreloader } from './VideoPreloader';
+
+export { AssetPreloader } from './AssetPreloader';
+export type { AssetPreloaderProps } from './AssetPreloader';
+
+export { AudioPreloader } from './AudioPreloader';
+export type { AudioPreloaderProps } from './AudioPreloader';
+
+export { PreloadLinks } from './PreloadLinks';
+
+export { LoadingScreen } from './LoadingScreen';
+export type { LoadingScreenProps } from './LoadingScreen';
+
 // Debug Components
 export { DebugUI } from './DebugUI';
+export { DeckDebugPanel } from './DeckDebugPanel';
+export { EventLogPanel } from './EventLogPanel';
 
 export { Menu } from './Menu';
 export { Text } from './Text';
@@ -43,6 +61,8 @@ export { ScreenRenderer } from './ScreenRenderer';
 export { Board } from './Board';
 export { Card } from './Card';
 export { DeckPile } from './DeckPile';
+export { DeckInteractionZone } from './DeckInteractionZone';
+export type { DeckInteractionZoneProps } from './DeckInteractionZone';
 export { Game } from './Game';
 export { PlayedCards } from './PlayedCards';
 export type { PlayedCardsProps } from './PlayedCards/types';

@@ -11,7 +11,7 @@ export const BackgroundCard: FC<BackgroundCardProps> = ({
   return (
     <Button
       onPress={onClick}
-      className={`relative w-[164px] h-[290px] rounded-lg overflow-hidden transition-all ${
+      className={`relative w-[10.25rem] h-[18.125rem] rounded-lg overflow-hidden transition-all ${
         isSelected ? 'ring-4 ring-accent scale-105' : 'opacity-70 hover:opacity-90'
       } ${className}`}
     >

@@ -409,6 +409,18 @@ interface GameStore {
   showOpenWhatYouWantModal: boolean;
   showOpenWhatYouWantAnimation: boolean;
 
+  // === TEMPER TANTRUM CARD SELECTION STATE ===
+  showTemperTantrumModal: boolean;        // Show modal for player card selection
+  temperTantrumAvailableCards: Card[];    // Cards player can choose from (winner's cards only)
+  temperTantrumSelectedCards: Card[];     // Cards player has selected (max 2)
+  temperTantrumMaxSelections: number;     // Always 2 (or less if fewer cards available)
+  temperTantrumWinner: 'player' | 'cpu' | null; // Who won the turn (to return remaining cards)
+  temperTantrumLoserCards: Card[];        // Loser's cards (stored to preserve for distribution)
+
+  // === COLLECTION ANIMATION STATE ===
+  showingWinEffect: 'player' | 'cpu' | null;  // Show win effect (billionaire celebration)
+  collecting: { winner: PlayerType; cards: Card[] } | null; // Card collection animation
+
   // === UI STATE ===
   selectedBillionaire: string;
   selectedBackground: string;
@@ -504,11 +516,20 @@ collectCards: (winnerId: 'player' | 'cpu', cards: Card[]) => void
 ```
 
 **What it does:**
-1. Adds won cards to winner's deck (bottom)
-2. Clears `cardsInPlay`
-3. Resets both players' `playedCard`, `playedCardsInHand`, and `currentTurnValue`
+Three-stage collection animation:
+1. **Stage 1**: Show win effect (billionaire celebration) - sets `showingWinEffect`
+2. **Stage 2**: Start card collection animation (cards fly to deck) - sets `collecting`
+3. **Stage 3**: Add cards to deck and clear all states
 
-**Key Pattern:** Won cards go to the bottom of the deck (traditional War rules).
+**Timing:**
+- Win effect duration: 1200ms
+- Card collection duration: 1200ms
+- Total: 2400ms
+
+**Key Pattern:**
+- Won cards go to the bottom of the deck (traditional War rules)
+- Separated `showingWinEffect` from `collecting` to prevent simultaneous animations
+- Three-stage process ensures win effect plays completely before card collection
 
 #### 4. Turn Resolution Actions
 
@@ -644,7 +665,59 @@ setShowOpenWhatYouWantAnimation: (show: boolean) => void
    - Unselected cards shuffled and added to bottom
    - Automatically plays the selected card
 
-#### 10. UI Actions
+#### 10. Temper Tantrum Card Selection Actions
+
+```typescript
+initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void
+selectTemperTantrumCard: (card: Card) => void
+confirmTemperTantrumSelection: () => void
+setShowTemperTantrumModal: (show: boolean) => void
+```
+
+**Flow:**
+1. **When player loses with Temper Tantrum**:
+   - `initializeTemperTantrumSelection(winner)` is called
+   - Stores winner's cards in `temperTantrumAvailableCards` (shown in modal)
+   - Stores loser's cards in `temperTantrumLoserCards` (preserved for distribution)
+   - Sets `blockTransitions: true` to pause game
+   - Opens modal showing only winner's cards
+
+2. **Player selects cards**:
+   - `selectTemperTantrumCard(card)` toggles selection
+   - Can select up to `temperTantrumMaxSelections` (2 or less)
+   - Selected cards stored in `temperTantrumSelectedCards`
+   - Visual feedback: selected cards scale up (scale-100 vs scale-[0.8] for unselected)
+
+3. **Player confirms selection**:
+   - `confirmTemperTantrumSelection()` is called
+   - Closes modal and triggers collection animation
+   - After animation completes (1200ms):
+     - **Loser (player) gets**: ONLY stolen cards (doesn't keep their own cards)
+     - **Winner gets**: remaining cards + loser's cards
+   - Resets turn values and active effects
+   - Sets `blockTransitions: false` to resume game
+
+**Card Distribution Logic:**
+```typescript
+// Example: Player played 1 card, CPU played 3 cards, player loses
+// Player steals 2 from CPU's 3 cards
+
+// Loser gets: 2 stolen cards (selected in modal)
+playerDeck += stolenCards  // +2 cards
+
+// Winner gets: 1 remaining card + 1 loser's card
+cpuDeck += (winnerCards - stolenCards) + loserCards  // +1 + 1 = +2 cards
+```
+
+**Key Features:**
+- **Modal-based selection** for player (interactive)
+- **Automatic selection** for CPU (first 2 cards)
+- **Preserved card state**: Loser's cards stored before modal opens
+- **Proper distribution**: Loser only gets stolen cards, winner gets everything else
+- **Animation flow**: Collection animation shows cards flying to both players' decks
+- **State cleanup**: Clears all Temper Tantrum state after distribution
+
+#### 11. UI Actions
 
 ```typescript
 selectBillionaire: (billionaire: string) => void
@@ -1031,7 +1104,7 @@ pre_reveal
 - Blockers - Play again + subtract from opponent
 - `open_what_you_want` - Reorder top 3 cards on next turn
 - `mandatory_recall` - Opponent shuffles launch stacks back
-- `temper_tantrum` - If lose, steal 2 cards from winner
+- `temper_tantrum` - If lose, steal up to 2 cards from winner's pile (modal selection for player)
 - `patent_theft` - If win, steal 1 launch stack
 - `leveraged_buyout` - If win, steal 2 cards from opponent deck
 - `data_grab` - Randomly distribute cards in play
@@ -1063,7 +1136,7 @@ processPendingEffects(winner)
         └─► Apply effect based on type:
               ├─► open_what_you_want: setOpenWhatYouWantActive(playedBy)
               ├─► mandatory_recall: if winner === playedBy, removeLaunchStacks(opponent)
-              ├─► temper_tantrum: if winner !== playedBy, steal 2 cards
+              ├─► temper_tantrum: See Temper Tantrum Flow below
               ├─► patent_theft: if winner === playedBy, stealLaunchStack()
               ├─► leveraged_buyout: if winner === playedBy, stealCards(opponent, 2)
               └─► data_grab: randomly split cardsInPlay between both players
@@ -1071,7 +1144,73 @@ processPendingEffects(winner)
 // 4. Collect cards after effects
 collectCardsAfterEffects(winner)
   │
+  ├─► Skip if showTemperTantrumModal is true (cards distributed in modal flow)
   └─► collectCards(winner, cardsInPlay)
+```
+
+### Temper Tantrum Processing Flow
+
+**Trigger Condition:** Player who played Temper Tantrum LOSES the turn
+
+```typescript
+processPendingEffects(winner)
+  │
+  └─► case 'temper_tantrum':
+        │
+        ├─► If winner === effect.playedBy: No effect (tantrum player won)
+        │
+        └─► If winner !== effect.playedBy: Effect triggers
+              │
+              ├─► If loser === 'player': INTERACTIVE FLOW
+              │     │
+              │     ├─► initializeTemperTantrumSelection(winner)
+              │     │     ├─► Extract winner's cards from playedCardsInHand
+              │     │     ├─► Extract loser's cards from playedCardsInHand
+              │     │     ├─► Store winner's cards in temperTantrumAvailableCards
+              │     │     ├─► Store loser's cards in temperTantrumLoserCards
+              │     │     ├─► Set maxSelections = min(2, winnerCards.length)
+              │     │     ├─► Set temperTantrumWinner = winner
+              │     │     ├─► Set blockTransitions = true (pause game)
+              │     │     └─► Set showTemperTantrumModal = true
+              │     │
+              │     ├─► Modal displays winner's cards (CardCarousel)
+              │     │     ├─► Player scrolls: highlights card (onCardSelect)
+              │     │     ├─► Player taps: toggles selection (onCardClick)
+              │     │     ├─► Selected cards: scale-100 (normal size)
+              │     │     ├─► Unselected cards: scale-[0.8] (80% size)
+              │     │     └─► Button enabled when exactly maxSelections cards selected
+              │     │
+              │     ├─► Player confirms: confirmTemperTantrumSelection()
+              │     │     ├─► Close modal
+              │     │     ├─► Set collecting state (triggers animation)
+              │     │     └─► After CARD_COLLECTION duration (1200ms):
+              │     │           ├─► Loser gets: stolenCards ONLY
+              │     │           ├─► Winner gets: remainingCards + loserCards
+              │     │           ├─► Clear playedCardsInHand for both players
+              │     │           ├─► Reset currentTurnValue to 0
+              │     │           ├─► Clear activeEffects
+              │     │           ├─► Clear showEffectNotificationBadge
+              │     │           ├─► Set cardsInPlay = []
+              │     │           └─► Set blockTransitions = false
+              │     │
+              │     └─► collectCardsAfterEffects skipped (modal handles distribution)
+              │
+              └─► If loser === 'cpu': AUTOMATIC FLOW
+                    ├─► Extract playerCards from playedCardsInHand (winner's cards)
+                    ├─► Extract cpuCards from playedCardsInHand (loser's cards)
+                    ├─► Steal first 2 cards from playerCards
+                    ├─► CPU (loser) gets: stolenCards ONLY
+                    ├─► Player (winner) gets: remainingPlayerCards + cpuCards
+                    ├─► Clear playedCardsInHand for both players
+                    └─► Set cardsInPlay = []
+```
+
+**Key Implementation Details:**
+- **Card preservation**: Winner's and loser's cards stored BEFORE modal opens (playedCardsInHand may be cleared during animation)
+- **Distribution math**: Total cards distributed = cards in play (loser gets some, winner gets rest)
+- **Animation timing**: Collection animation runs AFTER modal closes, uses standard CARD_COLLECTION duration
+- **State blocking**: `blockTransitions` prevents normal game flow until selection complete
+- **Proper cleanup**: Resets all turn-specific state (values, effects, badges) after distribution
 ```
 
 ### Tracker Smacker Blocking
@@ -1408,12 +1547,14 @@ playCard: (playerId) => {
 - **Consistent timing** across state machine and components
 
 **Zustand Store (`game-store.ts`):**
-- **Player state** (decks, played cards, turn values)
+- **Player state** (decks, played cards, turn values, active effects)
 - **Game state** (cards in play, pendingEffects, preRevealEffects, preRevealProcessed flag, win conditions)
 - **OWYW state** (active player, selected cards, modal/animation visibility)
-- **UI state** (pause, menu, tooltips)
-- **50+ actions** for game logic
-- **Selector hooks** for performance (including useOpenWhatYouWantState)
+- **Temper Tantrum state** (modal, available cards, selected cards, winner, loser cards, max selections)
+- **Collection animation state** (showingWinEffect, collecting) - separated for proper timing
+- **UI state** (pause, menu, tooltips, effect badges)
+- **60+ actions** for game logic
+- **Selector hooks** for performance (including useOpenWhatYouWantState, useTemperTantrumState)
 - **DevTools integration** for debugging
 
 **Integration:**
@@ -1432,12 +1573,36 @@ playCard: (playerId) => {
 7. **React Best Practices**: No direct `getState()` calls in components, state updates in effects
 8. **Centralized Configuration**: Animation timings in dedicated config file
 
-**Recent Improvements (OWYW Implementation):**
+**Recent Improvements:**
+
+**OWYW Implementation:**
 - Added `pre_reveal` state system for effects that need to execute before card reveal
 - Separated `preRevealEffects` from `pendingEffects` for better timing control
 - Fixed race conditions by using store state instead of React refs
 - Centralized all animation timing constants for consistency
 - Improved accessibility with descriptive alt text for card images
 - Cleaned up unused Swiper navigation configuration
+
+**Temper Tantrum Manual Card Selection:**
+- Implemented interactive modal for player to select cards to steal
+- Added card preservation system (`temperTantrumLoserCards`) to maintain state during modal interaction
+- Created proper card distribution logic (loser gets stolen cards ONLY, winner gets rest)
+- Separated win effect animation from card collection animation for proper sequencing
+- Added visual feedback with scale animations (selected vs unselected cards)
+- Implemented automatic CPU selection flow (first 2 cards)
+- Proper state cleanup after distribution (turn values, effects, badges)
+- Full test coverage with updated unit and integration tests
+
+**Collection Animation Improvements:**
+- Separated `showingWinEffect` from `collecting` to prevent simultaneous animations
+- Three-stage collection process: win effect → card collection → deck addition
+- Each stage has proper timing (1200ms each) for smooth visual flow
+- Fixed race conditions in Temper Tantrum by capturing card arrays before animations
+
+**Testing Enhancements:**
+- Fixed all existing tests to work with new Temper Tantrum flow
+- Added proper fake timer advancement for animation testing
+- Updated test expectations to match new card distribution logic
+- All 254 tests passing with full coverage
 
 This architecture makes the game maintainable, testable, and extensible while handling complex game logic with confidence.

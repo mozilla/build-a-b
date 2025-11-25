@@ -1,9 +1,12 @@
+import type { AudioTrackId } from '@/config/audio-config';
 
 export type SpecialCardAnimationProps = {
   /** Controls visibility of the animation */
   show: boolean;
-  /** Video source URL (WebM file) */
-  videoSrc: string;
+  /** Video source URL (WebM file) or lottie animation */
+  animationSrc?: string | unknown;
+  /** boolean set if animation is a lottie */
+  isLottie?: unknown;
   /** Optional title/label to display */
   title?: string;
   /** Custom className for the overlay container */
@@ -18,4 +21,8 @@ export type SpecialCardAnimationProps = {
   loop?: boolean;
   /** Whether to show controls (default: false) */
   controls?: boolean;
+  /** Remove bg blur */
+  removeBlur?: boolean;
+  /** Optional audio track to play (defaults to EVENT_TAKEOVER) */
+  audioTrack?: AudioTrackId;
 };

@@ -8,14 +8,20 @@ export const ANIMATION_DELAYS = {
 
 /**
  * Z-index configuration for card stacking
+ * 
+ * NOTE: These values align with the centralized z-index system defined in
+ * /src/styles/z-index.css. See /docs/Z_INDEX_SYSTEM.md for full documentation.
+ * 
+ * - Card Layer: 20-500 (settled cards to in-flight)
+ * - Collection Layer: 150-200 (loser to winner)
  */
 export const Z_INDEX_CONFIG = {
-  START_BASE: 500, // High z-index while cards are in-flight
-  FINAL_BASE: 20, // Base z-index for landed cards
-  CARD_MAX: 100, // Maximum z-index to prevent interfering with overlays
-  COLLECTION_WINNER_BASE: 10, // Base for winner's cards during collection
-  COLLECTION_LOSER_BASE: 0, // Base for loser's cards during collection
-  FALLBACK: 20, // Fallback for non-animated cards
+  START_BASE: 500, // High z-index while cards are in-flight (--z-card-in-flight)
+  FINAL_BASE: 20, // Base z-index for landed cards (--z-card-settled)
+  CARD_MAX: 100, // Maximum z-index to prevent interfering with overlays (--z-card-settled-max)
+  COLLECTION_WINNER_BASE: 200, // Base for winner's cards during collection (--z-collection-winner)
+  COLLECTION_LOSER_BASE: 150, // Base for loser's cards during collection (--z-collection-loser)
+  FALLBACK: 20, // Fallback for non-animated cards (--z-card-settled)
 } as const;
 
 /**

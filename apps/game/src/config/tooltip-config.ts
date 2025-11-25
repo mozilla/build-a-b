@@ -35,21 +35,26 @@ export const TOOLTIP_CONFIGS = {
     maxDisplayCount: null, // Always show (informational)
   },
 
-  // Gameplay Tooltips
-  READY_TAP_DECK: {
-    id: 'ready_tap_deck',
-    message: 'Tap to start!',
-    maxDisplayCount: 1, // Show only once (first time game begins)
+  // Deck Interaction Tooltips
+  TAP_TO_PLAY: {
+    id: 'tap_to_play',
+    message: 'Tap to Play',
+    maxDisplayCount: null, // Always show
   },
-  TAP_TO_CONTINUE: {
-    id: 'tap_to_continue',
-    message: 'Tap to continue',
-    maxDisplayCount: 3, // Show 3 times after first turn
+  TAP_TO_PLAY_AGAIN: {
+    id: 'tap_to_play_again',
+    message: 'Tap to play again',
+    maxDisplayCount: null, // Always show
   },
-  PLAY_AGAIN: {
-    id: 'play_again',
-    message: 'Play again',
-    maxDisplayCount: 3, // Show 3 times when playing another card (tracker/blocker/launch stack)
+  TAP_TO_PLAY_WAR_FACE_DOWN: {
+    id: 'tap_to_play_war_face_down',
+    message: 'Tap to play 3 war cards',
+    maxDisplayCount: null, // Always show
+  },
+  TAP_TO_PLAY_WAR_FACE_UP: {
+    id: 'tap_to_play_war_face_up',
+    message: 'Tap to play your next war card',
+    maxDisplayCount: null, // Always show
   },
 
   // Data War Tooltips
@@ -58,27 +63,19 @@ export const TOOLTIP_CONFIGS = {
     message: 'DATA WAR!',
     maxDisplayCount: null, // Always show (excitement/game state)
   },
-  DATA_WAR_FACE_DOWN: {
-    id: 'data_war_face_down',
-    message: 'Tap to play 3 cards',
-    maxDisplayCount: 3, // Show first 3 times
-  },
-  DATA_WAR_FACE_UP: {
-    id: 'data_war_face_up',
-    message: 'Tap to play your next war card',
-    maxDisplayCount: 3, // Show first 3 times
-  },
 
   // Special Effects Tooltips
   OWYW_TAP_DECK: {
     id: 'owyw_tap_deck',
-    message: 'Tap to see top 3 cards',
-    maxDisplayCount: 2, // Show first 2 times
+    message: 'Tap to look at your top 3 cards',
+    maxDisplayCount: null, // Always show
   },
-  EFFECT_NOTIFICATION: {
-    id: 'effect_notification',
-    message: 'Tap to see effect',
-    maxDisplayCount: 1, // Show only once
+  
+  // Tableau Tooltips
+  TAP_TO_VIEW_CARDS: {
+    id: 'tap_to_view_cards',
+    message: 'Tap to View Cards',
+    maxDisplayCount: null, // Managed by card type tracking
   },
 
   // Game Over
