@@ -1,6 +1,6 @@
 import { TRACKS } from '@/config/audio-config';
 import { useGameLogic } from '@/hooks/use-game-logic';
-import { NON_GAMEPLAY_PHASES } from '@/machines/game-flow-machine';
+import { NON_GAMEPLAY_PHASES } from '@/config/store';
 import { useGameStore } from '@/store';
 import { useEffect, useRef } from 'react';
 

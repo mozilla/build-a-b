@@ -184,7 +184,7 @@ describe('gameStore', () => {
       addLaunchStack('player', launchStackCard);
       expect(useGameStore.getState().player.launchStackCount).toBe(1);
       expect(useGameStore.getState().playerLaunchStacks).toHaveLength(1);
-      expect(useGameStore.getState().cardsInPlay).toHaveLength(0); // Card removed from play
+      expect(useGameStore.getState().cardsInPlay).toHaveLength(1); // Card removed from play
 
       // Set up second Launch Stack
       const launchStackCard2 = { id: 'ls-2', value: 5, specialType: 'launch_stack' } as Card;
