@@ -9,12 +9,12 @@ import { Text } from '@/components/Text';
 import { AudioToggle } from '@/components/Toggle';
 import { TRACKS } from '@/config/audio-config';
 import { useGameLogic } from '@/hooks/use-game-logic';
-import { NON_GAMEPLAY_PHASES } from '@/machines/game-flow-machine';
 import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Fragment, useEffect, useState, type FC } from 'react';
 import { menuMicrocopy } from './microcopy';
+import { NON_GAMEPLAY_PHASES } from '@/config/store';
 
 export const Menu: FC = () => {
   const [showGuide, setShowGuide] = useState(false);

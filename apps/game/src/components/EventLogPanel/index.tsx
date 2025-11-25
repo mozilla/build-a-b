@@ -3,7 +3,7 @@
  */
 
 import { useGameStore } from '@/store/game-store';
-import type { GameEvent } from '@/store/types';
+import type { GameEvent } from '@/types';
 import { motion } from 'framer-motion';
 import { type FC, useState, useEffect, useRef } from 'react';
 import { Text } from '../Text';
@@ -99,12 +99,12 @@ export const EventLogPanel: FC = () => {
 
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
       second: '2-digit',
-      fractionalSecondDigits: 3
+      fractionalSecondDigits: 3,
     });
   };
 
@@ -161,14 +161,12 @@ export const EventLogPanel: FC = () => {
 
       {/* Content */}
       {!isMinimized && (
-        <div 
+        <div
           ref={scrollContainerRef}
           className="p-3 max-h-[60vh] overflow-y-auto font-mono text-xs"
         >
           {events.length === 0 ? (
-            <div className="text-gray-500 text-center py-8">
-              No events logged yet...
-            </div>
+            <div className="text-gray-500 text-center py-8">No events logged yet...</div>
           ) : (
             <div className="space-y-1">
               {events.map((event) => (
