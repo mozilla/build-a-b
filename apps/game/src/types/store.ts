@@ -16,7 +16,7 @@ import type { DeckOrderStrategy } from '@/utils/deck-builder';
 /**
  * Game Event - Debug event log entry
  */
-export interface GameEvent {
+export type GameEvent = {
   id: string;
   timestamp: number;
   type: string;
@@ -24,29 +24,29 @@ export interface GameEvent {
   details?: string;
   level: 'info' | 'success' | 'warning' | 'error';
   data?: unknown;
-}
+};
 
 /**
  * Card Distribution - Defines where a card should animate to and from
  * Used by the enhanced collection system to support both board-to-deck and deck-to-deck animations
  */
-export interface CardDistribution {
+export type CardDistribution = {
   card: Card;
   destination: PlayerType; // Which player's deck to animate to
   source?: {
     type: 'board' | 'deck'; // Where the card is coming from
     owner?: PlayerType; // Which player's deck (required for deck-to-deck animations)
   };
-}
+};
 
 /**
  * Collecting State - Enhanced collection system that supports per-card destinations
  * Replaces the old { winner, cards } format with explicit per-card routing
  */
-export interface CollectingState {
+export type CollectingState = {
   distributions: CardDistribution[]; // Each card has its own destination and source
   primaryWinner?: PlayerType; // Who won the turn (for win effect animation)
-}
+};
 
 export type GameStore = {
   // Player State
@@ -171,10 +171,10 @@ export type GameStore = {
   // Tooltip System
   tooltipDisplayCounts: Record<string, number>; // Tooltip ID -> display count mapping
   tooltipPersistence: 'localStorage' | 'memory'; // Configurable persistence
-  
+
   // Play Trigger Tracking (per playthrough, not persisted)
   seenPlayTriggers: Set<string>; // Tracks which play triggers have been shown (e.g., 'game_start', 'play_again', 'war_face_down', 'war_face_up')
-  
+
   // Tableau Card Type Tracking (per playthrough, not persisted)
   seenTableauCardTypes: Set<string>; // Tracks which card types have been shown on tableau (e.g., 'common_data', 'tracker', 'blocker', 'firewall', 'billionaire_move', 'launch_stack')
 
@@ -310,7 +310,12 @@ export type GameStore = {
 
   // Debug Actions
   setGameSpeedMultiplier: (multiplier: number) => void; // Set game speed multiplier
-  logEvent: (type: string, message: string, details?: string, level?: 'info' | 'success' | 'warning' | 'error') => void; // Log a game event
+  logEvent: (
+    type: string,
+    message: string,
+    details?: string,
+    level?: 'info' | 'success' | 'warning' | 'error',
+  ) => void; // Log a game event
 
   // Temper Tantrum Actions
   initializeTemperTantrumSelection: (winner: 'player' | 'cpu') => void; // Prepare modal state with winner info
@@ -345,12 +350,12 @@ export type GameStore = {
   shouldShowTooltip: (tooltipId: string, maxDisplayCount: number | null) => boolean; // Check if should show
   clearTooltipCounts: () => void; // For testing
   setTooltipPersistence: (mode: 'localStorage' | 'memory') => void;
-  
+
   // Play Trigger Tracking Actions
   markPlayTriggerSeen: (trigger: string) => void; // Mark a play trigger as seen
   hasSeenPlayTrigger: (trigger: string) => boolean; // Check if trigger has been seen
   shouldShowDeckTooltip: () => boolean; // Check if deck tooltip should show
-  
+
   // Tableau Card Type Tracking Actions
   markTableauCardTypeSeen: (cardType: string) => void; // Mark a card type as seen on tableau
   shouldShowTableauTooltip: () => boolean; // Check if tableau tooltip should show
@@ -403,3 +408,15 @@ export type GameStore = {
   setHasShownHighPriorityLoadingScreen: (shown: boolean) => void;
   setHasShownEssentialLoadingScreen: (shown: boolean) => void;
 };
+
+/**
+ * Zustand set function type for updating store state
+ */
+export type SetState = (
+  state: Partial<GameStore> | ((state: GameStore) => Partial<GameStore>),
+) => void;
+
+/**
+ * Zustand get function type for reading store state
+ */
+export type GetState = () => GameStore;
