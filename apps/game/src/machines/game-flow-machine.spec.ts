@@ -142,7 +142,7 @@ describe('gameFlowMachine', () => {
       actor.send({ type: 'VS_ANIMATION_COMPLETE' });
 
       expect(actor.getSnapshot().value).toBe('ready');
-      expect(actor.getSnapshot().context.tooltipMessage).toBe('READY_TAP_DECK');
+      expect(actor.getSnapshot().context.tooltipMessage).toBe('TAP_TO_PLAY');
       actor.stop();
     });
   });
