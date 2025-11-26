@@ -256,8 +256,10 @@ export const gameFlowMachine = createMachine(
                   },
                 });
 
-                // Show contextual tooltip for Data War face-down cards
-                return 'TAP_TO_PLAY_WAR_FACE_DOWN';
+                // During Hostile Takeover by player, CPU auto-plays so no tooltip needed
+                // Only show tooltip if player needs to interact
+                const cpuAutoPlays = htEffectApplies && playerHasHostileTakeover;
+                return cpuAutoPlays ? 'EMPTY' : 'TAP_TO_PLAY_WAR_FACE_DOWN';
               },
             }),
             on: {
@@ -283,8 +285,16 @@ export const gameFlowMachine = createMachine(
               ready: {
                 entry: assign({
                   tooltipMessage: () => {
-                    // Show contextual tooltip for Data War face-up card
-                    return 'TAP_TO_PLAY_WAR_FACE_UP';
+                    const store = useGameStore.getState();
+                    const { player } = store;
+                    const playerHasHostileTakeover =
+                      player.playedCard?.specialType === 'hostile_takeover';
+                    const htEffectApplies = store.hostileTakeoverDataWar;
+
+                    // During Hostile Takeover by player, CPU auto-plays so no tooltip needed
+                    // Only show tooltip if player needs to interact
+                    const cpuAutoPlays = htEffectApplies && playerHasHostileTakeover;
+                    return cpuAutoPlays ? 'EMPTY' : 'TAP_TO_PLAY_WAR_FACE_UP';
                   },
                 }),
                 on: {
