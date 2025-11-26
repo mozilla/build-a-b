@@ -290,6 +290,7 @@ export function Game() {
 
   return (
     <div
+      id="Game"
       className={cn(
         'h-[100dvh] w-[100vw] bg-black flex items-center justify-center',
         essentialAssetsReady ? 'opacity-100' : 'opacity-0 pointer-events-none',

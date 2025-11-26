@@ -1,5 +1,5 @@
 import { ScreenRenderer } from '@/components';
-// import { BlurredBackground } from '@/components/BlurredBackground';
+import { BlurredBackground } from '@/components/BlurredBackground';
 import { Menu } from '@/components/Menu';
 import { MusicManager } from '@/components/MusicManager';
 import { useAudioLifecycle } from '@/hooks/use-audio-lifecycle';
@@ -36,7 +36,7 @@ function App() {
         <PreloadingProvider>
           <MusicManager />
           <div className="h-[100dvh] w-[100vw] bg-black flex items-center justify-center overscroll-none">
-            {/* <BlurredBackground /> */}
+            <BlurredBackground />
             <Game />
             <ScreenRenderer />
             <Menu />
