@@ -16,6 +16,7 @@ export const BlurredBackground: FC = () => {
     <AnimatePresence>
       {backgroundSrc && (
         <motion.div
+          id="BlurredBackground"
           key={backgroundSrc}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
