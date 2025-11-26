@@ -1,4 +1,4 @@
-import blueGridBg from '@/assets/backgrounds/color_blue.webp';
+import nebulaBg from '@/assets/backgrounds/color_nebula.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { Button } from '@/components/Button';
 import { Frame } from '@/components/Frame';
@@ -202,7 +202,7 @@ export const Menu: FC = () => {
                     className="frame absolute inset-0 z-202 max-h-screen hide-scrollbar overflow-y-auto flex justify-center"
                   >
                     <img
-                      src={blueGridBg}
+                      src={nebulaBg}
                       alt=""
                       className="sticky top-0 inset-0 w-full h-full object-cover shadow-[inset_0_0_2rem_0_#53ffbc]"
                       role="presentation"

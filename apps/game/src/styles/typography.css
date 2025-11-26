@@ -263,16 +263,10 @@ html {
      ------------------------------------------------------------------------ */
   .display-1 {
     @apply text-6xl/15;
-    @variant landscape {
-      @apply text-8xl/20;
-    }
   }
 
   .display-2 {
     @apply text-5xl/12;
-    @variant landscape {
-      @apply text-7xl/18;
-    }
   }
 
   /* --------------------------------------------------------------------------
@@ -280,44 +274,26 @@ html {
      ------------------------------------------------------------------------ */
   .title-1 {
     @apply text-4xl/10;
-    @variant landscape {
-      @apply text-6xl/15;
-    }
   }
 
   .title-2 {
     @apply text-3xl/9;
-    @variant landscape {
-      @apply text-5xl/12;
-    }
   }
 
   .title-3 {
     @apply text-2xl/8;
-    @variant landscape {
-      @apply text-4xl/10;
-    }
   }
 
   .title-4 {
     @apply text-xl/7;
-    @variant landscape {
-      @apply text-2xl/8;
-    }
   }
 
   .title-5 {
     @apply text-lg/6;
-    @variant landscape {
-      @apply text-lg/6;
-    }
   }
 
   .title-6 {
     @apply text-base/6;
-    @variant landscape {
-      @apply text-base/6;
-    }
   }
 
   /* --------------------------------------------------------------------------
@@ -325,47 +301,33 @@ html {
      ------------------------------------------------------------------------ */
   .label-1 {
     @apply text-sm/5;
-    @variant landscape {
-      @apply text-sm/5;
-    }
   }
 
   .label-2 {
     @apply text-xs/4;
-    @variant landscape {
-      @apply text-xs/4;
-    }
   }
 
   /* --------------------------------------------------------------------------
      BODY STYLES - Main content and paragraph text
      ------------------------------------------------------------------------ */
+  .body-extra-large {
+    @apply text-xl/6 font-semibold;
+  }
+
   .body-large {
     @apply text-lg/6 font-semibold;
-    @variant landscape {
-      @apply text-lg/6;
-    }
   }
 
   .body-regular {
     @apply text-base/6 font-semibold;
-    @variant landscape {
-      @apply text-base/6;
-    }
   }
 
   .body-small {
     @apply text-sm/5 font-semibold;
-    @variant landscape {
-      @apply text-sm/5;
-    }
   }
 
   .body-xs {
     @apply text-xs/4 font-semibold;
-    @variant landscape {
-      @apply text-xs/4;
-    }
   }
 
   /* --------------------------------------------------------------------------
@@ -388,25 +350,16 @@ html {
   /* Regular body text with landscape variant */
   .text-body-regular {
     @apply text-regular-custom font-sharp font-medium;
-    @variant landscape {
-      @apply text-xl-custom;
-    }
   }
 
   /* Small body text with landscape variant */
   .text-body-small {
     @apply text-regular-custom font-sharp font-medium;
-    @variant landscape {
-      @apply text-lg-custom;
-    }
   }
 
   /* Ticker/marquee content (uppercase, bold) */
   .text-ticker {
     @apply text-mobile-meta-2 font-sharp font-bold uppercase;
-    @variant landscape {
-      @apply text-sharp-19;
-    }
   }
 
   /* Navigation menu items (uppercase labels) */
