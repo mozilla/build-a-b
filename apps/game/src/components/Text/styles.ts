@@ -15,6 +15,10 @@ export const variantStyles: Record<TextVariant, string> = {
 
   'card-modal-title': 'text-[1.75rem] leading-none font-extrabold', // 28px / 28px (28/28 = 1)
 
+  // Body text - Extra Large
+  'body-extra-large': 'text-xl leading-[1.4] font-normal', // 20px / 28px (28/20 = 1.4)
+  'body-extra-large-semibold': 'text-xl leading-[1.4] font-semibold', // 20px / 28px (28/20 = 1.4)
+
   // Body text - Large
   'body-large-semibold': 'text-lg leading-[1.333] font-semibold', // 18px / 24px (24/18 = 1.333)
   'body-large-medium': 'text-lg leading-[1.333] font-medium', // 18px / 24px (24/18 = 1.333)
