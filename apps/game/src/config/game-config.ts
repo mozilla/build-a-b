@@ -294,7 +294,7 @@ export const DEFAULT_GAME_CONFIG = {
       isSpecial: true,
       specialType: 'blocker',
       triggersAnotherPlay: true,
-      specialActionDescription: 'Subtract from opponents turn value by 1.',
+      specialActionDescription: 'Subtract from opponent\'s turn value by 1.',
       count: 2,
     },
     {
@@ -305,7 +305,7 @@ export const DEFAULT_GAME_CONFIG = {
       isSpecial: true,
       specialType: 'blocker',
       triggersAnotherPlay: true,
-      specialActionDescription: 'Subtract from opponents turn value by 2.',
+      specialActionDescription: 'Subtract from opponent\'s turn value by 2.',
       count: 2,
     },
 

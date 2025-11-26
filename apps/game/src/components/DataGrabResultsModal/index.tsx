@@ -296,7 +296,7 @@ export const DataGrabResultsModal: FC = () => {
               ) : (
                 <div className="h-100 flex flex-col items-center justify-center">
                   <Text variant="title-2" className="text-common-ash">
-                    Nada.Zip.Zilch
+                    Nada. Zip. Zilch.
                   </Text>
                   <Text variant="body-large" className="text-common-ash">
                     {displayMode === 'player'
@@ -314,7 +314,7 @@ export const DataGrabResultsModal: FC = () => {
               onPress={handleCollectCards}
               className="bg-accent text-black font-bold px-12 py-6 text-lg rounded-full hover:bg-accent/90 transition-colors flex items-center px-6"
             >
-              {playerCards.length > 0 ? 'Collect Cards' : 'Continue'}
+              Continue
             </Button>
           </ModalFooter>
       </ModalContent>
