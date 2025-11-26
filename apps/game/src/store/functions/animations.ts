@@ -147,10 +147,10 @@ export function createAnimationActions(set: SetState, get: GetState) {
         move_buyout: get().setShowLeveragedBuyoutAnimation, // Leveraged Buyout now uses move_buyout animation
         move_tantrum: get().setShowTemperTantrumAnimation, // Temper Tantrum now uses move_tantrum animation
         firewall_recall: get().setShowMandatoryRecallAnimation, // Mandatory Recall now uses firewall_recall animation
-        open_what_you_want: get().setShowOpenWhatYouWantAnimation,
         data_grab: (show) => set({ showDataGrabTakeover: show }),
         mandatory_recall_won: get().setShowRecallWonAnimation,
         // Note: theft_won removed - move_theft animation now plays instead
+        // Note: open_what_you_want animation now handled directly in OpenWhatYouWantModal
       };
 
       const setter = animationTypeToSetter[nextAnimation.type];
