@@ -1,5 +1,11 @@
 import { Button, Text } from '@/components';
 import { TRACKS } from '@/config/audio-config';
+import { ANIMATION_DURATIONS } from '@/config/animation-timings';
+import {
+  SPECIAL_EFFECT_ANIMATIONS,
+  getAnimationVideoSrc,
+  isAnimationLottie,
+} from '@/config/special-effect-animations';
 import { capitalize } from '@/utils/capitalize';
 import { cn } from '@/utils/cn';
 import { Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react';
@@ -9,10 +15,11 @@ import { useGameStore, useOpenWhatYouWantState } from '../../store';
 import type { Card } from '../../types';
 import { CardCarousel } from '../CardCarousel';
 import type { CardCarouselRef } from '../CardCarousel/types';
+import { SpecialCardAnimation } from '../SpecialCardAnimation';
 import OwywImage from '../../assets/special-effects/owyw.webp';
 
 export const OpenWhatYouWantModal = () => {
-  const { playAudio } = useGameStore();
+  const { playAudio, activePlayer } = useGameStore();
   const { send } = useGameMachineActor();
   const { cards, showModal, isActive } = useOpenWhatYouWantState();
   const playSelectedCardFromOWYW = useGameStore((state) => state.playSelectedCardFromOWYW);
@@ -23,6 +30,8 @@ export const OpenWhatYouWantModal = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [showCardSelection, setShowCardSelection] = useState(false);
 
   // Set the first card as highlighted when cards become available
   useEffect(() => {
@@ -31,15 +40,29 @@ export const OpenWhatYouWantModal = () => {
     }
   }, [cards, highlightedCard]);
 
-  // Reset when modal closes
+  // Show animation when modal opens, then show card selection
   useEffect(() => {
-    if (!showModal) {
+    if (showModal) {
+      // Start with animation immediately
+      setShowAnimation(true);
+      setShowCardSelection(false);
+
+      // After animation duration (6 seconds), hide animation and show card selection
+      const timer = setTimeout(() => {
+        setShowAnimation(false);
+        setShowCardSelection(true);
+        playAudio(TRACKS.HAND_VIEWER);
+      }, ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Reset when modal closes
       setHighlightedCard(null);
       setSelectedCard(null);
       setIsBeginning(true);
       setIsEnd(false);
-    } else {
-      playAudio(TRACKS.HAND_VIEWER);
+      setShowAnimation(false);
+      setShowCardSelection(false);
     }
   }, [showModal, playAudio]);
 
@@ -115,21 +138,37 @@ export const OpenWhatYouWantModal = () => {
     }
   };
 
+  const animation = SPECIAL_EFFECT_ANIMATIONS.open_what_you_want;
+  const isPlayerAction = activePlayer === 'player';
+
   return (
-    <Modal
-      hideCloseButton
-      isOpen={showModal}
-      size="3xl"
-      backdrop="blur"
-      classNames={{
-        wrapper: 'overflow-hidden items-center z-[9999]',
-        backdrop: 'z-[9999]',
-        base: 'frame bg-[rgba(0,0,0,0.9)] z-[9999]',
-        body: 'px-0 pt-6',
-      }}
-    >
-      <ModalContent className="relative">
-        <ModalBody className="flex flex-col items-center justify-start gap-4">
+    <>
+      {/* Show animation overlay */}
+      {showAnimation && (
+        <SpecialCardAnimation
+          show={true}
+          animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
+          isLottie={isAnimationLottie(animation)}
+          title={animation.title}
+          loop={animation.loop}
+        />
+      )}
+
+      {/* Show modal with card selection after animation */}
+      <Modal
+        hideCloseButton
+        isOpen={showModal && showCardSelection}
+        size="3xl"
+        backdrop="blur"
+        classNames={{
+          wrapper: 'overflow-hidden items-center z-[9999]',
+          backdrop: 'z-[9999]',
+          base: 'frame bg-[rgba(0,0,0,0.9)] z-[9999]',
+          body: 'px-0 pt-6',
+        }}
+      >
+        <ModalContent className="relative">
+          <ModalBody className="flex flex-col items-center justify-start gap-4">
           {/* Title */}
           <div className="flex justify-between items-center px-8">
             <img src={OwywImage} width={160} height={160} className="w-40 h-40" />
@@ -282,5 +321,6 @@ export const OpenWhatYouWantModal = () => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+    </>
   );
 };
