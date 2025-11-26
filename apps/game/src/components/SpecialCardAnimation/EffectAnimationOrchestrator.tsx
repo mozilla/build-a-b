@@ -24,11 +24,11 @@ import { SpecialCardAnimation } from './index';
  * - Theft Won (post-effect, when Patent Theft steals a Launch Stack)
  * - Launch Stack (post-turn, after collecting a launch stack)
  * - Data Grab (during mini-game takeover)
- * - Open What You Want (pre-reveal, beginning of next turn)
+ *
+ * Note: Open What You Want animation is now handled directly in the OpenWhatYouWantModal component
  */
 export const EffectAnimationOrchestrator = () => {
   const {
-    showOpenWhatYouWantAnimation,
     showForcedEmpathyAnimation,
     showHostileTakeoverAnimation,
     showLaunchStackAnimation,
@@ -216,20 +216,6 @@ export const EffectAnimationOrchestrator = () => {
   // Data Grab - Shows takeover animation with countdown
   if (showDataGrabTakeover) {
     const animation = SPECIAL_EFFECT_ANIMATIONS.data_grab;
-    return (
-      <SpecialCardAnimation
-        show={true}
-        animationSrc={getAnimationVideoSrc(animation, isPlayerAction)}
-        isLottie={isAnimationLottie(animation)}
-        title={animation.title}
-        loop={animation.loop}
-      />
-    );
-  }
-
-  // Open What You Want - Shows during 2-second transition at beginning of next turn
-  if (showOpenWhatYouWantAnimation) {
-    const animation = SPECIAL_EFFECT_ANIMATIONS.open_what_you_want;
     return (
       <SpecialCardAnimation
         show={true}
