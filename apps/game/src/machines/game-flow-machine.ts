@@ -607,6 +607,14 @@ export const gameFlowMachine = createMachine(
           tooltipMessage: 'EMPTY',
         }),
       },
+      NEW_GAME: {
+        target: '.select_billionaire',
+        actions: assign({
+          currentTurn: 0,
+          trackerSmackerActive: null,
+          tooltipMessage: 'EMPTY',
+        }),
+      },
       QUIT_GAME: {
         target: '.welcome',
         actions: assign({
