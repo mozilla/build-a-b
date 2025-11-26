@@ -13,7 +13,7 @@ export const GuideStep: FC<GuideStepProps> = ({ number, title, description, clas
         </Text>
       </div>
       <div className="ml-10">
-        <Text variant="body-small" color="text-common-ash">
+        <Text variant="body-medium-semibold" color="text-common-ash">
           {description}
         </Text>
       </div>

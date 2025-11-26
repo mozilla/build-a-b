@@ -15,6 +15,8 @@ export type TextVariant =
   // Card and Modal Titles
   | 'card-modal-title' // Regular, 28px - Card modal titles
   // Body text
+  | 'body-extra-large' // Regular, 20px - Large body text
+  | 'body-extra-large-semibold' // Semibold, 20px - Large body text
   | 'body-large-semibold' // Semibold, 18px - Large body text
   | 'body-large-medium' // Medium, 18px - Large body text
   | 'body-large' // Regular, 18px - Large body text

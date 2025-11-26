@@ -54,8 +54,10 @@ export const QuickStart: FC<
           <Text as="h1" variant="title-3" align="left" className="text-common-ash mb-4">
             {quickStartMicrocopy.title}
           </Text>
-          <Text variant="body-large" align="left" className="text-common-ash">
+          <Text variant="body-extra-large-semibold" align="left" className="text-common-ash">
             {quickStartMicrocopy.subtitle}
+            <br /><br />
+            {quickStartMicrocopy.description}
           </Text>
         </div>
 
@@ -77,7 +79,7 @@ export const QuickStart: FC<
             <Text variant="title-3" color="text-common-ash">
               {quickStartMicrocopy.cardCarousel.title}
             </Text>
-            <Text variant="body-small" color="text-common-ash">
+            <Text variant="body-medium-semibold" color="text-common-ash">
               <span
                 dangerouslySetInnerHTML={{ __html: quickStartMicrocopy.cardCarousel.subtitle }}
               ></span>
