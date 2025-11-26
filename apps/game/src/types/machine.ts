@@ -34,6 +34,7 @@ export type GameFlowEvent =
   | { type: 'CONTINUE' }
   | { type: 'RESET_GAME' }
   | { type: 'RESTART_GAME' } // Restart game and go to VS animation
+  | { type: 'NEW_GAME' } // Start a new game from billionaire selection
   | { type: 'QUIT_GAME' }
   | { type: 'CARD_SELECTED' } // Player confirmed card selection from OWYW modal
   | { type: 'PRE_REVEAL_COMPLETE' } // All pre-reveal effects processed
