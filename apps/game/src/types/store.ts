@@ -115,6 +115,7 @@ export type GameStore = {
   animationsPaused: boolean; // Internal: Animation queue is processing
   blockTransitions: boolean; // External: Game is paused (blocks state machine transitions during animations OR modals)
   hostileTakeoverDataWar: boolean; // True during one-sided data war triggered by Hostile Takeover
+  dataWarFaceUpPending: boolean; // True when pre-reveal (OWYW) is triggered from DataWar face-up card play
   currentAnimationPlayer: PlayerType | null; // Tracks which player's animation is currently playing
   shownAnimationCardIds: Set<string>; // Track which card IDs have already shown animations (prevents duplicates)
 

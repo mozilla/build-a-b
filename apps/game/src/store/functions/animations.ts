@@ -214,22 +214,20 @@ export function createAnimationActions(set: SetState, get: GetState) {
         // Skip if this card has already shown its animation
         if (shownAnimationCardIds.has(card.id)) return false;
 
-        // Skip tracker and blocker - they don't have animations
-        if (card.specialType === 'tracker' || card.specialType === 'blocker') return false;
-
-        // Skip forced_empathy - it has custom animation handling in handleCardEffect
-        if (card.specialType === 'forced_empathy') return false;
-
-        // Skip data_grab - it has its own mini-game flow, no separate animation needed
-        if (card.specialType === 'data_grab') return false;
-
-        // Skip post-resolution animations - these play only after winner is determined
         const isPostResolutionCard =
+          // Skip tracker and blocker - they don't have animations
+          card.specialType === 'tracker' ||
+          card.specialType === 'blocker' ||
           card.specialType === 'launch_stack' ||
           card.specialType === 'patent_theft' ||
           card.specialType === 'leveraged_buyout' ||
           card.specialType === 'temper_tantrum' ||
-          card.specialType === 'mandatory_recall';
+          card.specialType === 'mandatory_recall' ||
+          // Skip data_grab - it has its own mini-game flow, no separate animation needed
+          card.specialType === 'data_grab' ||
+          // Skip forced_empathy - it has custom animation handling in handleCardEffect
+          card.specialType === 'forced_empathy' ||
+          card.specialType === 'open_what_you_want';
 
         if (isPostResolutionCard) {
           return false;

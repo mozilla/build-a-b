@@ -52,7 +52,7 @@ export function Game() {
     send,
   } = useGameLogic();
   const { essentialAssetsReady } = usePreloading();
-  
+
   // Get tooltip message without incrementing count (always show)
   const deckTooltipMessage = useTooltipPreview(tooltipKey);
 
@@ -62,7 +62,7 @@ export function Game() {
   const collecting = useGameStore((state) => state.collecting);
   const deckClickBlocked = useGameStore((state) => state.deckClickBlocked);
   const blockTransitions = useGameStore((state) => state.blockTransitions);
-  
+
   const [ownerBadgeClicked, setOwnerBadgeClicked] = useState<PlayerType>();
   const [showTableauTooltipVisible, setShowTableauTooltipVisible] = useState(false);
   const { playAudio } = useGameStore();
@@ -122,9 +122,8 @@ export function Game() {
     if (collecting) return;
 
     // Only open modal if there are cards to display
-    const hasCards = owner === 'player'
-      ? player.playedCardsInHand.length > 0
-      : cpu.playedCardsInHand.length > 0;
+    const hasCards =
+      owner === 'player' ? player.playedCardsInHand.length > 0 : cpu.playedCardsInHand.length > 0;
 
     if (hasCards) {
       setOwnerBadgeClicked(owner);
@@ -132,7 +131,7 @@ export function Game() {
       playAudio(TRACKS.HAND_VIEWER);
     }
   };
-  
+
   const handleTableauCenterClick = () => {
     // Don't open modal during collection animation
     if (collecting) return;
@@ -153,7 +152,7 @@ export function Game() {
   // Player interaction zone is ALWAYS at bottom (never moves)
   // CPU has no interaction zone (automated)
   // Visual deck positions can swap, but interaction stays fixed
-  
+
   // HEARTBEAT ANIMATION LOGIC
   // Heartbeat should appear on whichever deck is visually at the bottom (player's side)
   // When NOT swapped: player deck at bottom → player deck gets heartbeat
@@ -172,12 +171,7 @@ export function Game() {
       case 'pre_reveal.processing':
         handlePreReveal();
         break;
-      case 'pre_reveal.animating':
-        // Animation plays automatically via state machine 'after' transition
-        break;
       case 'pre_reveal.awaiting_interaction':
-        // Hide animation, show tooltip (handled by state machine entry action)
-        useGameStore.getState().setShowOpenWhatYouWantAnimation(false);
         break;
       case 'pre_reveal.selecting':
         // Show modal for card selection
@@ -195,6 +189,38 @@ export function Game() {
       case 'resolving':
         handleResolveTurn();
         break;
+      case 'data_war.reveal_face_up.owyw_selecting': {
+        // Determine who plays the face-up card and prepare their cards
+        const store = useGameStore.getState();
+        const { player, hostileTakeoverDataWar } = store;
+
+        // With Hostile Takeover, the player who played HT doesn't play face-up
+        const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
+        const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
+
+        const faceUpPlayer = playerPlaysFaceUp ? 'player' : 'cpu';
+
+        // Set OWYW active for the face-up player (required for modal to work)
+        store.setOpenWhatYouWantActive(faceUpPlayer);
+
+        // Prepare top 3 cards for OWYW selection
+        store.prepareOpenWhatYouWantCards(faceUpPlayer);
+
+        // Show OWYW modal (only for player, CPU would auto-select)
+        if (faceUpPlayer === 'player') {
+          store.setShowOpenWhatYouWantModal(true);
+        } else {
+          // CPU auto-selects and continues
+          const topCards = store.openWhatYouWantCards;
+          if (topCards.length > 0) {
+            const randomCard = topCards[Math.floor(Math.random() * topCards.length)];
+            store.playSelectedCardFromOWYW(randomCard);
+            // Transition to comparing to play the face-up card
+            send({ type: 'CARD_SELECTED' });
+          }
+        }
+        break;
+      }
       default:
         break;
     }
@@ -204,7 +230,9 @@ export function Game() {
   useEffect(() => {
     // Handle special effect phase - auto-dismiss after a brief delay
     if (phase === 'special_effect.showing') {
-      const adjustedDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY);
+      const adjustedDelay = getGameSpeedAdjustedDuration(
+        ANIMATION_DURATIONS.SPECIAL_EFFECT_DISPLAY,
+      );
       const timer = setTimeout(() => {
         send({ type: 'DISMISS_EFFECT' });
       }, adjustedDelay);
@@ -222,11 +250,7 @@ export function Game() {
     if (shouldAutoAdvance) {
       tapDeck();
     }
-  }, [
-    phase,
-    shouldAutoAdvanceHT,
-    tapDeck,
-  ]);
+  }, [phase, shouldAutoAdvanceHT, tapDeck]);
 
   // Auto-transition to win screen after animations complete
   const shouldTransitionToWin = useGameStore((state) => state.shouldTransitionToWin);
@@ -244,20 +268,20 @@ export function Game() {
   // Only hide when collection animation starts or cards are removed (e.g., Data Grab)
   useEffect(() => {
     const hasCardsOnTable = player.playedCardsInHand.length > 0 || cpu.playedCardsInHand.length > 0;
-    
+
     // Hide during card collection animation
     const isCollecting = collecting !== null;
-    
+
     // If cards just appeared on table and we're not already showing the tooltip
     if (hasCardsOnTable && !isCollecting && !showTableauTooltipVisible) {
       // Delay showing tooltip until first card animation completes (CARD_PLAY_FROM_DECK = 800ms)
       const timer = setTimeout(() => {
         setShowTableauTooltipVisible(true);
       }, ANIMATION_DURATIONS.CARD_PLAY_FROM_DECK);
-      
+
       return () => clearTimeout(timer);
     }
-    
+
     // If collection starts or cards are removed, hide immediately
     if (isCollecting || !hasCardsOnTable) {
       setShowTableauTooltipVisible(false);
@@ -286,15 +310,19 @@ export function Game() {
           {/* Play Area - Center of board */}
           <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[1.125rem] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
             {/* CPU Played Card Area */}
-            <div 
+            <div
               className={cn(
-                "flex items-center justify-center gap-6 col-2 self-end",
-                cpu.playedCardsInHand.length > 0 && "cursor-pointer"
+                'flex items-center justify-center gap-6 col-2 self-end',
+                cpu.playedCardsInHand.length > 0 && 'cursor-pointer',
               )}
               onClick={() => handlePlayAreaClick('cpu')}
             >
               {/* CPU Cards */}
-              <PlayedCards cards={cpu.playedCardsInHand} owner="cpu" onBadgeClicked={setOwnerBadgeClicked} />
+              <PlayedCards
+                cards={cpu.playedCardsInHand}
+                owner="cpu"
+                onBadgeClicked={setOwnerBadgeClicked}
+              />
             </div>
 
             {/* Tableau Tooltip - positioned 1rem from left of play area, centered vertically */}
@@ -325,15 +353,19 @@ export function Game() {
             </AnimatePresence>
 
             {/* Player Played Card Area */}
-            <div 
+            <div
               className={cn(
-                "flex items-center justify-center gap-6 col-2 self-start",
-                player.playedCardsInHand.length > 0 && "cursor-pointer"
+                'flex items-center justify-center gap-6 col-2 self-start',
+                player.playedCardsInHand.length > 0 && 'cursor-pointer',
               )}
               onClick={() => handlePlayAreaClick('player')}
             >
               {/* Player Cards */}
-              <PlayedCards cards={player.playedCardsInHand} owner="player" onBadgeClicked={setOwnerBadgeClicked} />
+              <PlayedCards
+                cards={player.playedCardsInHand}
+                owner="player"
+                onBadgeClicked={setOwnerBadgeClicked}
+              />
             </div>
           </div>
 
