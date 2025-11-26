@@ -730,7 +730,7 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
 
         case 'open_what_you_want':
           // OWYW triggers regardless of win/loss - player chooses card on next turn
-          // Set up pre-reveal effect FIRST (before animation) so it's ready when state machine checks
+          // Set up pre-reveal effect so it's ready when state machine checks
           get().setOpenWhatYouWantActive(effect.playedBy);
           get().addPreRevealEffect({
             type: 'owyw',
@@ -738,14 +738,9 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
             requiresInteraction: effect.playedBy === 'player',
           });
 
-          // Then queue animation
-          get().queueAnimation('open_what_you_want', effect.playedBy);
-          set({
-            animationCompletionCallback: () => {
-              // Continue to next effect
-              get().processNextEffect();
-            },
-          });
+          // Note: Animation is now handled directly in OpenWhatYouWantModal
+          // Continue to next effect immediately
+          get().processNextEffect();
           break;
 
         case 'launch_stack': {
