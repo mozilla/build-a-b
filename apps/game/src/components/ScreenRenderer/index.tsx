@@ -1,4 +1,4 @@
-import blueGridBg from '@/assets/backgrounds/color_blue.webp';
+import nebulaBg from '@/assets/backgrounds/color_nebula.webp';
 import nightSkyBg from '@/assets/backgrounds/color_nightsky.webp';
 import { Frame } from '@/components/Frame';
 import { Icon } from '@/components/Icon';
@@ -174,7 +174,7 @@ export const ScreenRenderer: FC = () => {
   if (config?.variant === 'billionaire' && selectedBillionaire) {
     backgroundImage = getBackgroundImage(selectedBackground || selectedBillionaire) || nightSkyBg;
   } else if (config?.variant === 'grid') {
-    backgroundImage = blueGridBg;
+    backgroundImage = nebulaBg;
   }
 
   if (isWaitingForCritical || isWaitingForBackgrounds || isWaitingForEssentialAssets) {
