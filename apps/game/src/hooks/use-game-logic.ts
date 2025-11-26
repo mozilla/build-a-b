@@ -27,7 +27,6 @@ function shouldUseFastTiming(): boolean {
   const slowTimingCardTypes = [
     'forced_empathy', // Deck swap animation
     'hostile_takeover', // Triggers data war
-    'open_what_you_want', // Modal selection
     'tracker_smacker', // Animation
     // Note: data_grab removed - has its own extended animation/mini-game sequence
     // Note: launch_stack, patent_theft, leveraged_buyout, temper_tantrum, mandatory_recall removed - animations play after resolution
@@ -160,7 +159,6 @@ export function useGameLogic() {
     } else {
       // Player: Let the state machine handle the flow
       // State machine will automatically transition:
-      // pre_reveal.processing → pre_reveal.animating → pre_reveal.awaiting_interaction
       // Then player taps deck → pre_reveal.selecting → modal opens
       // (Cards are already prepared above, pre-reveal effects will be cleared when card is selected)
     }
@@ -337,7 +335,8 @@ export function useGameLogic() {
 
     // If BOTH players trigger another play, skip CPU auto-play here
     // Let handleResolveTurn handle simultaneous play (player taps deck first)
-    const bothTriggerAnother = cpuTriggersAnother && playerTriggersAnother && !htNegatesCPU && !htNegatesPlayer;
+    const bothTriggerAnother =
+      cpuTriggersAnother && playerTriggersAnother && !htNegatesCPU && !htNegatesPlayer;
 
     // Skip CPU's "another play" if HT negates their first card OR if both players triggered
     // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
@@ -455,6 +454,7 @@ export function useGameLogic() {
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
+            effect.type === 'open_what_you_want' ||
             effect.type === 'mandatory_recall',
         );
 
@@ -790,8 +790,28 @@ export function useGameLogic() {
       handleDataWarFaceDown();
       actorRef.send({ type: 'TAP_DECK' });
     } else if (phase === 'data_war.reveal_face_up.ready') {
-      // Add 1 face-up card from each player and compare
-      handleDataWarFaceUp();
+      // Check if OWYW was played - if so, don't play cards yet (modal opens first)
+      const store = useGameStore.getState();
+      const { player, cpu, hostileTakeoverDataWar } = store;
+
+      const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
+      const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
+
+      const playerPlayedOWYW = player.playedCardsInHand.some(
+        (p) => p.card.specialType === 'open_what_you_want',
+      );
+      const cpuPlayedOWYW = cpu.playedCardsInHand.some(
+        (p) => p.card.specialType === 'open_what_you_want',
+      );
+
+      const hasOWYW =
+        (playerPlayedOWYW && playerPlaysFaceUp) || (cpuPlayedOWYW && !playerPlaysFaceUp);
+
+      if (!hasOWYW) {
+        // No OWYW - play face-up cards normally
+        handleDataWarFaceUp();
+      }
+      // Send TAP_DECK event (will route to owyw_selecting if OWYW detected)
       actorRef.send({ type: 'TAP_DECK' });
     }
     gtagEvent({
@@ -822,8 +842,10 @@ export function useGameLogic() {
         store.logEvent(
           'PLAY_CARD',
           `PLAYER played ${card.name} (${card.value}) - Face-down`,
-          `Card ${index + 1} of 3 in Data War${playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''}`,
-          'info'
+          `Card ${index + 1} of 3 in Data War${
+            playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''
+          }`,
+          'info',
         );
       });
     }
@@ -833,8 +855,10 @@ export function useGameLogic() {
         store.logEvent(
           'PLAY_CARD',
           `CPU played ${card.name} (${card.value}) - Face-down`,
-          `Card ${index + 1} of 3 in Data War${playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''}`,
-          'info'
+          `Card ${index + 1} of 3 in Data War${
+            playerHasHostileTakeover || cpuHasHostileTakeover ? ' (Hostile Takeover)' : ''
+          }`,
+          'info',
         );
       });
     }
@@ -976,6 +1000,7 @@ export function useGameLogic() {
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
+            effect.type === 'open_what_you_want' ||
             effect.type === 'mandatory_recall',
         );
 

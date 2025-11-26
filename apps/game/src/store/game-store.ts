@@ -45,6 +45,7 @@ export const useGameStore = create<GameStore>()(
       pendingEffects: [],
       preRevealEffects: [],
       preRevealProcessed: false,
+      dataWarFaceUpPending: false, // True when pre-reveal (OWYW) is triggered from DataWar face-up card play
       trackerSmackerActive: null,
       winner: null,
       winCondition: null,

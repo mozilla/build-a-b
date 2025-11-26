@@ -35,7 +35,6 @@ export type GameFlowEvent =
   | { type: 'RESET_GAME' }
   | { type: 'RESTART_GAME' } // Restart game and go to VS animation
   | { type: 'QUIT_GAME' }
-  | { type: 'START_OWYW_ANIMATION' } // Start OWYW animation (transition to animating sub-state)
   | { type: 'CARD_SELECTED' } // Player confirmed card selection from OWYW modal
   | { type: 'PRE_REVEAL_COMPLETE' } // All pre-reveal effects processed
   | { type: 'SHOW_EFFECT_NOTIFICATION' } // Transition to effect notification
