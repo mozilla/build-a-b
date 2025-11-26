@@ -47,7 +47,7 @@ export const EffectNotificationBadge: FC<EffectNotificationBadgeProps> = ({
   return (
     <div
       onMouseEnter={() => playAudio(TRACKS.WHOOSH)}
-      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 bg-gray-800/30 border-white/20"
+      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gray-800/50"
     >
       {/* Stacked icons - similar to TurnValue with ~50% overlap */}
       <div
