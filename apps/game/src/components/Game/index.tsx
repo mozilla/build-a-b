@@ -94,9 +94,11 @@ export function Game() {
   // Disable clicking during card collection animation and during settling
   // IMPORTANT: Only the PLAYER's deck is ever clickable - CPU plays are automated
 
-  // Player always clicks during data war, even HT data war
-  // CPU auto-plays as usual
-  const shouldAutoAdvanceHT = false;
+  // During Hostile Takeover by player, CPU auto-plays data war cards
+  // So player deck should NOT be clickable during those phases
+  const hostileTakeoverDataWar = useGameStore((state) => state.hostileTakeoverDataWar);
+  const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
+  const cpuAutoPlaysDataWar = hostileTakeoverDataWar && playerHasHT;
 
   // Never clickable during comparison/resolution phases or win effects
   const isComparisonPhase = phase === 'comparing' || phase === 'resolving';
@@ -110,8 +112,8 @@ export function Game() {
     !showingWinEffect &&
     ((phase === 'ready' && activePlayer === 'player') ||
       phase === 'pre_reveal.awaiting_interaction' ||
-      // Data war is clickable if NOT auto-advancing for HT
-      (isClickableDataWarPhase && !shouldAutoAdvanceHT));
+      // Data war is clickable if CPU is NOT auto-playing (i.e., not HT by player)
+      (isClickableDataWarPhase && !cpuAutoPlaysDataWar));
 
   const handleDeckClick = () => {
     tapDeck();
@@ -239,18 +241,6 @@ export function Game() {
       return () => clearTimeout(timer);
     }
   }, [phase, send]);
-
-  useEffect(() => {
-    // Auto-advance when HT effect applies and player has HT
-    // This handles both first HT and HT-as-face-up cases
-    const shouldAutoAdvance =
-      shouldAutoAdvanceHT &&
-      (phase === 'data_war.reveal_face_down' || phase === 'data_war.reveal_face_up.ready');
-
-    if (shouldAutoAdvance) {
-      tapDeck();
-    }
-  }, [phase, shouldAutoAdvanceHT, tapDeck]);
 
   // Auto-transition to win screen after animations complete
   const shouldTransitionToWin = useGameStore((state) => state.shouldTransitionToWin);
