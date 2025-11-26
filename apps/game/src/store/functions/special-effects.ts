@@ -307,6 +307,9 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
         case 'mandatory_recall':
           // Animation will be queued and played sequentially
           break;
+        case 'open_what_you_want':
+          // Animation will be queued and played sequentially
+          break;
         case 'forced_empathy':
           // Block game transitions during Forced Empathy animation
           set({ blockTransitions: true });
@@ -442,17 +445,6 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
 
         switch (effect.type) {
           // Immediate effects - process now, don't queue
-          case 'open_what_you_want':
-            // Mark that OWYW is active for this player's next turn
-            get().setOpenWhatYouWantActive(effect.playedBy);
-            // Queue pre-reveal effect for next turn
-            get().addPreRevealEffect({
-              type: 'owyw',
-              playerId: effect.playedBy,
-              requiresInteraction: effect.playedBy === 'player',
-            });
-            break;
-
           case 'data_grab': {
             // Mini-game handles distribution via finalizeDataGrabResults()
             const { cardsInPlay } = get();
@@ -486,6 +478,7 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
 
           // Interactive effects - queue after non-interactive
           case 'temper_tantrum':
+          case 'open_what_you_want':
             interactiveEffects.push(effect);
             break;
 
@@ -733,6 +726,26 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
             // Tantrum player won or tied - no effect, continue to next
             get().processNextEffect();
           }
+          break;
+
+        case 'open_what_you_want':
+          // OWYW triggers regardless of win/loss - player chooses card on next turn
+          // Set up pre-reveal effect FIRST (before animation) so it's ready when state machine checks
+          get().setOpenWhatYouWantActive(effect.playedBy);
+          get().addPreRevealEffect({
+            type: 'owyw',
+            playerId: effect.playedBy,
+            requiresInteraction: effect.playedBy === 'player',
+          });
+
+          // Then queue animation
+          get().queueAnimation('open_what_you_want', effect.playedBy);
+          set({
+            animationCompletionCallback: () => {
+              // Continue to next effect
+              get().processNextEffect();
+            },
+          });
           break;
 
         case 'launch_stack': {

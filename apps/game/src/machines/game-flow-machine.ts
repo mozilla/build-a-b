@@ -288,11 +288,57 @@ export const gameFlowMachine = createMachine(
                   },
                 }),
                 on: {
-                  TAP_DECK: {
+                  TAP_DECK: [
+                    // If face-up player played OWYW, show modal to select face-up card
+                    {
+                      target: 'owyw_selecting',
+                      guard: 'hasPreRevealEffectsForFaceUpCard',
+                    },
+                    // Otherwise, play face-up card normally
+                    {
+                      target: '#dataWarGame.comparing',
+                      guard: 'notShowingEffectModal',
+                      actions: assign({
+                        currentTurn: ({ context }) => {
+                          return context.currentTurn + 1;
+                        },
+                      }),
+                    },
+                  ],
+                },
+              },
+              owyw_selecting: {
+                entry: assign({
+                  tooltipMessage: 'EMPTY',
+                }),
+                on: {
+                  CARD_SELECTED: {
                     target: '#dataWarGame.comparing',
-                    guard: 'notShowingEffectModal',
                     actions: assign({
-                      currentTurn: ({ context }) => context.currentTurn + 1,
+                      currentTurn: ({ context }) => {
+                        // Now play the face-up cards (selected card is on top of deck)
+                        const store = useGameStore.getState();
+                        const { player, cpu } = store;
+                        const playerHasHostileTakeover =
+                          player.playedCard?.specialType === 'hostile_takeover';
+                        const cpuHasHostileTakeover =
+                          cpu.playedCard?.specialType === 'hostile_takeover';
+                        const htEffectApplies = store.hostileTakeoverDataWar;
+
+                        // Play one card from each player (respecting HT rules)
+                        // playCard() updates the store internally
+                        const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
+                        const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
+
+                        if (cpuPlays) {
+                          store.playCard('cpu');
+                        }
+                        if (playerPlays) {
+                          store.playCard('player');
+                        }
+
+                        return context.currentTurn + 1;
+                      },
                     }),
                   },
                 },
@@ -483,31 +529,19 @@ export const gameFlowMachine = createMachine(
             after: {
               // Dynamic delay based on whether cards collected or another play coming
               winAnimationDelay: [
-                { target: 'animating', guard: 'hasPreRevealEffects' },
+                { target: 'awaiting_interaction', guard: 'hasPreRevealEffects' },
                 { target: '#dataWarGame.ready' },
               ],
             },
-            on: {
-              START_OWYW_ANIMATION: 'animating',
-            },
             // Wait for win animation to complete before transitioning (fast if another play)
-          },
-
-          // Animation plays (for OWYW)
-          animating: {
-            after: {
-              [ANIMATION_DURATIONS.OWYW_ANIMATION]: [
-                // Check win condition first - rockets may have finished during animation
-                { target: '#dataWarGame.game_over', guard: 'hasWinCondition' },
-                { target: 'awaiting_interaction' },
-              ],
-            },
           },
 
           // Wait for user to tap deck before showing selection
           awaiting_interaction: {
             entry: assign({
-              tooltipMessage: 'OWYW_TAP_DECK',
+              tooltipMessage: () => {
+                return 'OWYW_TAP_DECK';
+              },
             }),
             on: {
               TAP_DECK: 'selecting',
@@ -664,6 +698,7 @@ export const gameFlowMachine = createMachine(
             effect.type === 'patent_theft' ||
             effect.type === 'leveraged_buyout' ||
             effect.type === 'temper_tantrum' ||
+            effect.type === 'open_what_you_want' ||
             effect.type === 'mandatory_recall' ||
             effect.type === 'data_grab'
           );
@@ -678,6 +713,40 @@ export const gameFlowMachine = createMachine(
         // Safety check for tests
         if (!state.hasPreRevealEffects) return false;
         return state.hasPreRevealEffects();
+      },
+      hasPreRevealEffectsForFaceUpCard: () => {
+        // Check if the player who's about to play the DataWar face-up card played OWYW
+        // During nested DataWar, we check playedCardsInHand directly since effects aren't processed yet
+        const state = useGameStore.getState();
+        const { openWhatYouWantActive, player, cpu, hostileTakeoverDataWar } = state;
+
+        // Determine who plays the face-up card in DataWar
+        // With Hostile Takeover, the player who played HT doesn't play face-up
+        const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
+        const cpuHasHT = cpu.playedCard?.specialType === 'hostile_takeover';
+
+        const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
+        const cpuPlaysFaceUp = !(cpuHasHT && hostileTakeoverDataWar);
+
+        // Check if OWYW is already active (from previous turn)
+        const hasActiveOWYW =
+          (openWhatYouWantActive === 'player' && playerPlaysFaceUp) ||
+          (openWhatYouWantActive === 'cpu' && cpuPlaysFaceUp);
+
+        // Check if OWYW was just played (in playedCardsInHand, not processed yet)
+        const playerPlayedOWYW = player.playedCardsInHand.some(
+          p => p.card.specialType === 'open_what_you_want'
+        );
+        const cpuPlayedOWYW = cpu.playedCardsInHand.some(
+          p => p.card.specialType === 'open_what_you_want'
+        );
+
+        const justPlayedOWYW =
+          (playerPlayedOWYW && playerPlaysFaceUp) ||
+          (cpuPlayedOWYW && cpuPlaysFaceUp);
+
+        const hasOWYW = hasActiveOWYW || justPlayedOWYW;
+        return hasOWYW;
       },
       hasUnseenEffectNotifications: () => {
         // Check if there are unseen effect notifications to show
@@ -778,7 +847,6 @@ export const gameFlowMachine = createMachine(
           'forced_empathy', // Deck swap animation
           'hostile_takeover', // Triggers data war
           'data_grab', // Mini-game
-          'open_what_you_want', // Modal selection
           'tracker_smacker', // Animation
           // Note: launch_stack, patent_theft, leveraged_buyout, temper_tantrum, mandatory_recall removed - animations play after resolution
         ];

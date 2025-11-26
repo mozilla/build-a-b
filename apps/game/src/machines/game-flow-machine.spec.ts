@@ -8,32 +8,44 @@ const mockCheckForDataWar = vi.fn(() => false);
 const mockHasPreRevealEffects = vi.fn(() => false);
 const mockHasUnseenEffectNotifications = vi.fn(() => false);
 
+// Create a default mock state that can be overridden per test
+let mockStoreState: any = {
+  preloadingComplete: true,
+  highPriorityAssetsReady: true,
+  criticalPriorityAssetsReady: true,
+  winner: null,
+  winCondition: null,
+  checkForDataWar: mockCheckForDataWar,
+  pendingEffects: [],
+  hasPreRevealEffects: mockHasPreRevealEffects,
+  hasUnseenEffectNotifications: mockHasUnseenEffectNotifications,
+  anotherPlayExpected: false,
+  openWhatYouWantActive: null,
+  hostileTakeoverDataWar: false,
+  player: {
+    playedCard: null,
+    playedCardsInHand: [],
+    pendingTrackerBonus: 0,
+    pendingBlockerPenalty: 0,
+    currentTurnValue: 0,
+    activeEffects: [],
+  },
+  cpu: {
+    playedCard: null,
+    playedCardsInHand: [],
+    pendingTrackerBonus: 0,
+    pendingBlockerPenalty: 0,
+    currentTurnValue: 0,
+    activeEffects: [],
+  },
+};
+
 // Mock the store to allow tests to bypass asset preloading guards
 vi.mock('../store/game-store', () => ({
   useGameStore: {
     getState: vi.fn(() => ({
-      preloadingComplete: true, // Allow transitions through asset-gated states
-      highPriorityAssetsReady: true, // Allow transitions through background selection
-      criticalPriorityAssetsReady: true, // Allow transitions through billionaire selection
-      winner: null,
-      winCondition: null,
-      checkForDataWar: mockCheckForDataWar,
-      pendingEffects: [],
-      hasPreRevealEffects: mockHasPreRevealEffects,
-      hasUnseenEffectNotifications: mockHasUnseenEffectNotifications,
-      anotherPlayExpected: false,
-      player: {
-        playedCard: null,
-        pendingTrackerBonus: 0,
-        pendingBlockerPenalty: 0,
-        currentTurnValue: 0,
-      },
-      cpu: {
-        playedCard: null,
-        pendingTrackerBonus: 0,
-        pendingBlockerPenalty: 0,
-        currentTurnValue: 0,
-      },
+      ...mockStoreState,
+      playCard: vi.fn(), // Mock playCard function for OWYW transitions
     })),
     setState: vi.fn(),
     subscribe: vi.fn(),
@@ -47,6 +59,38 @@ describe('gameFlowMachine', () => {
     mockCheckForDataWar.mockReturnValue(false);
     mockHasPreRevealEffects.mockReturnValue(false);
     mockHasUnseenEffectNotifications.mockReturnValue(false);
+
+    // Reset mock store state
+    mockStoreState = {
+      preloadingComplete: true,
+      highPriorityAssetsReady: true,
+      criticalPriorityAssetsReady: true,
+      winner: null,
+      winCondition: null,
+      checkForDataWar: mockCheckForDataWar,
+      pendingEffects: [],
+      hasPreRevealEffects: mockHasPreRevealEffects,
+      hasUnseenEffectNotifications: mockHasUnseenEffectNotifications,
+      anotherPlayExpected: false,
+      openWhatYouWantActive: null,
+      hostileTakeoverDataWar: false,
+      player: {
+        playedCard: null,
+        playedCardsInHand: [],
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+        activeEffects: [],
+      },
+      cpu: {
+        playedCard: null,
+        playedCardsInHand: [],
+        pendingTrackerBonus: 0,
+        pendingBlockerPenalty: 0,
+        currentTurnValue: 0,
+        activeEffects: [],
+      },
+    };
   });
 
   afterEach(() => {
@@ -474,6 +518,204 @@ describe('gameFlowMachine', () => {
       actor.start();
 
       expect(actor.getSnapshot().context.trackerSmackerActive).toBe(null);
+
+      actor.stop();
+    });
+  });
+
+  describe('DataWar OWYW flow', () => {
+    // Helper to navigate to data_war.reveal_face_up.ready state
+    const navigateToDataWarFaceUpReady = (actor: any) => {
+      actor.send({ type: 'START_GAME' });
+      actor.send({ type: 'SELECT_BILLIONAIRE', billionaire: 'elon' });
+      actor.send({ type: 'SELECT_BACKGROUND', background: 'space' });
+      actor.send({ type: 'SKIP_INSTRUCTIONS' });
+      actor.send({ type: 'START_PLAYING' });
+      actor.send({ type: 'VS_ANIMATION_COMPLETE' });
+      actor.send({ type: 'REVEAL_CARDS' });
+      actor.send({ type: 'CARDS_REVEALED' });
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.EFFECT_NOTIFICATION_TRANSITION_DELAY);
+
+      // Enter data_war (starts in pre_animation)
+      actor.send({ type: 'TIE' });
+
+      // Wait for pre_animation → animating (1500ms)
+      vi.advanceTimersByTime(1500);
+
+      // Wait for animating → reveal_face_down (2000ms)
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION);
+
+      // Reveal face-down cards (reveal_face_down → reveal_face_up.settling)
+      actor.send({ type: 'TAP_DECK' });
+
+      // Wait for settling → ready (2500ms)
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION);
+
+      // Now in data_war.reveal_face_up.ready
+    };
+
+    it('should route to owyw_selecting when player played OWYW during face-up', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Set up OWYW in player's played cards
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+
+      navigateToDataWarFaceUpReady(actor);
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'ready' } });
+
+      // Tap deck should route to owyw_selecting
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.stop();
+    });
+
+    it('should route to comparing when no OWYW was played', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // No OWYW in played cards
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: null } },
+      ];
+      mockStoreState.cpu.playedCardsInHand = [
+        { card: { id: 'card2', name: 'Test Card', specialType: null } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+
+      navigateToDataWarFaceUpReady(actor);
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'ready' } });
+
+      // Tap deck should route to comparing (normal path)
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      actor.stop();
+    });
+
+    it('should detect OWYW from openWhatYouWantActive flag', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Set OWYW active from previous turn
+      mockStoreState.openWhatYouWantActive = 'player';
+      mockStoreState.player.playedCardsInHand = [];
+      mockStoreState.hostileTakeoverDataWar = false;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      // Tap deck should route to owyw_selecting
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.stop();
+    });
+
+    it('should transition to comparing when CARD_SELECTED is sent from owyw_selecting', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+
+      navigateToDataWarFaceUpReady(actor);
+      actor.send({ type: 'TAP_DECK' });
+
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      // Send CARD_SELECTED (after player selects card)
+      actor.send({ type: 'CARD_SELECTED' });
+      expect(actor.getSnapshot().value).toBe('comparing');
+      expect(actor.getSnapshot().context.currentTurn).toBe(1);
+
+      actor.stop();
+    });
+
+    it('should handle Hostile Takeover - player has HT, CPU plays face-up with OWYW', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Player has HT, CPU played OWYW
+      mockStoreState.player.playedCard = { specialType: 'hostile_takeover' };
+      mockStoreState.cpu.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = true;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      // CPU plays face-up, should detect OWYW
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.stop();
+    });
+
+    it('should handle Hostile Takeover - CPU has HT, player plays face-up with OWYW', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // CPU has HT, player played OWYW
+      mockStoreState.cpu.playedCard = { specialType: 'hostile_takeover' };
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = true;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      // Player plays face-up, should detect OWYW
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.stop();
+    });
+
+    it('should not trigger OWYW if wrong player played it during Hostile Takeover', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Player has HT (doesn't play face-up), player also played OWYW (shouldn't trigger)
+      mockStoreState.player.playedCard = { specialType: 'hostile_takeover' };
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.cpu.playedCardsInHand = [];
+      mockStoreState.hostileTakeoverDataWar = true;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      // Should route to comparing (not owyw_selecting) because player doesn't play face-up
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      actor.stop();
+    });
+
+    it('should increment currentTurn when transitioning from owyw_selecting to comparing', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'card1', name: 'Test Card', specialType: 'open_what_you_want' } },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      const turnBeforeSelection = actor.getSnapshot().context.currentTurn;
+
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.send({ type: 'CARD_SELECTED' });
+      expect(actor.getSnapshot().context.currentTurn).toBe(turnBeforeSelection + 1);
 
       actor.stop();
     });
