@@ -85,7 +85,7 @@ export const ANIMATION_DURATIONS = {
   WIN_EFFECT_DURATION: 2500, // Total time win effect is visible
 
   // CPU player automation
-  CPU_TURN_DELAY: 500, // Delay before CPU plays a card
+  CPU_TURN_DELAY: 1500, // Delay before CPU plays a card
 
   // UI transitions
   UI_TRANSITION_DELAY: 300, // General UI transition/navigation delay
