@@ -27,10 +27,14 @@ export function createCardCollectionActions(set: SetState, get: GetState) {
       const winnerId = primaryWinner || distributions[0]?.destination;
 
       // Calculate dynamic duration based on number of rockets
-      // Each rocket needs time to animate, and they may be staggered
+      // Rockets play sequentially: each takes 3000ms with 200ms gap between them
+      // Formula: (n × 3000ms) + ((n-1) × 200ms) = total time for all rockets to finish
+      // Example for 3 rockets: (3 × 3000) + (2 × 200) = 9400ms
+      const GAP_BETWEEN_ROCKET_ANIMATIONS = 200;
       const rocketDuration =
         launchStackCount > 0
-          ? ANIMATION_DURATIONS.WIN_ANIMATION + launchStackCount * ANIMATION_DURATIONS.WIN_ANIMATION // Base + 1200ms per rocket
+          ? launchStackCount * ANIMATION_DURATIONS.LAUNCH_STACK_WON_TOKEN_DURATION +
+            (launchStackCount - 1) * GAP_BETWEEN_ROCKET_ANIMATIONS
           : ANIMATION_DURATIONS.WIN_ANIMATION;
 
       // Win confetti is now shown BEFORE effects in handleResolveTurn
