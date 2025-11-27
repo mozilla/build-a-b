@@ -341,33 +341,41 @@ export function useGameLogic() {
     // Skip CPU's "another play" if HT negates their first card OR if both players triggered
     // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
     if (cpuTriggersAnother && store.cpu.deck.length > 0 && !htNegatesCPU && !bothTriggerAnother) {
-      playCard('cpu');
-      const newState = useGameStore.getState();
-      if (newState.cpu.playedCard) {
-        handleCardEffect(newState.cpu.playedCard, 'cpu');
+      // Add CPU delay for "another play" to match normal turn pacing
+      const cpuDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.CPU_TURN_DELAY);
+      setTimeout(() => {
+        playCard('cpu');
+        const newState = useGameStore.getState();
+        if (newState.cpu.playedCard) {
+          handleCardEffect(newState.cpu.playedCard, 'cpu');
 
-        // If CPU played an instant-animation card as "another play", show animation before continuing
-        // This handles HT, and any future instant-animation cards that can be played as "another play"
-        const instantAnimationTypes = ['hostile_takeover', 'tracker_smacker', 'forced_empathy'];
-        if (instantAnimationTypes.includes(newState.cpu.playedCard.specialType || '')) {
-          // Wait for card to settle on board before showing animation
-          const settleDelay = getGameSpeedAdjustedDuration(
-            ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY,
-          );
-          setTimeout(() => {
-            const currentState = useGameStore.getState();
-            const hasAnimations = currentState.queueSpecialCardAnimations();
-            if (hasAnimations) {
-              currentState.setAnimationCompletionCallback(() => {
+          // If CPU played an instant-animation card as "another play", show animation before continuing
+          // This handles HT, and any future instant-animation cards that can be played as "another play"
+          const instantAnimationTypes = ['hostile_takeover', 'tracker_smacker', 'forced_empathy'];
+          if (instantAnimationTypes.includes(newState.cpu.playedCard.specialType || '')) {
+            // Wait for card to settle on board before showing animation
+            const settleDelay = getGameSpeedAdjustedDuration(
+              ANIMATION_DURATIONS.INSTANT_ANIMATION_DELAY,
+            );
+            setTimeout(() => {
+              const currentState = useGameStore.getState();
+              const hasAnimations = currentState.queueSpecialCardAnimations();
+              if (hasAnimations) {
+                currentState.setAnimationCompletionCallback(() => {
+                  handleCompareTurnContinued();
+                });
+              } else {
                 handleCompareTurnContinued();
-              });
-            } else {
-              handleCompareTurnContinued();
-            }
-          }, settleDelay);
-          return;
+              }
+            }, settleDelay);
+            return;
+          }
         }
-      }
+
+        // Continue with the rest of the comparison flow after CPU plays
+        handleCompareTurnContinued();
+      }, cpuDelay);
+      return;
     }
 
     // Re-fetch state after potential additional plays
