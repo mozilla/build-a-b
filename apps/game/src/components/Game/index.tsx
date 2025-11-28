@@ -32,6 +32,7 @@ import { PlayerDeck } from '../PlayerDeck';
 import { EffectAnimationOrchestrator } from '../SpecialCardAnimation/EffectAnimationOrchestrator';
 import { TemperTantrumModal } from '../TemperTantrumModal';
 import { Tooltip } from '../Tooltip';
+import { detectDataWarOWYW } from '../../utils/owyw-helpers';
 import type { PlayerType } from '@/types/game';
 
 /**
@@ -192,33 +193,34 @@ export function Game() {
         handleResolveTurn();
         break;
       case 'data_war.reveal_face_up.owyw_selecting': {
-        // Determine who plays the face-up card and prepare their cards
+        // Determine WHO actually has OWYW (player or CPU) using centralized helper
         const store = useGameStore.getState();
-        const { player, hostileTakeoverDataWar } = store;
+        const result = detectDataWarOWYW(store);
 
-        // With Hostile Takeover, the player who played HT doesn't play face-up
-        const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
-        const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
-
-        const faceUpPlayer = playerPlaysFaceUp ? 'player' : 'cpu';
-
-        // Set OWYW active for the face-up player (required for modal to work)
-        store.setOpenWhatYouWantActive(faceUpPlayer);
+        // The guard already validated hasOWYW is true, so owyWPlayer should never be null
+        const owyWPlayer = result.owyWPlayer || 'player';
+        // Set OWYW active for the correct player
+        store.setOpenWhatYouWantActive(owyWPlayer);
 
         // Prepare top 3 cards for OWYW selection
-        store.prepareOpenWhatYouWantCards(faceUpPlayer);
+        store.prepareOpenWhatYouWantCards(owyWPlayer);
 
-        // Show OWYW modal (only for player, CPU would auto-select)
-        if (faceUpPlayer === 'player') {
-          store.setShowOpenWhatYouWantModal(true);
+        // Get fresh state after prepare (store is a snapshot, need to re-get)
+        const freshStore = useGameStore.getState();
+
+        // Show OWYW modal (only for player, CPU auto-selects)
+        if (owyWPlayer === 'player') {
+          freshStore.setShowOpenWhatYouWantModal(true);
         } else {
           // CPU auto-selects and continues
-          const topCards = store.openWhatYouWantCards;
+          const topCards = freshStore.openWhatYouWantCards;
           if (topCards.length > 0) {
             const randomCard = topCards[Math.floor(Math.random() * topCards.length)];
-            store.playSelectedCardFromOWYW(randomCard);
+            freshStore.playSelectedCardFromOWYW(randomCard);
             // Transition to comparing to play the face-up card
             send({ type: 'CARD_SELECTED' });
+          } else {
+            console.error('[Phase Handler] ERROR: No cards available for CPU OWYW selection!');
           }
         }
         break;
