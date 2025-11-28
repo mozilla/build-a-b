@@ -728,8 +728,23 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
           }
           break;
 
-        case 'open_what_you_want':
+        case 'open_what_you_want': {
           // OWYW triggers regardless of win/loss - player chooses card on next turn
+          // BUT: Check if already used during DataWar (face-up cards played after OWYW)
+          const playerState = get()[effect.playedBy];
+          const faceUpCards = playerState.playedCardsInHand.filter((c) => !c.isFaceDown);
+          const owyWIndex = faceUpCards.findIndex(
+            (c) => c.card.specialType === 'open_what_you_want',
+          );
+
+          // If OWYW was played and there are face-up cards after it, it was already used during DataWar
+          const alreadyUsedInDataWar = owyWIndex !== -1 && owyWIndex < faceUpCards.length - 1;
+
+          if (alreadyUsedInDataWar) {
+            get().processNextEffect();
+            break;
+          }
+
           // Set up pre-reveal effect so it's ready when state machine checks
           get().setOpenWhatYouWantActive(effect.playedBy);
           get().addPreRevealEffect({
@@ -742,6 +757,7 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
           // Continue to next effect immediately
           get().processNextEffect();
           break;
+        }
 
         case 'launch_stack': {
           // Gather all launch_stack effects (current one + remaining in queue)
