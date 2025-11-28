@@ -10,6 +10,7 @@ import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
+import { detectDataWarOWYW } from '../utils/owyw-helpers';
 import { useCpuPlayer } from './use-cpu-player';
 import { gtagEvent } from '@/utils/gtag';
 
@@ -798,25 +799,12 @@ export function useGameLogic() {
       handleDataWarFaceDown();
       actorRef.send({ type: 'TAP_DECK' });
     } else if (phase === 'data_war.reveal_face_up.ready') {
-      // Check if OWYW was played - if so, don't play cards yet (modal opens first)
+      // Check if OWYW needs to be triggered - use centralized helper
       const store = useGameStore.getState();
-      const { player, cpu, hostileTakeoverDataWar } = store;
+      const result = detectDataWarOWYW(store);
 
-      const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
-      const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
-
-      const playerPlayedOWYW = player.playedCardsInHand.some(
-        (p) => p.card.specialType === 'open_what_you_want',
-      );
-      const cpuPlayedOWYW = cpu.playedCardsInHand.some(
-        (p) => p.card.specialType === 'open_what_you_want',
-      );
-
-      const hasOWYW =
-        (playerPlayedOWYW && playerPlaysFaceUp) || (cpuPlayedOWYW && !playerPlaysFaceUp);
-
-      if (!hasOWYW) {
-        // No OWYW - play face-up cards normally
+      if (!result.hasOWYW) {
+        // No OWYW or already used - play face-up cards normally
         handleDataWarFaceUp();
       }
       // Send TAP_DECK event (will route to owyw_selecting if OWYW detected)
@@ -910,6 +898,7 @@ export function useGameLogic() {
    * Handles Data War face-up cards (add 1 card from each player and resolve)
    */
   const handleDataWarFaceUp = () => {
+    console.log('[handleDataWarFaceUp] Playing face-up cards');
     // Play one card from each player that does not have hostile_takeover in hand.
     const store = useGameStore.getState();
     const { player, cpu } = store;
@@ -924,12 +913,16 @@ export function useGameLogic() {
     const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
     const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
 
+    console.log('[handleDataWarFaceUp] playerPlays:', playerPlays, 'cpuPlays:', cpuPlays);
+
     if (cpuPlays) {
       playCard('cpu');
     }
     if (playerPlays) {
       playCard('player');
     }
+
+    console.log('[handleDataWarFaceUp] Cards played');
 
     // Get fresh state after playing cards to access the newly played cards
     const freshState = useGameStore.getState();
