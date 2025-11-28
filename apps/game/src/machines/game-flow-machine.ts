@@ -7,6 +7,7 @@ import { assign, createMachine } from 'xstate';
 import { ANIMATION_DURATIONS, getGameSpeedAdjustedDuration } from '../config/animation-timings';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
+import { detectDataWarOWYW } from '../utils/owyw-helpers';
 import type { GameFlowContext, GameFlowEvent } from '@/types';
 
 export const gameFlowMachine = createMachine(
@@ -733,38 +734,10 @@ export const gameFlowMachine = createMachine(
         return state.hasPreRevealEffects();
       },
       hasPreRevealEffectsForFaceUpCard: () => {
-        // Check if the player who's about to play the DataWar face-up card played OWYW
-        // During nested DataWar, we check playedCardsInHand directly since effects aren't processed yet
+        // Check if OWYW should be triggered during DataWar face-up phase
         const state = useGameStore.getState();
-        const { openWhatYouWantActive, player, cpu, hostileTakeoverDataWar } = state;
-
-        // Determine who plays the face-up card in DataWar
-        // With Hostile Takeover, the player who played HT doesn't play face-up
-        const playerHasHT = player.playedCard?.specialType === 'hostile_takeover';
-        const cpuHasHT = cpu.playedCard?.specialType === 'hostile_takeover';
-
-        const playerPlaysFaceUp = !(playerHasHT && hostileTakeoverDataWar);
-        const cpuPlaysFaceUp = !(cpuHasHT && hostileTakeoverDataWar);
-
-        // Check if OWYW is already active (from previous turn)
-        const hasActiveOWYW =
-          (openWhatYouWantActive === 'player' && playerPlaysFaceUp) ||
-          (openWhatYouWantActive === 'cpu' && cpuPlaysFaceUp);
-
-        // Check if OWYW was just played (in playedCardsInHand, not processed yet)
-        const playerPlayedOWYW = player.playedCardsInHand.some(
-          p => p.card.specialType === 'open_what_you_want'
-        );
-        const cpuPlayedOWYW = cpu.playedCardsInHand.some(
-          p => p.card.specialType === 'open_what_you_want'
-        );
-
-        const justPlayedOWYW =
-          (playerPlayedOWYW && playerPlaysFaceUp) ||
-          (cpuPlayedOWYW && cpuPlaysFaceUp);
-
-        const hasOWYW = hasActiveOWYW || justPlayedOWYW;
-        return hasOWYW;
+        const result = detectDataWarOWYW(state);
+        return result.hasOWYW;
       },
       hasUnseenEffectNotifications: () => {
         // Check if there are unseen effect notifications to show
