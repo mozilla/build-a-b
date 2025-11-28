@@ -55,6 +55,8 @@ export const QuickStart: FC<
             {quickStartMicrocopy.title}
           </Text>
           <Text variant="body-extra-large-semibold" align="left" className="text-common-ash">
+            {quickStartMicrocopy.subtitle}
+            <br /><br />
             {quickStartMicrocopy.description}
           </Text>
         </div>
