@@ -47,11 +47,18 @@ export const GameOver: FC<BaseScreenProps> = ({
     [winnerBillionaireId],
   );
 
-  // Share hook
+  // Share hook - Detect iOS Firefox for special handling
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const isIOSFirefox = typeof navigator !== 'undefined' &&
+    /FxiOS/i.test(navigator.userAgent);
+
   const { handleShare: shareNatively, isShareSupported } = useShare({
-    shareText: 'Make Earth a better place. Launch a billionaire.',
-    url: shareUrl
+    // iOS Firefox doesn't properly pass the separate url parameter to Threads
+    // so we include it in the text for that browser only
+    shareText: isIOSFirefox
+      ? `Make Earth a better place. Launch a billionaire.\n\n${shareUrl}`
+      : 'Make Earth a better place. Launch a billionaire.',
+    url: shareUrl,
   });
 
   useEffect(() => {
