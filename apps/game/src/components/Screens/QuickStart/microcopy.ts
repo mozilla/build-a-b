@@ -1,6 +1,7 @@
 export const quickStartMicrocopy = {
   title: 'Quick Launch Guide',
-  description: 'The first player to collect 3 Launch Stack cards wins their Billionaire a one-way ticket to space!',
+  subtitle: 'War rules, but with a twist!',
+  description: 'The first player to collect 3 Launch Stack cards (or all cards in the deck) wins their Billionaire a one-way ticket to space!',
   steps: [
     {
       number: 1,
