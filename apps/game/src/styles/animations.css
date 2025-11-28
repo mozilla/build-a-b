@@ -296,24 +296,30 @@
    GLOW ANIMATIONS - HEARTBEAT & CARD TYPES
    ============================================ */
 
-@keyframes heartbeat {
-  0%,
-  100% {
+@keyframes heartbeat-pulse {
+  0%, 90%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
   }
   30% {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8));
   }
-  90% {
-    transform: scale(1);
+}
+
+@keyframes heartbeat-glow {
+  0%, 90%, 100% {
     filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  30% {
+    filter: drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8));
   }
 }
 
 @utility animate-heartbeat {
-  animation: heartbeat 1.5s ease-in-out infinite;
+  animation:
+    heartbeat-pulse 1.5s ease-in-out infinite,
+    heartbeat-glow 1.5s ease-in-out infinite;
+  animation-iteration-count: infinite, infinite;
+  will-change: transform, filter;
 }
 
 /* Tracker cards - Teal glow (#49C1B4) */
