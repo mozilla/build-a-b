@@ -48,8 +48,10 @@ export const GameOver: FC<BaseScreenProps> = ({
   );
 
   // Share hook
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const { handleShare: shareNatively, isShareSupported } = useShare({
     shareText: 'Make Earth a better place. Launch a billionaire.',
+    url: shareUrl
   });
 
   useEffect(() => {
