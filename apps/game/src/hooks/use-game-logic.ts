@@ -898,7 +898,6 @@ export function useGameLogic() {
    * Handles Data War face-up cards (add 1 card from each player and resolve)
    */
   const handleDataWarFaceUp = () => {
-    console.log('[handleDataWarFaceUp] Playing face-up cards');
     // Play one card from each player that does not have hostile_takeover in hand.
     const store = useGameStore.getState();
     const { player, cpu } = store;
@@ -913,16 +912,12 @@ export function useGameLogic() {
     const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
     const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
 
-    console.log('[handleDataWarFaceUp] playerPlays:', playerPlays, 'cpuPlays:', cpuPlays);
-
     if (cpuPlays) {
       playCard('cpu');
     }
     if (playerPlays) {
       playCard('player');
     }
-
-    console.log('[handleDataWarFaceUp] Cards played');
 
     // Get fresh state after playing cards to access the newly played cards
     const freshState = useGameStore.getState();
