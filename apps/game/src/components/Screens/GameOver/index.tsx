@@ -26,12 +26,7 @@ import { gtagEvent } from '@/utils/gtag';
  * - Play Again and Share buttons
  * - Firefox branding with hover animation
  */
-export const GameOver: FC<BaseScreenProps> = ({
-  className,
-  send,
-  isCrossFadeComplete,
-  ...props
-}) => {
+export const GameOver: FC<BaseScreenProps> = ({ className, isCrossFadeComplete, ...props }) => {
   const { selectedBillionaire, winner, playAudio } = useGameStore();
   const cpuBillionaireId = useCpuBillionaire();
   const [linkCopied, setLinkCopied] = useState(false);
@@ -119,17 +114,16 @@ export const GameOver: FC<BaseScreenProps> = ({
     }
   };
 
-  // Handle play again - navigate to billionaire selection for a new game
+  // Handle play again - reload page to ensure complete memory cleanup
   const handlePlayAgain = () => {
-    const { resetGame } = useGameStore.getState();
-    resetGame();
-    send?.({ type: 'NEW_GAME' });
-
     gtagEvent({
       action: 'play_again_click',
       category: 'end_sequence',
       label: 'Play Again button clicked',
     });
+
+    // Force page reload to free all memory
+    window.location.reload();
   };
 
   const handleGoToFirefox = () => {
