@@ -172,6 +172,11 @@ export function createGameLifecycleActions(set: SetState, get: GetState) {
       playerCustomOrder?: CardTypeId[],
       cpuCustomOrder?: CardTypeId[],
     ) => {
+      // Stop and cleanup audio before resetting state
+      const { stopAudio } = get();
+      stopAudio({ channel: 'music' });
+      stopAudio({ channel: 'sfx' });
+
       const { playerDeck, cpuDeck } = initializeGameDeck(
         DEFAULT_GAME_CONFIG,
         playerStrategy,
@@ -198,6 +203,13 @@ export function createGameLifecycleActions(set: SetState, get: GetState) {
         deckClickBlocked: false,
         playerLaunchStacks: [],
         cpuLaunchStacks: [],
+        playerTurnState: 'normal',
+        cpuTurnState: 'normal',
+        openWhatYouWantActive: null,
+        openWhatYouWantCards: [],
+        showOpenWhatYouWantModal: false,
+        showOpenWhatYouWantAnimation: false,
+        dataWarFaceUpPending: false,
         isPaused: false,
         showMenu: false,
         showGameOverScreen: false,
@@ -208,26 +220,38 @@ export function createGameLifecycleActions(set: SetState, get: GetState) {
         forcedEmpathySwapping: false,
         deckSwapCount: 0,
         showHostileTakeoverAnimation: false,
+        showLaunchStackAnimation: false,
+        showDataWarAnimation: false,
+        dataWarVideoPlaying: false,
         showTrackerSmackerAnimation: false,
         showLeveragedBuyoutAnimation: false,
         showPatentTheftAnimation: false,
         showTemperTantrumAnimation: false,
         showMandatoryRecallAnimation: false,
         showTheftWonAnimation: false,
+        showRecallWonAnimation: false,
+        recallReturnCount: 0,
+        patentTheftStolenCard: null,
+        patentTheftWinner: null,
         animationQueue: [],
         isPlayingQueuedAnimation: false,
         animationsPaused: false,
         blockTransitions: false,
         hostileTakeoverDataWar: false,
+        currentAnimationPlayer: null,
+        animationCompletionCallback: null,
         // Reset Data Grab state
         dataGrabActive: false,
         dataGrabCards: [],
         dataGrabCollectedByPlayer: [],
         dataGrabCollectedByCPU: [],
         dataGrabDistributions: [],
+        dataGrabPlayerLaunchStacks: [],
+        dataGrabCPULaunchStacks: [],
         showDataGrabTakeover: false,
         dataGrabGameActive: false,
         showDataGrabResults: false,
+        showDataGrabCookies: false,
         // Reset Temper Tantrum state
         showTemperTantrumModal: false,
         temperTantrumAvailableCards: [],
@@ -235,6 +259,7 @@ export function createGameLifecycleActions(set: SetState, get: GetState) {
         temperTantrumMaxSelections: 2,
         temperTantrumWinner: null,
         temperTantrumLoserCards: [],
+        temperTantrumFaceDownCardIds: new Set(),
         // Reset Effect Notification System state
         pendingEffectNotifications: [],
         currentEffectNotification: null,
@@ -253,6 +278,16 @@ export function createGameLifecycleActions(set: SetState, get: GetState) {
         hasShownCriticalLoadingScreen: false,
         hasShownHighPriorityLoadingScreen: false,
         hasShownEssentialLoadingScreen: false,
+        // Memory cleanup - Reset unbounded data structures
+        eventLog: [],
+        shownAnimationCardIds: new Set(),
+        seenPlayTriggers: new Set<string>(),
+        seenTableauCardTypes: new Set<string>(),
+        // Reset audio channels
+        audioMusicChannel: null,
+        audioSfxChannels: [null, null, null, null],
+        audioMusicTrackId: null,
+        audioSfxTrackIds: [null, null, null, null],
       });
     },
   };
