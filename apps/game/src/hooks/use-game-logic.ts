@@ -73,6 +73,7 @@ export function useGameLogic() {
     needsDataWarAfterEffects,
     blockTransitions,
     shouldTransitionToWin,
+    showMenu,
     playCard,
     resolveTurn,
     collectCardsAfterEffects,
@@ -1071,8 +1072,8 @@ export function useGameLogic() {
   }, [shouldTransitionToWin, actorRef]);
 
   // CPU automation - calls tapDeck when it's CPU's turn
-  // Pass isPaused flag to prevent CPU from playing while effect modal is open
-  useCpuPlayer(phase, activePlayer, tapDeck, { isPaused: effectAccumulationPaused });
+  // Pass isPaused flag to prevent CPU from playing while effect modal or menu is open
+  useCpuPlayer(phase, activePlayer, tapDeck, { isPaused: effectAccumulationPaused || showMenu });
 
   return {
     // State
