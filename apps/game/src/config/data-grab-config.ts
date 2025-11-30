@@ -12,11 +12,11 @@ export const DATA_GRAB_CONFIG = {
   MIN_CARDS_IN_PLAY: 1, // Minimum cards in play to trigger Data Grab
 
   // Card falling animation
-  CARD_FALL_DURATION_MS: 3000, // Base time for card to traverse from top to bottom
-  CARD_SPEED_VARIATION_PERCENT: 20, // Speed variation as integer percent (20 = ±20%)
-  INITIAL_CARD_DELAY_MS: 300, // Delay before first card starts falling
-  CARD_DELAY_INCREMENT_MIN_MS: 250, // Minimum delay between card starts
-  CARD_DELAY_INCREMENT_MAX_MS: 750, // Maximum delay between card starts
+  CARD_FALL_DURATION_MS: 2500, // Base time for card to traverse from top to bottom
+  CARD_SPEED_VARIATION_PERCENT: 40, // Speed variation as integer percent (20 = ±20%)
+  INITIAL_CARD_DELAY_MS: 500, // Delay before first card starts falling
+  CARD_DELAY_INCREMENT_MIN_MS: 150, // Minimum delay between card starts
+  CARD_DELAY_INCREMENT_MAX_MS: 500, // Maximum delay between card starts
 
   // Visual elements
   COOKIE_COUNT: 4, // Number of floating data cookies
