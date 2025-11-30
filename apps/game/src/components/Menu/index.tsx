@@ -30,6 +30,7 @@ export const Menu: FC = () => {
     playAudio,
     pauseAudio,
   } = useGameStore();
+  
   const { quitGame, restartGame, phase } = useGameLogic();
   const phaseKey = typeof phase === 'string' ? phase : String(phase);
 
@@ -37,6 +38,17 @@ export const Menu: FC = () => {
   const isNonGameplayPhase = NON_GAMEPLAY_PHASES.includes(
     phaseKey as (typeof NON_GAMEPLAY_PHASES)[number],
   );
+
+  // Block game transitions when menu is open to pause gameplay
+  useEffect(() => {
+    if (showMenu) {
+      // Pause gameplay by blocking state machine transitions
+      useGameStore.setState({ blockTransitions: true });
+    } else {
+      // Resume gameplay when menu closes
+      useGameStore.setState({ blockTransitions: false });
+    }
+  }, [showMenu]);
 
   // Pause/resume SFX when sound effects toggle changes
   useEffect(() => {
@@ -115,7 +127,7 @@ export const Menu: FC = () => {
             variant="screen-renderer"
           >
             {/* Menu Content */}
-            <div className="relative h-full flex flex-col items-center pt-16 overflow-auto">
+            <div className="relative h-full flex flex-col items-center py-16 overflow-auto">
               {/* Close Button */}
               <header className="mx-auto absolute top-8 right-0 w-full h-12">
                 <Button
@@ -128,7 +140,7 @@ export const Menu: FC = () => {
               </header>
 
               {/* Menu Items */}
-              <div className="w-full flex flex-col gap-8">
+              <div className="w-full h-full flex flex-col justify-between">
                 {/* Title */}
                 <Text variant="title-2" align="center" className="text-common-ash mx-auto">
                   {menuMicrocopy.title}

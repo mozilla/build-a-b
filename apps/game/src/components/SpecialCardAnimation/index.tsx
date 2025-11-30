@@ -22,6 +22,7 @@ export const SpecialCardAnimation = ({
   controls = false,
   removeBlur = true,
   audioTrack,
+  onVideoEnd,
 }: SpecialCardAnimationProps) => {
   const { playAudio } = useGameStore();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -43,6 +44,13 @@ export const SpecialCardAnimation = ({
         });
     }
   }, [show, playAudio, audioTrack]);
+  
+  // Handle video end event
+  const handleVideoEnd = () => {
+    if (onVideoEnd) {
+      onVideoEnd();
+    }
+  };
 
   if (!show) return null;
 
@@ -65,6 +73,7 @@ export const SpecialCardAnimation = ({
             muted
             playsInline
             controls={controls}
+            onEnded={handleVideoEnd}
             className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
             aria-label={title ? `${title} animation` : 'Special card animation'}
           />
