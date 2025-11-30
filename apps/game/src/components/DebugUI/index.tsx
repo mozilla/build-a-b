@@ -597,7 +597,7 @@ export function DebugUI() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="fixed top-4 right-4 z-[900] bg-gray-900 text-white rounded-lg shadow-2xl backdrop-blur-sm border-2 border-purple-500"
+          className="fixed top-4 right-4 z-[var(--z-debug-panel)] bg-gray-900 text-white rounded-lg shadow-2xl backdrop-blur-sm border-2 border-purple-500"
           style={{ width: isMinimized ? '200px' : '600px', maxWidth: '95vw' }}
         >
           {/* Header */}

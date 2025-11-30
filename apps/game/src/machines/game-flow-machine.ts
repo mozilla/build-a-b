@@ -378,9 +378,6 @@ export const gameFlowMachine = createMachine(
               // Clear tooltip
               useGameStore.setState({ tooltipMessage: 'EMPTY' } as Partial<GameFlowContext>);
             },
-            after: {
-              [ANIMATION_DURATIONS.DATA_GRAB_TAKEOVER]: 'playing',
-            },
             on: {
               DATA_GRAB_COUNTDOWN_COMPLETE: 'playing',
             },

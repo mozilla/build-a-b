@@ -23,23 +23,17 @@
   --z-collection-winner: 200;        /* Winner's cards during collection */
 
   /* UI Element Layer (20-99) - Interactive elements */
-  --z-deck-interaction: 550;         /* Deck interaction zones (must be above in-flight cards) */
+  --z-deck-interaction: 250;         /* Deck interaction zones (must be above in-flight cards) */
   --z-ui-element: 30;                /* General UI elements */
   --z-badge: 50;                     /* Badges and indicators */
-
+  
   /* Overlay Layer (100-499) - Tooltips, popovers, dropdowns */
   --z-tooltip-base: 48;              /* Base tooltip z-index */
   --z-tooltip: 100;                  /* Standard tooltip */
   --z-popover: 150;                  /* Popovers and dropdowns */
+  --z-drawer: 150;                   /* Drawer */
   --z-screen-transition: 100;        /* Screen transition overlays */
 
-  /* Menu Layer (200-299) - Menu overlays */
-  --z-menu-backdrop: 200;            /* Menu backdrop overlay */
-  --z-menu-content: 201;             /* Menu content */
-  --z-menu-modal-backdrop: 202;      /* Modal within menu backdrop */
-  --z-menu-modal-bg: 203;            /* Modal within menu background */
-  --z-menu-modal-content: 204;       /* Modal within menu content */
-  
   /* Modal & Dialog Layer (500-600) - Top priority overlays */
   --z-modal-backdrop: 500;           /* Modal backdrop */
   --z-modal-content: 550;            /* Modal content */
@@ -48,8 +42,17 @@
 
   /* Special Animation Layer (700-800) - Full-screen animations */
   --z-game-over-screen: 700;         /* Game over screen (revealed when winner animation fades) */
+  --z-data-grab-game: 730;           /* Data Grab mini game board */
+  --z-data-grab-cards: 740;          /* Data Grab falling cards */
   --z-special-animation: 750;        /* Special card animations, Data Grab, Data War */
   --z-winner-animation: 800;         /* Winner animation screen (highest in animation layer) */
+  
+  /* Menu Layer (900-999) - Menu overlays */
+  --z-menu-backdrop: 900;            /* Menu backdrop overlay */
+  --z-menu-content: 901;             /* Menu content */
+  --z-menu-modal-backdrop: 902;      /* Modal within menu backdrop */
+  --z-menu-modal-bg: 903;            /* Modal within menu background */
+  --z-menu-modal-content: 904;       /* Modal within menu content */
   
   /* Debug Layer (9000+) - Development and testing tools */
   --z-debug-panel: 9000;             /* Debug panels */

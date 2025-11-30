@@ -30,6 +30,7 @@ export const Menu: FC = () => {
     playAudio,
     pauseAudio,
   } = useGameStore();
+  
   const { quitGame, restartGame, phase } = useGameLogic();
   const phaseKey = typeof phase === 'string' ? phase : String(phase);
 
@@ -37,6 +38,17 @@ export const Menu: FC = () => {
   const isNonGameplayPhase = NON_GAMEPLAY_PHASES.includes(
     phaseKey as (typeof NON_GAMEPLAY_PHASES)[number],
   );
+
+  // Block game transitions when menu is open to pause gameplay
+  useEffect(() => {
+    if (showMenu) {
+      // Pause gameplay by blocking state machine transitions
+      useGameStore.setState({ blockTransitions: true });
+    } else {
+      // Resume gameplay when menu closes
+      useGameStore.setState({ blockTransitions: false });
+    }
+  }, [showMenu]);
 
   // Pause/resume SFX when sound effects toggle changes
   useEffect(() => {
@@ -107,7 +119,7 @@ export const Menu: FC = () => {
             duration: 0.3,
             ease: [0.4, 0, 0.2, 1],
           }}
-          className="fixed overflow-auto inset-0 z-201 flex items-center justify-center h-[100dvh] w-[100vw] z-[var(--z-winner-animation)]"
+          className="fixed overflow-auto inset-0 z-[var(--z-menu-content)] flex items-center justify-center h-[100dvh] w-[100vw]"
         >
           <Frame
             backgroundSrc={nightSkyBg}
@@ -115,9 +127,9 @@ export const Menu: FC = () => {
             variant="screen-renderer"
           >
             {/* Menu Content */}
-            <div className="relative h-full flex flex-col items-center pt-6 overflow-auto">
+            <div className="relative h-full flex flex-col items-center py-16 overflow-auto">
               {/* Close Button */}
-              <header className="mx-auto relative w-full mb-10">
+              <header className="mx-auto absolute top-8 right-0 w-full h-12">
                 <Button
                   onPress={toggleMenu}
                   className="absolute top-0 right-6 cursor-pointer z-10 bg-transparent hover:opacity-70 active:opacity-70 transition-opacity p-0 w-7 h-7 flex items-center justify-center"
@@ -126,13 +138,13 @@ export const Menu: FC = () => {
                   <Icon name="close" width={8} height={8} className="w-2 h-2" />
                 </Button>
               </header>
-              {/* Title */}
-              <Text variant="title-2" align="center" className="text-common-ash mb-8 mx-auto">
-                {menuMicrocopy.title}
-              </Text>
 
               {/* Menu Items */}
-              <div className="w-full flex flex-col gap-8">
+              <div className="w-full h-full flex flex-col justify-between">
+                {/* Title */}
+                <Text variant="title-2" align="center" className="text-common-ash mx-auto">
+                  {menuMicrocopy.title}
+                </Text>
                 {/* Quick Launch Guide Button */}
                 <div className="w-full px-8 flex flex-col gap-y-8 mx-auto">
                   <button
@@ -173,7 +185,7 @@ export const Menu: FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 w-full pb-[clamp(1rem,-6.9788rem_+_17.02vh,2rem)] framed:max-w-[25rem] mx-auto px-9 framed:pb-8">
+                <div className="flex gap-4 w-full mx-auto px-9 ">
                   <Button
                     onPress={handleRestart}
                     variant="primary"

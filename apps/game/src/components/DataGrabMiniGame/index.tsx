@@ -85,6 +85,7 @@ export const DataGrabMiniGame: FC = () => {
   const collectedByPlayer = useGameStore((state) => state.dataGrabCollectedByPlayer);
   const collectedByCPU = useGameStore((state) => state.dataGrabCollectedByCPU);
   const showDataGrabCookies = useGameStore((state) => state.showDataGrabCookies);
+  const showMenu = useGameStore((state) => state.showMenu);
 
   // Generate positions once when cards are loaded
   const cardPositions = useMemo(
@@ -119,10 +120,11 @@ export const DataGrabMiniGame: FC = () => {
     }
   }, [dataGrabGameActive, collectedByPlayer.length, collectedByCPU.length, dataGrabCards.length, actorRef]);
 
-  if (!dataGrabGameActive) return null;
+  // Hide mini game when menu is open (gameplay is paused)
+  if (!dataGrabGameActive || showMenu) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center">
+    <div className="fixed inset-0 z-[var(--z-data-grab-game)] flex items-center justify-center">
       {/* Board-sized container matching game board */}
       <div className="relative w-full h-full max-w-[25rem] max-h-[54rem] overflow-hidden">
         {/* Background Image (Static) - Single image covering full area */}

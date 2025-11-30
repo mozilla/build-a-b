@@ -5,6 +5,7 @@ import {
   isAnimationLottie,
 } from '@/config/special-effect-animations';
 import { SpecialCardAnimation } from './index';
+import { GameMachineContext } from '@/providers/GameProvider';
 
 /**
  * Effect Animation Orchestrator
@@ -28,6 +29,7 @@ import { SpecialCardAnimation } from './index';
  * Note: Open What You Want animation is now handled directly in the OpenWhatYouWantModal component
  */
 export const EffectAnimationOrchestrator = () => {
+  const actorRef = GameMachineContext.useActorRef();
   const {
     showForcedEmpathyAnimation,
     showHostileTakeoverAnimation,
@@ -44,13 +46,14 @@ export const EffectAnimationOrchestrator = () => {
     currentAnimationPlayer,
     isPlayingQueuedAnimation,
     effectAccumulationPaused,
+    showMenu,
     cpuLaunchStacks,
     playerLaunchStacks,
     recallReturnCount,
   } = useGameStore();
 
-  // Hide all animations when effect modal is open (game is paused)
-  if (effectAccumulationPaused) {
+  // Hide all animations when effect modal or menu is open (game is paused)
+  if (effectAccumulationPaused || showMenu) {
     return null;
   }
 
@@ -223,6 +226,11 @@ export const EffectAnimationOrchestrator = () => {
         isLottie={isAnimationLottie(animation)}
         title={animation.title}
         loop={animation.loop}
+        onVideoEnd={() => {
+          // Send completion event to state machine when video finishes
+          // This ensures we only transition after the video has actually played
+          actorRef.send({ type: 'DATA_GRAB_COUNTDOWN_COMPLETE' });
+        }}
       />
     );
   }

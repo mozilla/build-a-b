@@ -53,11 +53,11 @@ export const Drawer: FC<DrawerProps> = ({
               ease: [0.35, 0, 0.15, 1],
               duration: 0.4,
             }}
-            className={cn('absolute bottom-0 left-0 right-0 z-50 w-full mx-auto', className)}
+            className={cn('absolute bottom-0 left-0 right-0 z-[var(--z-drawer)] w-full mx-auto', className)}
             {...props}
           >
             {/* Drawer Content */}
-            <div className="relative w-full bg-[#0a0a15] rounded-tl-[2rem] sm:rounded-tl-[2.5rem] rounded-tr-[2rem] sm:rounded-tr-[2.5rem] overflow-hidden pb-20 sm:pb-8">
+            <div className="relative w-full bg-[#0a0a15] rounded-tl-[2rem] rounded-tr-[2rem] overflow-hidden pb-16">
               <img
                 src={nightSkyBg}
                 alt=""

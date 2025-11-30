@@ -158,9 +158,9 @@ export const DataGrabResultsModal: FC = () => {
       hideCloseButton={true}
       isDismissable={false}
       classNames={{
-        wrapper: 'overflow-hidden items-center z-[9999]',
-        backdrop: 'z-[9999]',
-        base: 'frame bg-[rgba(0,0,0,0.9)] z-[9999]',
+        wrapper: 'overflow-hidden items-center z-[var(--z-modal-backdrop)]',
+        backdrop: 'z-[var(--z-modal-backdrop)]',
+        base: 'frame bg-[rgba(0,0,0,0.9)] z-[var(--z-modal-content)]',
         body: 'px-0 pt-6',
       }}
     >
