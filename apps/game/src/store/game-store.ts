@@ -42,6 +42,7 @@ export const useGameStore = create<GameStore>()(
       activePlayer: 'player',
       anotherPlayMode: false,
       anotherPlayExpected: false,
+      cpuAutoPlayInProgress: false,
       pendingEffects: [],
       preRevealEffects: [],
       preRevealProcessed: false,

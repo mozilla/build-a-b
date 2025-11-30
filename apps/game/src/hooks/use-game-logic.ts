@@ -342,6 +342,20 @@ export function useGameLogic() {
     // Skip CPU's "another play" if HT negates their first card OR if both players triggered
     // If CPU has HT, player's "another play" is handled by shouldResolveDirectly/handleResolveTurn
     if (cpuTriggersAnother && store.cpu.deck.length > 0 && !htNegatesCPU && !bothTriggerAnother) {
+      // CRITICAL: Get fresh state to check if CPU auto-play is already in progress
+      // Multiple simultaneous calls might all have old state snapshots
+      const freshState = useGameStore.getState();
+
+      if (freshState.cpuAutoPlayInProgress) {
+        // Another call already started the setTimeout - skip to prevent duplicate
+        return;
+      }
+
+      // Mark that we're starting CPU auto-play to prevent duplicate calls
+      useGameStore.setState({ cpuAutoPlayInProgress: true });
+      setAnotherPlayMode(true);
+      setActivePlayer('cpu');
+
       // Add CPU delay for "another play" to match normal turn pacing
       const cpuDelay = getGameSpeedAdjustedDuration(ANIMATION_DURATIONS.CPU_TURN_DELAY);
       setTimeout(() => {
@@ -363,15 +377,22 @@ export function useGameLogic() {
               const hasAnimations = currentState.queueSpecialCardAnimations();
               if (hasAnimations) {
                 currentState.setAnimationCompletionCallback(() => {
+                  // Clear the flag before recursive call to allow next card to be processed
+                  useGameStore.setState({ cpuAutoPlayInProgress: false });
                   handleCompareTurnContinued();
                 });
               } else {
+                // Clear the flag before recursive call to allow next card to be processed
+                useGameStore.setState({ cpuAutoPlayInProgress: false });
                 handleCompareTurnContinued();
               }
             }, settleDelay);
             return;
           }
         }
+
+        // Clear the flag before recursive call to allow next card to be processed
+        useGameStore.setState({ cpuAutoPlayInProgress: false });
 
         // Continue with the rest of the comparison flow after CPU plays
         handleCompareTurnContinued();
