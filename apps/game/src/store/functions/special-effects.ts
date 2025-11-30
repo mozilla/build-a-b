@@ -144,10 +144,10 @@ export function createSpecialEffectsActions(set: SetState, get: GetState) {
 
       // Update anotherPlayExpected flag
       // If this card triggers another play, we're expecting more cards
-      // If this card doesn't trigger another play and we're in anotherPlayMode, sequence is ending
+      // If this card doesn't trigger another play but anotherPlayExpected is set, clear it (sequence ending)
       if (card.triggersAnotherPlay) {
         updates.anotherPlayExpected = true;
-      } else if (get().anotherPlayMode) {
+      } else if (get().anotherPlayMode || get().anotherPlayExpected) {
         updates.anotherPlayExpected = false;
       }
 
