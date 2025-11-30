@@ -59,11 +59,9 @@ export function createCardCollectionActions(set: SetState, get: GetState) {
             // Visual-only mode: Decks already updated
             if (skipBoardClear) {
               // Skip board clearing - caller will handle it (e.g., stealCards)
+              // This is a special effect collection, NOT the final turn collection
+              // Keep deck blocked - it will be unblocked by the final turn collection
               set({ collecting: null });
-              // Unblock deck clicks after a short delay
-              setTimeout(() => {
-                set({ deckClickBlocked: false });
-              }, 200);
             } else {
               // Clear all board states
               set({
@@ -225,6 +223,10 @@ export function createCardCollectionActions(set: SetState, get: GetState) {
       const { cardsInPlay } = get();
       if (cardsInPlay.length > 0) {
         get().collectCards(winner, cardsInPlay, launchStackCount);
+      } else {
+        // No cards left to collect (special effects collected them all)
+        // But still need to unblock the deck since turn is over
+        set({ deckClickBlocked: false });
       }
     },
 
