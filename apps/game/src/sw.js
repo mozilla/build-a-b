@@ -21,50 +21,7 @@ setCacheNameDetails({
   suffix: CACHE_VERSION,
 });
 
-const preCacheUrls = [
-  { url: `${SUPABASE_BASE_URL}data_grab.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}firewall_empathy.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}firewall_owyw.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}firewall_recall_cpu.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}firewall_recall_player.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}firewall_smacker.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}launchstack.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_buyout_cpu.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_buyout_player.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_takeover_player.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_tantrum_cpu.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_tantrum_player.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_theft_cpu.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}move_theft_player.webm`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-bonk.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-button-d.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-card-collect.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-card-flip.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-data-war.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-drawer_start-turn.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-end-sequence.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-event-takeover.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-gameplay-loop.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-go.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-hand-viewer_deck-swap.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-launch-stack-card-collect.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-launch-stack-cha-ching.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-launch-stack-rocket.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-opponent-win.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-player-win.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-quick-launch.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-rocket-flyby.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-select-bg-alt.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-select-bg.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-title-music.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-turn-value.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-vs-animation-reverse-build-up.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-vs-animation.mp3`, revision: null },
-  { url: `${SUPABASE_BASE_URL}audio-war-3-card.mp3`, revision: null },
-];
-
-precacheAndRoute(preCacheUrls);
+precacheAndRoute(self.__WB_MANIFEST || []);
 
 const cacheStrategy = new CacheFirst({
   cacheName: cacheNames.runtime,
@@ -93,10 +50,10 @@ const cacheStrategy = new CacheFirst({
 // match, then it will properly serve partial responses.
 registerRoute(({ url }) => {
   console.log('************************');
-  console.log('Route hit: ', url);
+  console.log('Route hit: ', url, 'matches', url.href.startsWith(SUPABASE_BASE_URL));
   console.log('************************');
 
-  return url.href.startsWith(SUPABASE_BASE_URL) && url.pathname.endsWith('.webm');
+  return url.href.startsWith(SUPABASE_BASE_URL);
 }, cacheStrategy);
 
 self.addEventListener('install', (event) => {

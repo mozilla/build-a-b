@@ -14,7 +14,7 @@ import { useAudioPreloader } from '@/hooks/use-audio-preloader';
 import { useVideoPreloader } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
-import { useEffect, useMemo, type FC, type PropsWithChildren } from 'react';
+import { useEffect, useMemo, useRef, type FC, type PropsWithChildren } from 'react';
 
 // Import background images for preloading
 import blueGridBg from '@/assets/backgrounds/color_blue.webp';
@@ -28,7 +28,54 @@ import prudenceBg from '@/assets/backgrounds/color_prudence.webp';
 import savannahBg from '@/assets/backgrounds/color_savannah.webp';
 import walterBg from '@/assets/backgrounds/color_walter.webp';
 
+const SUPABASE_BASE_URL =
+  'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
+
+const STATIC_MEDIA_URLS = [
+  `${SUPABASE_BASE_URL}audio-bonk.mp3`,
+  `${SUPABASE_BASE_URL}audio-button-d.mp3`,
+  `${SUPABASE_BASE_URL}audio-card-collect.mp3`,
+  `${SUPABASE_BASE_URL}audio-card-flip.mp3`,
+  `${SUPABASE_BASE_URL}audio-data-war.mp3`,
+  `${SUPABASE_BASE_URL}audio-drawer_start-turn.mp3`,
+  `${SUPABASE_BASE_URL}audio-end-sequence.mp3`,
+  `${SUPABASE_BASE_URL}audio-event-takeover.mp3`,
+  `${SUPABASE_BASE_URL}audio-gameplay-loop.mp3`,
+  `${SUPABASE_BASE_URL}audio-go.mp3`,
+  `${SUPABASE_BASE_URL}audio-hand-viewer_deck-swap.mp3`,
+  `${SUPABASE_BASE_URL}audio-launch-stack-card-collect.mp3`,
+  `${SUPABASE_BASE_URL}audio-launch-stack-cha-ching.mp3`,
+  `${SUPABASE_BASE_URL}audio-launch-stack-rocket.mp3`,
+  `${SUPABASE_BASE_URL}audio-opponent-win.mp3`,
+  `${SUPABASE_BASE_URL}audio-player-win.mp3`,
+  `${SUPABASE_BASE_URL}audio-quick-launch.mp3`,
+  `${SUPABASE_BASE_URL}audio-rocket-flyby.mp3`,
+  `${SUPABASE_BASE_URL}audio-select-bg-alt.mp3`,
+  `${SUPABASE_BASE_URL}audio-select-bg.mp3`,
+  `${SUPABASE_BASE_URL}audio-title-music.mp3`,
+  `${SUPABASE_BASE_URL}audio-turn-value.mp3`,
+  `${SUPABASE_BASE_URL}audio-vs-animation-reverse-build-up.mp3`,
+  `${SUPABASE_BASE_URL}audio-vs-animation.mp3`,
+  `${SUPABASE_BASE_URL}audio-war-3-card.mp3`,
+  `${SUPABASE_BASE_URL}data_grab.webm`,
+  `${SUPABASE_BASE_URL}firewall_empathy.webm`,
+  `${SUPABASE_BASE_URL}firewall_owyw.webm`,
+  `${SUPABASE_BASE_URL}firewall_recall_cpu.webm`,
+  `${SUPABASE_BASE_URL}firewall_recall_player.webm`,
+  `${SUPABASE_BASE_URL}firewall_smacker.webm`,
+  `${SUPABASE_BASE_URL}launchstack.webm`,
+  `${SUPABASE_BASE_URL}move_buyout_cpu.webm`,
+  `${SUPABASE_BASE_URL}move_buyout_player.webm`,
+  `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
+  `${SUPABASE_BASE_URL}move_takeover_player.webm`,
+  `${SUPABASE_BASE_URL}move_tantrum_cpu.webm`,
+  `${SUPABASE_BASE_URL}move_tantrum_player.webm`,
+  `${SUPABASE_BASE_URL}move_theft_cpu.webm`,
+  `${SUPABASE_BASE_URL}move_theft_player.webm`,
+];
+
 export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
+  const wbRef = useRef<Workbox | null>(null);
   const { selectedBillionaire, updatePreloadingProgress } = useGameStore();
   const cpuBillionaire = useCpuBillionaire();
 
@@ -79,11 +126,27 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [selectedBillionaire, cpuBillionaire]);
 
   useEffect(() => {
-    const wb = new Workbox('/assets/game/sw.js');
+    if ('serviceWorker' in navigator && !wbRef.current) {
+      const wb = new Workbox('/assets/game/sw.js');
+      wbRef.current = wb;
 
-    wb.messageSW({ type: 'CACHE_URLS', payload: { urlsToCache: videoUrls } });
+      wb.messageSW({ type: 'CACHE_URLS', payload: { urlsToCache: STATIC_MEDIA_URLS } }).catch(
+        (err) => {
+          console.debug('FAiled to send message to service worker', err);
+        },
+      );
+      wb.register();
+    }
+  }, []);
 
-    wb.register();
+  useEffect(() => {
+    const wb = wbRef.current;
+
+    if (wb && videoUrls.length > 0) {
+      wb.messageSW({ type: 'CACHE_URLS', payload: { urlsToCache: videoUrls } }).catch((err) => {
+        console.debug('Failed to send message to service worker', err);
+      });
+    }
   }, [videoUrls]);
 
   const videoPreloadState = useVideoPreloader(videoUrls, {
