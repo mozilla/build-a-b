@@ -196,6 +196,8 @@ export const gameFlowMachine = createMachine(
             },
             anotherPlayExpected: false, // Clear flag (fresh start)
             anotherPlayMode: false, // Clear another play mode (Data War is fresh start)
+            cpuAutoPlayInProgress: false, // Clear CPU auto-play flag (Data War is fresh start)
+            deckClickBlocked: false, // Unblock deck for Data War (player needs to tap)
             activePlayer: 'player', // Reset active player to default
           });
         },
