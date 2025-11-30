@@ -225,9 +225,9 @@ export const EffectNotificationModal: FC<EffectNotificationModalProps> = ({
       hideCloseButton={true}
       isDismissable={false}
       classNames={{
-        wrapper: 'overflow-hidden items-center z-[9999]',
-        backdrop: 'z-[9999]',
-        base: 'frame bg-[rgba(0,0,0,0.8)] overflow-y-auto z-[9999]',
+        wrapper: 'overflow-hidden items-center z-[var(--z-modal-backdrop)]',
+        backdrop: 'z-[var(--z-modal-backdrop)]',
+        base: 'frame bg-[rgba(0,0,0,0.8)] overflow-y-auto z-[var(--z-modal-content)]',
         body: 'pt-12 pb-8 px-0',
       }}
     >

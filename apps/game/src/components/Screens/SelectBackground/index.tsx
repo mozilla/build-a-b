@@ -39,7 +39,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
       <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
         {children}
       </header>
-      <div className="w-full relative z-10 py-8 pt-[clamp(2rem,-13.9563rem_+_34.04vh,4rem)] h-full">
+      <div className="w-full relative z-10 py-16 h-full">
         {/* Title and Description */}
         <div className="flex flex-col items-center justify-start gap-4 h-full">
           <div className="flex flex-col items-center gap-4 w-full px-[2.25rem] sm:max-w-[25rem] mx-auto">
@@ -65,7 +65,7 @@ export const SelectBackground: FC<BaseScreenProps> = ({ send, className, childre
 
           {/* Next Button - Only show when a background is selected */}
           {localSelection && (
-            <div className="w-full flex justify-center pb-[clamp(1rem,-6.9781rem_+_17.02vh,2rem)] px-[2.25rem] sm:max-w-[25rem] mx-auto">
+            <div className="w-full flex justify-center px-[2.25rem] mt-auto mx-auto">
               <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
                 {selectBackgroundMicrocopy.ctaButton}
               </Button>

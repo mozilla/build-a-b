@@ -35,16 +35,16 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
 
   return (
     <motion.div
-      className={cn('relative flex flex-col framed::max-w-[25rem] mx-auto', className)}
+      className={cn('relative flex flex-col mx-auto', className)}
       {...props}
     >
       {/* Main content container */}
-      <header className="absolute top-0 landscape:relative w-full framed::max-w-[25rem] mx-auto z-20">
+      <header className="absolute top-0 landscape:relative w-full mx-auto z-20">
         {children}
       </header>
-      <div className="w-full relative z-10 flex flex-col items-center justify-between py-8 pt-16 h-full">
+      <div className="w-full relative z-10 flex flex-col items-center justify-between py-16 h-full">
         {/* Billionaire Avatar - centered at top */}
-        <div className="flex items-center justify-center pt-8 pb-4">
+        <div className="flex items-center justify-center pb-4">
           <div className="w-[12.1875rem] h-[12.1875rem] rounded-full overflow-hidden border-4 border-accent">
             <img
               src={billionaireImage}
@@ -70,7 +70,7 @@ export const Intro: FC<BaseScreenProps> = ({ send, className, children, ...props
         </div>
 
         {/* Action Buttons - stacked at bottom */}
-        <div className="w-full flex flex-col items-center gap-4 pt-4 pb-8 px-[4.5rem]">
+        <div className="w-full flex flex-col items-center gap-4 pt-4 px-[4.5rem]">
           <Button onPress={handleShowGuide} variant="primary" className="w-full max-w-[15.5rem]">
             {introMicrocopy.quickStartButton}
           </Button>

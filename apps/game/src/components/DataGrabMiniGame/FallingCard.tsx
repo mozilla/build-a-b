@@ -136,7 +136,7 @@ export const FallingCard: FC<FallingCardProps> = ({
           <AnimatePresence>
             {showBurst && (
               <motion.div
-                className="fixed pointer-events-none w-[18.75rem] h-[18.75rem] -translate-x-1/2 -translate-y-1/2 z-[9999]"
+                className="fixed pointer-events-none w-[18.75rem] h-[18.75rem] -translate-x-1/2 -translate-y-1/2 z-[var(--z-data-grab-cards)]"
                 style={{
                   left: `${clickPosition.x}px`,
                   top: `${clickPosition.y}px`,

@@ -59,7 +59,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
   const ConfirmationDrawer = useMemo(
     () => (
       <Drawer
-        className="framed::max-w-[25rem] mx-auto"
+        className=""
         isOpen={drawerOpen}
         billionaire={selectedBillionaireData}
         onClose={handleDrawerClose}
@@ -75,7 +75,7 @@ export const SelectBillionaire: FC<BaseScreenProps> = ({
 
   return (
     <motion.div className={cn(className)} {...props}>
-      <header className="absolute top-0 landscape:relative w-full max-w-[25rem] mx-auto z-20">
+      <header className="absolute top-0 landscape:relative w-full mx-auto z-20">
         {children}
       </header>
       {/* Main content container */}
