@@ -73,7 +73,7 @@ export const Tooltip: FC<TooltipProps> = ({
       'flex',
       ...arrowClassNames,
       // High z-index for tooltips: above cards (z-20 to z-100), below modals (z-50+) and badges (z-50)
-      'z-[48]',
+      'z-[var(--z-tooltip-base)]',
     ],
     content: [
       'flex',

@@ -110,7 +110,7 @@ export const BackgroundCarousel: FC<BackgroundCarouselProps> = ({
         {BACKGROUNDS.map((background) => (
           <SwiperSlide
             key={background.id}
-            className={cn(variant !== 'menu' ? '!w-[8.75rem] py-18' : '!w-[6.25rem] py-12')}
+            className={cn(variant !== 'menu' ? '!w-[8.75rem] py-18' : '!w-[6.25rem] py-16')}
           >
             <BackgroundCard
               className={cn(variant === 'menu' && 'w-[6.25rem] h-[13.75rem]')}

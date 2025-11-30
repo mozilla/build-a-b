@@ -18,10 +18,13 @@ interface DataWarAnimationProps {
  * Similar to VS animation but for gameplay phase.
  */
 export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
-  const { selectedBillionaire, playAudio } = useGameStore();
+  const { selectedBillionaire, playAudio, showMenu } = useGameStore();
   const cpuBillionaire = useCpuBillionaire();
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Hide animation when menu is open (gameplay is paused)
+  const shouldShow = show && !showMenu;
 
   // Get the animation for this matchup
   const animationSrc = useMemo(
@@ -36,8 +39,8 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
 
   // Get preloaded video element or null
   const preloadedVideo = useMemo(
-    () => (animationSrc && show ? getPreloadedVideo(animationSrc) : null),
-    [animationSrc, show],
+    () => (animationSrc && shouldShow ? getPreloadedVideo(animationSrc) : null),
+    [animationSrc, shouldShow],
   );
 
   // play preloaded video when available
@@ -131,9 +134,9 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
   return (
     <AnimatePresence>
       <motion.div
-        style={{ pointerEvents: show ? 'auto' : 'none' }}
+        style={{ pointerEvents: shouldShow ? 'auto' : 'none' }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: show ? 1 : 0 }}
+        animate={{ opacity: shouldShow ? 1 : 0 }}
         transition={{ duration: 0.3 }}
         className="absolute inset-0 z-[var(--z-special-animation)] flex items-center justify-center bg-black"
       >

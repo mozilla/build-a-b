@@ -36,13 +36,13 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
 
   return (
     <motion.div className={cn('relative flex flex-col min-h-full', className)} {...props}>
-      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
+      <header className="absolute top-0 landscape:relative w-full mx-auto z-20">
         {children}
       </header>
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-5">
+      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-16">
         {/* Billionaire Avatar in Porthole - centered at top */}
-        <div className="flex items-center justify-center pt-[3.5rem] pb-4">
+        <div className="flex items-center justify-center pb-4">
           <div className="w-[12.1875rem] h-[12.1875rem]">
             <img
               src={billionaireImage}
@@ -106,7 +106,7 @@ export const YourMission: FC<BaseScreenProps> = ({ send, className, children, ..
         </div>
 
         {/* Action Button - at bottom */}
-        <div className="w-full flex flex-col items-center pb-8 px-[4.5rem]">
+        <div className="w-full flex flex-col items-center px-[4.5rem]">
           <Button onPress={handleContinue} variant="primary" className="w-full max-w-[15.5rem]">
             {yourMissionMicrocopy.continueButton}
           </Button>

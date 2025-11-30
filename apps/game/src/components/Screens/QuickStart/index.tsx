@@ -88,7 +88,7 @@ export const QuickStart: FC<
           <CardCarousel />
         </div>
         {/* CTA Button */}
-        <div className="relative z-10 flex justify-center pb-8 pt-4 w-full px-12 max-w-[24.375rem] mx-auto">
+        <div className="relative z-10 flex justify-center pb-20 pt-4 w-full px-12 max-w-[24.375rem] mx-auto">
           <Button className="w-full mx-auto" onPress={handleContinue} variant="primary">
             {fromMenu ? quickStartMicrocopy.menuCta : quickStartMicrocopy.cta}
           </Button>

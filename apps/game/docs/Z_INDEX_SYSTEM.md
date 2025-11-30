@@ -48,16 +48,7 @@ Tooltips, popovers, and dropdowns.
 - `--z-popover: 150` - Popovers and dropdowns
 - `--z-screen-transition: 100` - Screen transition overlays
 
-### 6. Menu Layer (200 to 299)
-Menu overlays and navigation.
-
-- `--z-menu-backdrop: 200` - Menu backdrop overlay
-- `--z-menu-content: 201` - Menu content
-- `--z-menu-modal-backdrop: 202` - Modal within menu backdrop
-- `--z-menu-modal-bg: 203` - Modal within menu background
-- `--z-menu-modal-content: 204` - Modal within menu content
-
-### 7. Modal & Dialog Layer (500 to 600)
+### 6. Modal & Dialog Layer (500 to 600)
 Modals, dialogs, and critical overlays.
 
 - `--z-modal-backdrop: 500` - Modal backdrops
@@ -65,12 +56,23 @@ Modals, dialogs, and critical overlays.
 - `--z-loading-screen: 580` - Loading screen
 - `--z-critical: 600` - Critical overlays (Temper Tantrum, notifications, etc.)
 
-### 8. Special Animation Layer (700 to 800)
+### 7. Special Animation Layer (700 to 800)
 Full-screen animations and game cinematics.
 
 - `--z-game-over-screen: 700` - Game over screen (revealed when winner animation fades)
+- `--z-data-grab-game: 730` - Data Grab mini game board
+- `--z-data-grab-cards: 740` - Data Grab falling cards
 - `--z-special-animation: 750` - Special card animations, Data Grab mini-game, Data War
 - `--z-winner-animation: 800` - Winner animation screen (highest priority animation)
+
+### 8. Menu Layer (900 to 999)
+Menu overlays and navigation.
+
+- `--z-menu-backdrop: 900` - Menu backdrop overlay
+- `--z-menu-content: 901` - Menu content
+- `--z-menu-modal-backdrop: 902` - Modal within menu backdrop
+- `--z-menu-modal-bg: 903` - Modal within menu background
+- `--z-menu-modal-content: 904` - Modal within menu content
 
 ### 9. Debug Layer (9000+)
 Development and testing tools (always on top).

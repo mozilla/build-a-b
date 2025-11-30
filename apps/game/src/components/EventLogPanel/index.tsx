@@ -113,7 +113,7 @@ export const EventLogPanel: FC = () => {
       drag
       dragMomentum={false}
       dragElastic={0}
-      className="fixed top-20 left-4 z-[999] bg-black/90 border-2 border-cyan-500 rounded-lg shadow-2xl backdrop-blur-sm"
+      className="fixed top-20 left-4 z-[var(--z-debug-panel)] bg-black/90 border-2 border-cyan-500 rounded-lg shadow-2xl backdrop-blur-sm"
       style={{ width: isMinimized ? '200px' : '500px', maxWidth: '95vw' }}
     >
       {/* Header */}

@@ -38,10 +38,10 @@ const CardBadge: FC<CardBadgeProps> = ({ card, isFaceDown = false, colorClass, i
       placement="top"
       delay={200}
       classNames={{
-        base: ['!z-[9999]'], // Force above everything including debug panel
+        base: ['!z-[var(--z-debug-tooltip)]'],
       }}
       style={{
-        zIndex: 9999, // Inline style to ensure it takes precedence
+        zIndex: 9200, // Inline style to ensure it takes precedence
       }}
     >
       {content}
@@ -135,7 +135,7 @@ export const DeckDebugPanel: FC = () => {
       dragMomentum={false}
       dragElastic={0}
       dragListener={false}
-      className="fixed top-20 right-4 z-[999] bg-black/90 border-2 border-green-500 rounded-lg shadow-2xl backdrop-blur-sm"
+      className="fixed top-20 right-4 z-[var(--z-debug-panel)] bg-black/90 border-2 border-green-500 rounded-lg shadow-2xl backdrop-blur-sm"
       style={{ width: isMinimized ? '200px' : '500px', maxWidth: '95vw' }}
     >
       {/* Header */}

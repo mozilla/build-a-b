@@ -55,6 +55,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
   const forcedEmpathySwapping = useGameStore((state) => state.forcedEmpathySwapping);
   const deckSwapCount = useGameStore((state) => state.deckSwapCount);
   const showingWinEffect = useGameStore((state) => state.showingWinEffect);
+  const showMenu = useGameStore((state) => state.showMenu);
   const { playAudio } = useGameStore();
   const isSwapped = deckSwapCount % 2 === 1;
   // Get the correct player based on owner prop
@@ -128,6 +129,16 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
     animationTimersRef.current.forEach((timer) => clearTimeout(timer));
     animationTimersRef.current = [];
 
+    // Don't start animations if menu is open (gameplay is paused)
+    if (showMenu) {
+      // Update the count immediately without animation when paused
+      if (wonCount !== 0) {
+        setAnimatedLaunchStackCount(currentCount);
+        prevLaunchStackCount.current = currentCount;
+      }
+      return;
+    }
+
     // If Launch Stacks were won, queue up animations
     if (wonCount > 0) {
       const ANIMATION_DURATION = ANIMATION_DURATIONS.LAUNCH_STACK_WON_TOKEN_DURATION;
@@ -164,7 +175,7 @@ export const PlayerDeck: FC<PlayerDeckProps> = ({
       animationTimersRef.current.forEach((timer) => clearTimeout(timer));
       animationTimersRef.current = [];
     };
-  }, [currentPlayer.launchStackCount]);
+  }, [currentPlayer.launchStackCount, showMenu]);
 
   useEffect(() => {
     if (!showWinEffect) return;

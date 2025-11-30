@@ -25,4 +25,6 @@ export type SpecialCardAnimationProps = {
   removeBlur?: boolean;
   /** Optional audio track to play (defaults to EVENT_TAKEOVER) */
   audioTrack?: AudioTrackId;
+  /** Optional callback when video ends (only for non-looping videos) */
+  onVideoEnd?: () => void;
 };
