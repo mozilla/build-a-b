@@ -1,7 +1,7 @@
 /**
- * Audio Lifecycle Hook
+ * Audio Lifecycle Hook (Howler.js-based)
  *
- * Manages HTMLAudioElement lifecycle events for mobile browsers.
+ * Manages Howl instance lifecycle events for mobile browsers.
  * Handles tab switching, page backgrounding, and force quit scenarios
  * to prevent "zombie audio" and provide seamless pause/resume behavior.
  *
@@ -11,20 +11,24 @@
  * - Prevents auto-resume if user manually paused before leaving
  * - Forces pause on page unload (prevents zombie audio on iOS)
  * - Handles iOS interruptions (phone calls, Siri) via visibilitychange
+ *
+ * Note: Howler.js automatically handles audio context unlocking on iOS.
+ * The manual unlock logic has been removed in favor of Howler's built-in handling.
  */
 
 import { useEffect, useRef } from 'react';
+import type { Howl } from 'howler';
 
 export interface UseAudioLifecycleOptions {
   /**
-   * The HTMLAudioElement used for music playback
+   * The Howl instance used for music playback
    */
-  musicChannel: HTMLAudioElement | null;
+  musicChannel: Howl | null;
 
   /**
-   * Array of HTMLAudioElements used for sound effects
+   * Array of Howl instances used for sound effects
    */
-  sfxChannels: (HTMLAudioElement | null)[];
+  sfxChannels: (Howl | null)[];
 
   /**
    * Enable console logging for debugging
@@ -56,10 +60,10 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
   // This prevents auto-resuming music if the user had manually paused it
   const wasSystemPaused = useRef(false);
 
-  // Use refs to track current audio elements without triggering effect re-runs
+  // Use refs to track current Howl instances without triggering effect re-runs
   // This is critical because Zustand selectors return new array references on every render
-  const musicChannelRef = useRef<HTMLAudioElement | null>(null);
-  const sfxChannelsRef = useRef<(HTMLAudioElement | null)[]>([]);
+  const musicChannelRef = useRef<Howl | null>(null);
+  const sfxChannelsRef = useRef<(Howl | null)[]>([]);
 
   // Update refs when audio channels change
   useEffect(() => {
@@ -92,7 +96,7 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
         log('Page hidden - pausing audio');
 
         // Check if music is currently playing
-        if (music && !music.paused) {
+        if (music && music.playing()) {
           music.pause();
           wasSystemPaused.current = true;
           log('Music paused by system, will auto-resume on return');
@@ -103,7 +107,7 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
 
         // Pause all active SFX (we don't resume these)
         sfxChannelsRef.current.forEach((sfx, index) => {
-          if (sfx && !sfx.paused) {
+          if (sfx && sfx.playing()) {
             sfx.pause();
             log(`SFX channel ${index} paused`);
           }
@@ -116,18 +120,16 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
         if (wasSystemPaused.current && music) {
           log('Attempting to resume music...');
 
-          music
-            .play()
-            .then(() => {
-              log('Music resumed successfully');
-              wasSystemPaused.current = false;
-            })
-            .catch((error) => {
-              // This can happen if autoplay policy blocks resume
-              // or if audio context was suspended
-              console.warn('[AudioLifecycle] Auto-resume blocked:', error);
-              wasSystemPaused.current = false;
-            });
+          try {
+            music.play();
+            log('Music resumed successfully');
+            wasSystemPaused.current = false;
+          } catch (error) {
+            // This can happen if autoplay policy blocks resume
+            // or if audio context was suspended
+            console.warn('[AudioLifecycle] Auto-resume blocked:', error);
+            wasSystemPaused.current = false;
+          }
         } else {
           log('Not resuming music (user had paused it or no music channel)');
         }

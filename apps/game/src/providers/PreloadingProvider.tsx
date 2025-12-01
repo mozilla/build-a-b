@@ -9,7 +9,7 @@ import { getAudioByPriority } from '@/config/audio-config';
 import { BILLIONAIRES } from '@/config/billionaires';
 import { CARD_BACK_IMAGE, DEFAULT_GAME_CONFIG } from '@/config/game-config';
 import { useAssetPreloader, type AssetPreloadPriority } from '@/hooks/use-asset-preloader';
-import { useAudioPreloader } from '@/hooks/use-audio-preloader';
+import { useHowlerPreloader } from '@/hooks/use-howler-preloader';
 import { useVideoPreloader } from '@/hooks/use-video-preloader';
 import { useCpuBillionaire, useGameStore } from '@/store';
 import { getCharacterAnimation } from '@/utils/character-animations';
@@ -82,34 +82,38 @@ export const PreloadingProvider: FC<PropsWithChildren> = ({ children }) => {
     preloadStrategy: 'auto',
   });
 
-  // Preload audio assets (4-tier priority system)
+  // Preload audio assets using Howler.js (4-tier priority system)
   const criticalAudio = useMemo(() => getAudioByPriority('critical'), []);
   const highAudio = useMemo(() => getAudioByPriority('high'), []);
   const mediumAudio = useMemo(() => getAudioByPriority('medium'), []);
   const lowAudio = useMemo(() => getAudioByPriority('low'), []);
 
-  const criticalAudioState = useAudioPreloader(criticalAudio, {
+  const criticalAudioState = useHowlerPreloader(criticalAudio, {
     enabled: true,
     batchDelay: 50,
-    preloadStrategy: 'auto',
+    preload: true, // Force full preload
+    html5: false, // Use Web Audio API for better iOS support
   });
 
-  const highAudioState = useAudioPreloader(highAudio, {
+  const highAudioState = useHowlerPreloader(highAudio, {
     enabled: criticalAudioState.isReady, // Only after critical completes
     batchDelay: 50,
-    preloadStrategy: 'auto',
+    preload: true,
+    html5: false,
   });
 
-  const mediumAudioState = useAudioPreloader(mediumAudio, {
+  const mediumAudioState = useHowlerPreloader(mediumAudio, {
     enabled: highAudioState.isReady, // Only after high completes
     batchDelay: 50,
-    preloadStrategy: 'auto',
+    preload: true,
+    html5: false,
   });
 
-  const lowAudioState = useAudioPreloader(lowAudio, {
+  const lowAudioState = useHowlerPreloader(lowAudio, {
     enabled: mediumAudioState.isReady, // Only after medium completes
     batchDelay: 50,
-    preloadStrategy: 'auto',
+    preload: true,
+    html5: false,
   });
 
   // Update game store with combined preloading state

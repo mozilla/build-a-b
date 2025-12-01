@@ -1,7 +1,10 @@
 /**
  * Audio System Types
  * Defines interfaces for dual-channel audio playback (music + SFX)
+ * Using Howler.js for better mobile browser support (especially iOS)
  */
+
+import type { Howl } from 'howler';
 
 export type AudioPriority = 'critical' | 'high' | 'medium' | 'low';
 
@@ -95,10 +98,22 @@ export interface AudioManagerState {
 }
 
 /**
- * Preloaded audio registry entry
+ * Preloaded audio registry entry (Legacy - HTMLAudioElement)
+ * @deprecated Use PreloadedHowl instead
  */
 export interface PreloadedAudio {
   element: HTMLAudioElement;
   format: 'webm' | 'mp3';
   ready: boolean;
+}
+
+/**
+ * Preloaded Howl instance registry entry
+ * Used by the new Howler.js-based audio system
+ */
+export interface PreloadedHowl {
+  howl: Howl;
+  format: 'webm' | 'mp3';
+  ready: boolean;
+  trackId: string;
 }
