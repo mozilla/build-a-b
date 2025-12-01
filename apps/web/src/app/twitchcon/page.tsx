@@ -227,6 +227,7 @@ export default async function Page() {
             <div className="flex flex-wrap gap-4">
               <LinkButton
                 href="/datawar/game"
+                target="_blank"
                 title="Play Now"
                 className="secondary-button w-fit border-charcoal text-charcoal hover:bg-charcoal hover:text-common-ash active:bg-charcoal active:text-common-ash flex items-center gap-2"
               >
