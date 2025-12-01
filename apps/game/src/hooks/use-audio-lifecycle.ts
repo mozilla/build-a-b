@@ -1,23 +1,25 @@
 /**
- * Audio Lifecycle Hook (Howler.js-based)
+ * Audio Lifecycle Hook (Howler.js-optimized)
  *
  * Manages Howl instance lifecycle events for mobile browsers.
- * Handles tab switching, page backgrounding, and force quit scenarios
- * to prevent "zombie audio" and provide seamless pause/resume behavior.
+ * Works WITH Howler's AudioContext management instead of against it.
  *
- * Features:
- * - Pauses audio when page becomes hidden (tab switch, minimize, lock screen)
- * - Resumes audio when page becomes visible (only if system paused it)
- * - Prevents auto-resume if user manually paused before leaving
- * - Forces pause on page unload (prevents zombie audio on iOS)
- * - Handles iOS interruptions (phone calls, Siri) via visibilitychange
+ * Key improvements for iOS:
+ * - Leverages Howler's global AudioContext (Howler.ctx)
+ * - Properly resumes AudioContext on visibility change
+ * - Handles iOS interruptions (calls, notifications, Siri)
+ * - Prevents "zombie audio" on page unload
+ * - Works with Howler's autoSuspend feature
  *
- * Note: Howler.js automatically handles audio context unlocking on iOS.
- * The manual unlock logic has been removed in favor of Howler's built-in handling.
+ * Based on Howler.js best practices:
+ * - Howler automatically suspends AudioContext after 30s of inactivity
+ * - Howler automatically resumes AudioContext when play() is called
+ * - We need to help it resume after visibility changes
  */
 
 import { useEffect, useRef } from 'react';
 import type { Howl } from 'howler';
+import { Howler } from 'howler';
 
 export interface UseAudioLifecycleOptions {
   /**
@@ -38,8 +40,8 @@ export interface UseAudioLifecycleOptions {
 }
 
 /**
- * Hook to manage audio lifecycle across browser visibility changes
- * and page unload events.
+ * Hook to manage audio lifecycle across browser visibility changes,
+ * interruptions, and page unload events.
  *
  * @example
  * ```tsx
@@ -47,7 +49,7 @@ export interface UseAudioLifecycleOptions {
  *   const musicChannel = useGameStore(state => state.audioMusicChannel);
  *   const sfxChannels = useGameStore(state => state.audioSfxChannels);
  *
- *   useAudioLifecycle({ musicChannel, sfxChannels });
+ *   useAudioLifecycle({ musicChannel, sfxChannels, debug: true });
  *
  *   return <div>...</div>;
  * }
@@ -56,12 +58,11 @@ export interface UseAudioLifecycleOptions {
 export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
   const { musicChannel, sfxChannels, debug = false } = options;
 
-  // Tracks if the SYSTEM (not user) paused the music
-  // This prevents auto-resuming music if the user had manually paused it
-  const wasSystemPaused = useRef(false);
+  // Track music state
+  const wasMusicPlaying = useRef(false);
+  const isMusicPausedByUser = useRef(false);
 
-  // Use refs to track current Howl instances without triggering effect re-runs
-  // This is critical because Zustand selectors return new array references on every render
+  // Use refs to track current Howl instances
   const musicChannelRef = useRef<Howl | null>(null);
   const sfxChannelsRef = useRef<(Howl | null)[]>([]);
 
@@ -87,55 +88,146 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
      * - User locks phone screen
      * - Phone call comes in (iOS)
      * - Siri is activated (iOS)
-     * - Alarm goes off (iOS)
+     * - Notifications (sometimes on iOS)
      */
     const handleVisibilityChange = () => {
       const music = musicChannelRef.current;
 
       if (document.visibilityState === 'hidden') {
-        log('Page hidden - pausing audio');
+        log('Page hidden - pausing audio and noting state');
 
-        // Check if music is currently playing
+        // Track if music was playing BEFORE we pause it
         if (music && music.playing()) {
+          wasMusicPlaying.current = true;
+          isMusicPausedByUser.current = false;
           music.pause();
-          wasSystemPaused.current = true;
-          log('Music paused by system, will auto-resume on return');
+          log('Music paused by system (will auto-resume)');
         } else {
-          wasSystemPaused.current = false;
-          log('Music already paused, will NOT auto-resume');
+          wasMusicPlaying.current = false;
+          isMusicPausedByUser.current = music !== null; // If music exists but not playing, user paused it
+          log('Music not playing (will NOT auto-resume)');
         }
 
-        // Pause all active SFX (we don't resume these)
+        // Pause all active SFX
         sfxChannelsRef.current.forEach((sfx, index) => {
           if (sfx && sfx.playing()) {
             sfx.pause();
             log(`SFX channel ${index} paused`);
           }
         });
+
+        // CRITICAL: Suspend the AudioContext to save resources
+        // This is important for iOS battery life
+        if (Howler.ctx && Howler.ctx.state === 'running') {
+          Howler.ctx.suspend().then(() => {
+            log('AudioContext suspended');
+          }).catch((error) => {
+            log('Failed to suspend AudioContext:', error);
+          });
+        }
       } else if (document.visibilityState === 'visible') {
-        log('Page visible - checking if should resume');
+        log('Page visible - attempting to resume audio');
+        log(`AudioContext state: ${Howler.ctx?.state}`);
+        log(`Was music playing: ${wasMusicPlaying.current}`);
+        log(`User paused: ${isMusicPausedByUser.current}`);
 
-        // Only resume music if WE (the system) paused it
-        // If the user paused it before leaving, don't auto-resume
-        if (wasSystemPaused.current && music) {
-          log('Attempting to resume music...');
-
-          try {
-            music.play();
-            log('Music resumed successfully');
-            wasSystemPaused.current = false;
-          } catch (error) {
-            // This can happen if autoplay policy blocks resume
-            // or if audio context was suspended
-            console.warn('[AudioLifecycle] Auto-resume blocked:', error);
-            wasSystemPaused.current = false;
-          }
-        } else {
-          log('Not resuming music (user had paused it or no music channel)');
+        // CRITICAL: Resume the AudioContext first
+        // This is the KEY fix for iOS audio not working after backgrounding
+        if (Howler.ctx && Howler.ctx.state === 'suspended') {
+          Howler.ctx.resume().then(() => {
+            log('AudioContext resumed successfully');
+            log(`New AudioContext state: ${Howler.ctx.state}`);
+          }).catch((error) => {
+            console.error('[AudioLifecycle] Failed to resume AudioContext:', error);
+            // If resume fails, audio will be dead until user interaction
+            // Let's try to recover on next user interaction
+            const recoverAudio = () => {
+              if (Howler.ctx && Howler.ctx.state === 'suspended') {
+                Howler.ctx.resume().then(() => {
+                  log('AudioContext recovered on user interaction');
+                }).catch((err) => {
+                  console.error('[AudioLifecycle] Recovery failed:', err);
+                });
+              }
+            };
+            document.addEventListener('touchend', recoverAudio, { once: true });
+            document.addEventListener('click', recoverAudio, { once: true });
+          });
         }
 
-        // Note: We don't resume SFX channels - they're one-shot sounds
+        // Small delay to ensure AudioContext is fully resumed
+        setTimeout(() => {
+          // Only resume music if:
+          // 1. Music was playing when we backgrounded (wasMusicPlaying)
+          // 2. User didn't manually pause it (isMusicPausedByUser)
+          // 3. Music channel exists
+          const music = musicChannelRef.current;
+          if (wasMusicPlaying.current && !isMusicPausedByUser.current && music) {
+            log('Attempting to resume music...');
+            try {
+              music.play();
+              log('Music resumed successfully');
+            } catch (error) {
+              console.warn('[AudioLifecycle] Auto-resume blocked:', error);
+            }
+          } else {
+            log('Not resuming music:', {
+              wasPlaying: wasMusicPlaying.current,
+              userPaused: isMusicPausedByUser.current,
+              hasMusic: !!music,
+            });
+          }
+
+          // Reset state flags
+          wasMusicPlaying.current = false;
+          isMusicPausedByUser.current = false;
+        }, 100); // 100ms delay to ensure AudioContext is stable
+
+        // Note: We don't resume SFX channels - they're one-shot sounds that should
+        // restart naturally when game events trigger them
       }
+    };
+
+    /**
+     * Handle audio interruptions (iOS-specific)
+     * iOS fires this when phone calls, alarms, etc interrupt audio
+     */
+    const handleInterruptionBegin = () => {
+      log('Audio interruption began (iOS)');
+      const music = musicChannelRef.current;
+      
+      if (music && music.playing()) {
+        wasMusicPlaying.current = true;
+        isMusicPausedByUser.current = false;
+        music.pause();
+      }
+    };
+
+    const handleInterruptionEnd = () => {
+      log('Audio interruption ended (iOS)');
+      
+      // Resume AudioContext
+      if (Howler.ctx && Howler.ctx.state === 'suspended') {
+        Howler.ctx.resume().then(() => {
+          log('AudioContext resumed after interruption');
+        }).catch((error) => {
+          console.error('[AudioLifecycle] Failed to resume after interruption:', error);
+        });
+      }
+
+      // Resume music if it was playing
+      setTimeout(() => {
+        const music = musicChannelRef.current;
+        if (wasMusicPlaying.current && music) {
+          try {
+            music.play();
+            log('Music resumed after interruption');
+          } catch (error) {
+            console.warn('[AudioLifecycle] Failed to resume music:', error);
+          }
+        }
+        wasMusicPlaying.current = false;
+      }, 100);
     };
 
     /**
@@ -144,30 +236,52 @@ export function useAudioLifecycle(options: UseAudioLifecycleOptions): void {
      * 'pagehide' is more reliable than 'beforeunload' on mobile
      */
     const handlePageHide = () => {
-      log('Page hiding - forcing all audio to pause (zombie audio prevention)');
+      log('Page hiding - forcing all audio to stop (zombie audio prevention)');
 
-      // Force pause on all audio channels
+      // Stop all audio immediately
       if (musicChannelRef.current) {
-        musicChannelRef.current.pause();
+        musicChannelRef.current.stop();
       }
 
       sfxChannelsRef.current.forEach((sfx) => {
         if (sfx) {
-          sfx.pause();
+          sfx.stop();
         }
       });
+
+      // Suspend the AudioContext to save resources
+      if (Howler.ctx && Howler.ctx.state === 'running') {
+        Howler.ctx.suspend().catch((error) => {
+          log('Failed to suspend on page hide:', error);
+        });
+      }
     };
 
     // Attach event listeners
     log('Attaching lifecycle event listeners');
+    log(`Initial AudioContext state: ${Howler.ctx?.state}`);
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('pagehide', handlePageHide);
+    
+    // iOS-specific interruption events
+    // These fire when phone calls, alarms, etc interrupt audio
+    if ('onbegininterruption' in document) {
+      document.addEventListener('begininterruption', handleInterruptionBegin);
+      document.addEventListener('endinterruption', handleInterruptionEnd);
+      log('iOS interruption handlers attached');
+    }
 
     // Cleanup function - remove listeners on unmount
     return () => {
       log('Removing lifecycle event listeners');
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pagehide', handlePageHide);
+      
+      if ('onbegininterruption' in document) {
+        document.removeEventListener('begininterruption', handleInterruptionBegin);
+        document.removeEventListener('endinterruption', handleInterruptionEnd);
+      }
     };
-  }, [debug]); // Only re-run if debug flag changes
+  }, [debug]);
 }
