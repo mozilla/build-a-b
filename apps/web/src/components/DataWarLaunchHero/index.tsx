@@ -77,6 +77,7 @@ const DataWarLaunchHero: FC = () => {
           <div className="flex flex-col gap-4 w-[12rem] portrait:m-auto">
             <LinkButton
               href="/datawar/game"
+              target="_blank"
               className="primary-button border-accent text-charcoal hover:bg-transparent hover:text-accent active:bg-accent active:text-charcoal"
               trackableEvent="click_play_datawar_cta"
             >

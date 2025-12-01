@@ -108,6 +108,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, ctaLink })
           {ctaLink ? (
             <LinkButton
               href={ctaLink}
+              target="_blank"
               title="Play Data War"
               className="secondary-button"
               trackableEvent="click_play_datawar_footer"

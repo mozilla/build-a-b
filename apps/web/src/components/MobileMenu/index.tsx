@@ -65,6 +65,7 @@ const MobileMenu: FC<MobileMenuProps> = ({ links, socials, ctaLabel, ctaCopy, ct
               {ctaLink ? (
                 <LinkButton
                   href={ctaLink}
+                  target="_blank"
                   title="Play Data War"
                   className="secondary-button w-full"
                   trackableEvent="click_play_datawar_mobile_nav"
