@@ -114,7 +114,7 @@ export function useMusicManager() {
     if (
       phaseKey === 'select_billionaire' &&
       musicChannel &&
-      musicChannel.paused &&
+      !musicChannel.playing() &&
       isTitleMusicReady
     ) {
       playMusicTrack(TRACKS.TITLE_MUSIC);
