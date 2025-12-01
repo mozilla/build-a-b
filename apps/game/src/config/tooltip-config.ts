@@ -67,7 +67,7 @@ export const TOOLTIP_CONFIGS = {
   // Special Effects Tooltips
   OWYW_TAP_DECK: {
     id: 'owyw_tap_deck',
-    message: 'Tap to look at your top 3 cards',
+    message: 'Tap to play',
     maxDisplayCount: null, // Always show
   },
   
