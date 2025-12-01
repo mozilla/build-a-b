@@ -1,3 +1,4 @@
+import type { Howl } from 'howler';
 import type { AudioTrackId } from '@/config/audio-config';
 import type { CardTypeId } from '@/config/game-config';
 import type { SpecialEffectAnimationType } from '@/config/special-effect-animations';
@@ -195,9 +196,9 @@ export type GameStore = {
   soundEffectsEnabled: boolean;
   showTooltip: boolean;
 
-  // Audio Manager State
-  audioMusicChannel: HTMLAudioElement | null;
-  audioSfxChannels: (HTMLAudioElement | null)[]; // Multiple channels for overlapping SFX
+  // Audio Manager State (Howler.js-based)
+  audioMusicChannel: Howl | null;
+  audioSfxChannels: (Howl | null)[]; // Multiple Howl instances for overlapping SFX
   audioMusicTrackId: string | null;
   audioSfxTrackIds: (string | null)[]; // Track IDs for each SFX channel
   audioMusicVolume: number;
