@@ -45,6 +45,7 @@ export default async function Page() {
                 <div className="flex gap-4 portrait:flex-col portrait:w-full landscape:w-auto">
                   <LinkButton
                     href="/datawar/game"
+                    target="_blank"
                     className="flex items-center justify-center gap-2 h-12 px-4 border-2 border-solid border-charcoal bg-transparent text-charcoal rounded-full hover:bg-charcoal hover:text-white active:bg-charcoal/80 active:text-white transition-colors portrait:w-full landscape:min-w-[10rem]"
                     trackableEvent="click_play_datawar_cta"
                   >
