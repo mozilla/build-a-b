@@ -4,7 +4,9 @@ import { Menu } from '@/components/Menu';
 import { MusicManager } from '@/components/MusicManager';
 import { useAudioLifecycle } from '@/hooks/use-audio-lifecycle';
 import { useGameStore } from '@/store';
+import { setupAudioContextRecovery } from '@/utils/audio-context-recovery';
 import { HeroUIProvider } from '@heroui/react';
+import { useEffect } from 'react';
 import { Game } from './components/Game';
 import { GameProvider } from './providers/GameProvider';
 import { PreloadingProvider } from './providers/PreloadingProvider';
@@ -24,10 +26,18 @@ function App() {
   const audioMusicChannel = useGameStore((state) => state.audioMusicChannel);
   const audioSfxChannels = useGameStore((state) => state.audioSfxChannels);
 
+  // Setup audio recovery system (runs once on mount)
+  // This helps recover from AudioContext suspension on iOS
+  useEffect(() => {
+    setupAudioContextRecovery();
+  }, []);
+
   // Setup audio lifecycle management (handles tab switching, backgrounding, zombie audio prevention)
+  // Enable debug mode to see what's happening in console
   useAudioLifecycle({
     musicChannel: audioMusicChannel,
     sfxChannels: audioSfxChannels,
+    debug: import.meta.env.DEV, // Enable debug logging in development
   });
 
   return (
