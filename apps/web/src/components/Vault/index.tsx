@@ -12,19 +12,22 @@ import PlaypenSave from '../PlaypenPopup/PlaypenSave';
 import Carousel from '../PrimaryFlow/Carousel';
 import { usePrimaryFlowContext } from '../PrimaryFlow/PrimaryFlowContext';
 import ShareAvatar from '../ShareAvatar';
+import { useVaultContext } from './VaultContext';
 
 interface VaultProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   initialImage?: number;
+  isPhase4?: boolean;
 }
 
-const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
+const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage, isPhase4 = false }) => {
   const [showBookmarkScreen, setShowBookmarkScreen] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const resolution = useWindowSize();
   const { avatarData } = usePrimaryFlowContext();
+  const { curatedSelfies } = useVaultContext();
 
   const swiperOptions = useMemo(
     () => ({
@@ -56,6 +59,26 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
   );
 
   const sortedSelfies = useMemo(() => {
+    // Phase 4: Use curated selfies instead of user selfies
+    if (isPhase4 && curatedSelfies && curatedSelfies.length > 0) {
+      console.log('[Vault] Phase 4 - Using curated selfies:', curatedSelfies.length);
+      const curatedSelfieObjects = curatedSelfies.map((path: string, index: number) => ({
+        id: index,
+        asset: path,
+      }));
+
+      if (typeof initialImage !== 'number') return curatedSelfieObjects;
+
+      // Wrap initialImage to valid index using modulo
+      const validIndex = initialImage % curatedSelfieObjects.length;
+      // Reorder array starting from initialImage index
+      return [
+        ...curatedSelfieObjects.slice(validIndex),
+        ...curatedSelfieObjects.slice(0, validIndex),
+      ];
+    }
+
+    // Default: Use user selfies
     if (!avatarData?.selfies || avatarData.selfies.length <= 0) {
       return [];
     }
@@ -66,7 +89,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
     const validIndex = initialImage % avatarData.selfies.length;
     // Reorder array starting from initialImage index
     return [...avatarData.selfies.slice(validIndex), ...avatarData.selfies.slice(0, validIndex)];
-  }, [avatarData?.selfies, initialImage]);
+  }, [avatarData?.selfies, initialImage, isPhase4, curatedSelfies]);
 
   // Reset loading state when vault opens or selfies change
   useEffect(() => {
@@ -77,13 +100,35 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
 
   // Create avatar data with the current selfie's asset for sharing
   const avatarWithCurrentSelfie = useMemo(() => {
+    // Phase 4: Create mock avatar data for curated selfies
+    if (isPhase4 && sortedSelfies.length > 0 && sortedSelfies[activeSlideIndex]) {
+      return {
+        uuid: '',
+        name: 'Billionaire',
+        bio: 'Space Explorer',
+        url: sortedSelfies[activeSlideIndex].asset ?? '',
+        originalRidingAsset: '',
+        instragramAsset: sortedSelfies[activeSlideIndex].asset ?? '',
+        selfies: [
+          {
+            id: 0,
+            asset: sortedSelfies[activeSlideIndex].asset ?? '',
+            created_at: new Date().toISOString(),
+          },
+        ],
+        selfieAvailability: { selfies_available: 0, next_at: null },
+        hasEasterEgg: false,
+      };
+    }
+
+    // Default: Use actual avatar data
     if (!avatarData || !sortedSelfies[activeSlideIndex]) return avatarData;
 
     return {
       ...avatarData,
       instragramAsset: sortedSelfies[activeSlideIndex].asset ?? '',
     };
-  }, [avatarData, sortedSelfies, activeSlideIndex]);
+  }, [avatarData, sortedSelfies, activeSlideIndex, isPhase4]);
 
   const isEasterEgg = useMemo(() => {
     if (!sortedSelfies) return null;
@@ -105,13 +150,22 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
       scrollBehavior="inside"
     >
       {showBookmarkScreen ? (
-        <PlaypenSave action={action} V2 />
+        <PlaypenSave action={action} V2 onClose={() => setShowBookmarkScreen(false)} />
       ) : (
         <div className="w-full flex flex-col items-center portrait:py-12 landscape:my-6">
           <h3 className="text-title-3 text-center">
-            {isEasterEgg ? 'You just unlocked a data card!' : 'Your Billionaire Vault'}
+            {isPhase4
+              ? 'Billionaire Space Memories'
+              : isEasterEgg
+                ? 'You just unlocked a data card!'
+                : 'Your Billionaire Vault'}
           </h3>
-          {isEasterEgg ? (
+          {isPhase4 ? (
+            <p className="text-center max-w-[39.0625rem]">
+              Now that our Billionaires are in space, they can happily live out their dream lives,
+              while the rest of us can celebrate a healthier internet.
+            </p>
+          ) : isEasterEgg ? (
             <p className="text-center max-w-[39.0625rem]">
               This isn&apos;t just any Easter Egg - it&apos;s a real card from Data War, our
               upcoming physical and digital card game, rolling out at TwitchCon.
@@ -130,7 +184,7 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
               withArrowNavigation={resolution === 'landscape'}
               onSlideChange={setActiveSlideIndex}
               slides={
-                sortedSelfies.map(({ asset }, i) => {
+                (sortedSelfies || []).map(({ asset }: { asset: string | null }, i: number) => {
                   const mobileKey = `${i}-mobile`;
                   const landscapeKey = `${i}-landscape`;
                   const isMobileLoaded = loadedImages[mobileKey];
@@ -189,11 +243,12 @@ const Vault: FC<VaultProps> = ({ isOpen, onOpenChange, initialImage }) => {
               }
             />
           </div>
-          {avatarWithCurrentSelfie?.selfies && (
+          {avatarWithCurrentSelfie && (
             <ShareAvatar
               avatar={avatarWithCurrentSelfie}
-              onBookmarkClick={() => setShowBookmarkScreen(true)}
               centered
+              onBookmarkClick={() => setShowBookmarkScreen(true)}
+              hideBookmark={isPhase4}
             />
           )}
         </div>

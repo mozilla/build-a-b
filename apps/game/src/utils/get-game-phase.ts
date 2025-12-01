@@ -39,8 +39,16 @@ export function getGamePhase(
       if (typeof childState === 'string') {
         return `${parentState}.${childState}` as GamePhase;
       }
-      // If child is also an object, we could handle deeper nesting here
-      // but current state machine only has 2 levels
+      // Handle 3-level nesting (e.g., data_war.reveal_face_up.settling)
+      if (typeof childState === 'object' && childState !== null) {
+        const childEntries = Object.entries(childState);
+        if (childEntries.length > 0) {
+          const [midState, leafState] = childEntries[0];
+          if (typeof leafState === 'string') {
+            return `${parentState}.${midState}.${leafState}` as GamePhase;
+          }
+        }
+      }
       return parentState as GamePhase;
     }
   }

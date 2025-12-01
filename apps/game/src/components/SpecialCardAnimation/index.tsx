@@ -1,38 +1,83 @@
-import Lottie from 'lottie-react';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
+import { cn } from '@/utils/cn';
+import { useEffect, useRef } from 'react';
 import type { SpecialCardAnimationProps } from './types';
+import { LottieAnimation } from '../LottieAnimation';
 
 /**
  * Generic Special Card Animation Component
- * Displays a full-screen overlay with a Lottie animation
- * Reusable for any special card effect (OWYW, Data Grab, etc.)
+ * Displays a board-sized overlay with a WebM video animation
+ * Matches the game board dimensions (max-w-[25rem] max-h-[54rem])
+ * Reusable for any special card effect (OWYW, Forced Empathy, Data Grab, etc.)
  */
 export const SpecialCardAnimation = ({
   show,
-  animationData,
+  animationSrc,
+  isLottie,
   title,
-  width = 300,
-  height = 300,
   className = '',
-  animationClassName = '',
-  titleClassName = '',
+  videoClassName = '',
   loop = true,
-  lottieOptions = {},
+  controls = false,
+  removeBlur = true,
+  audioTrack,
+  onVideoEnd,
 }: SpecialCardAnimationProps) => {
+  const { playAudio } = useGameStore();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const audioPlayedRef = useRef(false);
+
+  // Auto-play video when component becomes visible
+  useEffect(() => {
+    if (show && videoRef.current) {
+      videoRef.current
+        .play()
+        .then(() => {
+          if (!audioPlayedRef.current) {
+            audioPlayedRef.current = true;
+            playAudio(audioTrack || TRACKS.EVENT_TAKEOVER);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to play special card animation:', error);
+        });
+    }
+  }, [show, playAudio, audioTrack]);
+  
+  // Handle video end event
+  const handleVideoEnd = () => {
+    if (onVideoEnd) {
+      onVideoEnd();
+    }
+  };
+
   if (!show) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm ${className}`}
-    >
-      <div className={`flex flex-col items-center gap-4 ${animationClassName}`}>
-        <Lottie
-          animationData={animationData}
-          loop={loop}
-          autoplay={true}
-          style={{ width, height }}
-          {...lottieOptions}
-        />
-        {title && <p className={`text-xl font-bold text-white ${titleClassName}`}>{title}</p>}
+    <div className={cn('fixed inset-0 z-[var(--z-special-animation)] flex items-center justify-center', className)}>
+      {/* Board-constrained container matching game board dimensions */}
+      <div
+        className={`relative frame bg-black/20 ${
+          removeBlur ? '' : 'backdrop-blur-sm'
+        }`}
+      >
+        {/* Video fills full board */}
+        {isLottie ? (
+          <LottieAnimation animationData={animationSrc} loop={loop} autoplay={true} />
+        ) : (
+          <video
+            ref={videoRef}
+            src={animationSrc as string}
+            loop={loop}
+            muted
+            playsInline
+            controls={controls}
+            onEnded={handleVideoEnd}
+            className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
+            aria-label={title ? `${title} animation` : 'Special card animation'}
+          />
+        )}
       </div>
     </div>
   );

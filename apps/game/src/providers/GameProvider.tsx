@@ -3,16 +3,16 @@
  * Creates ONE machine instance that all components share
  */
 
-import { createActorContext } from '@xstate/react';
 import { createBrowserInspector } from '@statelyai/inspect';
+import { createActorContext } from '@xstate/react';
 import { type PropsWithChildren, useEffect } from 'react';
 import { gameFlowMachine } from '../machines/game-flow-machine';
-import { useGameStore } from '../stores/game-store';
+import { useGameStore } from '../store/game-store';
 
 // XState Inspector - only enabled in development
 const inspector = import.meta.env.DEV
   ? createBrowserInspector({
-      autoStart: true, // Auto-open inspector popup
+      autoStart: false, // Auto-open inspector popup
     })
   : undefined;
 
@@ -24,17 +24,7 @@ export function GameProvider({ children }: PropsWithChildren) {
 
   // Initialize game on mount
   useEffect(() => {
-    // ====== TEST SCENARIO 1: TRACKER CARDS ======
-    // initializeGame('blocker-first', 'common-first');
-
-    // ====== TEST SCENARIO 2: BLOCKER CARDS ======
-    // initializeGame('blocker-first', 'common-first');
-
-    // ====== TEST SCENARIO 3: OWYW FLOW ======
-    // initializeGame('owyw-first', 'common-first', false, true)
-
-    // Keep adding scenarios here as needed to test different flows.
-    initializeGame('random', 'random', false, true);
+    initializeGame();
   }, [initializeGame]);
 
   return (

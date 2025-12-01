@@ -1,12 +1,15 @@
 import { variantStyles } from '@/components/Text/styles';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
+import { Button as HeroButton } from '@heroui/react';
 import { type FC } from 'react';
 import type { ButtonProps } from './types';
 
 const baseTypography = variantStyles['body-large-semibold'];
 
 const baseClasses =
-  'cursor-pointer flex items-center justify-center px-6 py-3 rounded-full transition-colors';
+  'cursor-pointer flex items-center justify-center px-6 py-3 rounded-full transition-colors h-12';
 
 const variantClasses = {
   primary:
@@ -15,19 +18,32 @@ const variantClasses = {
     'bg-transparent border-2 border-common-ash text-common-ash hover:bg-[rgba(248,246,244,0.1)]',
 };
 
+const variantSizes = {
+  primary: 'lg',
+  secondary: 'lg',
+} as const;
+
 export const Button: FC<ButtonProps> = ({
   children,
-  onClick,
   variant = 'primary',
   disabled = false,
   className = '',
+  onPress,
+  muted,
+  volume = 0.5,
+  ...props
 }) => {
+  const { playAudio } = useGameStore();
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
 
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
+    <HeroButton
+      {...props}
+      onPress={(e) => {
+        if (!muted) playAudio(TRACKS.BUTTON_PRESS, { volume });
+        onPress?.(e);
+      }}
+      isDisabled={disabled}
       className={cn(
         baseTypography,
         baseClasses,
@@ -35,8 +51,9 @@ export const Button: FC<ButtonProps> = ({
         disabledClasses,
         className,
       )}
+      size={props.size || variantSizes[variant]}
     >
       {children}
-    </button>
+    </HeroButton>
   );
 };

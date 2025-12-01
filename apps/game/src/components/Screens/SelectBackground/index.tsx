@@ -1,136 +1,78 @@
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 
 import { Button } from '@/components/Button';
-import { Icon } from '@/components/Icon';
 import type { BaseScreenProps } from '@/components/ScreenRenderer';
 import { Text } from '@/components/Text';
-import { useGameStore } from '@/stores/game-store';
+import { TRACKS } from '@/config/audio-config';
+import { useGameStore } from '@/store';
 import { cn } from '@/utils/cn';
-
-import { BackgroundCard } from './BackgroundCard';
+import { motion } from 'framer-motion';
+import { BackgroundCarousel } from './BackgroundCarousel';
 import { BACKGROUNDS } from './backgrounds';
 import { selectBackgroundMicrocopy } from './microcopy';
 
-export const SelectBackground: FC<BaseScreenProps> = ({ send, className, ...props }) => {
-  const { selectedBackground, selectBackground } = useGameStore();
+export const SelectBackground: FC<BaseScreenProps> = ({ send, className, children, ...props }) => {
+  const { selectedBackground, selectBackground, playAudio } = useGameStore();
   const [localSelection, setLocalSelection] = useState(selectedBackground || BACKGROUNDS[0].id);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to selected background on mount
+  // Automatically select the first background if none is selected (first game)
   useEffect(() => {
-    if (scrollContainerRef.current && localSelection) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === localSelection);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          // Center the selected card
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
+    if (!selectedBackground) {
+      selectBackground(BACKGROUNDS[0].id);
     }
-  }, [localSelection]);
+  }, [selectedBackground, selectBackground]);
 
   const handleBackgroundSelect = (backgroundId: string) => {
+    playAudio(TRACKS.OPTION_FOCUS);
     setLocalSelection(backgroundId);
-    selectBackground(backgroundId);
-
-    // Scroll to center the selected background
-    if (scrollContainerRef.current) {
-      const selectedIndex = BACKGROUNDS.findIndex((bg) => bg.id === backgroundId);
-      if (selectedIndex !== -1) {
-        const container = scrollContainerRef.current;
-        const selectedCard = container.children[selectedIndex] as HTMLElement;
-        if (selectedCard) {
-          const containerWidth = container.offsetWidth;
-          const cardLeft = selectedCard.offsetLeft;
-          const cardWidth = selectedCard.offsetWidth;
-          const scrollPosition = cardLeft - containerWidth / 2 + cardWidth / 2;
-          container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }
   };
 
   const handleNext = () => {
     if (localSelection) {
-      selectBackground(localSelection);
       send?.({ type: 'SELECT_BACKGROUND', background: localSelection });
     }
   };
 
   return (
-    <div className={cn(className)} {...props}>
+    <motion.div className={cn(className)} {...props}>
       {/* Main content container */}
-      <div className="w-full relative z-10 flex flex-col items-center justify-between h-full py-8 pt-16">
+      <header className="absolute top-0 landscape:relative w-full sm:max-w-[25rem] mx-auto z-20">
+        {children}
+      </header>
+      <div className="w-full relative z-10 py-16 h-full">
         {/* Title and Description */}
-        <div className="flex flex-col items-center gap-4 w-full px-[2.25rem]">
-          <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
-            {selectBackgroundMicrocopy.title}
-          </Text>
-
-          <div className="flex flex-col items-center gap-1">
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash max-w-[16.625rem]"
-            >
-              {selectBackgroundMicrocopy.description}
+        <div className="flex flex-col items-center justify-start gap-4 h-full">
+          <div className="flex flex-col items-center gap-4 w-full px-[2.25rem] sm:max-w-[25rem] mx-auto">
+            <Text as="h1" variant="title-2" align="center" className="text-common-ash w-full">
+              {selectBackgroundMicrocopy.title}
             </Text>
-            <Text
-              variant="body-large-semibold"
-              align="center"
-              className="text-common-ash max-w-[16.625rem] text-sm"
-            >
-              {selectBackgroundMicrocopy.disclaimer}
-            </Text>
-          </div>
-        </div>
 
-        {/* Backgrounds Carousel */}
-        <div className="w-full relative py-8">
-          <div
-            ref={scrollContainerRef}
-            className="hide-scrollbar flex items-center gap-4 overflow-x-auto snap-x snap-mandatory py-8 px-[calc(50%-5.625rem)]"
-            style={{
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-            }}
-          >
-            {BACKGROUNDS.map((background) => (
-              <BackgroundCard
-                key={background.id}
-                imageSrc={background.imageSrc}
-                name={background.name}
-                isSelected={localSelection === background.id}
-                onClick={() => handleBackgroundSelect(background.id)}
-              />
-            ))}
+            <div className="flex flex-col items-center gap-1">
+              <Text
+                variant="body-large-semibold"
+                align="center"
+                className="text-common-ash max-w-[16.625rem]"
+              >
+                {selectBackgroundMicrocopy.description}
+              </Text>
+            </div>
           </div>
-        </div>
 
-        {/* Next Button */}
-        <div className="w-full flex justify-center pb-8 px-[2.25rem]">
-          <Button onClick={handleNext} variant="primary" className="min-w-[15.5rem]">
-            {selectBackgroundMicrocopy.ctaButton}
-          </Button>
+          {/* Backgrounds Carousel */}
+          <div className="w-full relative">
+            <BackgroundCarousel onSelect={handleBackgroundSelect} />
+          </div>
+
+          {/* Next Button - Only show when a background is selected */}
+          {localSelection && (
+            <div className="w-full flex justify-center px-[2.25rem] mt-auto mx-auto">
+              <Button onPress={handleNext} variant="primary" className="min-w-[15.5rem]">
+                {selectBackgroundMicrocopy.ctaButton}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Close/Menu Icon - positioned at top right */}
-      <div className="absolute top-5 right-4">
-        <Icon name="close" />
-      </div>
-    </div>
+    </motion.div>
   );
 };
