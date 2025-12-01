@@ -22,6 +22,7 @@ export type SpecialCardType =
 
 export interface CardType {
   typeId: string; // Card type identifier (e.g., "common-1", "ls-ai-platform")
+  name: string; // Human-readable name for QA and testing
   imageUrl: string; // Path to card image
   value: CardValue; // Base value 0-6
   isSpecial: boolean;

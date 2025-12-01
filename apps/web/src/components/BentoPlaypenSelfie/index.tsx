@@ -81,14 +81,20 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
     <>
       <Bento
         className={`h-full py-8 flex flex-col justify-center items-center gap-2 border-accent! overflow-visible!
-                 relative group hover:cursor-pointer
+                 relative ${
+                   selfieAvailabilityState === 'CAMERA_ROLL_FULL'
+                     ? 'bg-common-ash! cursor-default'
+                     : 'group hover:cursor-pointer'
+                 }
                  ${
                    isGeneratingSelfie
                      ? 'bg-gradient-to-br from-common-ash to-accent'
-                     : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
+                     : selfieAvailabilityState === 'CAMERA_ROLL_FULL'
+                       ? ''
+                       : 'bg-common-ash! hover:bg-gradient-to-br hover:bg-gradient-to-r hover:from-secondary-blue hover:to-secondary-purple'
                  }`}
       >
-        {!isLaunchCompleted && (
+        {!isLaunchCompleted && selfieAvailabilityState !== 'CAMERA_ROLL_FULL' && (
           <Image
             className="absolute top-[-1.5rem] left-[-1.5rem] w-[6.3125rem] h-[3.8rem]"
             alt=""
@@ -101,7 +107,11 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
           src="/assets/images/icons/camera.webp"
           width={60}
           height={70}
-          className="group-hover:-rotate-5 transition-transform duration-300 h-auto w-auto"
+          className={`h-auto w-auto ${
+            selfieAvailabilityState === 'CAMERA_ROLL_FULL'
+              ? 'opacity-30'
+              : 'group-hover:-rotate-5 transition-transform duration-300'
+          }`}
           alt=""
           priority
         />
@@ -156,6 +166,11 @@ const BentoPlaypenSelfie: FC<BentoPlaypenSelfieProps> = ({ avatarData, isLaunchC
             {selfieAvailabilityState === 'COMING_SOON' && (
               <div className="flex flex-col items-center justify-center relative">
                 <span className="text-charcoal mt-2 font-extrabold">Coming soon</span>
+              </div>
+            )}
+            {selfieAvailabilityState === 'CAMERA_ROLL_FULL' && (
+              <div className="flex flex-col items-center justify-center relative">
+                <span className="text-charcoal mt-2 font-extrabold">Camera roll is full</span>
               </div>
             )}
           </>

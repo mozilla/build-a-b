@@ -13,6 +13,10 @@ interface PlaypenSaveProps {
    * Applies alternate styling to align with AvatarBentoV2 screens.
    */
   V2?: boolean;
+  /**
+   * Callback when close button is clicked
+   */
+  onClose?: () => void;
 }
 
 const microcopy = {
@@ -20,7 +24,7 @@ const microcopy = {
   copySuccessLabel: 'Link Copied',
 } as const;
 
-const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
+const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2, onClose }) => {
   const [currentHref, setCurrentHref] = useState('');
   const [copyButtonLabel, setCopyButtonLabel] = useState<string>(microcopy.copyLabel);
 
@@ -59,11 +63,10 @@ const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
           />
         </div>
       </div>
-      <div className="flex flex-col landscape:flex-row gap-4 portrait:w-full">
+      <div className="flex flex-col landscape:flex-row landscape:justify-center gap-4 portrait:w-full">
         <Button
-          fullWidth
           type="button"
-          className="portrait:shadow-[0_10px_15px_-3px_rgba(0,_0,_0,_0.10),_0_4px_6px_-4px_rgba(0,_0,_0,_0.10)] portrait:flex-1 portrait:bg-accent portrait:text-charcoal secondary-button group"
+          className="portrait:shadow-[0_10px_15px_-3px_rgba(0,_0,_0,_0.10),_0_4px_6px_-4px_rgba(0,_0,_0,_0.10)] portrait:flex-1 portrait:bg-accent portrait:text-charcoal portrait:w-full landscape:px-8 secondary-button group"
           onPress={handleLinkCopy}
         >
           <span className="portrait:hidden bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
@@ -74,6 +77,16 @@ const PlaypenSave: FC<PlaypenSaveProps> = ({ action, V2 }) => {
             {copyButtonLabel}
           </span>
         </Button>
+        {onClose && (
+          <Button
+            type="button"
+            className="portrait:shadow-[0_10px_15px_-3px_rgba(0,_0,_0,_0.10),_0_4px_6px_-4px_rgba(0,_0,_0,_0.10)] portrait:flex-1 portrait:w-full landscape:px-8 secondary-button group"
+            onPress={onClose}
+          >
+            <span className="portrait:hidden bg-[#18181B4D] absolute inset-0 pointer-events-none group-hover:opacity-0" />
+            <span className="relative">Close</span>
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -11,7 +11,12 @@ export type TextVariant =
   | 'title-3' // Extrabold, 24px - Section titles
   | 'title-4' // Extrabold, 20px - Subsection titles
   | 'title-5' // Extrabold, 16px - Minor titles
+  | 'title-6' // Extrabold, 16px - Minor titles
+  // Card and Modal Titles
+  | 'card-modal-title' // Regular, 28px - Card modal titles
   // Body text
+  | 'body-extra-large' // Regular, 20px - Large body text
+  | 'body-extra-large-semibold' // Semibold, 20px - Large body text
   | 'body-large-semibold' // Semibold, 18px - Large body text
   | 'body-large-medium' // Medium, 18px - Large body text
   | 'body-large' // Regular, 18px - Large body text
@@ -20,6 +25,9 @@ export type TextVariant =
   | 'body-small-medium' // Medium, 14px - Small body text
   | 'body-small' // Regular, 14px - Small body text
   | 'body-xs' // Regular, 12px - Extra small body text
+  // Badge
+  | 'badge-xl' // Extrabold, 42px - Large badges
+  | 'badge-xs' // Extrabold, 8px - Extra small badges
   // Labels
   | 'label-uppercase' // Extrabold, 8px, uppercase - Small labels
   | 'label-medium' // Medium, 12px - Labels

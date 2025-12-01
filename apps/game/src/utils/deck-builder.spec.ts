@@ -7,7 +7,7 @@ import {
   resetCardIdCounter,
   orderDeck,
 } from './deck-builder';
-import { DEFAULT_GAME_CONFIG } from '../config/game-config';
+import { DEFAULT_GAME_CONFIG, type CardTypeId } from '../config/game-config';
 
 describe('deckBuilder', () => {
   beforeEach(() => {
@@ -15,9 +15,9 @@ describe('deckBuilder', () => {
   });
 
   describe('createDeck', () => {
-    it('should create exactly 66 cards', () => {
+    it('should create exactly 64 cards', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
-      expect(deck).toHaveLength(66);
+      expect(deck).toHaveLength(64);
     });
 
     it('should create correct number of common cards (40 total)', () => {
@@ -45,17 +45,13 @@ describe('deckBuilder', () => {
 
     it('should create exactly 5 Launch Stack cards', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
-      const launchStacks = deck.filter(
-        (card) => card.specialType === 'launch_stack'
-      );
+      const launchStacks = deck.filter((card) => card.specialType === 'launch_stack');
       expect(launchStacks).toHaveLength(5);
     });
 
     it('should create Launch Stack cards with value 0 and triggersAnotherPlay', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
-      const launchStacks = deck.filter(
-        (card) => card.specialType === 'launch_stack'
-      );
+      const launchStacks = deck.filter((card) => card.specialType === 'launch_stack');
 
       launchStacks.forEach((card) => {
         expect(card.value).toBe(0);
@@ -106,25 +102,19 @@ describe('deckBuilder', () => {
     it('should create exactly 4 Firewall cards', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const firewalls = deck.filter((card) =>
-        [
-          'forced_empathy',
-          'tracker_smacker',
-          'open_what_you_want',
-          'mandatory_recall',
-        ].includes(card.specialType || '')
+        ['forced_empathy', 'open_what_you_want', 'mandatory_recall'].includes(
+          card.specialType || '',
+        ),
       );
-      expect(firewalls).toHaveLength(4);
+      expect(firewalls).toHaveLength(3);
     });
 
     it('should create Firewall cards with value 6', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const firewalls = deck.filter((card) =>
-        [
-          'forced_empathy',
-          'tracker_smacker',
-          'open_what_you_want',
-          'mandatory_recall',
-        ].includes(card.specialType || '')
+        ['forced_empathy', 'tracker_smacker', 'open_what_you_want', 'mandatory_recall'].includes(
+          card.specialType || '',
+        ),
       );
 
       firewalls.forEach((card) => {
@@ -135,12 +125,9 @@ describe('deckBuilder', () => {
     it('should create exactly 4 Billionaire Move cards', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const moves = deck.filter((card) =>
-        [
-          'hostile_takeover',
-          'temper_tantrum',
-          'patent_theft',
-          'leveraged_buyout',
-        ].includes(card.specialType || '')
+        ['hostile_takeover', 'temper_tantrum', 'patent_theft', 'leveraged_buyout'].includes(
+          card.specialType || '',
+        ),
       );
       expect(moves).toHaveLength(4);
     });
@@ -148,12 +135,9 @@ describe('deckBuilder', () => {
     it('should create Billionaire Move cards with value 6', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const moves = deck.filter((card) =>
-        [
-          'hostile_takeover',
-          'temper_tantrum',
-          'patent_theft',
-          'leveraged_buyout',
-        ].includes(card.specialType || '')
+        ['hostile_takeover', 'temper_tantrum', 'patent_theft', 'leveraged_buyout'].includes(
+          card.specialType || '',
+        ),
       );
 
       moves.forEach((card) => {
@@ -161,10 +145,10 @@ describe('deckBuilder', () => {
       });
     });
 
-    it('should create exactly 3 Data Grab cards', () => {
+    it('should create exactly 2 Data Grab cards', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const dataGrabs = deck.filter((card) => card.specialType === 'data_grab');
-      expect(dataGrabs).toHaveLength(3);
+      expect(dataGrabs).toHaveLength(2);
     });
 
     it('should have exactly 15 cards that trigger another play', () => {
@@ -178,7 +162,7 @@ describe('deckBuilder', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
       const ids = deck.map((card) => card.id);
       const uniqueIds = new Set(ids);
-      expect(uniqueIds.size).toBe(66);
+      expect(uniqueIds.size).toBe(64);
     });
 
     it('should have correct card value distribution (0-6)', () => {
@@ -192,8 +176,8 @@ describe('deckBuilder', () => {
       const value5Cards = deck.filter((c) => c.value === 5);
       const value6Cards = deck.filter((c) => c.value === 6);
 
-      // Value 0: 4 Blockers + 5 Launch Stacks + 3 Data Grabs = 12
-      expect(value0Cards).toHaveLength(12);
+      // Value 0: 4 Blockers + 5 Launch Stacks + 2 Data Grabs = 11
+      expect(value0Cards).toHaveLength(11);
       // Value 1: 8 common + 2 tracker-1 = 10
       expect(value1Cards).toHaveLength(10);
       // Value 2: 8 common + 2 tracker-2 = 10
@@ -204,8 +188,8 @@ describe('deckBuilder', () => {
       expect(value4Cards).toHaveLength(8);
       // Value 5: 8 common = 8
       expect(value5Cards).toHaveLength(8);
-      // Value 6: 4 Firewalls + 4 Moves = 8
-      expect(value6Cards).toHaveLength(8);
+      // Value 6: 3 Firewalls + 4 Moves = 7
+      expect(value6Cards).toHaveLength(7);
     });
   });
 
@@ -243,10 +227,10 @@ describe('deckBuilder', () => {
   describe('dealCards', () => {
     it('should split deck into two equal halves', () => {
       const deck = createDeck(DEFAULT_GAME_CONFIG);
-      const { playerDeck, cpuDeck } = dealCards(deck, 33);
+      const { playerDeck, cpuDeck } = dealCards(deck, 32);
 
-      expect(playerDeck).toHaveLength(33);
-      expect(cpuDeck).toHaveLength(33);
+      expect(playerDeck).toHaveLength(32);
+      expect(cpuDeck).toHaveLength(32);
     });
 
     it('should not duplicate or lose cards', () => {
@@ -265,15 +249,12 @@ describe('deckBuilder', () => {
     it('should create, shuffle, and deal a complete game', () => {
       const { playerDeck, cpuDeck } = initializeGameDeck(DEFAULT_GAME_CONFIG);
 
-      expect(playerDeck).toHaveLength(33);
-      expect(cpuDeck).toHaveLength(33);
+      expect(playerDeck).toHaveLength(32);
+      expect(cpuDeck).toHaveLength(32);
     });
 
     it('should respect ordering strategies', () => {
-      const { playerDeck } = initializeGameDeck(
-        DEFAULT_GAME_CONFIG,
-        'tracker-first'
-      );
+      const { playerDeck } = initializeGameDeck(DEFAULT_GAME_CONFIG, 'tracker-first');
 
       // First few cards should be trackers
       const firstCard = playerDeck[0];
@@ -314,6 +295,55 @@ describe('deckBuilder', () => {
       for (let i = 0; i < ordered.length - 1; i++) {
         expect(ordered[i].value).toBeLessThanOrEqual(ordered[i + 1].value);
       }
+    });
+
+    it('should place custom ordered cards first with custom strategy', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+
+      // Use typeIds instead of Card objects
+      const customOrder: CardTypeId[] = ['tracker-1', 'common-3', 'ls-ai-platform'];
+      const ordered = orderDeck(deck, 'custom', customOrder);
+
+      // First three cards should have the specified typeIds in order
+      expect(ordered[0].typeId).toBe('tracker-1');
+      expect(ordered[1].typeId).toBe('common-3');
+      expect(ordered[2].typeId).toBe('ls-ai-platform');
+
+      // Should still have all 64 cards
+      expect(ordered).toHaveLength(64);
+    });
+
+    it('should shuffle all cards when custom strategy used without customOrder', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+      const ordered = orderDeck(deck, 'custom');
+
+      // Should have all cards
+      expect(ordered).toHaveLength(deck.length);
+
+      // Should contain all the same cards
+      const originalIds = deck.map((c) => c.id).sort();
+      const orderedIds = ordered.map((c) => c.id).sort();
+      expect(orderedIds).toEqual(originalIds);
+    });
+
+    it('should maintain total deck size with custom strategy', () => {
+      const deck = createDeck(DEFAULT_GAME_CONFIG);
+
+      // Use typeIds instead of Card objects
+      const customOrder: CardTypeId[] = ['tracker-2', 'common-5'];
+      const ordered = orderDeck(deck, 'custom', customOrder);
+
+      // Should have all 64 cards until we re-add smacker + datagrab
+      expect(ordered).toHaveLength(64);
+
+      // Should contain all the same cards
+      const originalIds = deck.map((c) => c.id).sort();
+      const orderedIds = ordered.map((c) => c.id).sort();
+      expect(orderedIds).toEqual(originalIds);
+
+      // First two should be the custom ordered ones
+      expect(ordered[0].typeId).toBe('tracker-2');
+      expect(ordered[1].typeId).toBe('common-5');
     });
   });
 });

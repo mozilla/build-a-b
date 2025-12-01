@@ -6,25 +6,38 @@ import prudenceImg from '@/assets/characters/prudence.webp';
 import savannahImg from '@/assets/characters/savannah.webp';
 import walterImg from '@/assets/characters/walter.webp';
 
+export type BillionaireId = 'chaz' | 'chloe' | 'savannah' | 'walter' | 'enzo' | 'prudence';
 export interface Billionaire {
-  id: string;
+  id: BillionaireId;
   name: string;
   imageSrc: string;
   description?: string;
 }
+
+export const DEFAULT_BILLIONAIRE_ID = 'chaz';
+
+/**
+ * Selects a random billionaire from the list, excluding the specified billionaire ID
+ * Used to randomly assign a CPU opponent that's different from the player's selection
+ */
+export const getRandomBillionaire = (excludeId?: BillionaireId): BillionaireId => {
+  const availableBillionaires = BILLIONAIRES.filter((b) => b.id !== excludeId);
+  const randomIndex = Math.floor(Math.random() * availableBillionaires.length);
+  return availableBillionaires[randomIndex].id;
+};
 
 export const BILLIONAIRES: Billionaire[] = [
   {
     id: 'chaz',
     name: 'Chaz Brogan',
     imageSrc: chazImg,
-    description: 'asteroid-mining, vanity-juiced, influence-chasing',
+    description: 'trust-funded, PR-polished, globe-gripping, space-dreaming',
   },
   {
     id: 'chloe',
-    name: 'Chloe Von Sphincterspiel',
+    name: 'Chloe Von Weirdenspiel',
     imageSrc: chloeImg,
-    description: 'social-media-obsessed, attention-seeking, data-hoarding',
+    description: 'media-consolidating, advertiser-alienating, buyback-binging',
   },
   {
     id: 'savannah',
@@ -36,18 +49,18 @@ export const BILLIONAIRES: Billionaire[] = [
     id: 'walter',
     name: 'Walter Bradford Benedict',
     imageSrc: walterImg,
-    description: 'monopoly-building, regulation-dodging, profit-maximizing',
+    description: 'kleptocratic, haven-hopping, art-hoarding',
   },
   {
     id: 'enzo',
     name: 'Enzo Huntington',
     imageSrc: enzoImg,
-    description: 'tech-disrupting, patent-hoarding, innovation-claiming',
+    description: 'election-rigging, cult-leader-larping, infinity-pool-lengthening',
   },
   {
     id: 'prudence',
     name: 'Dame Prudence Smythe',
     imageSrc: prudenceImg,
-    description: 'empire-expanding, tax-avoiding, fortune-amassing',
+    description: 'yacht-hopping, crypto-hustling, heritage-hyping',
   },
-];
+] as const;

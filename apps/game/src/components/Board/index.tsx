@@ -1,19 +1,34 @@
+import { Icon } from '@/components/Icon';
+import { useGameStore } from '@/store';
+import { Button } from '@heroui/react';
 import { type FC, type PropsWithChildren } from 'react';
+import { Frame } from '../Frame';
 import type { BoardProps } from './types';
-import HamburguerIcon from '../../assets/icons/hamburguer.svg';
-import PauseIcon from '../../assets/icons/pause.svg';
 
 export const Board: FC<PropsWithChildren<BoardProps>> = ({ children, bgSrc }) => {
+  const toggleMenu = useGameStore((state) => state.toggleMenu);
+  const toggleAllSound = useGameStore((state) => state.toggleAllSound);
+  const musicEnabled = useGameStore((state) => state.musicEnabled);
+  const soundEffectsEnabled = useGameStore((state) => state.soundEffectsEnabled);
+
+  // Show muted icon only when BOTH music and sound effects are off
+  const isAllSoundOff = !musicEnabled && !soundEffectsEnabled;
+
   return (
-    <section
-      className="h-[100dvh] w-[100vw] max-w-[25rem] max-h-[54rem] bg-cover bg-center bg-no-repeat relative px-[1.625rem] pb-[2.25rem] flex flex-col"
-      style={{ backgroundImage: `url(${bgSrc})` }}
-    >
-      <header className="h-[3.75rem] w-full bg-transparent flex items-center justify-end gap-[0.375rem]">
-        <img src={PauseIcon} alt="Pause" />
-        <img src={HamburguerIcon} alt="Menu" />
+    <Frame backgroundSrc={bgSrc} className="px-6 pt-7 pb-4 flex flex-col justify-center">
+      <header className="relative w-full bg-transparent flex items-center justify-end gap-4">
+        <Button
+          onPress={toggleAllSound}
+          className="px-0 w-6 h-8"
+          aria-label={isAllSoundOff ? 'Unmute all sound' : 'Mute all sound'}
+        >
+          <Icon name={isAllSoundOff ? 'soundOff' : 'soundOn'} className="w-6 h-8" />
+        </Button>
+        <Button onPress={toggleMenu} className="px-0 w-6 h-[1.375rem]">
+          <Icon name="pause" className="w-6 h-[1.375rem]" />
+        </Button>
       </header>
       {children}
-    </section>
+    </Frame>
   );
 };

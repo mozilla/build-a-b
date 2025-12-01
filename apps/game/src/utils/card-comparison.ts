@@ -155,7 +155,7 @@ export function applyTrackerModifier(currentValue: number, trackerCard: Card): n
  *
  * @param opponentValue - Opponent's current turn value
  * @param blockerCard - The blocker card being played
- * @returns Updated opponent value (minimum 0)
+ * @returns Updated opponent value (can be negative)
  */
 export function applyBlockerModifier(opponentValue: number, blockerCard: Card): number {
   if (blockerCard.specialType !== 'blocker') {
@@ -171,8 +171,8 @@ export function applyBlockerModifier(opponentValue: number, blockerCard: Card): 
     console.warn(`Unknown blocker typeId: ${blockerCard.typeId}`);
   }
 
-  // Subtract from opponent, but don't go below 0
-  return Math.max(0, opponentValue - blockerValue);
+  // Subtract from opponent (can go negative)
+  return opponentValue - blockerValue;
 }
 
 /**
@@ -215,8 +215,19 @@ export function shouldTriggerDataWar(
     return true;
   }
 
-  // Otherwise, Data War only on tie
-  return playerValue === cpuValue;
+  // Check if values are tied
+  if (playerValue !== cpuValue) return false; // No tie, no Data War
+
+  // Values are tied - check if either player needs to play another card
+  // Trackers and Blockers trigger "play another card" on tie
+  const playerHasNextPlay = playerCard.triggersAnotherPlay;
+  const cpuHasNextPlay = cpuCard.triggersAnotherPlay;
+
+  // If either player has a next play card, they play another card instead of Data War
+  if (playerHasNextPlay || cpuHasNextPlay) return false;
+
+  // Tie with no next play cards - trigger Data War
+  return true;
 }
 
 /**

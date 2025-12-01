@@ -78,6 +78,7 @@ export type AvatarData = {
   uuid: string;
   selfies: Selfie[];
   selfieAvailability: SelfieAvailabilityData;
+  hasEasterEgg: boolean;
 };
 
 export type DatabaseAvatarResponse = Pick<
@@ -119,7 +120,8 @@ export type SelfieAvailabilityState =
   | 'COMING_SOON'
   | 'COOL_DOWN_PERIOD'
   | 'AVAILABLE'
-  | 'EASTER_EGG';
+  | 'EASTER_EGG'
+  | 'CAMERA_ROLL_FULL';
 
 export type StatusEndpointBaseResponse = {
   status: string;

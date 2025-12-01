@@ -1,11 +1,17 @@
-import type { TooltipProps as HeroUITooltipProps } from '@heroui/tooltip';
+import type { TooltipProps as HeroUITooltipProps } from '@heroui/react';
 
 export type ArrowDirection = 'top' | 'bottom' | 'left' | 'right';
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 export interface TooltipProps extends Omit<HeroUITooltipProps, 'placement'> {
   /**
-   * Arrow direction for the tooltip
+   * Where the tooltip should be positioned relative to the target
+   * @default 'top'
+   */
+  placement?: TooltipPlacement;
+
+  /**
+   * Which direction the arrow should point
    * @default 'bottom'
    */
   arrowDirection?: ArrowDirection;

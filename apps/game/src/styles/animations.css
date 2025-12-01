@@ -1,0 +1,429 @@
+/* ============================================
+   SCROLL & TICKER ANIMATIONS
+   ============================================ */
+
+@keyframes ticker-horizontal-infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-without-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+.animate-scroll-with-pause {
+  animation: ticker-horizontal-infinite-scroll 20s linear infinite;
+}
+
+/* Pause on hover */
+.animate-scroll-with-pause:hover {
+  animation-play-state: paused;
+}
+
+/* ============================================
+   SHIMMER EFFECT
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+/* ============================================
+   FLOAT ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.25rem);
+  }
+}
+
+@keyframes float-2 {
+  0%,
+  100% {
+    transform: translateY(0) rotate(25.48deg);
+  }
+  50% {
+    transform: translateY(-8rem) rotate(25.48deg);
+  }
+}
+
+@keyframes float-tilt {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3rem) rotate(20deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2.5rem) rotate(-15deg);
+  }
+}
+
+@utility animate-float-tilt {
+  animation: float-tilt 6s ease-in-out infinite;
+}
+
+@keyframes float-tilt-left {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2rem, -1.5rem) rotate(-18deg);
+  }
+  50% {
+    transform: translate(0, 0.5rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(-1.5rem, -2rem) rotate(-12deg);
+  }
+}
+
+@utility animate-float-tilt-left {
+  animation: float-tilt-left 7s ease-in-out infinite;
+}
+
+@keyframes float-tilt-right {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(2rem, -1.5rem) rotate(22deg);
+  }
+  50% {
+    transform: translate(0.5rem, 1rem) rotate(0deg);
+  }
+  75% {
+    transform: translate(1.5rem, -2rem) rotate(15deg);
+  }
+}
+
+@utility animate-float-tilt-right {
+  animation: float-tilt-right 7s ease-in-out infinite;
+}
+
+@keyframes float-tilt-2 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotate(22.618deg);
+  }
+  50% {
+    transform: translateX(-1rem) translateY(-3.625rem) rotate(-12.849deg);
+  }
+}
+
+@keyframes float-slide-1 {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(20rem) translateY(1.5rem);
+  }
+}
+
+@keyframes rocket-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
+.animate-rocket-float {
+  animation: rocket-float 4s ease-in-out infinite;
+}
+
+/* ============================================
+   HEADER ANIMATIONS (FLIERS & FLOATERS)
+   ============================================ */
+
+@keyframes flier-1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  5.555% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+  100% {
+    transform: translateX(26.25rem) translateY(24.5625rem);
+  }
+}
+
+@keyframes flier-2 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  4.166% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+  100% {
+    transform: translateX(-51.6875rem) translateY(21.75rem) scale(0.82);
+  }
+}
+
+@keyframes flier-3 {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  26.388% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+  100% {
+    transform: translateX(88.1875rem) translateY(-5.5rem) scale(0.83);
+  }
+}
+
+@keyframes floater-1 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(-11rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-2 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  1.388% {
+    transform: translateY(2.9375rem) rotate(11.444deg);
+  }
+  15.277% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+@keyframes floater-3 {
+  0% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  8.333% {
+    transform: translateY(4.4375rem) rotate(11.444deg);
+  }
+  91.666% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+  100% {
+    transform: translateY(0) rotate(11.444deg);
+  }
+}
+
+/* ============================================
+   GAME CARD ANIMATIONS
+   ============================================ */
+
+@keyframes slide-from-top {
+  0% {
+    transform: translateY(-11.25rem) translateZ(1.875rem) scale(0.68);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-7.5rem) translateZ(1.25rem) scale(0.75);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@utility animate-slide-from-top {
+  animation: slide-from-top 0.5s ease-out forwards;
+}
+
+@keyframes slide-from-bottom {
+  0% {
+    transform: translateY(11.25rem) translateZ(1.875rem) scale(0.68);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(7.5rem) translateZ(1.25rem) scale(0.75);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@utility animate-slide-from-bottom {
+  animation: slide-from-bottom 0.5s ease-out forwards;
+}
+
+/* ============================================
+   GLOW ANIMATIONS - HEARTBEAT & CARD TYPES
+   ============================================ */
+
+@keyframes heartbeat-pulse {
+  0%, 90%, 100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes heartbeat-glow {
+  0%, 90%, 100% {
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  30% {
+    filter: drop-shadow(0 0 1.25rem rgba(255, 255, 255, 0.8));
+  }
+}
+
+@utility animate-heartbeat {
+  animation:
+    heartbeat-pulse 1.5s ease-in-out infinite,
+    heartbeat-glow 1.5s ease-in-out infinite;
+  animation-iteration-count: infinite, infinite;
+  will-change: transform, filter;
+}
+
+/* Tracker cards - Teal glow (#49C1B4) */
+@keyframes tracker-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(73, 193, 180, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.25rem rgba(73, 193, 180, 0.8));
+  }
+}
+
+@utility animate-tracker-glow {
+  animation: tracker-glow 2s ease-in-out infinite;
+}
+
+/* Firewall cards - Orange/yellow glow (#FEC560) */
+@keyframes firewall-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(254, 197, 96, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.25rem rgba(254, 197, 96, 0.8));
+  }
+}
+
+@utility animate-firewall-glow {
+  animation: firewall-glow 2s ease-in-out infinite;
+}
+
+/* Blocker cards - Yellow glow (#FCE978) */
+@keyframes blocker-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(252, 233, 120, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.25rem rgba(252, 233, 120, 0.8));
+  }
+}
+
+@utility animate-blocker-glow {
+  animation: blocker-glow 2s ease-in-out infinite;
+}
+
+/* Move cards - Lighter, brighter purple/blue glow (#8090D0) */
+@keyframes move-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(128, 144, 208, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.5625rem rgba(128, 144, 208, 0.9));
+  }
+}
+
+@utility animate-move-glow {
+  animation: move-glow 2s ease-in-out infinite;
+}
+
+/* Launch Stack cards - Lighter, brighter purple glow (#C77DB8) */
+@keyframes launch-stack-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(199, 125, 184, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.5625rem rgba(199, 125, 184, 0.9));
+  }
+}
+
+@utility animate-launch-stack-glow {
+  animation: launch-stack-glow 2s ease-in-out infinite;
+}
+
+/* Data Grab cards - Blue glow (#0088CC) */
+@keyframes data-grab-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(0, 136, 204, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.25rem rgba(0, 136, 204, 0.8));
+  }
+}
+
+@utility animate-data-grab-glow {
+  animation: data-grab-glow 2s ease-in-out infinite;
+}
+
+/* Data War (common cards) - White glow */
+@keyframes data-war-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.875rem rgba(255, 255, 255, 0.9));
+  }
+}
+
+@utility animate-data-war-glow {
+  animation: data-war-glow 2s ease-in-out infinite;
+}
+

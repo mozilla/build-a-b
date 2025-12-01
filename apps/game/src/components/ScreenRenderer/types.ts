@@ -2,19 +2,7 @@
  * Background variant types for intro/setup screens
  * Note: Gameplay backgrounds are handled by Game/Board component
  */
-export type BackgroundVariant = 'night-sky' | 'billionaire';
-
-/**
- * Available billionaire backgrounds
- * Maps to character selection in game
- */
-export type BillionaireBackground =
-  | 'chaz'
-  | 'chloe'
-  | 'savannah'
-  | 'walter'
-  | 'poindexter'
-  | 'prudence';
+export type BackgroundVariant = 'night-sky' | 'billionaire' | 'grid';
 
 /**
  * Configuration for background rendering

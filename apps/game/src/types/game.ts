@@ -16,14 +16,21 @@ export type GamePhase =
   | 'vs_animation' // Head-to-head VS takeover animation
   | 'ready' // Ready to start turn (tap deck prompt)
   | 'revealing' // Cards being revealed
+  | 'effect_notification.checking' // Effect notification: checking for unseen effects
+  | 'effect_notification.showing' // Effect notification: displaying effect badge and modal
+  | 'effect_notification.transitioning' // Effect notification: delay before comparing
   | 'comparing' // Values being compared
   | 'data_war.animating' // Data War: showing "DATA WAR!" animation
   | 'data_war.reveal_face_down' // Data War: tap to reveal 3 face-down cards
-  | 'data_war.reveal_face_up' // Data War: tap to reveal final card
+  | 'data_war.reveal_face_up.settling' // Data War: waiting for face-down cards to finish animating
+  | 'data_war.reveal_face_up.ready' // Data War: tap to reveal final card
+  | 'data_war.reveal_face_up.owyw_selecting' // Data War: OWYW modal for selecting face-up card
+  | 'data_grab.takeover' // Data Grab: intro animation and countdown
+  | 'data_grab.playing' // Data Grab: active mini-game (10 seconds)
+  | 'data_grab.results' // Data Grab: showing results in hand viewer
   | 'special_effect.showing' // Special effect: displaying effect to player
   | 'special_effect.processing' // Special effect: brief delay before resolving
   | 'pre_reveal.processing' // Pre-reveal: processing non-interactive effects
-  | 'pre_reveal.animating' // Pre-reveal: OWYW animation playing
   | 'pre_reveal.awaiting_interaction' // Pre-reveal: waiting for player to tap deck
   | 'pre_reveal.selecting' // Pre-reveal: player selecting card from modal
   | 'resolving' // Winner taking cards
@@ -36,6 +43,12 @@ export interface PlayedCardState {
   isFaceDown: boolean; // True for Data War face-down cards
 }
 
+export interface ActiveEffect {
+  type: 'tracker' | 'blocker';
+  value: number; // The modifier value
+  source: PlayerType; // Who applied this effect
+}
+
 export interface Player {
   id: PlayerType;
   name: string;
@@ -45,6 +58,9 @@ export interface Player {
   currentTurnValue: number; // Calculated value for current turn (base + modifiers)
   launchStackCount: number; // Number of launch stacks collected (0-3)
   billionaireCharacter?: string; // Selected billionaire (player only)
+  activeEffects: ActiveEffect[]; // Active effects for this player (for stacked display)
+  pendingTrackerBonus: number; // Tracker bonus to apply to next card in same turn (0 if none)
+  pendingBlockerPenalty: number; // Blocker penalty to apply to next card in same turn (0 if none)
 }
 
 export interface SpecialEffect {
@@ -52,6 +68,7 @@ export interface SpecialEffect {
   playedBy: PlayerType;
   card: Card;
   isInstant: boolean; // True for instant effects, false for queued
+  destinationOverride?: PlayerType; // Override destination (e.g., stolen by Temper Tantrum)
 }
 
 export interface PreRevealEffect {
@@ -64,6 +81,15 @@ export interface PreRevealEffect {
 export interface DataWarState {
   isActive: boolean;
   faceDownRevealed: boolean; // Have 3 face-down cards been revealed?
+}
+
+export interface EffectNotification {
+  card: Card;
+  playedBy: PlayerType;
+  specialType: SpecialCardType | null;
+  effectType: string; // e.g., 'tracker', 'blocker', 'hostile_takeover'
+  effectName: string; // e.g., 'Cursed Cursor', 'Enhanced Tracking Protection'
+  effectDescription: string; // Full description from card data
 }
 
 export interface GameState {

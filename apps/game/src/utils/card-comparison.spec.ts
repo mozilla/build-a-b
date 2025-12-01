@@ -27,6 +27,9 @@ const createMockPlayer = (
   currentTurnValue,
   launchStackCount: 0,
   playedCardsInHand: [],
+  activeEffects: [],
+  pendingBlockerPenalty: 0,
+  pendingTrackerBonus: 0,
 });
 
 // Helper to create mock cards
@@ -42,6 +45,7 @@ const createMockCard = (
   isSpecial: !!specialType,
   specialType: specialType,
   triggersAnotherPlay,
+  name: 'test',
 });
 
 describe('cardComparison', () => {
@@ -263,13 +267,13 @@ describe('cardComparison', () => {
       expect(result).toBe(3); // 5 - 2
     });
 
-    it('should not go below 0', () => {
+    it('should go below 0', () => {
       const blocker = createMockCard(0, 'blocker');
       blocker.typeId = 'blocker-2';
 
       const result = applyBlockerModifier(1, blocker);
 
-      expect(result).toBe(0); // Max(0, 1 - 2)
+      expect(result).toBe(-1);
     });
 
     it('should handle zero opponent value', () => {
@@ -278,7 +282,7 @@ describe('cardComparison', () => {
 
       const result = applyBlockerModifier(0, blocker);
 
-      expect(result).toBe(0);
+      expect(result).toBe(-1);
     });
   });
 
