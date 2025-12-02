@@ -719,5 +719,87 @@ describe('gameFlowMachine', () => {
 
       actor.stop();
     });
+
+    it('should trigger OWYW on SECOND face-up when played as first face-up (nested DataWar)', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // Setup: Player will play OWYW as FIRST face-up card
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+      ];
+      mockStoreState.cpu.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+      mockStoreState.openWhatYouWantActive = null;
+
+      navigateToDataWarFaceUpReady(actor);
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'ready' } });
+
+      // FIRST face-up: Play OWYW (should NOT trigger modal yet)
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toBe('comparing');
+
+      // Simulate cards being played - OWYW is now in playedCardsInHand
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+        { card: { id: 'owyw', name: 'OWYW', specialType: 'open_what_you_want' }, isFaceDown: false },
+      ];
+      mockStoreState.cpu.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+        { card: { id: 'regular', name: 'Regular Card' }, isFaceDown: false },
+      ];
+
+      // Cards tie again → another DataWar face-up phase
+      actor.send({ type: 'TIE' });
+      vi.advanceTimersByTime(1500); // pre_animation → animating
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.DATA_WAR_ANIMATION_DURATION); // animating → reveal_face_down
+      actor.send({ type: 'TAP_DECK' }); // reveal_face_down → reveal_face_up.settling
+      vi.advanceTimersByTime(ANIMATION_DURATIONS.DATA_WAR_FACE_DOWN_CARDS_ANIMATION_DURATION); // settling → ready
+
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'ready' } });
+
+      // SECOND face-up: Should trigger OWYW modal (OWYW was played in first face-up)
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toEqual({ data_war: { reveal_face_up: 'owyw_selecting' } });
+
+      actor.stop();
+    });
+
+    it('should NOT trigger OWYW twice if OWYW is the only face-up card', () => {
+      const actor = createActor(gameFlowMachine);
+      actor.start();
+
+      // OWYW is the only face-up card (just played)
+      mockStoreState.player.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+      ];
+      mockStoreState.cpu.playedCardsInHand = [
+        { card: { id: 'fd1', name: 'Face Down 1' }, isFaceDown: true },
+        { card: { id: 'fd2', name: 'Face Down 2' }, isFaceDown: true },
+        { card: { id: 'fd3', name: 'Face Down 3' }, isFaceDown: true },
+      ];
+      mockStoreState.hostileTakeoverDataWar = false;
+      mockStoreState.openWhatYouWantActive = null;
+
+      navigateToDataWarFaceUpReady(actor);
+
+      // About to play OWYW as first face-up - should NOT trigger
+      actor.send({ type: 'TAP_DECK' });
+      expect(actor.getSnapshot().value).toBe('comparing'); // Goes to comparing, not owyw_selecting
+
+      actor.stop();
+    });
   });
 });
