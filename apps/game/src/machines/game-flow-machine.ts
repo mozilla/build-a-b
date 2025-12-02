@@ -243,7 +243,7 @@ export const gameFlowMachine = createMachine(
                     ...player,
                     currentTurnValue:
                       playerHasHostileTakeover && htEffectApplies
-                        ? player.playedCard?.value ?? 6
+                        ? (player.playedCard?.value ?? 6)
                         : 0,
                     activeEffects: player.activeEffects.filter(
                       (effect) => effect.type !== 'tracker' && effect.type !== 'blocker',
@@ -252,7 +252,7 @@ export const gameFlowMachine = createMachine(
                   cpu: {
                     ...cpu,
                     currentTurnValue:
-                      cpuHasHostileTakeover && htEffectApplies ? cpu.playedCard?.value ?? 6 : 0,
+                      cpuHasHostileTakeover && htEffectApplies ? (cpu.playedCard?.value ?? 6) : 0,
                     activeEffects: cpu.activeEffects.filter(
                       (effect) => effect.type !== 'tracker' && effect.type !== 'blocker',
                     ),
@@ -313,6 +313,35 @@ export const gameFlowMachine = createMachine(
                       guard: 'notShowingEffectModal',
                       actions: assign({
                         currentTurn: ({ context }) => {
+                          // Play face-up cards here (after guard check)
+                          const store = useGameStore.getState();
+                          const { player, cpu } = store;
+                          const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
+                          const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
+                          const htEffectApplies = store.hostileTakeoverDataWar;
+
+                          // Track who plays in this phase
+                          const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
+                          const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
+
+                          if (cpuPlays) {
+                            store.playCard('cpu');
+                          }
+                          if (playerPlays) {
+                            store.playCard('player');
+                          }
+
+                          // Get fresh state after playing cards to access the newly played cards
+                          const freshState = useGameStore.getState();
+
+                          // Handle special effects for the new cards
+                          if (playerPlays && freshState.player.playedCard) {
+                            store.handleCardEffect(freshState.player.playedCard, 'player');
+                          }
+                          if (cpuPlays && freshState.cpu.playedCard) {
+                            store.handleCardEffect(freshState.cpu.playedCard, 'cpu');
+                          }
+
                           return context.currentTurn + 1;
                         },
                       }),
