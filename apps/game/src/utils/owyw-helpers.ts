@@ -44,6 +44,7 @@ export function detectDataWarOWYW(state: GameState): OWYWDetectionResult {
   if (hasActivePlayerOWYW) {
     return { hasOWYW: true, owyWPlayer: 'player', isFromPreviousTurn: true };
   }
+
   if (hasActiveCpuOWYW) {
     return { hasOWYW: true, owyWPlayer: 'cpu', isFromPreviousTurn: true };
   }
@@ -60,11 +61,15 @@ export function detectDataWarOWYW(state: GameState): OWYWDetectionResult {
     (c) => c.card.specialType === 'open_what_you_want',
   );
 
-  // Check if OWYW is the LAST face-up card (meaning not used yet)
+  // Check if OWYW was played in a previous face-up phase AND hasn't been used yet
+  // OWYW should only trigger if it's the LAST face-up card (no cards played after it)
+  // If there are cards after OWYW, it means OWYW was already used to select that card
   const playerPlayedOWYW =
-    playerOwywIndex !== -1 && playerOwywIndex === currentPlayerFaceUpCards.length - 1;
+    playerOwywIndex !== -1 &&
+    playerOwywIndex === currentPlayerFaceUpCards.length - 1 &&
+    playerPlaysFaceUp;
   const cpuPlayedOWYW =
-    cpuOwywIndex !== -1 && cpuOwywIndex === currentCpuFaceUpCards.length - 1;
+    cpuOwywIndex !== -1 && cpuOwywIndex === currentCpuFaceUpCards.length - 1 && cpuPlaysFaceUp;
 
   if (playerPlayedOWYW && playerPlaysFaceUp) {
     return { hasOWYW: true, owyWPlayer: 'player', isFromPreviousTurn: false };
