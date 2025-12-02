@@ -10,7 +10,6 @@ import { GameMachineContext } from '../providers/GameProvider';
 import { useGameStore } from '../store/game-store';
 import { isEffectBlocked, shouldTriggerAnotherPlay } from '../utils/card-comparison';
 import { getGamePhase } from '../utils/get-game-phase';
-import { detectDataWarOWYW } from '../utils/owyw-helpers';
 import { useCpuPlayer } from './use-cpu-player';
 import { gtagEvent } from '@/utils/gtag';
 
@@ -205,9 +204,14 @@ export function useGameLogic() {
 
         // Check if Forced Empathy was played - if so, delay transition for BOTH animations
         if (activePlayerState.playedCard.specialType === 'forced_empathy') {
-          setTimeout(() => {
-            actorRef.send({ type: 'CARDS_REVEALED' });
-          }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+          setTimeout(
+            () => {
+              actorRef.send({ type: 'CARDS_REVEALED' });
+            },
+            ANIMATION_DURATIONS.CARD_SETTLE_DELAY +
+              ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION +
+              ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION,
+          );
           return;
         }
       }
@@ -240,9 +244,14 @@ export function useGameLogic() {
 
       if (forcedEmpathyPlayed) {
         // Wait for BOTH animations to finish: video + deck swap
-        setTimeout(() => {
-          actorRef.send({ type: 'CARDS_REVEALED' });
-        }, ANIMATION_DURATIONS.CARD_SETTLE_DELAY + ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION + ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION);
+        setTimeout(
+          () => {
+            actorRef.send({ type: 'CARDS_REVEALED' });
+          },
+          ANIMATION_DURATIONS.CARD_SETTLE_DELAY +
+            ANIMATION_DURATIONS.FORCED_EMPATHY_VIDEO_DURATION +
+            ANIMATION_DURATIONS.FORCED_EMPATHY_SWAP_DURATION,
+        );
         return;
       }
     }
@@ -821,15 +830,8 @@ export function useGameLogic() {
       handleDataWarFaceDown();
       actorRef.send({ type: 'TAP_DECK' });
     } else if (phase === 'data_war.reveal_face_up.ready') {
-      // Check if OWYW needs to be triggered - use centralized helper
-      const store = useGameStore.getState();
-      const result = detectDataWarOWYW(store);
-
-      if (!result.hasOWYW) {
-        // No OWYW or already used - play face-up cards normally
-        handleDataWarFaceUp();
-      }
-      // Send TAP_DECK event (will route to owyw_selecting if OWYW detected)
+      // Send TAP_DECK event - state machine guard will check for OWYW
+      // Cards will be played in the transition action AFTER guard checks
       actorRef.send({ type: 'TAP_DECK' });
     }
     gtagEvent({
@@ -914,44 +916,6 @@ export function useGameLogic() {
         ...(cpuHasHostileTakeover && htEffectApplies ? [] : cpuCards),
       ],
     });
-  };
-
-  /**
-   * Handles Data War face-up cards (add 1 card from each player and resolve)
-   */
-  const handleDataWarFaceUp = () => {
-    // Play one card from each player that does not have hostile_takeover in hand.
-    const store = useGameStore.getState();
-    const { player, cpu } = store;
-    const playerHasHostileTakeover = player.playedCard?.specialType === 'hostile_takeover';
-    const cpuHasHostileTakeover = cpu.playedCard?.specialType === 'hostile_takeover';
-
-    // Use the hostileTakeoverDataWar flag set by checkForDataWar
-    // This correctly handles all HT scenarios including HT played as "another play"
-    const htEffectApplies = store.hostileTakeoverDataWar;
-
-    // Track who plays in this phase
-    const playerPlays = !(playerHasHostileTakeover && htEffectApplies);
-    const cpuPlays = !(cpuHasHostileTakeover && htEffectApplies);
-
-    if (cpuPlays) {
-      playCard('cpu');
-    }
-    if (playerPlays) {
-      playCard('player');
-    }
-
-    // Get fresh state after playing cards to access the newly played cards
-    const freshState = useGameStore.getState();
-
-    // Handle special effects for the new cards
-    if (playerPlays && freshState.player.playedCard) {
-      handleCardEffect(freshState.player.playedCard, 'player');
-    }
-
-    if (cpuPlays && freshState.cpu.playedCard) {
-      handleCardEffect(freshState.cpu.playedCard, 'cpu');
-    }
   };
 
   /**
