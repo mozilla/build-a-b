@@ -301,7 +301,7 @@ export function Game() {
           />
 
           {/* Play Area - Center of board */}
-          <div className="framed:px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-[1.125rem] framed:gap-x-3 items-center justify-around relative row-3 col-span-full gap-4 w-full mx-auto">
+          <div className="px-0 size-full grid grid-cols-[30.4%_1fr_26.6%] gap-x-3 items-center justify-around relative row-3 col-span-full gap-y-4 w-full mx-auto">
             {/* CPU Played Card Area */}
             <div
               className={cn(

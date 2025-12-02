@@ -224,8 +224,30 @@ export const Welcome: FC<BaseScreenProps> = ({ send, className, children, ...pro
       </div>
 
       {/* Powered by Firefox - in document flow at bottom with padding */}
-      <div className="relative z-10 flex justify-center pb-[3.79dvh] pt-4">
+      <div className="relative z-10 flex flex-col items-center gap-3 pb-[3.79dvh] pt-4">
         <PoweredByFirefox />
+        <div className="flex items-center gap-4">
+          <Link
+            href="https://www.mozilla.org/privacy/websites/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-common-ash/70 hover:text-common-ash transition-colors"
+          >
+            <Text variant="body-small" className="underline">
+              Privacy Policy
+            </Text>
+          </Link>
+          <Link
+            href="https://www.mozilla.org/en-US/about/legal/terms/firefox/?utm_source=billionaireblastoff.firefox.com&utm_medium=referral&utm_campaign=footer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-common-ash/70 hover:text-common-ash transition-colors"
+          >
+            <Text variant="body-small" className="underline">
+              Terms & Conditions
+            </Text>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );

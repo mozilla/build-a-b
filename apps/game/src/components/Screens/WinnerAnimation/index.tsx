@@ -206,13 +206,14 @@ export const WinnerAnimation: FC<BaseScreenProps> = memo(
       </motion.div>
     );
   },
-  // Custom comparison function to prevent re-renders when only style/className changes
+  // Custom comparison function to prevent unnecessary re-renders while allowing opacity changes
   (prevProps, nextProps) => {
-    // Only re-render if the critical callback props change
+    // Re-render if critical callback props change OR if opacity style changes (for crossfade)
     return (
       prevProps.onGameOverCrossfadeStart === nextProps.onGameOverCrossfadeStart &&
       prevProps.onGameOverCrossfadeComplete === nextProps.onGameOverCrossfadeComplete &&
-      prevProps.send === nextProps.send
+      prevProps.send === nextProps.send &&
+      prevProps.style?.opacity === nextProps.style?.opacity
     );
   },
 );
