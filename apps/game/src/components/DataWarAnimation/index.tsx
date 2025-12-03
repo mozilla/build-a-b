@@ -22,7 +22,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
   const cpuBillionaire = useCpuBillionaire();
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   // Hide animation when menu is open (gameplay is paused)
   const shouldShow = show && !showMenu;
 
@@ -53,6 +53,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
 
     // Style the video for full coverage
     preloadedVideo.className = 'w-full h-full object-cover';
+    preloadedVideo.currentTime = 0.5;
     preloadedVideo.setAttribute('aria-label', `Data War animation`);
 
     // Call load() to ensure Safari re-processes the video
