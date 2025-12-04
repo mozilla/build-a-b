@@ -40,7 +40,7 @@ const DataWarLaunchHeroWide: FC = () => {
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Center-bottom astronaut - larger */}
         <div
-          className="absolute 
+          className="absolute
                       portrait:bottom-4 portrait:left-0 portrait:w-[7.5rem] portrait:h-[7.5rem]
                       landscape:bottom-[1rem] landscape:left-[47.25rem] landscape:w-[13rem] landscape:h-[13rem]
                       animate-float-tilt z-10"
@@ -50,7 +50,7 @@ const DataWarLaunchHeroWide: FC = () => {
 
         {/* Top right astronaut - smaller */}
         <div
-          className="absolute 
+          className="absolute
                       portrait:top-90 portrait:right-12 portrait:w-[5rem] portrait:h-[5rem]
                       landscape:top-[1.875rem] landscape:right-[3.375rem] landscape:w-[7.9375rem] landscape:h-[7.9375rem]
                       animate-float-tilt-right z-10"
@@ -70,7 +70,7 @@ const DataWarLaunchHeroWide: FC = () => {
               <p className="text-[0.875rem] leading-[1.25rem] landscape:text-[0.75rem] font-bold tracking-[0.96px] text-ash uppercase">
                 PLAY DATA WAR
               </p>
-              <h1 className="font-extrabold text-[2.5rem] leading-[2.5rem] landscape:text-[3.75rem] landscape:leading-[3.75rem] text-ash">
+              <h1 className="font-extrabold text-[2.5rem] leading-[3rem] landscape:text-[3.75rem] landscape:leading-[4.25rem] text-ash">
                 Data War Digital
                 <br />
                 is live now!
