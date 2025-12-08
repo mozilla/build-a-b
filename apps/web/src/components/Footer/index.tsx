@@ -193,7 +193,7 @@ const Footer: FC<FooterProps> = ({ links, socials, ctaCopy, ctaLabel, ctaLink })
           <div key={index} className={className} style={style}>
             <Image
               src={`/assets/images/intro-modal/${id}.webp`}
-              alt={`Floating character ${index + 1}`}
+              alt=""
               fill
               sizes="(max-width: 768px) 30vw, 20vw"
               className="object-contain"

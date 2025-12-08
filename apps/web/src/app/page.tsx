@@ -356,7 +356,7 @@ export default async function Home({
                   >
                     <Image
                       src={`/assets/images/${asset}`}
-                      alt={`Floating character ${index + 1}`}
+                      alt=""
                       fill
                       sizes="(max-width: 768px) 30vw, 20vw"
                       className="object-contain"

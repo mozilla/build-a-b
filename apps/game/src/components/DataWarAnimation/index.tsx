@@ -53,7 +53,6 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
 
     // Style the video for full coverage
     preloadedVideo.className = 'w-full h-full object-cover';
-    preloadedVideo.currentTime = 0.5;
     preloadedVideo.setAttribute('aria-label', `Data War animation`);
 
     // Call load() to ensure Safari re-processes the video
@@ -138,7 +137,6 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
         style={{ pointerEvents: shouldShow ? 'auto' : 'none' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: shouldShow ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
         className="absolute inset-0 z-[var(--z-special-animation)] flex items-center justify-center bg-black"
       >
         {preloadedVideo ? (
