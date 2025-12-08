@@ -15,7 +15,7 @@ const RocketCountdown: FC<RocketCountdownProps> = () => {
     <div className="w-full flex flex-0 flex-col items-end relative landscape:mt-12">
       <Image
         src="/assets/images/intro-modal/10.webp"
-        alt={`Floating character 10`}
+        alt=""
         sizes="(max-width: 768px) 30vw, 20vw"
         width={223}
         height={223}

@@ -714,43 +714,53 @@ export function useGameLogic() {
       // Show win confetti FIRST (before special effects)
       // This establishes the winner before effect animations play
       if (winner && winner !== 'tie') {
-        useGameStore.setState({ showingWinEffect: winner, deckClickBlocked: true });
-        useGameStore.getState().clearAccumulatedEffects();
+        useGameStore.setState({ deckClickBlocked: true });
 
-        // Wait for confetti animation, then process effects
-        setTimeout(() => {
-          // Clear confetti before processing effects
-          useGameStore.setState({ showingWinEffect: null });
+        setTimeout(
+          () => {
+            useGameStore.setState({ showingWinEffect: winner });
+            useGameStore.getState().clearAccumulatedEffects();
 
-          // Process pending special effects now that we know the winner
-          // Returns true if post-resolution animations were queued (e.g., launch_stack)
-          const animationsQueued = processPendingEffects(winner);
+            // Wait for confetti animation, then process effects
+            setTimeout(() => {
+              // Clear confetti before processing effects
+              useGameStore.setState({ showingWinEffect: null });
 
-          // Only collect cards if no post-resolution animations were queued
-          // If animations were queued, the callback will handle card collection after they complete
-          if (!animationsQueued) {
-            collectCardsAfterEffects(winner);
-          }
+              // Process pending special effects now that we know the winner
+              // Returns true if post-resolution animations were queued (e.g., launch_stack)
+              const animationsQueued = processPendingEffects(winner);
 
-          // Check if game is over
-          const hasWon = checkWinCondition();
-          if (hasWon) {
-            actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+              // Only collect cards if no post-resolution animations were queued
+              // If animations were queued, the callback will handle card collection after they complete
+              if (!animationsQueued) {
+                collectCardsAfterEffects(winner);
+              }
+
+              // Check if game is over
+              const hasWon = checkWinCondition();
+              if (hasWon) {
+                actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+                return;
+              }
+
+              // Disable "another play" mode
+              setAnotherPlayMode(false);
+
+              // Reset active player to default (player always initiates in normal mode)
+              setActivePlayer('player');
+
+              // Clear Tracker Smacker at the end of the turn
+              setTrackerSmackerActive(null);
+
+              // Move to next turn (will go through pre_reveal if there are effects)
+              actorRef.send({ type: 'CHECK_WIN_CONDITION' });
+            }, ANIMATION_DURATIONS.WIN_ANIMATION);
             return;
-          }
+          },
+          // Add delay only for cpu, player timing is fine
+          ANIMATION_DURATIONS.WIN_ANIMATION,
+        );
 
-          // Disable "another play" mode
-          setAnotherPlayMode(false);
-
-          // Reset active player to default (player always initiates in normal mode)
-          setActivePlayer('player');
-
-          // Clear Tracker Smacker at the end of the turn
-          setTrackerSmackerActive(null);
-
-          // Move to next turn (will go through pre_reveal if there are effects)
-          actorRef.send({ type: 'CHECK_WIN_CONDITION' });
-        }, ANIMATION_DURATIONS.WIN_ANIMATION);
         return;
       }
 

@@ -22,7 +22,7 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
   const cpuBillionaire = useCpuBillionaire();
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   // Hide animation when menu is open (gameplay is paused)
   const shouldShow = show && !showMenu;
 
@@ -137,7 +137,6 @@ export const DataWarAnimation: FC<DataWarAnimationProps> = ({ show }) => {
         style={{ pointerEvents: shouldShow ? 'auto' : 'none' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: shouldShow ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
         className="absolute inset-0 z-[var(--z-special-animation)] flex items-center justify-center bg-black"
       >
         {preloadedVideo ? (
