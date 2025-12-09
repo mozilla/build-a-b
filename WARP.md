@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-**Mondo Lite** is a Next.js 15+ TypeScript monorepo starter kit featuring HeroUI components, Tailwind CSS v4, and Sanity CMS. This is a white-label boilerplate designed for rapid client site deployment with consistent quality gates and architectural patterns.
+**Mondo Lite** is a Next.js 15+ TypeScript monorepo starter kit featuring HeroUI components and Tailwind CSS v4. This is a white-label boilerplate designed for rapid client site deployment with consistent quality gates and architectural patterns.
 
 ## Common Development Commands
 
@@ -13,7 +13,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 # Install dependencies
 pnpm install
 
-# Start all services (web + studio)
+# Start all services (web + game)
 pnpm dev
 
 # Build all apps
@@ -46,20 +46,17 @@ pnpm --filter ./apps/web lint
 pnpm --filter ./apps/web format
 ```
 
-### Sanity Studio Development (`apps/studio`)
+### Game App Development (`apps/game`)
 ```bash
-# Start studio locally
-pnpm --filter ./apps/studio dev
-# or: pnpm dev:studio
+# Start game locally
+pnpm --filter ./apps/game dev
+# or: pnpm dev:game
 
-# Build studio
-pnpm --filter ./apps/studio build
+# Build game
+pnpm --filter ./apps/game build
 
-# Deploy studio to Sanity hosting
-pnpm --filter ./apps/studio deploy
-
-# Deploy GraphQL API
-pnpm --filter ./apps/studio deploy-graphql
+# Run game tests
+pnpm --filter ./apps/game test
 ```
 
 ### Quality Gates & CI
@@ -75,36 +72,29 @@ pnpm test
 
 # Type checking (if configured)
 pnpm typecheck
-
-# Validate Sanity schemas
-pnpm --filter ./apps/studio schema:validate
 ```
 
 ## Architecture Overview
 
 ### Monorepo Structure
 - **pnpm workspaces** with potential for shared packages in `packages/*`
-- **Two main apps**: `apps/web` (Next.js frontend) and `apps/studio` (Sanity CMS)
+- **Two main apps**: `apps/web` (Next.js frontend) and `apps/game` (Vite/React game)
 - **Shared configuration** at root level with workspace-specific overrides
 
 ### Technology Stack
 - **Frontend**: Next.js 15 with App Router, TypeScript strict mode, Turbopack dev server
 - **UI**: HeroUI component library + Tailwind CSS v4 with custom tokens
-- **CMS**: Sanity v4 with internationalization plugins
 - **Testing**: Jest with React Testing Library, jsdom environment
 - **Linting**: ESLint v9 with Next.js and Prettier configs
 - **Package Management**: pnpm with workspaces
 
 ### Data Flow Architecture
-1. **Content Creation**: Editors use Sanity Studio (`apps/studio`) to author content
-2. **Content Storage**: Sanity Content Lake serves as source of truth via API/GROQ
-3. **Content Rendering**: Next.js web app (`apps/web`) fetches content via server components
-4. **Static Generation**: Pages use SSG with ISR or full SSR based on requirements
-5. **Deployment**: Branch-based deployments (main → production, PRs → preview)
+1. **Content Rendering**: Next.js web app (`apps/web`) serves pages with SSG/ISR
+2. **Static Generation**: Pages use SSG with ISR or full SSR based on requirements
+3. **Deployment**: Branch-based deployments (main → production, PRs → preview)
 
 ### Key Architectural Patterns
 - **Server-first rendering**: Prefer Server Components, use Client Components (`"use client"`) only for interactivity
-- **Centralized queries**: GROQ queries in `apps/web/src/lib/sanity/queries.ts`
 - **Co-location**: Component, styles, tests, and stories in same folder
 - **Path aliases**: Use `@/*` imports configured in tsconfig.json
 - **Composition over props**: Prefer slots/asChild patterns for reusable components
@@ -115,24 +105,16 @@ apps/web/src/
 ├── app/              # Next.js App Router (pages, layouts, route segments)
 ├── components/       # Presentational & composed components
 │   └── __tests__/   # Component tests alongside code
-├── lib/             # Utilities, data-fetching helpers, GROQ wrappers
+├── lib/             # Utilities, data-fetching helpers
 └── types/           # Shared TypeScript definitions
 
-apps/studio/
-├── schemaTypes/     # Sanity schema definitions
-│   ├── documents/   # Document types (post, author, category)
-│   ├── objects/     # Object types (blockContent, seo, link)
-│   └── singletons/  # Singleton types (homepage, settings)
-└── sanity.config.ts # Studio configuration
+apps/game/
+├── src/             # Game source code
+├── public/          # Static assets
+└── vite.config.ts   # Vite configuration
 ```
 
 ## Development Guidelines
-
-### Content Management (Sanity)
-- **Schema changes require PR** with migration notes and `schema:validate` CI pass
-- **Centralize GROQ queries** in `apps/web/src/lib/sanity/queries.ts`
-- **Type safety**: Export TypeScript types for content shapes
-- **Preview workflow**: Use Next.js draft mode + Sanity webhooks
 
 ### Frontend Development
 - **TypeScript strict mode** everywhere with path aliases
@@ -153,12 +135,10 @@ apps/studio/
 1. **Prerequisites**: Node.js ≥18.x, pnpm ≥7.x, Git CLI
 2. **Environment variables**: Copy `.env.example` to `.env.local` and configure
 3. **Development setup**: Run `pnpm install` then `pnpm dev`
-4. **First deployment**: Setup Vercel project with environment variables
+4. **First deployment**: Setup Netlify project with environment variables
 
 ## Anti-patterns to Avoid
-- Fetching Sanity content directly from Client Components
 - Large, untyped Client Components containing most application logic
-- Scattering fetch logic across pages instead of centralized queries
+- Scattering fetch logic across pages instead of centralized modules
 - Adding heavy third-party libraries without ADR and approval
 - Hard-coded styles instead of using design tokens
-- Mutating production datasets from local development
