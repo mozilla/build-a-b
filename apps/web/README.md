@@ -1,6 +1,6 @@
 # Web Application — Mondolite Boilerplate
 
-The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroUI, Tailwind CSS, Sanity integration, and optimized for performance.
+The Next.js 15+ TypeScript frontend for the Mondolite monorepo, built with HeroUI, Tailwind CSS, and optimized for performance.
 
 ## Table of Contents
 
@@ -43,8 +43,6 @@ Open [http://localhost:3000](http://localhost:3000).
 Environment variables are managed in `.env.local` and documented in `.env.example`. Key variables for the web app include:
 
 ```env
-NEXT_PUBLIC_SANITY_PROJECT_ID=...
-NEXT_PUBLIC_SANITY_DATASET=production
 DEPLOY_BUTTON_VISIBILITY_FLAG=boolean-value
 BETA_FEATURE_FLAG=boolean-value
 NEXT_PUBLIC_DATAWAR_PDF_URL=https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/assets/DataWar_FullGame_Print.pdf
@@ -94,7 +92,6 @@ packages/web/
 - `tailwind-plugin` - HeroUI Tailwind plugin
 - `next` - Next.js framework (v15.4.5)
 - `react` & `react-dom` (v19.1.0)
-- `@sanity/client` - Sanity API client
 - `framer-motion` - Animations
 
 ## Architecture & Technologies
@@ -104,7 +101,6 @@ packages/web/
 - Tailwind CSS v4 for utility-first styling
 - HeroUI for pre-built UI components
 - Vercel Flags SDK for gating
-- Sanity CMS for content management
 
 ## Styling
 
