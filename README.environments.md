@@ -20,9 +20,6 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
   - GitHub Actions secrets (CI)
   - Cloud secret managers (AWS SSM / Secrets Manager) for infra-level credentials
 - Minimal example keys (defined in [`.env.example`](.env.example:1)):
-  - NEXT_PUBLIC_SANITY_PROJECT_ID
-  - NEXT_PUBLIC_SANITY_DATASET
-  - SANITY_WRITE_TOKEN
   - NEXT_PUBLIC_DATAWAR_PDF_URL (DataWar game PDF download link)
 
 ## Local development
@@ -47,7 +44,7 @@ Guidance for branch → environment mapping, secrets, and caching/CDN considerat
 
 ## CI / Deploy notes
 
--   PR pipelines should run Quality Gates (typecheck, format, lint, tests, schema validate, build) before preview deploy.
+-   PR pipelines should run Quality Gates (typecheck, format, lint, tests, build) before preview deploy.
 -   Merging to `main` triggers staging/pre-release deployment for final validation before production.
 -   Merging to `prod` triggers production deploy (Netlify) after staging validation is complete.
 -   **Release Branches**: Each `release/{phase}` branch (`2a`, `2b`, `2c`) has its own Netlify deployment:

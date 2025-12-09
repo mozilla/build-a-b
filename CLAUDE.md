@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Mondo Lite is a Next.js 15+ TypeScript monorepo featuring:
 - HeroUI component library for UI components
 - Tailwind CSS v4 for styling with custom plugins
-- Sanity CMS Studio for content management
 - Flags SDK for feature flags
 - Performance optimizations (Turbopack, caching, ISR)
 
@@ -15,7 +14,7 @@ Mondo Lite is a Next.js 15+ TypeScript monorepo featuring:
 
 **Root workspace commands:**
 ```bash
-pnpm dev          # Start both web and studio apps in parallel
+pnpm dev          # Start web and game apps in parallel
 pnpm build        # Build all packages
 pnpm start        # Start web app in production mode
 pnpm lint         # Lint all packages
@@ -33,18 +32,18 @@ pnpm --filter ./apps/web test     # Run Jest tests
 pnpm --filter ./apps/web test:watch  # Run tests in watch mode
 ```
 
-**Studio (Sanity) specific:**
+**Game app specific:**
 ```bash
-pnpm --filter ./apps/studio dev        # Start Sanity studio
-pnpm --filter ./apps/studio build      # Build studio
-pnpm --filter ./apps/studio deploy     # Deploy studio to Sanity
+pnpm --filter ./apps/game dev     # Start game dev server
+pnpm --filter ./apps/game build   # Build game
+pnpm --filter ./apps/game test    # Run game tests
 ```
 
 ## Architecture
 
 **Monorepo Structure:**
 - `apps/web/` - Next.js frontend application (App Router)
-- `apps/studio/` - Sanity CMS Studio for content management
+- `apps/game/` - Vite/React game application
 - `packages/` - Shared packages (future packages for ui, config, utils)
 
 **Frontend Architecture:**
@@ -58,7 +57,6 @@ pnpm --filter ./apps/studio deploy     # Deploy studio to Sanity
 **Key Technologies:**
 - Package manager: pnpm with workspaces
 - Build tool: Turbopack for faster development
-- CMS: Sanity with GROQ queries and next-sanity integration
 - Styling: Tailwind v4 with CSS custom properties for theming
 - Testing: Jest with React Testing Library
 - Code quality: ESLint, Prettier, Husky with lint-staged

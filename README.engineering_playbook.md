@@ -7,7 +7,6 @@ _(Draft, Sep 2025)_
 ### Tech Stack
 
 -   **Frontend**: Next.js (on Netlify), Tailwind CSS, HeroUI (limited).
--   **CMS**: Sanity (content blocks, homepage cards, editorial updates).
 -   **Database**: Supabase (Postgres) → avatar/user mapping + playpen action flags.
 -   **Image Storage**:
     -   LLM returns avatar/playpen images.
@@ -95,7 +94,6 @@ _(Draft, Sep 2025)_
 
 1.  **Scaffolding**
     -   Next.js project setup in Mozilla GitHub.
-    -   Sanity CMS integration for homepage cards.
     -   Tailwind + HeroUI baseline setup.
 2.  **Core Components**
     -   Header (nav, logo, social links).
