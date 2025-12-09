@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.2",
-    "@sanity/client": "^6.29.1",
     "@supabase/ssr": "^0.7.0",
     "clsx": "^2.1.1",
     "cookies-next": "^6.1.0",

@@ -2,7 +2,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/783c3055-df4e-41ee-a9fe-1772db6f3e95/deploy-status)](https://app.netlify.com/projects/build-a-b/deploys)
 
-This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off" microsite. It features a HeroUI component library, Tailwind CSS v4 with a customized plugin, Sanity CMS Studio for content management, and the Flags SDK for feature flags.
+This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off" microsite. It features a HeroUI component library, Tailwind CSS v4 with a customized plugin, and the Flags SDK for feature flags.
 
 ## Table ofContents
 
@@ -29,7 +29,7 @@ This is a Next.js 15+ TypeScript monorepo for the Mozilla "Billionaire Blast-Off
 **Live URLs**: preview via Vercel; production via Vercel/AWS (per project)
 
 **Summary:**
-"Billionaire Blast-Off" is an interactive microsite designed to promote Firefox’s “Open What You Want” positioning through a satirical, Gen Z–friendly creative lens. Users can build their own billionaire avatar and learn about data privacy in a playful way. The project is built on a white-label Next.js + Sanity starter that provides a production-ready foundation for quickly shipping client sites. The primary goal is to drive awareness, not data collection, with no PII being stored.
+"Billionaire Blast-Off" is an interactive microsite designed to promote Firefox’s “Open What You Want” positioning through a satirical, Gen Z–friendly creative lens. Users can build their own billionaire avatar and learn about data privacy in a playful way. The project is built on a white-label Next.js starter that provides a production-ready foundation for quickly shipping client sites. The primary goal is to drive awareness, not data collection, with no PII being stored.
 
 **Goals / Success Metrics:**
 -   Volume of avatars generated.
@@ -46,7 +46,6 @@ For more in-depth information, please see the following documents:
 -   [**Product Requirements Document (PRD)**](PRODUCT_REQUIREMENTS.md): Detailed information on campaign goals, user experience flow, success metrics, and constraints.
 -   [**Engineering Playbook**](ENGINEERING_PLAYBOOK.md): A comprehensive guide to the technical architecture, database schema, security measures, and deployment process.
 -   [**Frontend Documentation**](README.frontend.md)
--   [**CMS Documentation**](README.cms.md)
 -   [**Architecture Documentation**](README.architecture.md)
 -   [**Environments Documentation**](README.environments.md)
 
@@ -58,7 +57,6 @@ For more in-depth information, please see the following documents:
 -   **Unique Avatar URL**: Each user receives a unique "all-access pass" link (e.g., `/a/{hash}`) to their generated avatar, which they can share.
 -   **Interactive Story**: The experience guides users through a narrative about data privacy and corporate accountability.
 -   **Avatar Gallery & Playpen**: Users can perform actions with their avatar, such as taking a space selfie or doing a TikTok dance.
--   **Sanity CMS Integration**: Content is managed through a Sanity Studio backend.
 -   **Bento Grid Layout**: The site uses a modern bento grid layout for its components.
 
 ---
@@ -86,7 +84,7 @@ For more in-depth information, please see the following documents:
     ```bash
     cp .env.example .env.local
     ```
-4.  Update `.env.local` with your Sanity project ID and dataset from `apps/studio/sanity.config.ts`.
+4.  Update `.env.local` with your environment-specific configuration.
 
 ---
 
@@ -103,7 +101,6 @@ build-a-b/
 ├─ apps/
 │  ├─ web/             # Next.js application (frontend)
 │  │  └─ .env.example  # Web-level .env is required for build
-│  ├─ studio/          # Sanity CMS Studio (content backend)
 │  └─ game/            # Vite/React SPA (embedded game)
 ├─ packages/           # shared packages (ui, config, utils)
 ├─ .env.example
@@ -118,11 +115,7 @@ build-a-b/
 ### [`apps/web`](apps/web:1)
 
 -   Next.js (App Router), TypeScript, Turbopack, Tailwind v4, HeroUI.
--   Flags SDK and Sanity for content.
-
-### [`apps/studio`](apps/studio:1)
-
--   Sanity Studio configured; schemas live in `apps/studio/schemaTypes`.
+-   Flags SDK for feature management.
 
 ### [`apps/game`](apps/game:1)
 
@@ -137,7 +130,7 @@ build-a-b/
 Root scripts:
 
 ```bash
-pnpm dev      # Start web and studio (local)
+pnpm dev      # Start web and game (local)
 pnpm build    # Build all packages (game builds automatically during web prebuild)
 pnpm start    # Start web in production
 pnpm lint
@@ -154,14 +147,6 @@ pnpm --filter web start
 pnpm --filter web lint
 ```
 
-Studio package:
-
-```bash
-pnpm --filter studio dev
-pnpm --filter studio build
-pnpm --filter studio deploy
-```
-
 Game package:
 
 ```bash
@@ -176,7 +161,6 @@ pnpm --filter game build    # Build game (happens automatically during web build
 -   Monorepo: pnpm workspaces + Turbo
 -   Frontend: Next.js (App Router), Server Components where applicable
 -   Styling: Tailwind v4, HeroUI component wrappers
--   CMS: Sanity (GROQ, next-sanity)
 -   Feature flags: Vercel Flags SDK
 -   Game: Vite/React SPA with Rolldown (embedded via build process)
 
@@ -212,8 +196,7 @@ These commands should run successfully in CI for PRs:
 2.  Format: `pnpm format`
 3.  Lint: `pnpm lint`
 4.  Tests: `pnpm test`
-5.  Sanity schema validate: `pnpm -F @apps/studio schema:validate`
-6.  Build: `pnpm build`
+5.  Build: `pnpm build`
 
 ---
 
