@@ -14,7 +14,7 @@
     "dev:web": "pnpm --filter ./apps/web dev",
     "dev:game": "pnpm --filter ./apps/game dev",
     "test:game": "pnpm --filter ./apps/game test",
-    "build": "pnpm --parallel build",
+    "build": "pnpm --filter ./apps/web build",
     "build:web": "pnpm --filter ./apps/web build",
     "build:game": "pnpm --filter ./apps/game build",
     "start": "pnpm --filter ./apps/web start",
@@ -41,7 +41,9 @@
       "@heroui/shared-utils"
     ],
     "overrides": {
-      "vite": "npm:rolldown-vite@7.1.14"
+      "vite": "npm:rolldown-vite@7.1.14",
+      "react": "19.2.3",
+      "react-dom": "19.2.3"
     }
   }
 }
