@@ -48,6 +48,8 @@ export default defineConfig(({ command }) => ({
       '@/utils': path.resolve(__dirname, './src/utils'),
       '@/stores': path.resolve(__dirname, './src/stores'),
     },
+    // Ensure only one React instance is used (prevents hooks errors)
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     assetsDir: '',
