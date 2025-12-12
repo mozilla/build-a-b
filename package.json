@@ -41,7 +41,9 @@
       "@heroui/shared-utils"
     ],
     "overrides": {
-      "vite": "npm:rolldown-vite@7.1.14"
+      "vite": "npm:rolldown-vite@7.1.14",
+      "react": "19.2.3",
+      "react-dom": "19.2.3"
     }
   }
 }
