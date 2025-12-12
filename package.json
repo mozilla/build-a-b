@@ -14,7 +14,7 @@
     "dev:web": "pnpm --filter ./apps/web dev",
     "dev:game": "pnpm --filter ./apps/game dev",
     "test:game": "pnpm --filter ./apps/game test",
-    "build": "pnpm --parallel build",
+    "build": "pnpm --filter ./apps/web build",
     "build:web": "pnpm --filter ./apps/web build",
     "build:game": "pnpm --filter ./apps/game build",
     "start": "pnpm --filter ./apps/web start",
