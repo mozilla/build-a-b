@@ -2,12 +2,11 @@
  * Audio Configuration Registry
  * Centralized mapping of game phases/events to audio files
  *
- * Audio files are loaded from Supabase storage
+ * Audio files are loaded from local assets
  */
-import { SUPABASE_BASE_URL } from '@/config/special-effect-animations';
 
-// Reuse same base URL as video assets
-export const AUDIO_BASE_URL = SUPABASE_BASE_URL;
+// Local assets path (served from public/assets/, respects Vite base path)
+export const AUDIO_BASE_URL = `${import.meta.env.BASE_URL}assets/audio/`;
 
 /**
  * Audio track registry
