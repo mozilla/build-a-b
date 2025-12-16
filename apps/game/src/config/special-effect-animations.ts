@@ -2,7 +2,7 @@
  * Special Effect Animation Registry
  * Centralized mapping of special effects to their animation video files
  *
- * Animations are loaded from Supabase storage
+ * Animations are loaded from local assets
  */
 
 import mandatoryRecallPlayer1 from '@/assets/special-effects/mandatory_recall_player_1.json';
@@ -16,8 +16,8 @@ import theftWonPlayer from '@/assets/special-effects/theft_won_player.json';
 import wonLaunchStackCpu from '@/assets/special-effects/won_launchstack_cpu.json';
 import wonLaunchStackPlayer from '@/assets/special-effects/won_launchstack_player.json';
 
-export const SUPABASE_BASE_URL =
-  'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/';
+// Local assets path (served from public/assets/, respects Vite base path)
+export const VIDEO_BASE_URL = `${import.meta.env.BASE_URL}assets/video/`;
 
 export type SpecialEffectAnimationType =
   | 'forced_empathy'
@@ -97,33 +97,33 @@ export function getAnimationVideoSrc(
 export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, SpecialEffectAnimation> =
   {
     forced_empathy: {
-      videoSrc: `${SUPABASE_BASE_URL}firewall_empathy.webm`,
+      videoSrc: `${VIDEO_BASE_URL}firewall_empathy.webm`,
       title: 'Forced Empathy',
       loop: false,
     },
     open_what_you_want: {
-      videoSrc: `${SUPABASE_BASE_URL}firewall_owyw.webm`,
+      videoSrc: `${VIDEO_BASE_URL}firewall_owyw.webm`,
       title: 'Open What You Want',
       loop: false,
     },
     hostile_takeover: {
       videoSrc: {
         // This should be fixed in supabase, but for now I'm doing a code change to fix animation
-        player: `${SUPABASE_BASE_URL}move_takeover_cpu.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_takeover_player.webm`,
+        player: `${VIDEO_BASE_URL}move_takeover_cpu.webm`,
+        cpu: `${VIDEO_BASE_URL}move_takeover_player.webm`,
       },
       title: 'Hostile Takeover',
       loop: false,
     },
     launch_stack: {
-      videoSrc: `${SUPABASE_BASE_URL}launchstack.webm`,
+      videoSrc: `${VIDEO_BASE_URL}launchstack.webm`,
       title: 'Launch Stack',
       loop: false,
     },
     launch_stack_won: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}won_launchstack_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}won_launchstack_cpu.webm`,
+        player: `${VIDEO_BASE_URL}won_launchstack_player.webm`,
+        cpu: `${VIDEO_BASE_URL}won_launchstack_cpu.webm`,
       },
       lottie: {
         player: wonLaunchStackPlayer,
@@ -133,51 +133,51 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
       loop: false,
     },
     data_grab: {
-      videoSrc: `${SUPABASE_BASE_URL}data_grab.webm`,
+      videoSrc: `${VIDEO_BASE_URL}data_grab.webm`,
       title: 'Data Grab',
       loop: false,
     },
     firewall_recall: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}firewall_recall_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}firewall_recall_cpu.webm`,
+        player: `${VIDEO_BASE_URL}firewall_recall_player.webm`,
+        cpu: `${VIDEO_BASE_URL}firewall_recall_cpu.webm`,
       },
       title: 'Firewall Recall',
       loop: false,
     },
     firewall_smacker: {
-      videoSrc: `${SUPABASE_BASE_URL}firewall_smacker.webm`,
+      videoSrc: `${VIDEO_BASE_URL}firewall_smacker.webm`,
       title: 'Firewall Smacker',
       loop: false,
     },
     move_buyout: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}move_buyout_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_buyout_cpu.webm`,
+        player: `${VIDEO_BASE_URL}move_buyout_player.webm`,
+        cpu: `${VIDEO_BASE_URL}move_buyout_cpu.webm`,
       },
       title: 'Move Buyout',
       loop: false,
     },
     move_tantrum: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}move_tantrum_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_tantrum_cpu.webm`,
+        player: `${VIDEO_BASE_URL}move_tantrum_player.webm`,
+        cpu: `${VIDEO_BASE_URL}move_tantrum_cpu.webm`,
       },
       title: 'Move Tantrum',
       loop: false,
     },
     move_theft: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}move_theft_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}move_theft_cpu.webm`,
+        player: `${VIDEO_BASE_URL}move_theft_player.webm`,
+        cpu: `${VIDEO_BASE_URL}move_theft_cpu.webm`,
       },
       title: 'Move Theft',
       loop: false,
     },
     theft_won: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}theft_won_player.webm`,
-        cpu: `${SUPABASE_BASE_URL}theft_won_cpu.webm`,
+        player: `${VIDEO_BASE_URL}theft_won_player.webm`,
+        cpu: `${VIDEO_BASE_URL}theft_won_cpu.webm`,
       },
       lottie: {
         player: theftWonPlayer,
@@ -188,8 +188,8 @@ export const SPECIAL_EFFECT_ANIMATIONS: Record<SpecialEffectAnimationType, Speci
     },
     mandatory_recall_won: {
       videoSrc: {
-        player: `${SUPABASE_BASE_URL}recall_cpu_{counter}.webm`,
-        cpu: `${SUPABASE_BASE_URL}recall_player_{counter}.webm`,
+        player: `${VIDEO_BASE_URL}recall_cpu_{counter}.webm`,
+        cpu: `${VIDEO_BASE_URL}recall_player_{counter}.webm`,
       },
       lottie: {
         player: [mandatoryRecallPlayer1, mandatoryRecallPlayer2, mandatoryRecallPlayer3],
