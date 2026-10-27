@@ -109,7 +109,7 @@ Mix and match props for precise control:
 
 ## Typography Variants
 
-All variants are based on the Figma design system and use Sharp Sans font family.
+All variants are based on the Figma design system and use the system font stack.
 
 ### Titles
 
@@ -262,7 +262,7 @@ const align: TextAlign = 'center'; // ✅
 The component uses Tailwind CSS classes and respects the project's design tokens:
 
 - Colors: `text-common-ash` (default), `text-accent`, `text-secondary-blue`, etc.
-- Font family: `font-sharp-sans` (Sharp Sans)
+- Font family: `font-sharp` (system font stack)
 - Responsive: All font sizes are responsive using the project's viewport-based system
 
 ## Migration from Existing Code
@@ -285,7 +285,7 @@ If you have existing text elements, you can easily migrate them:
 
 ## Notes
 
-- The component automatically applies the Sharp Sans font family
+- The component automatically applies the system font stack
 - Default text color is common-ash (#f8f6f4)
 - All variants are designed for the mobile-first approach
 - The component is optimized for the game's visual design system
