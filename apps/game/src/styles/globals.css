@@ -60,7 +60,7 @@
   --color-accent: #53ffbc;
 
   /* Typography */
-  --font-sharp: 'Sharp Sans', sans-serif;
+  --font-sharp: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-size-xs10: 0.714rem;
 }
 
