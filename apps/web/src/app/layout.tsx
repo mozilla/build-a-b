@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import localFont from 'next/font/local';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import { getCuratedSelfies } from '@/utils/helpers/get-curated-selfies';
@@ -11,83 +10,6 @@ import { evaluateFlag } from './flags';
 import AnalyticsListener from '@/components/AnalyticsListener';
 import { Suspense } from 'react';
 import { socials } from '@/utils/constants';
-
-const sharpSans = localFont({
-  src: [
-    {
-      path: '../../public/assets/fonts/Sharp Sans Thin.woff',
-      weight: '100',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Thin Italic.woff',
-      weight: '100',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Light.woff',
-      weight: '300',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Light Italic.woff',
-      weight: '300',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans.woff',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Italic.woff',
-      weight: '400',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Medium.woff',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Medium Italic.woff',
-      weight: '500',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Semibold.woff',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Semibold Italic.woff',
-      weight: '600',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/SharpSansBold.woff',
-      weight: '700',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Bold Italic.woff',
-      weight: '700',
-      style: 'italic',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans Extrabold.woff',
-      weight: '800',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/Sharp Sans ExtraBold Italic.woff',
-      weight: '800',
-      style: 'italic',
-    },
-  ],
-  variable: '--font-sharp-sans',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -164,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     ctaLink: isPhase4 ? '/datawar/game' : undefined,
   };
   return (
-    <html lang="en" className={`scroll-smooth ${sharpSans.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
         {/* Google Analytics */}
         <Script

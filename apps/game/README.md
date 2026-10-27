@@ -153,9 +153,6 @@ The game is served as a static SPA from within the Next.js application:
 apps/game/
 ├── dist/              # Build output (gitignored)
 ├── public/            # Static assets
-│   ├── assets/
-│   │   └── fonts/     # Symlink to web/public/assets/fonts
-│   └── README.md      # Documentation for public assets
 ├── src/
 │   ├── App.tsx        # Main app component
 │   └── main.tsx       # Entry point
@@ -164,16 +161,6 @@ apps/game/
 ├── tsconfig.json      # TypeScript config
 └── package.json       # Dependencies and scripts
 ```
-
-### Font Loading Strategy
-
-The game shares font files with the web app to avoid duplication:
-
-- **Development**: Fonts accessed via symlink at `public/assets/fonts` → `../../web/public/assets/fonts`
-- **Production**: Game served from `/assets/game/`, fonts from `/assets/fonts/` (both under web app)
-- **CSS**: Font URLs use `/assets/fonts/` (absolute paths work in both environments)
-
-See `public/README.md` for details on recreating the symlink if needed.
 
 ### Accessing the Game
 
