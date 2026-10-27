@@ -39,7 +39,7 @@ export type TextVariant =
   | 'display-small'; // Extrabold, 48px - Small display text
 
 /**
- * Font weight types matching Sharp Sans font family
+ * Font weight types for the system font stack
  */
 export type FontWeight =
   | 'thin' // 100

@@ -49,3 +49,10 @@ lerna-debug.log*
 *.log
 *.tmp
 *.swp
+
+# Fonts (licensed font files must not be committed)
+apps/web/public/assets/fonts/
+*.otf
+*.ttf
+*.woff
+*.woff2
