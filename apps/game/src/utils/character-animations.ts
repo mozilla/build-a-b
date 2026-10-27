@@ -4,6 +4,10 @@
  */
 
 import type { BillionaireId } from '@/config/billionaires';
+
+// Local assets path (served from public/assets/, respects Vite base path)
+const VIDEO_BASE_URL = `${import.meta.env.BASE_URL}assets/video/`;
+
 export type AnimationType = 'vs' | 'datawar' | 'winner';
 type VideoFileType = 'webm' | 'mp4';
 
@@ -86,66 +90,46 @@ const ANIMATION_REGISTRIES: {
     },
     webm: {
       chaz: {
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/1_R1_Chaz_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/9_R1_Chaz_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/7_R1_Chaz_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/5_R1_Chaz_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/3_R1_Chaz_vs_Walter.webm',
+        chloe: `${VIDEO_BASE_URL}1_R1_Chaz_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}9_R1_Chaz_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}7_R1_Chaz_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}5_R1_Chaz_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}3_R1_Chaz_vs_Walter.webm`,
       },
       chloe: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/2_R1_Chloe_vs_Chaz.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/17_R1_Chloe_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/15_R1_Chloe_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/13_R1_Chloe_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/11_R1_Chloe_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}2_R1_Chloe_vs_Chaz.webm`,
+        enzo: `${VIDEO_BASE_URL}17_R1_Chloe_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}15_R1_Chloe_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}13_R1_Chloe_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}11_R1_Chloe_vs_Walter.webm`,
       },
       enzo: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/10_R1_Enzo_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/18_R1_Enzo_vs_Chloe.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/30_R1_Enzo_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/28_R1_Enzo_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/24_R1_Enzo_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}10_R1_Enzo_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}18_R1_Enzo_vs_Chloe.webm`,
+        prudence: `${VIDEO_BASE_URL}30_R1_Enzo_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}28_R1_Enzo_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}24_R1_Enzo_vs_Walter.webm`,
       },
       prudence: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/8_R1_Prudence_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/16_R1_Prudence_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/29_R1_Prudence_vs_Enzo.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/26_R1_Prudence_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/22_R1_Prudence_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}8_R1_Prudence_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}16_R1_Prudence_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}29_R1_Prudence_vs_Enzo.webm`,
+        savannah: `${VIDEO_BASE_URL}26_R1_Prudence_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}22_R1_Prudence_vs_Walter.webm`,
       },
       savannah: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/6_R1_Savanah_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/14_R1_Savannah_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/27_R1_Savannah_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/25_R1_Savannah_vs_Prudence.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/20_R1_Savannah_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}6_R1_Savanah_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}14_R1_Savannah_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}27_R1_Savannah_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}25_R1_Savannah_vs_Prudence.webm`,
+        walter: `${VIDEO_BASE_URL}20_R1_Savannah_vs_Walter.webm`,
       },
       walter: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/4_R1_Walter_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/12_R1_Walter_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/23_R1_Walter_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/21_R1_Walter_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/19_R1_Walter_vs_Savannah.webm',
+        chaz: `${VIDEO_BASE_URL}4_R1_Walter_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}12_R1_Walter_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}23_R1_Walter_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}21_R1_Walter_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}19_R1_Walter_vs_Savannah.webm`,
       },
     },
   },
@@ -197,66 +181,46 @@ const ANIMATION_REGISTRIES: {
     },
     webm: {
       chaz: {
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chaz_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chaz_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chaz_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chaz_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chaz_vs_Walter.webm',
+        chloe: `${VIDEO_BASE_URL}R1_DataWar_Chaz_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_DataWar_Chaz_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_DataWar_Chaz_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_DataWar_Chaz_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_DataWar_Chaz_vs_Walter.webm`,
       },
       chloe: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chloe_vs_Chaz.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chloe_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chloe_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chloe_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Chloe_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_DataWar_Chloe_vs_Chaz.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_DataWar_Chloe_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_DataWar_Chloe_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_DataWar_Chloe_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_DataWar_Chloe_vs_Walter.webm`,
       },
       enzo: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Enzo_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Enzo_vs_Chloe.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Enzo_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Enzo_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Enzo_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_DataWar_Enzo_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_DataWar_Enzo_vs_Chloe.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_DataWar_Enzo_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_DataWar_Enzo_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_DataWar_Enzo_vs_Walter.webm`,
       },
       prudence: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Prudence_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Prudence_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Prudence_vs_Enzo.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Prudence_vs_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Prudence_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_DataWar_Prudence_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_DataWar_Prudence_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_DataWar_Prudence_vs_Enzo.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_DataWar_Prudence_vs_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_DataWar_Prudence_vs_Walter.webm`,
       },
       savannah: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Savannah_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Savannah_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Savannah_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Savannah_vs_Prudence.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Savannah_vs_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_DataWar_Savannah_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_DataWar_Savannah_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_DataWar_Savannah_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_DataWar_Savannah_vs_Prudence.webm`,
+        walter: `${VIDEO_BASE_URL}R1_DataWar_Savannah_vs_Walter.webm`,
       },
       walter: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Walter_vs_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Walter_vs_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Walter_vs_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Walter_vs_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_DataWar_Walter_vs_Savannah.webm',
+        chaz: `${VIDEO_BASE_URL}R1_DataWar_Walter_vs_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_DataWar_Walter_vs_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_DataWar_Walter_vs_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_DataWar_Walter_vs_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_DataWar_Walter_vs_Savannah.webm`,
       },
     },
   },
@@ -281,28 +245,20 @@ const ANIMATION_REGISTRIES: {
     },
     webm: {
       player: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_Player_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_Winner_Player_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_Winner_Player_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_Winner_Player_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_Winner_Player_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_Winner_Player_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_Winner_Player_Walter.webm`,
       },
       cpu: {
-        chaz: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Chaz.webm',
-        chloe:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Chloe.webm',
-        enzo: 'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Enzo.webm',
-        prudence:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Prudence.webm',
-        savannah:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Savannah.webm',
-        walter:
-          'https://oqqutatvbdlpumixjiwg.supabase.co/storage/v1/object/public/datawar/R1_Winner_CPU_Walter.webm',
+        chaz: `${VIDEO_BASE_URL}R1_Winner_CPU_Chaz.webm`,
+        chloe: `${VIDEO_BASE_URL}R1_Winner_CPU_Chloe.webm`,
+        enzo: `${VIDEO_BASE_URL}R1_Winner_CPU_Enzo.webm`,
+        prudence: `${VIDEO_BASE_URL}R1_Winner_CPU_Prudence.webm`,
+        savannah: `${VIDEO_BASE_URL}R1_Winner_CPU_Savannah.webm`,
+        walter: `${VIDEO_BASE_URL}R1_Winner_CPU_Walter.webm`,
       },
     },
   },
